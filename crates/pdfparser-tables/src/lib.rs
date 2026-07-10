@@ -1,4 +1,4 @@
-//! Table extraction engine — Phase V: lattice + stream + hybrid + stitch + FP control.
+//! Multi-strategy PDF table extraction (lattice, stream, hybrid, stitch, FP control).
 #![deny(missing_docs)]
 
 mod form;
@@ -42,7 +42,6 @@ pub fn detect_tables_page(
 
     let mut cands = Vec::new();
 
-    // S2 Lattice first — highest trust for ruled grids
     if opts.modes.lattice {
         cands.extend(detect_lattice_tables(page_index, runs, rules, opts));
     }
@@ -51,16 +50,13 @@ pub fn detect_tables_page(
         t.method == TableMethod::Lattice && t.cols >= 2 && t.rows >= 2 && t.confidence >= 0.65
     });
 
-    // S4 Hybrid only when lattice did not already recover a strong grid
-    // (still allow hybrid for partial-border pages where lattice rejects cols<2)
+    // Hybrid when lattice did not already recover a strong multi-column grid
     if opts.modes.hybrid && !has_strong_lattice {
         cands.extend(detect_hybrid_tables(page_index, runs, rules, opts));
     }
 
-    // S3 Stream — always candidate; NMS suppresses under ruled tables
     if opts.modes.stream {
         let stream_cands = detect_stream_tables(page_index, runs, opts);
-        // Demote stream that heavily overlaps a lattice/hybrid candidate
         for mut s in stream_cands {
             let under_ruled = cands.iter().any(|k| {
                 matches!(k.method, TableMethod::Lattice | TableMethod::Hybrid)
@@ -74,14 +70,12 @@ pub fn detect_tables_page(
         }
     }
 
-    // P4 side-by-side split (on lattice/hybrid over-merges)
     if opts.side_by_side_split {
-        cands = split_side_by_side(cands, runs);
+        cands = split_side_by_side(cands, runs, opts);
     }
 
-    // P1 form discriminator (penalties / veto)
     if opts.form_discriminator {
-        cands = apply_form_discriminator(cands);
+        cands = apply_form_discriminator(cands, opts);
     }
 
     let min_conf = opts.min_confidence_stream.min(opts.min_table_confidence);
@@ -94,9 +88,12 @@ pub fn detect_tables_page(
     kept
 }
 
-/// Detect tables for all pages and optionally stitch multi-page logical tables.
+/// Detect tables for all pages; optional stitch and over-seg scrub.
+///
+/// `page_heights[i]` should be media-box height in user units for page `i`.
 pub fn detect_tables_document(
     pages: &[(u32, &[TextRun], &[RuleSegment])],
+    page_heights: &[f32],
     opts: &TableOptions,
 ) -> (Vec<Vec<Table>>, Vec<Table>) {
     let mut page_tables: Vec<Vec<Table>> = pages
@@ -105,7 +102,7 @@ pub fn detect_tables_document(
         .collect();
 
     if opts.stitch_multipage {
-        stitch_document(&mut page_tables, opts);
+        stitch_document(&mut page_tables, page_heights, opts);
     }
 
     let mut logical = if opts.stitch_multipage {
@@ -114,7 +111,7 @@ pub fn detect_tables_document(
         page_tables.iter().flatten().cloned().collect()
     };
     if opts.form_discriminator {
-        logical = scrub_document_table_fps(logical);
+        logical = scrub_document_table_fps(logical, opts);
     }
     (page_tables, logical)
 }
@@ -139,7 +136,6 @@ fn nms(mut cands: Vec<Table>, min_conf: f32) -> Vec<Table> {
     for c in cands {
         let overlaps = out.iter().any(|k| {
             let ov = region_overlap(k.bbox, c.bbox);
-            // Tight IoU OR substantial containment of either box
             ov >= 0.28 || geom::iou(k.bbox, c.bbox) >= 0.35
         });
         if !overlaps {
@@ -149,7 +145,6 @@ fn nms(mut cands: Vec<Table>, min_conf: f32) -> Vec<Table> {
     out
 }
 
-/// Overlap as intersection / min(area_a, area_b) — catches nested / near-duplicate regions.
 fn region_overlap(a: pdfparser_ir::Rect, b: pdfparser_ir::Rect) -> f32 {
     let x0 = a.x0.max(b.x0);
     let y0 = a.y0.max(b.y0);

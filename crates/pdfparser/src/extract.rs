@@ -138,16 +138,23 @@ pub fn document_tables(
     let n = doc.page_count() as usize;
     let mut page_runs: Vec<Vec<TextRun>> = Vec::with_capacity(n);
     let mut page_rules: Vec<Vec<pdfparser_content::RuleSegment>> = Vec::with_capacity(n);
+    let mut page_heights: Vec<f32> = Vec::with_capacity(n);
     for i in 0..n {
         let pc = page_content(doc, i, text_opts, true)?;
         page_runs.push(pc.runs);
         page_rules.push(pc.rules);
+        let height = doc
+            .pages
+            .get(i)
+            .map(|p| (p.media_box.y1 - p.media_box.y0).abs().max(1.0))
+            .unwrap_or(0.0);
+        page_heights.push(height);
     }
     let mut page_tables: Vec<Vec<Table>> = (0..n)
         .map(|i| detect_tables_page(i as u32, &page_runs[i], &page_rules[i], table_opts))
         .collect();
     if table_opts.stitch_multipage {
-        stitch_document(&mut page_tables, table_opts);
+        stitch_document(&mut page_tables, &page_heights, table_opts);
     }
     let mut logical = if table_opts.stitch_multipage {
         materialize_stitched(&page_tables)
@@ -155,7 +162,7 @@ pub fn document_tables(
         page_tables.iter().flatten().cloned().collect()
     };
     if table_opts.form_discriminator {
-        logical = pdfparser_tables::scrub_document_table_fps(logical);
+        logical = pdfparser_tables::scrub_document_table_fps(logical, table_opts);
     }
     Ok((page_tables, logical))
 }

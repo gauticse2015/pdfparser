@@ -1,20 +1,38 @@
-//! D1 multi-page table stitcher.
+//! Multi-page table stitcher.
 use crate::options::TableOptions;
 use crate::types::{PipelineId, Table, TableCell};
 
-/// Stitch multi-page table fragments in-place (sets flags + logical_table_id).
-pub fn stitch_document(page_tables: &mut [Vec<Table>], _opts: &TableOptions) {
+/// Stitch multi-page table fragments in-place (flags + logical_table_id).
+///
+/// `page_heights[i]` is the page height in user units (typically media-box height).
+pub fn stitch_document(
+    page_tables: &mut [Vec<Table>],
+    page_heights: &[f32],
+    opts: &TableOptions,
+) {
     if page_tables.len() < 2 {
         return;
     }
     let mut next_id: u32 = 1;
     for i in 1..page_tables.len() {
-        // Collect candidate indices (can't hold mut refs across pages easily)
+        let h_prev = page_heights.get(i - 1).copied().unwrap_or(0.0);
+        let h_cur = page_heights.get(i).copied().unwrap_or(0.0);
+        let h_prev = if h_prev > 1.0 {
+            h_prev
+        } else {
+            infer_page_height(&page_tables[i - 1])
+        };
+        let h_cur = if h_cur > 1.0 {
+            h_cur
+        } else {
+            infer_page_height(&page_tables[i])
+        };
+
         let bottoms: Vec<usize> = page_tables[i - 1]
             .iter()
             .enumerate()
             .filter(|(_, t)| {
-                !t.continued_to_next_page && in_bottom_band(t, page_height_hint(t))
+                !t.continued_to_next_page && in_bottom_band(t, h_prev, opts.stitch_band_frac)
             })
             .map(|(idx, _)| idx)
             .collect();
@@ -22,7 +40,7 @@ pub fn stitch_document(page_tables: &mut [Vec<Table>], _opts: &TableOptions) {
             .iter()
             .enumerate()
             .filter(|(_, t)| {
-                !t.continued_from_previous_page && in_top_band(t, page_height_hint(t))
+                !t.continued_from_previous_page && in_top_band(t, h_cur, opts.stitch_band_frac)
             })
             .map(|(idx, _)| idx)
             .collect();
@@ -32,7 +50,7 @@ pub fn stitch_document(page_tables: &mut [Vec<Table>], _opts: &TableOptions) {
             for &ti in &tops {
                 let a = &page_tables[i - 1][bi];
                 let b = &page_tables[i][ti];
-                if let Some(score) = stitch_score(a, b) {
+                if let Some(score) = stitch_score(a, b, opts) {
                     pairs.push((score, bi, ti));
                 }
             }
@@ -48,13 +66,11 @@ pub fn stitch_document(page_tables: &mut [Vec<Table>], _opts: &TableOptions) {
             used_t.insert(ti);
             let id = {
                 let a = &page_tables[i - 1][bi];
-                if let Some(id) = a.logical_table_id {
-                    id
-                } else {
+                a.logical_table_id.unwrap_or_else(|| {
                     let id = next_id;
                     next_id += 1;
                     id
-                }
+                })
             };
             {
                 let a = &mut page_tables[i - 1][bi];
@@ -76,9 +92,10 @@ pub fn stitch_document(page_tables: &mut [Vec<Table>], _opts: &TableOptions) {
     }
 }
 
-/// Build logical (stitched) tables for scoreboard adapter.
+/// Build logical (stitched) tables from page fragments sharing `logical_table_id`.
 pub fn materialize_stitched(page_tables: &[Vec<Table>]) -> Vec<Table> {
-    let mut by_id: std::collections::BTreeMap<u32, Vec<&Table>> = std::collections::BTreeMap::new();
+    let mut by_id: std::collections::BTreeMap<u32, Vec<&Table>> =
+        std::collections::BTreeMap::new();
     let mut singles: Vec<Table> = Vec::new();
 
     for page in page_tables {
@@ -103,16 +120,13 @@ pub fn materialize_stitched(page_tables: &[Vec<Table>]) -> Vec<Table> {
         }
     }
     out.extend(singles);
-    // stable order by page then x
     out.sort_by(|a, b| {
-        a.page
-            .cmp(&b.page)
-            .then_with(|| {
-                a.bbox
-                    .x0
-                    .partial_cmp(&b.bbox.x0)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-            })
+        a.page.cmp(&b.page).then_with(|| {
+            a.bbox
+                .x0
+                .partial_cmp(&b.bbox.x0)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
     });
     out
 }
@@ -134,7 +148,6 @@ fn merge_fragments(frags: &[&Table]) -> Option<Table> {
         if frag.cols != cols {
             continue;
         }
-        // Drop repeated header rows when similar
         let skip = if header_sim(first, frag) >= 0.85 {
             header_rows
         } else {
@@ -190,57 +203,68 @@ fn merge_fragments(frags: &[&Table]) -> Option<Table> {
     })
 }
 
-fn page_height_hint(t: &Table) -> f32 {
-    // Approximate letter height if bbox is mid-page; use 792 as default US Letter
-    let top = t.bbox.y1;
-    if top > 700.0 {
-        top + 50.0
+/// Infer page height from table bboxes when media box is unavailable.
+fn infer_page_height(tables: &[Table]) -> f32 {
+    let top = tables
+        .iter()
+        .map(|t| t.bbox.y1)
+        .fold(0.0f32, f32::max);
+    if top > 1.0 {
+        top * 1.05
     } else {
-        792.0
+        0.0
     }
 }
 
-fn in_bottom_band(t: &Table, page_h: f32) -> bool {
-    // bottom 30% of page (PDF y-up: low y)
-    let band_top = page_h * 0.30;
-    t.bbox.y0 < band_top || t.bbox.y_center() < page_h * 0.45
+fn in_bottom_band(t: &Table, page_h: f32, band_frac: f32) -> bool {
+    if page_h <= 1.0 {
+        return true;
+    }
+    let band_top = page_h * band_frac;
+    t.bbox.y0 < band_top || t.bbox.y_center() < page_h * (band_frac + 0.15)
 }
 
-fn in_top_band(t: &Table, page_h: f32) -> bool {
-    let band_bot = page_h * 0.70;
-    t.bbox.y1 > band_bot || t.bbox.y_center() > page_h * 0.55
+fn in_top_band(t: &Table, page_h: f32, band_frac: f32) -> bool {
+    if page_h <= 1.0 {
+        return true;
+    }
+    let band_bot = page_h * (1.0 - band_frac);
+    t.bbox.y1 > band_bot || t.bbox.y_center() > page_h * (1.0 - band_frac - 0.15)
 }
 
-fn stitch_score(a: &Table, b: &Table) -> Option<f32> {
+fn stitch_score(a: &Table, b: &Table, opts: &TableOptions) -> Option<f32> {
     if a.cols != b.cols || a.cols < 2 {
         return None;
     }
-    // methods compatible
     match (a.method, b.method) {
-        (crate::types::TableMethod::FormLayout, _) => return None,
-        (_, crate::types::TableMethod::FormLayout) => return None,
+        (crate::types::TableMethod::FormLayout, _) | (_, crate::types::TableMethod::FormLayout) => {
+            return None;
+        }
         _ => {}
     }
     let col_dx = mean_col_dx(a, b);
-    if col_dx > 3.0 {
-        // allow slightly looser for bank statements
-        if col_dx > 12.0 {
-            return None;
-        }
+    let max_dx = opts.stitch_max_col_dx;
+    if col_dx > max_dx {
+        return None;
     }
     let hs = header_sim(a, b);
-    // Match if headers similar OR b looks like continuation (header matches or body-only)
-    let header_ok = hs >= 0.85 || headers_subset(a, b) || (b.header_rows == 0);
-    // Bank ledgers: same col count + alignment is enough when both have many rows
-    let ledger_ok = a.cols >= 4 && a.rows >= 5 && b.rows >= 3 && col_dx <= 8.0;
-    if !header_ok && !ledger_ok {
+    let header_ok =
+        hs >= opts.stitch_min_header_sim || headers_subset(a, b) || b.header_rows == 0;
+    // Same-shape multi-row grids with aligned columns can continue without header copy
+    let continuation_ok =
+        a.cols >= 3 && a.rows >= 4 && b.rows >= 2 && col_dx <= max_dx * 0.7;
+    if !header_ok && !continuation_ok {
         return None;
     }
-    let score = (0.5 * hs + 0.5 * (1.0 - (col_dx / 12.0).min(1.0))).clamp(0.0, 1.0);
-    if score < 0.35 && !ledger_ok {
+    let score = (0.5 * hs + 0.5 * (1.0 - (col_dx / max_dx).min(1.0))).clamp(0.0, 1.0);
+    if score < 0.35 && !continuation_ok {
         return None;
     }
-    Some(score.max(if ledger_ok { 0.6 } else { score }))
+    Some(if continuation_ok {
+        score.max(0.55)
+    } else {
+        score
+    })
 }
 
 fn mean_col_dx(a: &Table, b: &Table) -> f32 {
@@ -284,9 +308,7 @@ fn header_sim(a: &Table, b: &Table) -> f32 {
         let na = normalize(&ha[i]);
         let nb = normalize(&hb[i]);
         if na == nb
-            || (!na.is_empty()
-                && !nb.is_empty()
-                && (na.contains(&nb) || nb.contains(&na)))
+            || (!na.is_empty() && !nb.is_empty() && (na.contains(&nb) || nb.contains(&na)))
         {
             hits += 1;
         }

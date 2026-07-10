@@ -1,7 +1,7 @@
-//! S3 stream detector: whitespace-aligned columns without ruling lines.
+//! Stream detector: whitespace-aligned columns without ruling lines.
 use crate::geom::{
-    band_runs, bbox_of_cells, cells_from_grid, cluster_coords, column_separation_score,
-    median_font_size, row_consistency_score,
+    alignment_score, band_runs, bbox_of_cells, cells_from_grid, cluster_coords,
+    column_separation_score, median_font_size, row_consistency_score,
 };
 use crate::options::TableOptions;
 use crate::types::{PipelineId, Table, TableMethod};
@@ -12,8 +12,6 @@ pub fn detect_stream_tables(page_index: u32, runs: &[TextRun], opts: &TableOptio
     if runs.len() < 6 {
         return Vec::new();
     }
-
-    // Prefer body-sized runs (drop large titles).
     let fs_all = median_font_size(runs);
     let body: Vec<&TextRun> = runs
         .iter()
@@ -26,7 +24,7 @@ pub fn detect_stream_tables(page_index: u32, runs: &[TextRun], opts: &TableOptio
     detect_stream_region(page_index, &owned, opts, None)
 }
 
-/// Stream detection restricted to an optional x-span (used by hybrid / multi-table).
+/// Stream detection restricted to an optional x-span.
 pub fn detect_stream_region(
     page_index: u32,
     runs: &[TextRun],
@@ -51,23 +49,17 @@ pub fn detect_stream_region(
         return Vec::new();
     }
 
-    let fs = median_font_size(
-        &runs
-            .iter()
-            .map(|r| (*r).clone())
-            .collect::<Vec<_>>(),
-    );
-    let y_tol = (0.55 * fs).max(3.0);
     let owned: Vec<TextRun> = runs.iter().map(|r| (*r).clone()).collect();
+    let fs = median_font_size(&owned);
+    let y_tol = (0.55 * fs).max(3.0);
     let bands = band_runs(&owned, y_tol);
 
-    // Multi-column bands only for column discovery
     let multi: Vec<&Vec<&TextRun>> = bands.iter().filter(|b| b.len() >= 2).collect();
-    if multi.len() < 3 {
+    let min_bands = opts.stream_min_body_bands.max(3) as usize;
+    if multi.len() < min_bands {
         return Vec::new();
     }
 
-    // Column anchors from left edges on multi-run bands
     let mut x0s: Vec<f32> = Vec::new();
     for b in &multi {
         for r in *b {
@@ -79,7 +71,6 @@ pub fn detect_stream_region(
     if col_anchors.len() < 2 {
         return Vec::new();
     }
-    // Drop rare columns (< 40% of multi bands)
     col_anchors.retain(|&x| {
         let hits = multi
             .iter()
@@ -92,7 +83,6 @@ pub fn detect_stream_region(
     }
     col_anchors.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
 
-    // Also try gap-midpoint peaks between words on multi bands
     let mut gap_mids: Vec<f32> = Vec::new();
     for b in &multi {
         for w in b.windows(2) {
@@ -102,7 +92,7 @@ pub fn detect_stream_region(
             }
         }
     }
-    // Prefer left-edge anchors; gap mids refine if they align
+
     let mut xs = Vec::new();
     let left_pad = col_anchors[0] - fs * 0.3;
     xs.push(if let Some((x0, _)) = x_clip {
@@ -111,10 +101,7 @@ pub fn detect_stream_region(
         left_pad
     });
     for w in col_anchors.windows(2) {
-        // boundary between columns = midpoint of previous rightmost content and next anchor
-        // or simple midpoint of anchors
         let mid = (w[0] + w[1]) * 0.5;
-        // snap to nearest gap peak if close
         let snapped = gap_mids
             .iter()
             .copied()
@@ -146,7 +133,6 @@ pub fn detect_stream_region(
     xs.push(right);
     xs = cluster_coords(&xs, 1.0);
 
-    // Row centers: multi-column bands only (drop title/prose single lines)
     let x_lo = xs[0];
     let x_hi = *xs.last().unwrap();
     let mut body_bands: Vec<&Vec<&TextRun>> = multi
@@ -168,16 +154,14 @@ pub fn detect_stream_region(
                 })
         })
         .collect();
-    if body_bands.len() < 3 {
+    if body_bands.len() < min_bands {
         return Vec::new();
     }
-    // Keep only the largest contiguous y-cluster of multi-col bands (drop far titles)
     body_bands.sort_by(|a, b| {
         let ya = a.iter().map(|r| r.bbox.y_center()).sum::<f32>() / a.len() as f32;
         let yb = b.iter().map(|r| r.bbox.y_center()).sum::<f32>() / b.len() as f32;
         yb.partial_cmp(&ya).unwrap_or(std::cmp::Ordering::Equal)
     });
-    // Find densest vertical group (gap < 3*fs between successive bands)
     let centers: Vec<f32> = body_bands
         .iter()
         .map(|b| b.iter().map(|r| r.bbox.y_center()).sum::<f32>() / b.len() as f32)
@@ -195,27 +179,24 @@ pub fn detect_stream_region(
         i = j.max(i + 1);
     }
     let (bi, bj) = best_range;
-    if bj - bi < 3 {
+    if bj - bi < min_bands {
         return Vec::new();
     }
     let mut y_centers: Vec<f32> = centers[bi..bj].to_vec();
     y_centers = cluster_coords(&y_centers, y_tol);
     y_centers.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
-    if y_centers.len() < 3 {
+    if y_centers.len() < min_bands {
         return Vec::new();
     }
 
     let mut ys = Vec::new();
-    let top = y_centers[0] + fs * 0.65;
-    ys.push(top);
+    ys.push(y_centers[0] + fs * 0.65);
     for w in y_centers.windows(2) {
         ys.push((w[0] + w[1]) * 0.5);
     }
-    let bot = y_centers[y_centers.len() - 1] - fs * 0.65;
-    ys.push(bot);
+    ys.push(y_centers[y_centers.len() - 1] - fs * 0.65);
 
-    let min_cell = opts.min_cell_size;
-    let (cells, filled) = cells_from_grid(&owned, &xs, &ys, min_cell);
+    let (cells, filled) = cells_from_grid(&owned, &xs, &ys, opts.min_cell_size);
     if cells.is_empty() || filled < 4 {
         return Vec::new();
     }
@@ -232,7 +213,7 @@ pub fn detect_stream_region(
         }
     }
     let multi_col_rows = row_fill.iter().filter(|&&n| n >= 2).count();
-    if multi_col_rows < 3 {
+    if multi_col_rows < min_bands {
         return Vec::new();
     }
 
@@ -242,49 +223,53 @@ pub fn detect_stream_region(
         return Vec::new();
     }
 
-    // Prose / document-layout reject (NIST, papers, forms)
     let col_sep = column_separation_score(&xs, fs);
-    if col_sep < 0.30 {
+    if col_sep < opts.stream_min_col_sep {
         return Vec::new();
     }
+
+    // Measured alignment: multi-band left edges vs column anchors
+    let align_x0s: Vec<f32> = multi
+        .iter()
+        .flat_map(|b| b.iter().map(|r| r.bbox.x0))
+        .collect();
+    let alignment = alignment_score(&align_x0s, &col_anchors, col_snap);
+
     let punct = punctuation_density(&cells);
-    let alignment = 0.8f32;
     let mean_chars = mean_nonempty_chars(&cells);
     let num_dens = numeric_density(&cells);
-    // Long paragraph cells in narrow 2-col layouts → prose (NIST definitions)
-    if mean_chars >= 70.0 && max_col <= 2 && num_dens < 0.25 {
+
+    // Layout rejects (geometry/stats only)
+    if mean_chars >= opts.stream_max_prose_mean_chars && max_col <= 2 && num_dens < 0.25 {
         return Vec::new();
     }
-    // Numbered-list / definition layout (1. foo, 2. bar) only for 2-col
-    if max_col <= 2 && looks_like_numbered_list(&cells) && num_dens < 0.2 && mean_chars > 40.0
+    if max_col <= 2
+        && looks_like_numbered_list(&cells)
+        && num_dens < 0.2
+        && mean_chars > opts.stream_max_prose_mean_chars * 0.55
     {
         return Vec::new();
     }
-    // TOC-ish: many dots, long cells, few columns
     if punct > 0.12 && mean_chars > 40.0 && max_col <= 3 && num_dens < 0.15 {
         return Vec::new();
     }
     if punct > 0.12 && alignment < 0.55 {
         return Vec::new();
     }
-    // Sparse wide multi-col stream with mostly empty cells is TOC/layout junk
     if max_col >= 5 && fill_rate < 0.35 && num_dens < 0.12 {
         return Vec::new();
     }
 
     let row_cons = row_consistency_score(&row_fill);
-    let confidence = (0.30 * col_sep
+    let mut confidence = (0.30 * col_sep
         + 0.25 * row_cons
         + 0.20 * fill_rate
         + 0.15 * alignment
         + 0.10 * (total as f32 / 6.0).min(1.0))
     .clamp(0.0, 1.0);
-    // Soft penalize borderline prose without hard reject (document scrub handles NIST)
-    let confidence = if mean_chars > 55.0 && num_dens < 0.15 && max_col <= 2 {
-        confidence * 0.65
-    } else {
-        confidence
-    };
+    if mean_chars > opts.stream_max_prose_mean_chars * 0.8 && num_dens < 0.15 && max_col <= 2 {
+        confidence *= 0.65;
+    }
 
     if confidence < opts.min_confidence_stream {
         return Vec::new();
@@ -380,7 +365,6 @@ fn is_numericish(s: &str) -> bool {
 }
 
 fn looks_like_numbered_list(cells: &[crate::types::TableCell]) -> bool {
-    // First column mostly "1." / "2." / "a)" style markers
     let first_col: Vec<&str> = cells
         .iter()
         .filter(|c| c.col == 0 && !c.text.trim().is_empty())

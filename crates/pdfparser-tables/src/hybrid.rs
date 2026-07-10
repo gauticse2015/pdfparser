@@ -95,7 +95,7 @@ fn find_outer_frames(rules: &[RuleSegment], tol: f32) -> Vec<Rect> {
     }
 
     let coverage = edge_coverage(x_left, x_right, y_bot, y_top, &hs, &vs, tol);
-    // Accept partial frames with ≥3 sides reasonably covered (hybrid fixture)
+    // Accept partial frames with ≥3 sides reasonably covered
     let sides_ok = coverage.iter().filter(|&&c| c >= 0.55).count();
     if sides_ok >= 3 || coverage.iter().sum::<f32>() >= 2.5 {
         frames.push(Rect {
@@ -421,9 +421,9 @@ fn hybrid_grid(
     };
     let confidence = (0.5 * conf_l + 0.5 * conf_s + agreement).clamp(0.0, 1.0);
 
-    // Boost hybrid when it recovers a real multi-col grid (beat lattice 1×2)
+    // Prefer multi-column recovered grids in NMS (floor conf when ≥3×3)
     let confidence = if max_col >= 3 && max_row >= 3 {
-        confidence.max(0.72)
+        confidence.max(opts.hybrid_min_conf_when_grid)
     } else {
         confidence
     };

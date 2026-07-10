@@ -66,7 +66,7 @@ impl Document {
     ///
     /// Returns `(page_fragments, logical_tables)`. When `stitch_multipage` is
     /// enabled, fragments carry `continued_*` / `logical_table_id` and
-    /// `logical_tables` are scoreboard-ready stitched grids.
+    /// `logical_tables` are stitched logical tables when multipage stitch is on.
     pub fn tables(
         &self,
         text_opts: &TextOptions,

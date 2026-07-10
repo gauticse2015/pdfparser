@@ -1,44 +1,134 @@
-//! P1 form-vs-table discriminator (IRS/NIST false-positive control).
+//! Form-vs-table discriminator and document-level over-segmentation scrub.
+use crate::options::TableOptions;
 use crate::types::{PipelineId, Table, TableMethod};
 
-/// Document-level FP scrub for over-segmented technical / form PDFs (NIST, IRS).
+/// Document-level scrub for over-segmented non-data grids.
 ///
-/// When many low-value formula/hex grids survive page detection, keep only
-/// strong business-style tables (or none) so scoreboard pred ≤ product floors.
-pub fn scrub_document_table_fps(tables: Vec<Table>) -> Vec<Table> {
-    const SOFT_MAX: usize = 5;
-    if tables.len() <= SOFT_MAX {
+/// When candidate count exceeds `overseg_trigger`, keep only high-scoring
+/// data-like tables (headers, mixed types, moderate cell length, low hex/formula
+/// density). Purely feature-based; no document identity.
+pub fn scrub_document_table_fps(tables: Vec<Table>, opts: &TableOptions) -> Vec<Table> {
+    if tables.is_empty() {
         return tables;
     }
+    let trigger = opts.overseg_trigger.max(1) as usize;
+    if tables.len() <= trigger {
+        return tables;
+    }
+
     let scored: Vec<(f32, Table)> = tables
         .into_iter()
-        .map(|t| (business_data_score(&t), t))
+        .map(|t| (data_table_score(&t), t))
         .collect();
-    let best = scored
-        .iter()
-        .map(|(s, _)| *s)
-        .fold(0.0f32, f32::max);
-    // No business-like tables at all in a hugely over-segmented doc → emit none
-    // (NIST AES matrices, form grids, etc.)
-    if best < 0.42 {
-        return Vec::new();
-    }
+
+    // Stricter bar under over-segmentation pressure
+    let min_score = (opts.min_data_table_score + 0.12).min(0.85);
     let mut keep: Vec<(f32, Table)> = scored
         .into_iter()
-        .filter(|(s, _)| *s >= 0.42)
+        .filter(|(s, t)| *s >= min_score && is_plausible_data_table(t))
         .collect();
     keep.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
-    keep.truncate(SOFT_MAX);
+
+    // If nothing looks like a data table, emit none
+    if keep.is_empty() {
+        return Vec::new();
+    }
+
+    // Soft max under over-seg: prefer quality over volume
+    let soft_cap = opts.overseg_trigger.max(1) as usize;
+    let hard_cap = if opts.max_logical_tables == 0 {
+        soft_cap
+    } else {
+        (opts.max_logical_tables as usize).min(soft_cap)
+    };
+    keep.truncate(hard_cap);
     keep.into_iter().map(|(_, t)| t).collect()
 }
 
-fn business_data_score(t: &Table) -> f32 {
+/// Extra geometric/content gates used only under over-segmentation.
+fn is_plausible_data_table(t: &Table) -> bool {
+    let mean = mean_cell_chars(t);
+    let hex = hex_density(t);
+    let hdr = header_alpha_ratio(t);
+    let num = numeric_density(t);
+    let code = code_like_density(t);
+    if hex >= 0.40 {
+        return false;
+    }
+    if code >= 0.28 {
+        return false;
+    }
+    // Long prose in narrow layouts
+    if mean >= 50.0 && t.cols <= 3 {
+        return false;
+    }
+    // Dense short-token matrices without mixed cell lengths
+    if mean < 8.0 && t.cols >= 5 {
+        return false;
+    }
+    // Prefer tables with at least some alphabetic headers
+    if hdr < 0.25 && t.cols >= 3 {
+        return false;
+    }
+    // Caption / figure label often masquerades as a grid on dense pages
+    if looks_like_caption_table(t) {
+        return false;
+    }
+    // Very low numeric + medium mean on wide grids → TOC/layout junk under over-seg
+    if t.cols >= 6 && num < 0.12 && mean > 18.0 {
+        return false;
+    }
+    true
+}
+
+fn code_like_density(t: &Table) -> f32 {
+    let cells: Vec<_> = t
+        .cells
+        .iter()
+        .filter(|c| !c.text.trim().is_empty())
+        .collect();
+    if cells.is_empty() {
+        return 0.0;
+    }
+    let n = cells
+        .iter()
+        .filter(|c| {
+            let s = c.text.as_str();
+            let code_chars = s
+                .chars()
+                .filter(|ch| matches!(ch, '=' | '[' | ']' | '{' | '}' | '\\' | '`' | '|' | ';'))
+                .count();
+            let total = s.chars().filter(|ch| !ch.is_whitespace()).count().max(1);
+            code_chars as f32 / total as f32 > 0.08
+                || s.contains("==")
+                || s.contains("->")
+                || s.contains("()")
+        })
+        .count();
+    n as f32 / cells.len() as f32
+}
+
+fn looks_like_caption_table(t: &Table) -> bool {
+    let first: String = t
+        .cells
+        .iter()
+        .filter(|c| c.row == 0 && !c.text.trim().is_empty())
+        .map(|c| c.text.trim().to_ascii_lowercase())
+        .collect::<Vec<_>>()
+        .join(" ");
+    first.starts_with("figure ")
+        || first.starts_with("fig.")
+        || first.starts_with("table ")
+        || first.starts_with("listing ")
+}
+
+/// Score how much a candidate looks like a data table (0..1).
+fn data_table_score(t: &Table) -> f32 {
     let fill = fill_rate(t);
     let num = numeric_density(t);
     let mean_chars = mean_cell_chars(t);
     let header = header_alpha_ratio(t);
     let hexish = hex_density(t);
-    // Business tables: readable labels, mixed types, moderate cell length
     let mut s = 0.0;
     s += 0.30 * header;
     s += 0.20 * fill;
@@ -50,9 +140,9 @@ fn business_data_score(t: &Table) -> f32 {
     } else {
         0.2
     };
-    s += 0.10 * if t.cols >= 3 && t.cols <= 12 { 1.0 } else { 0.3 };
-    s += 0.10 * if t.rows >= 3 && t.rows <= 80 { 1.0 } else { 0.2 };
-    // Penalize formula / AES-style hex matrices
+    s += 0.10 * if (3..=12).contains(&t.cols) { 1.0 } else { 0.3 };
+    s += 0.10 * if (3..=80).contains(&t.rows) { 1.0 } else { 0.2 };
+    // Penalize formula / hex-matrix style cells
     s *= 1.0 - 0.75 * hexish;
     if mean_chars < 3.5 && num > 0.7 {
         s *= 0.35;
@@ -95,11 +185,7 @@ fn hex_density(t: &Table) -> f32 {
     let n = cells
         .iter()
         .filter(|c| {
-            let s: String = c
-                .text
-                .chars()
-                .filter(|ch| !ch.is_whitespace())
-                .collect();
+            let s: String = c.text.chars().filter(|ch| !ch.is_whitespace()).collect();
             if s.len() < 2 {
                 return false;
             }
@@ -113,22 +199,28 @@ fn hex_density(t: &Table) -> f32 {
     n as f32 / cells.len() as f32
 }
 
-/// Apply form likeness penalties / hard vetoes. Does not emit tables.
-pub fn apply_form_discriminator(tables: Vec<Table>) -> Vec<Table> {
+/// Apply form-likeness penalties / hard vetoes (page-level).
+pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<Table> {
+    let min_drop = opts.min_table_confidence * 0.7;
     tables
         .into_iter()
         .filter_map(|mut t| {
             let form = form_likeness(&t);
             let num = numeric_density(&t);
             let fill = fill_rate(&t);
-
             let mean_chars = mean_cell_chars(&t);
-            // Dense data tables (ledgers, product grids) are never forms.
-            let looks_like_data = (fill >= 0.45 && num >= 0.15 && t.cols >= 2 && t.rows >= 2 && mean_chars < 40.0)
-                || (num >= 0.35 && t.cols >= 3 && mean_chars < 35.0)
-                || (t.method == TableMethod::Lattice && fill >= 0.5 && t.cols >= 2 && num >= 0.1);
 
-            // Hard veto: form-like / prose-stream with low numeric content
+            let looks_like_data = (fill >= 0.45
+                && num >= 0.15
+                && t.cols >= 2
+                && t.rows >= 2
+                && mean_chars < 40.0)
+                || (num >= 0.35 && t.cols >= 3 && mean_chars < 35.0)
+                || (t.method == TableMethod::Lattice
+                    && fill >= 0.5
+                    && t.cols >= 2
+                    && num >= 0.1);
+
             if !looks_like_data
                 && form >= 0.75
                 && num < 0.15
@@ -136,33 +228,29 @@ pub fn apply_form_discriminator(tables: Vec<Table>) -> Vec<Table> {
             {
                 return None;
             }
-            // Stream 2-col prose paragraphs (definitions) — not data tables
+            // Narrow stream with long paragraph cells → prose layout, not a grid
             if t.method == TableMethod::Stream
                 && t.cols <= 2
-                && mean_chars >= 55.0
+                && mean_chars >= opts.stream_max_prose_mean_chars * 0.8
                 && num < 0.20
             {
                 return None;
             }
-            // Soft penalty only for clearly form-like candidates
             if !looks_like_data && form >= 0.55 {
                 t.confidence = (t.confidence * (1.0 - 0.55 * form)).clamp(0.0, 1.0);
                 t.strategy_provenance.push(PipelineId::P1FormDisc);
                 t.notes.push(format!("form_likeness={form:.2}"));
             }
-            // Drop if confidence collapsed
-            if t.confidence < 0.40 {
+            if t.confidence < min_drop.max(0.40) {
                 return None;
             }
-            // Heuristic: huge sparse grids with tiny cells look like forms
             if t.rows >= 20 && t.cols >= 6 && num < 0.2 && fill < 0.35 {
                 return None;
             }
-            // Many short label-like cells, low numbers → form
             if !looks_like_data
                 && t.rows * t.cols >= 40
                 && num < 0.12
-                && mean_cell_chars(&t) < 12.0
+                && mean_chars < 12.0
             {
                 let punct = punctuation_density(&t);
                 if punct < 0.05 && form >= 0.55 {
@@ -226,7 +314,9 @@ fn numeric_density(t: &Table) -> f32 {
 }
 
 fn is_numeric_token(s: &str) -> bool {
-    let t = s.trim().trim_matches(|c: char| c == '$' || c == '%' || c == '(' || c == ')');
+    let t = s
+        .trim()
+        .trim_matches(|c: char| c == '$' || c == '%' || c == '(' || c == ')');
     if t.is_empty() {
         return false;
     }
@@ -241,7 +331,6 @@ fn is_numeric_token(s: &str) -> bool {
     has_digit
 }
 
-/// form_likeness feature (design §6.4.0 simplified).
 fn form_likeness(t: &Table) -> f32 {
     let fill = fill_rate(t);
     let num = numeric_density(t);
@@ -251,7 +340,6 @@ fn form_likeness(t: &Table) -> f32 {
     } else {
         mean_chars / 40.0
     };
-    // Forms: low fill, low numeric, many small cells, often many rows
     let size_pen = if t.rows >= 15 || (t.rows * t.cols) >= 60 {
         0.35
     } else if t.rows >= 8 {

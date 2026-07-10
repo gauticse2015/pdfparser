@@ -247,6 +247,21 @@ pub fn row_consistency_score(row_fill: &[u32]) -> f32 {
     (1.0 - cv.min(1.5) / 1.5).clamp(0.0, 1.0)
 }
 
+/// Column alignment quality: fraction of multi-run bands whose left edges
+/// snap to the discovered column anchors (0..1).
+pub fn alignment_score(runs_x0: &[f32], col_anchors: &[f32], snap: f32) -> f32 {
+    if runs_x0.is_empty() || col_anchors.len() < 2 {
+        return 0.5;
+    }
+    let mut hits = 0u32;
+    for &x in runs_x0 {
+        if col_anchors.iter().any(|&a| (x - a).abs() <= snap * 1.5) {
+            hits += 1;
+        }
+    }
+    hits as f32 / runs_x0.len() as f32
+}
+
 /// Runs whose centers fall inside a rect (with pad).
 pub fn runs_in_rect(runs: &[TextRun], r: Rect, pad: f32) -> Vec<&TextRun> {
     runs.iter()

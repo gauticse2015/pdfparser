@@ -62,7 +62,7 @@ pub fn detect_lattice_tables(
     if nrows < 2 || ncols < 2 {
         return Vec::new();
     }
-    // Cap absurd grids (form FP protection light)
+    // Cap absurd grids
     if nrows > 80 || ncols > 40 {
         return Vec::new();
     }
