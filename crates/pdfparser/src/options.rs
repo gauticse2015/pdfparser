@@ -1,5 +1,6 @@
 //! Public options.
 use pdfparser_core::ResourceLimits;
+use pdfparser_tables::TableOptions;
 
 /// Open options.
 #[derive(Debug, Clone, Default)]
@@ -37,6 +38,6 @@ impl Default for TextOptions {
 pub struct ExtractOptions {
     /// Text options.
     pub text: TextOptions,
-    /// Detect tables (Phase T: ignored / always false).
-    pub detect_tables: bool,
+    /// Table options (default: detect off).
+    pub tables: TableOptions,
 }

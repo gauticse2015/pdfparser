@@ -1,4 +1,4 @@
-//! Text-focused graphics state machine.
+//! Text + path graphics state machine.
 use crate::lexer::{tokenize, Token};
 use pdfparser_fonts::LoadedFont;
 use pdfparser_ir::{Matrix3x2, Rect, TextRun};
@@ -9,58 +9,59 @@ use std::collections::HashMap;
 pub struct InterpretOptions {
     /// Max operators.
     pub max_ops: u64,
+    /// Capture stroked axis-aligned segments for table lattice.
+    pub capture_rules: bool,
 }
 
 impl Default for InterpretOptions {
     fn default() -> Self {
-        Self { max_ops: 2_000_000 }
-    }
-}
-
-#[derive(Clone)]
-struct TextState {
-    font: Option<String>,
-    font_size: f32,
-    char_spacing: f32,
-    word_spacing: f32,
-    horizontal_scale: f32, // percent, default 100
-    leading: f32,
-    rise: f32,
-    render_mode: i32,
-    tm: Matrix3x2,
-    tlm: Matrix3x2,
-}
-
-impl Default for TextState {
-    fn default() -> Self {
         Self {
-            font: None,
-            font_size: 12.0,
-            char_spacing: 0.0,
-            word_spacing: 0.0,
-            horizontal_scale: 100.0,
-            leading: 0.0,
-            rise: 0.0,
-            render_mode: 0,
-            tm: Matrix3x2::identity(),
-            tlm: Matrix3x2::identity(),
+            max_ops: 2_000_000,
+            capture_rules: true,
         }
     }
 }
 
-struct GState {
-    ctm: Matrix3x2,
-    text: TextState,
+/// Axis-aligned (or near) stroked segment in page user space.
+#[derive(Debug, Clone, Copy)]
+pub struct RuleSegment {
+    pub x0: f32,
+    pub y0: f32,
+    pub x1: f32,
+    pub y1: f32,
 }
 
-/// Interpret content stream into paint-order text runs.
-pub fn interpret_text(
+impl RuleSegment {
+    pub fn is_horizontal(&self, tol: f32) -> bool {
+        (self.y0 - self.y1).abs() <= tol
+    }
+    pub fn is_vertical(&self, tol: f32) -> bool {
+        (self.x0 - self.x1).abs() <= tol
+    }
+    pub fn len(&self) -> f32 {
+        let dx = self.x1 - self.x0;
+        let dy = self.y1 - self.y0;
+        (dx * dx + dy * dy).sqrt()
+    }
+}
+
+/// Full page interpret output.
+#[derive(Debug, Clone, Default)]
+pub struct InterpretResult {
+    pub runs: Vec<TextRun>,
+    pub rules: Vec<RuleSegment>,
+    pub warnings: Vec<String>,
+}
+
+/// Interpret content stream (text + optional lattice rules).
+pub fn interpret_page(
     content: &[u8],
     fonts: &HashMap<String, LoadedFont>,
     opts: &InterpretOptions,
-) -> (Vec<TextRun>, Vec<String>) {
+) -> InterpretResult {
     let tokens = tokenize(content);
     let mut runs = Vec::new();
+    let mut rules = Vec::new();
     let mut warnings = Vec::new();
     let mut stack: Vec<Token> = Vec::new();
     let mut gs = GState {
@@ -68,6 +69,7 @@ pub fn interpret_text(
         text: TextState::default(),
     };
     let mut gstack: Vec<GState> = Vec::new();
+    let mut path = PathBuilder::default();
     let mut in_text = false;
     let mut ops = 0u64;
 
@@ -83,10 +85,7 @@ pub fn interpret_text(
                 let op = op.as_str();
                 match op {
                     "q" => {
-                        gstack.push(GState {
-                            ctm: gs.ctm,
-                            text: gs.text.clone(),
-                        });
+                        gstack.push(gs.clone());
                         stack.clear();
                     }
                     "Q" => {
@@ -106,9 +105,62 @@ pub fn interpret_text(
                             let m = Matrix3x2 {
                                 m: [a, b, c, d, e, f],
                             };
-                            // CTM = M * CTM (new matrix multiplies on left in PDF when using cm)
                             gs.ctm = m.concat(gs.ctm);
                         }
+                        stack.clear();
+                    }
+                    "m" => {
+                        let y = pop_num(&mut stack);
+                        let x = pop_num(&mut stack);
+                        path.move_to(x, y);
+                        stack.clear();
+                    }
+                    "l" => {
+                        let y = pop_num(&mut stack);
+                        let x = pop_num(&mut stack);
+                        path.line_to(x, y);
+                        stack.clear();
+                    }
+                    "re" => {
+                        let h = pop_num(&mut stack);
+                        let w = pop_num(&mut stack);
+                        let y = pop_num(&mut stack);
+                        let x = pop_num(&mut stack);
+                        path.rect(x, y, w, h);
+                        stack.clear();
+                    }
+                    "h" => {
+                        path.close();
+                        stack.clear();
+                    }
+                    "n" => {
+                        path.clear();
+                        stack.clear();
+                    }
+                    "S" | "s" | "B" | "B*" | "b" | "b*" => {
+                        if opts.capture_rules {
+                            for seg in path.segments_user(&gs.ctm) {
+                                // Keep near axis-aligned segments of meaningful length
+                                if (seg.is_horizontal(1.5) || seg.is_vertical(1.5))
+                                    && seg.len() >= 2.0
+                                {
+                                    rules.push(seg);
+                                }
+                            }
+                        }
+                        if op == "s" || op == "b" || op == "b*" {
+                            // close then stroke already in segments if close called; path may need close
+                        }
+                        path.clear();
+                        stack.clear();
+                    }
+                    "f" | "F" | "f*" => {
+                        // fill only — discard path for lattice (no stroke rules)
+                        path.clear();
+                        stack.clear();
+                    }
+                    "W" | "W*" => {
+                        // clip — keep path for following paint; don't clear yet
                         stack.clear();
                     }
                     "BT" => {
@@ -196,10 +248,6 @@ pub fn interpret_text(
                     }
                     "Tj" | "'" | "\"" => {
                         if op == "'" || op == "\"" {
-                            if op == "\"" {
-                                // aw ac string "
-                                // stack: aw ac string — but string already separate
-                            }
                             let m = Matrix3x2 {
                                 m: [1.0, 0.0, 0.0, 1.0, 0.0, -gs.text.leading],
                             };
@@ -214,8 +262,6 @@ pub fn interpret_text(
                         stack.clear();
                     }
                     "TJ" => {
-                        // array of strings and numbers on stack as nested — our lexer flattens arrays
-                        // We collect from stack until ArrayStart
                         let mut items: Vec<Token> = Vec::new();
                         while let Some(t) = stack.pop() {
                             match t {
@@ -229,16 +275,17 @@ pub fn interpret_text(
                         }
                         stack.clear();
                     }
-                    // Ignore path/paint for Phase T text
-                    "m" | "l" | "c" | "v" | "y" | "h" | "re" | "S" | "s" | "f" | "F" | "f*"
-                    | "B" | "B*" | "b" | "b*" | "n" | "W" | "W*" | "CS" | "cs" | "SC" | "SCN"
-                    | "sc" | "scn" | "G" | "g" | "RG" | "rg" | "K" | "k" | "sh" | "Do" | "gs"
-                    | "MP" | "DP" | "BMC" | "BDC" | "EMC" | "BX" | "EX" | "ri" | "i" | "d"
-                    | "J" | "j" | "M" | "w" | "d0" | "d1" => {
+                    "c" | "v" | "y" => {
+                        // curves — approximate as nothing for lattice Phase U
+                        path.clear();
+                        stack.clear();
+                    }
+                    "CS" | "cs" | "SC" | "SCN" | "sc" | "scn" | "G" | "g" | "RG" | "rg" | "K"
+                    | "k" | "sh" | "Do" | "gs" | "MP" | "DP" | "BMC" | "BDC" | "EMC" | "BX"
+                    | "EX" | "ri" | "i" | "d" | "J" | "j" | "M" | "w" | "d0" | "d1" => {
                         stack.clear();
                     }
                     _ => {
-                        // unknown: clear stack (EX23)
                         warnings.push(format!("unknown_op:{op}"));
                         stack.clear();
                     }
@@ -251,7 +298,105 @@ pub fn interpret_text(
             }
         }
     }
-    (runs, warnings)
+    InterpretResult {
+        runs,
+        rules,
+        warnings,
+    }
+}
+
+#[derive(Clone)]
+struct TextState {
+    font: Option<String>,
+    font_size: f32,
+    char_spacing: f32,
+    word_spacing: f32,
+    horizontal_scale: f32,
+    leading: f32,
+    rise: f32,
+    render_mode: i32,
+    tm: Matrix3x2,
+    tlm: Matrix3x2,
+}
+
+impl Default for TextState {
+    fn default() -> Self {
+        Self {
+            font: None,
+            font_size: 12.0,
+            char_spacing: 0.0,
+            word_spacing: 0.0,
+            horizontal_scale: 100.0,
+            leading: 0.0,
+            rise: 0.0,
+            render_mode: 0,
+            tm: Matrix3x2::identity(),
+            tlm: Matrix3x2::identity(),
+        }
+    }
+}
+
+#[derive(Clone)]
+struct GState {
+    ctm: Matrix3x2,
+    text: TextState,
+}
+
+#[derive(Default)]
+struct PathBuilder {
+    start: Option<(f32, f32)>,
+    current: Option<(f32, f32)>,
+    segs: Vec<((f32, f32), (f32, f32))>,
+}
+
+impl PathBuilder {
+    fn clear(&mut self) {
+        self.start = None;
+        self.current = None;
+        self.segs.clear();
+    }
+    fn move_to(&mut self, x: f32, y: f32) {
+        self.start = Some((x, y));
+        self.current = Some((x, y));
+    }
+    fn line_to(&mut self, x: f32, y: f32) {
+        if let Some(cur) = self.current {
+            self.segs.push((cur, (x, y)));
+        }
+        self.current = Some((x, y));
+        if self.start.is_none() {
+            self.start = Some((x, y));
+        }
+    }
+    fn close(&mut self) {
+        if let (Some(s), Some(c)) = (self.start, self.current) {
+            if (s.0 - c.0).abs() > 1e-4 || (s.1 - c.1).abs() > 1e-4 {
+                self.segs.push((c, s));
+            }
+            self.current = self.start;
+        }
+    }
+    fn rect(&mut self, x: f32, y: f32, w: f32, h: f32) {
+        self.move_to(x, y);
+        self.line_to(x + w, y);
+        self.line_to(x + w, y + h);
+        self.line_to(x, y + h);
+        self.close();
+    }
+    fn segments_user(&self, ctm: &Matrix3x2) -> Vec<RuleSegment> {
+        let mut out = Vec::new();
+        for ((x0, y0), (x1, y1)) in &self.segs {
+            let p0 = ctm.apply(*x0, *y0);
+            let p1 = ctm.apply(*x1, *y1);
+            out.push(RuleSegment {
+                x0: p0.x,
+                y0: p0.y,
+                x1: p1.x,
+                y1: p1.y,
+            });
+        }
+        out
+    }
 }
 
 fn pop_num(stack: &mut Vec<Token>) -> f32 {
@@ -288,18 +433,30 @@ fn resolve_font(fonts: &HashMap<String, LoadedFont>, name: &str) -> (String, Loa
     if let Some(f) = fonts.get(name) {
         return (name.to_string(), f.clone());
     }
-    // try without subset prefix ABCDEF+
     if let Some(pos) = name.find('+') {
         let base = &name[pos + 1..];
         if let Some(f) = fonts.get(base) {
             return (base.to_string(), f.clone());
         }
     }
-    // any font
     if let Some((k, f)) = fonts.iter().next() {
         return (k.clone(), f.clone());
     }
     ("Helvetica".into(), LoadedFont::simple_latin("Helvetica"))
+}
+
+fn codes_for_show(font: &LoadedFont, bytes: &[u8]) -> Vec<u32> {
+    if bytes.len() >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF {
+        let mut out = Vec::new();
+        let mut i = 2;
+        while i + 1 < bytes.len() {
+            let u = ((bytes[i] as u32) << 8) | (bytes[i + 1] as u32);
+            i += 2;
+            out.push(u);
+        }
+        return out;
+    }
+    font.codes_from_bytes(bytes)
 }
 
 fn show_text(
@@ -317,25 +474,6 @@ fn show_text(
     show_codes(gs, &font, &resolved, &codes)
 }
 
-/// Choose code units for a PDF string. Generic: CID fonts use CMap widths (2-byte Identity);
-/// simple fonts use 1-byte codes (Differences/ToUnicode applied later).
-fn codes_for_show(font: &LoadedFont, bytes: &[u8]) -> Vec<u32> {
-    // UTF-16BE with BOM in literal string (PDF spec)
-    if bytes.len() >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF {
-        let mut out = Vec::new();
-        let mut i = 2;
-        while i + 1 < bytes.len() {
-            let u = ((bytes[i] as u32) << 8) | (bytes[i + 1] as u32);
-            i += 2;
-            out.push(u);
-        }
-        // For UTF-16BE embedded as unicode code units, treat as "identity unicode" path:
-        // map via to_unicode only if cmap has them; else use char directly in show_codes_unicode
-        return out;
-    }
-    font.codes_from_bytes(bytes)
-}
-
 fn show_text_array(
     gs: &mut GState,
     fonts: &HashMap<String, LoadedFont>,
@@ -348,7 +486,6 @@ fn show_text_array(
     let font_name = gs.text.font.clone().unwrap_or_else(|| "Helvetica".into());
     let (resolved, font) = resolve_font(fonts, &font_name);
     let font_name = resolved;
-    let font = &font;
     let mut text = String::new();
     let mut bbox: Option<Rect> = None;
     let mut map_conf = 1.0f32;
@@ -361,7 +498,7 @@ fn show_text_array(
     for item in items {
         match item {
             Token::LiteralString(s) | Token::HexString(s) => {
-                let codes = font.codes_from_bytes(s);
+                let codes = codes_for_show(&font, s);
                 for code in codes {
                     let (ch, cconf) = font.to_unicode(code);
                     map_conf = map_conf.min(cconf);
@@ -371,22 +508,21 @@ fn show_text_array(
                         adv += gs.text.word_spacing;
                     }
                     let p0 = gs.ctm.concat(gs.text.tm).apply(0.0, gs.text.rise);
-                    let p1 = gs
-                        .ctm
-                        .concat(gs.text.tm)
-                        .apply(adv, gs.text.rise + fs * 0.8);
+                    let ascent = (font.ascent / 1000.0) * fs;
+                    let descent = (font.descent / 1000.0) * fs;
+                    let p_bl = gs.ctm.concat(gs.text.tm).apply(0.0, gs.text.rise + descent);
+                    let p_tr = gs.ctm.concat(gs.text.tm).apply(adv, gs.text.rise + ascent);
                     let glyph_bb = Rect {
-                        x0: p0.x.min(p1.x),
-                        y0: p0.y.min(p1.y),
-                        x1: p0.x.max(p1.x),
-                        y1: p0.y.max(p1.y),
+                        x0: p0.x.min(p_bl.x).min(p_tr.x),
+                        y0: p0.y.min(p_bl.y).min(p_tr.y),
+                        x1: p0.x.max(p_bl.x).max(p_tr.x),
+                        y1: p0.y.max(p_bl.y).max(p_tr.y),
                     };
                     bbox = Some(match bbox {
                         Some(b) => b.union(glyph_bb),
                         None => glyph_bb,
                     });
                     text.push_str(&ch);
-                    // advance Tm
                     let adj = Matrix3x2 {
                         m: [1.0, 0.0, 0.0, 1.0, adv, 0.0],
                     };
@@ -394,7 +530,6 @@ fn show_text_array(
                 }
             }
             Token::Number(n) => {
-                // TJ adjustment: tx -= (n/1000)*fs*Th
                 let dx = -(*n / 1000.0) * fs * th;
                 let adj = Matrix3x2 {
                     m: [1.0, 0.0, 0.0, 1.0, dx, 0.0],
@@ -480,4 +615,15 @@ fn show_codes(
         invisible,
         from_actual_text: false,
     })
+}
+
+/// Back-compat alias used by older call sites.
+#[allow(dead_code)]
+pub fn interpret_text(
+    content: &[u8],
+    fonts: &HashMap<String, LoadedFont>,
+    opts: &InterpretOptions,
+) -> (Vec<TextRun>, Vec<String>) {
+    let r = interpret_page(content, fonts, opts);
+    (r.runs, r.warnings)
 }

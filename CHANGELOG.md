@@ -7,9 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Phase U lattice table extraction (`pdfparser-tables`, S2 + R9 cell assign)
+- CLI `--tables` flag; JSON table export
+- Phase U corpus tests (`phase_u_tables`)
+
 ### Planned
 
-- Multi-strategy table extraction (lattice / stream / hybrid)
+- Stream / hybrid table strategies (Phase V)
+- Multi-page table stitch, form FP control
 - Optional encryption (user-password) subset
 - Forms, annotations, outline extraction
 

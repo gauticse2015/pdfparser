@@ -1,9 +1,10 @@
 //! Document / Page handles.
-use crate::extract::{page_elements, page_text};
+use crate::extract::{page_elements, page_tables, page_text};
 use crate::font_load::load_page_fonts;
 use crate::options::{OpenOptions, TextOptions};
 use pdfparser_core::{Error, PdfDocument, Result};
 use pdfparser_ir::{Element, ExtractWarning, TextRun};
+use pdfparser_tables::{Table, TableOptions};
 use std::path::Path;
 use std::sync::Arc;
 
@@ -113,6 +114,11 @@ impl Page {
         let (runs, warns) = page_elements(&self.doc, self.index as usize, opts)?;
         let elements = runs.into_iter().map(Element::Text).collect();
         Ok((elements, warns))
+    }
+
+    /// Detect tables on this page (Phase U lattice when enabled).
+    pub fn tables(&self, text_opts: &TextOptions, table_opts: &TableOptions) -> Result<Vec<Table>> {
+        page_tables(&self.doc, self.index as usize, text_opts, table_opts)
     }
 
     /// Load fonts for this page (testing/debug).

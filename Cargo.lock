@@ -551,7 +551,9 @@ dependencies = [
 name = "pdfparser-tables"
 version = "0.1.0"
 dependencies = [
+ "pdfparser-content",
  "pdfparser-ir",
+ "serde",
 ]
 
 [[package]]

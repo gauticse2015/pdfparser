@@ -23,6 +23,9 @@ pub use pdfparser_ir::{
     DocumentMetadata, Element, ExtractWarning, ExtractedDocument, ExtractedPage, Matrix3x2,
     ObjectId, Point, Rect, TextRun, WarningCode, SCHEMA_VERSION,
 };
+pub use pdfparser_tables::{
+    Table, TableCell, TableMethod, TableModeSet, TableOptions, TablePreset,
+};
 
 /// Crate version.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

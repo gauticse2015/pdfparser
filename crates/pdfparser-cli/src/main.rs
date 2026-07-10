@@ -1,12 +1,12 @@
-//! pdfparser CLI — Phase T text extract.
+//! pdfparser CLI — text + Phase U tables.
 use clap::{Parser, Subcommand, ValueEnum};
-use pdfparser::{Document, TextOptions};
+use pdfparser::{Document, TableOptions, TablePreset, TextOptions};
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::time::Instant;
 
 #[derive(Parser, Debug)]
-#[command(name = "pdfparser", version, about = "Native PDF parser CLI (Phase T)")]
+#[command(name = "pdfparser", version, about = "Native PDF parser CLI")]
 struct Cli {
     #[command(subcommand)]
     cmd: Commands,
@@ -14,7 +14,7 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Extract text from a PDF
+    /// Extract text (and optional tables) from a PDF
     Extract {
         /// Input PDF path
         path: PathBuf,
@@ -27,6 +27,9 @@ enum Commands {
         /// Do not apply page /Rotate
         #[arg(long)]
         no_rotate: bool,
+        /// Enable table detection (Phase U lattice)
+        #[arg(long)]
+        tables: bool,
         /// Page range 1-based inclusive, e.g. 1-3 or 2
         #[arg(long)]
         pages: Option<String>,
@@ -49,8 +52,9 @@ fn main() -> ExitCode {
             format,
             paint_order,
             no_rotate,
+            tables,
             pages,
-        } => match run_extract(path, format, paint_order, no_rotate, pages) {
+        } => match run_extract(path, format, paint_order, no_rotate, tables, pages) {
             Ok(()) => ExitCode::SUCCESS,
             Err(e) => {
                 eprintln!("error: {e}");
@@ -72,6 +76,7 @@ fn run_extract(
     format: OutFormat,
     paint_order: bool,
     no_rotate: bool,
+    tables: bool,
     pages: Option<String>,
 ) -> Result<(), String> {
     let t0 = Instant::now();
@@ -81,6 +86,11 @@ fn run_extract(
         insert_spaces: true,
         apply_page_rotate: !no_rotate,
         include_invisible: true,
+    };
+    let table_opts = if tables {
+        TableOptions::from_preset(TablePreset::LatticeOnly)
+    } else {
+        TableOptions::default()
     };
     let range = parse_pages(pages.as_deref(), doc.page_count())?;
 
@@ -94,6 +104,18 @@ fn run_extract(
                     out.push('\n');
                 }
                 out.push_str(&t);
+                if tables {
+                    let tabs = page
+                        .tables(&text_opts, &table_opts)
+                        .map_err(|e| e.to_string())?;
+                    for (ti, tab) in tabs.iter().enumerate() {
+                        out.push_str(&format!(
+                            "\n[table {ti} {}x{} conf={:.2}]\n",
+                            tab.rows, tab.cols, tab.confidence
+                        ));
+                        out.push_str(&render_table_tsv(tab));
+                    }
+                }
             }
             print!("{out}");
             if !out.ends_with('\n') {
@@ -105,16 +127,24 @@ fn run_extract(
             for i in range {
                 let page = doc.page(i).map_err(|e| e.to_string())?;
                 let text = page.text(&text_opts).map_err(|e| e.to_string())?;
-                pages_out.push(serde_json::json!({
+                let mut page_json = serde_json::json!({
                     "index": i,
                     "rotate": page.rotate(),
                     "text": text,
-                }));
+                });
+                if tables {
+                    let tabs = page
+                        .tables(&text_opts, &table_opts)
+                        .map_err(|e| e.to_string())?;
+                    page_json["tables"] = serde_json::to_value(&tabs).map_err(|e| e.to_string())?;
+                }
+                pages_out.push(page_json);
             }
             let v = serde_json::json!({
                 "schema_version": pdfparser::SCHEMA_VERSION,
                 "page_count": doc.page_count(),
                 "version": doc.version(),
+                "tables_enabled": tables,
                 "pages": pages_out,
                 "elapsed_ms": t0.elapsed().as_secs_f64() * 1000.0,
                 "library": "pdfparser",
@@ -127,6 +157,24 @@ fn run_extract(
         }
     }
     Ok(())
+}
+
+fn render_table_tsv(tab: &pdfparser::Table) -> String {
+    let mut grid: Vec<Vec<String>> =
+        vec![vec![String::new(); tab.cols as usize]; tab.rows as usize];
+    for c in &tab.cells {
+        let r = c.row as usize;
+        let col = c.col as usize;
+        if r < grid.len() && col < grid[r].len() {
+            grid[r][col] = c.text.replace(['\n', '\t'], " ");
+        }
+    }
+    let mut out = String::new();
+    for row in grid {
+        out.push_str(&row.join("\t"));
+        out.push('\n');
+    }
+    out
 }
 
 fn run_info(path: PathBuf) -> Result<(), String> {

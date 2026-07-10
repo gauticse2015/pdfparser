@@ -1,6 +1,6 @@
 [package]
 name = "pdfparser-tables"
-description = "Table extraction engine (stub in Phase T)"
+description = "Multi-strategy PDF table extraction (Phase U: lattice foundation)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,3 +9,9 @@ publish = false
 
 [dependencies]
 pdfparser-ir = { workspace = true }
+pdfparser-content = { workspace = true }
+serde = { workspace = true, optional = true }
+
+[features]
+default = ["serde"]
+serde = ["dep:serde", "pdfparser-ir/serde"]

@@ -511,25 +511,26 @@ def extract_pypdfium2(path: Path, gt: dict, password: Optional[str] = None) -> E
 
 
 
+
 def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> ExtractResult:
-    """Native pdfparser CLI adapter (Phase T text path)."""
-    import os
+    """Native pdfparser CLI adapter (Phase T text + Phase U tables)."""
+    import json
     import subprocess
     import shutil
 
     supports = {
         "text": True,
         "chars_geometry": True,
-        "tables": False,
+        "tables": True,
         "images_meta": False,
         "lines_rects": False,
         "annots_hyperlinks": False,
         "forms": False,
         "outline": False,
-        "encrypted_password": False,  # 0.1 K15: Encryption error without decrypt
+        "encrypted_password": False,
     }
-    notes = ["phase_t_text_path"]
-    root = ROOT.parent  # repo root
+    notes = ["phase_u_lattice_tables"]
+    root = ROOT.parent
     bin_path = root / "target" / "release" / "pdfparser"
     if not bin_path.exists():
         bin_path = root / "target" / "debug" / "pdfparser"
@@ -538,10 +539,14 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
         if which:
             bin_path = Path(which)
     if not bin_path.exists():
-        raise RuntimeError("pdfparser binary not found; build with: cargo build --release -p pdfparser-cli")
+        raise RuntimeError(
+            "pdfparser binary not found; build with: cargo build --release -p pdfparser-cli"
+        )
 
-    # Encrypted without password: expect failure matching K15
-    if gt.get("category") == "encrypted_password" and not password:
+    if gt.get("category") == "encrypted_password":
+        # Phase T/U: no decrypt
+        if password:
+            raise RuntimeError("password decrypt not in Phase U")
         proc = subprocess.run(
             [str(bin_path), "extract", str(path)],
             capture_output=True,
@@ -550,38 +555,54 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
         )
         if proc.returncode != 0:
             raise RuntimeError(proc.stderr.strip() or "encryption rejected")
-        # if it somehow succeeded, treat as empty
         text = proc.stdout or ""
-    else:
-        if password:
-            notes.append("password_not_supported_phase_t")
-            raise RuntimeError("password decrypt not in Phase T")
-        proc = subprocess.run(
-            [str(bin_path), "extract", "--format", "text", str(path)],
-            capture_output=True,
-            text=True,
-            timeout=180,
+        return ExtractResult(
+            library="pdfparser",
+            doc_id=gt["id"],
+            success=True,
+            text=normalize_text(text),
+            text_chars=len(text),
+            tables=[],
+            notes=notes + ["encrypted_open_unexpected"],
+            supports=supports,
         )
-        if proc.returncode != 0:
-            raise RuntimeError(proc.stderr.strip() or f"exit {proc.returncode}")
-        text = proc.stdout or ""
 
-    # page count via info
-    page_count = None
+    # Prefer JSON with tables for structured extract
+    proc = subprocess.run(
+        [str(bin_path), "extract", "--format", "json", "--tables", str(path)],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.strip() or f"exit {proc.returncode}")
+
     try:
-        ip = subprocess.run(
-            [str(bin_path), "info", str(path)],
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        for line in (ip.stdout or "").splitlines():
-            if line.startswith("pages:"):
-                page_count = int(line.split(":")[1].strip())
-    except Exception as e:
-        notes.append(f"info:{e}")
+        payload = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"invalid json: {e}") from e
 
-    text = normalize_text(text)
+    pages = payload.get("pages") or []
+    texts = []
+    tables_all = []
+    for page in pages:
+        texts.append(page.get("text") or "")
+        for tab in page.get("tables") or []:
+            rows = int(tab.get("rows") or 0)
+            cols = int(tab.get("cols") or 0)
+            grid = [["" for _ in range(cols)] for _ in range(rows)]
+            for cell in tab.get("cells") or []:
+                r = int(cell.get("row") or 0)
+                c = int(cell.get("col") or 0)
+                if 0 <= r < rows and 0 <= c < cols:
+                    grid[r][c] = str(cell.get("text") or "")
+            tables_all.append(grid)
+
+    text = normalize_text("\n".join(texts))
+    page_count = payload.get("page_count")
+    if page_count is None:
+        page_count = len(pages)
+
     return ExtractResult(
         library="pdfparser",
         doc_id=gt["id"],
@@ -589,11 +610,12 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
         page_count=page_count,
         text=text,
         text_chars=len(text),
-        tables=[],
+        tables=tables_all,
         image_count=None,
         notes=notes,
         supports=supports,
     )
+
 
 
 ADAPTERS: dict[str, Callable] = {
