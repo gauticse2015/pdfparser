@@ -1,4 +1,4 @@
-//! pdfparser CLI — text + Phase U tables.
+//! pdfparser CLI — text + Phase V tables.
 use clap::{Parser, Subcommand, ValueEnum};
 use pdfparser::{Document, TableOptions, TablePreset, TextOptions};
 use std::path::PathBuf;
@@ -27,7 +27,7 @@ enum Commands {
         /// Do not apply page /Rotate
         #[arg(long)]
         no_rotate: bool,
-        /// Enable table detection (Phase U lattice)
+        /// Enable table detection (Phase V full pipeline)
         #[arg(long)]
         tables: bool,
         /// Page range 1-based inclusive, e.g. 1-3 or 2
@@ -88,33 +88,52 @@ fn run_extract(
         include_invisible: true,
     };
     let table_opts = if tables {
-        TableOptions::from_preset(TablePreset::LatticeOnly)
+        TableOptions::from_preset(TablePreset::Full)
     } else {
         TableOptions::default()
     };
     let range = parse_pages(pages.as_deref(), doc.page_count())?;
 
+    // Document-level tables (stitched) when tables on and full page range preferred
+    let (page_frags, logical) = if tables {
+        doc.tables(&text_opts, &table_opts)
+            .map_err(|e| e.to_string())?
+    } else {
+        (Vec::new(), Vec::new())
+    };
+
     match format {
         OutFormat::Text => {
             let mut out = String::new();
-            for i in range {
-                let page = doc.page(i).map_err(|e| e.to_string())?;
+            for i in &range {
+                let page = doc.page(*i).map_err(|e| e.to_string())?;
                 let t = page.text(&text_opts).map_err(|e| e.to_string())?;
                 if !out.is_empty() {
                     out.push('\n');
                 }
                 out.push_str(&t);
                 if tables {
-                    let tabs = page
-                        .tables(&text_opts, &table_opts)
-                        .map_err(|e| e.to_string())?;
+                    let tabs = page_frags
+                        .get(*i as usize)
+                        .cloned()
+                        .unwrap_or_default();
                     for (ti, tab) in tabs.iter().enumerate() {
                         out.push_str(&format!(
-                            "\n[table {ti} {}x{} conf={:.2}]\n",
-                            tab.rows, tab.cols, tab.confidence
+                            "\n[table {ti} {}x{} conf={:.2} method={:?}]\n",
+                            tab.rows, tab.cols, tab.confidence, tab.method
                         ));
                         out.push_str(&render_table_tsv(tab));
                     }
+                }
+            }
+            if tables && logical.len() != page_frags.iter().map(|p| p.len()).sum::<usize>() {
+                out.push_str("\n# logical (stitched) tables\n");
+                for (ti, tab) in logical.iter().enumerate() {
+                    out.push_str(&format!(
+                        "\n[logical {ti} {}x{} pages_chain conf={:.2}]\n",
+                        tab.rows, tab.cols, tab.confidence
+                    ));
+                    out.push_str(&render_table_tsv(tab));
                 }
             }
             print!("{out}");
@@ -124,8 +143,8 @@ fn run_extract(
         }
         OutFormat::Json => {
             let mut pages_out = Vec::new();
-            for i in range {
-                let page = doc.page(i).map_err(|e| e.to_string())?;
+            for i in &range {
+                let page = doc.page(*i).map_err(|e| e.to_string())?;
                 let text = page.text(&text_opts).map_err(|e| e.to_string())?;
                 let mut page_json = serde_json::json!({
                     "index": i,
@@ -133,14 +152,12 @@ fn run_extract(
                     "text": text,
                 });
                 if tables {
-                    let tabs = page
-                        .tables(&text_opts, &table_opts)
-                        .map_err(|e| e.to_string())?;
+                    let tabs = page_frags.get(*i as usize).cloned().unwrap_or_default();
                     page_json["tables"] = serde_json::to_value(&tabs).map_err(|e| e.to_string())?;
                 }
                 pages_out.push(page_json);
             }
-            let v = serde_json::json!({
+            let mut v = serde_json::json!({
                 "schema_version": pdfparser::SCHEMA_VERSION,
                 "page_count": doc.page_count(),
                 "version": doc.version(),
@@ -150,6 +167,11 @@ fn run_extract(
                 "library": "pdfparser",
                 "library_version": pdfparser::VERSION,
             });
+            if tables {
+                // Scoreboard adapter prefers document-level stitched tables
+                v["tables"] = serde_json::to_value(&logical).map_err(|e| e.to_string())?;
+                v["table_count"] = serde_json::json!(logical.len());
+            }
             println!(
                 "{}",
                 serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?

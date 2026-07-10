@@ -513,7 +513,7 @@ def extract_pypdfium2(path: Path, gt: dict, password: Optional[str] = None) -> E
 
 
 def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> ExtractResult:
-    """Native pdfparser CLI adapter (Phase T text + Phase U tables)."""
+    """Native pdfparser CLI adapter (Phase T text + Phase V tables)."""
     import json
     import subprocess
     import shutil
@@ -529,7 +529,7 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
         "outline": False,
         "encrypted_password": False,
     }
-    notes = ["phase_u_lattice_tables"]
+    notes = ["phase_v_full_tables"]
     root = ROOT.parent
     bin_path = root / "target" / "release" / "pdfparser"
     if not bin_path.exists():
@@ -585,18 +585,29 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
     pages = payload.get("pages") or []
     texts = []
     tables_all = []
+
+    def tab_to_grid(tab):
+        rows = int(tab.get("rows") or 0)
+        cols = int(tab.get("cols") or 0)
+        grid = [["" for _ in range(cols)] for _ in range(rows)]
+        for cell in tab.get("cells") or []:
+            r = int(cell.get("row") or 0)
+            c = int(cell.get("col") or 0)
+            if 0 <= r < rows and 0 <= c < cols:
+                grid[r][c] = str(cell.get("text") or "")
+        return grid
+
+    # Prefer document-level stitched tables (Phase V D1) when present
+    root_tables = payload.get("tables")
+    if isinstance(root_tables, list) and root_tables:
+        for tab in root_tables:
+            tables_all.append(tab_to_grid(tab))
+        notes.append("stitched_root_tables")
     for page in pages:
         texts.append(page.get("text") or "")
-        for tab in page.get("tables") or []:
-            rows = int(tab.get("rows") or 0)
-            cols = int(tab.get("cols") or 0)
-            grid = [["" for _ in range(cols)] for _ in range(rows)]
-            for cell in tab.get("cells") or []:
-                r = int(cell.get("row") or 0)
-                c = int(cell.get("col") or 0)
-                if 0 <= r < rows and 0 <= c < cols:
-                    grid[r][c] = str(cell.get("text") or "")
-            tables_all.append(grid)
+        if not (isinstance(root_tables, list) and root_tables):
+            for tab in page.get("tables") or []:
+                tables_all.append(tab_to_grid(tab))
 
     text = normalize_text("\n".join(texts))
     page_count = payload.get("page_count")

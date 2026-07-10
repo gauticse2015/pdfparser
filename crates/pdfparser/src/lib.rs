@@ -1,4 +1,4 @@
-//! pdfparser — native PDF extraction library (Phase T: text).
+//! pdfparser — native PDF extraction library (Phase T text + Phase V tables).
 //!
 //! # Example
 //! ```no_run

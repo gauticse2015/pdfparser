@@ -93,10 +93,12 @@ pub struct Table {
     pub cells: Vec<TableCell>,
     /// Header row count.
     pub header_rows: u32,
-    /// Multi-page flags (D1 later).
+    /// Multi-page flags.
     pub continued_from_previous_page: bool,
     /// Multi-page flags.
     pub continued_to_next_page: bool,
+    /// Logical table id after D1 stitch (shared across fragments).
+    pub logical_table_id: Option<u32>,
     /// Strategy tags.
     pub strategy_provenance: Vec<PipelineId>,
     /// Notes.

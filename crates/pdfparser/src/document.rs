@@ -1,5 +1,5 @@
 //! Document / Page handles.
-use crate::extract::{page_elements, page_tables, page_text};
+use crate::extract::{document_tables, page_elements, page_tables, page_text};
 use crate::font_load::load_page_fonts;
 use crate::options::{OpenOptions, TextOptions};
 use pdfparser_core::{Error, PdfDocument, Result};
@@ -61,6 +61,29 @@ impl Document {
             index,
         })
     }
+
+    /// Detect tables across all pages.
+    ///
+    /// Returns `(page_fragments, logical_tables)`. When `stitch_multipage` is
+    /// enabled, fragments carry `continued_*` / `logical_table_id` and
+    /// `logical_tables` are scoreboard-ready stitched grids.
+    pub fn tables(
+        &self,
+        text_opts: &TextOptions,
+        table_opts: &TableOptions,
+    ) -> Result<(Vec<Vec<Table>>, Vec<Table>)> {
+        document_tables(&self.inner, text_opts, table_opts)
+    }
+
+    /// Stitched logical tables only (Phase V D1).
+    pub fn tables_stitched(
+        &self,
+        text_opts: &TextOptions,
+        table_opts: &TableOptions,
+    ) -> Result<Vec<Table>> {
+        let (_, logical) = self.tables(text_opts, table_opts)?;
+        Ok(logical)
+    }
 }
 
 /// Lazy page handle.
@@ -116,7 +139,7 @@ impl Page {
         Ok((elements, warns))
     }
 
-    /// Detect tables on this page (Phase U lattice when enabled).
+    /// Detect tables on this page (page-local fragments; no cross-page stitch).
     pub fn tables(&self, text_opts: &TextOptions, table_opts: &TableOptions) -> Result<Vec<Table>> {
         page_tables(&self.doc, self.index as usize, text_opts, table_opts)
     }

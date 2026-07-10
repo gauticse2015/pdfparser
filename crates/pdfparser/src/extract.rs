@@ -1,4 +1,4 @@
-//! Page extract orchestration (text + Phase U tables).
+//! Page extract orchestration (text + Phase V tables).
 use crate::font_load::load_page_fonts;
 use crate::options::{ExtractOptions, TextOptions};
 use pdfparser_content::{interpret_page, InterpretOptions};
@@ -8,7 +8,10 @@ use pdfparser_ir::{
     WarningCode, SCHEMA_VERSION,
 };
 use pdfparser_layout::{apply_page_rotate_to_runs, insert_spaces, reading_order_text};
-use pdfparser_tables::{detect_tables_page, Table, TableOptions};
+use pdfparser_tables::{
+    detect_tables_page, materialize_stitched, stitch_document, Table, TableOptions,
+};
+// form scrub is applied via materialize path in tables crate after stitch
 
 /// Intermediate page content after interpret.
 pub struct PageContent {
@@ -121,6 +124,40 @@ pub fn page_tables(
         &pc.rules,
         table_opts,
     ))
+}
+
+/// Document-level table extract: page fragments + optional D1 stitched logical tables.
+pub fn document_tables(
+    doc: &PdfDocument,
+    text_opts: &TextOptions,
+    table_opts: &TableOptions,
+) -> Result<(Vec<Vec<Table>>, Vec<Table>)> {
+    if !table_opts.detect_tables {
+        return Ok((Vec::new(), Vec::new()));
+    }
+    let n = doc.page_count() as usize;
+    let mut page_runs: Vec<Vec<TextRun>> = Vec::with_capacity(n);
+    let mut page_rules: Vec<Vec<pdfparser_content::RuleSegment>> = Vec::with_capacity(n);
+    for i in 0..n {
+        let pc = page_content(doc, i, text_opts, true)?;
+        page_runs.push(pc.runs);
+        page_rules.push(pc.rules);
+    }
+    let mut page_tables: Vec<Vec<Table>> = (0..n)
+        .map(|i| detect_tables_page(i as u32, &page_runs[i], &page_rules[i], table_opts))
+        .collect();
+    if table_opts.stitch_multipage {
+        stitch_document(&mut page_tables, table_opts);
+    }
+    let mut logical = if table_opts.stitch_multipage {
+        materialize_stitched(&page_tables)
+    } else {
+        page_tables.iter().flatten().cloned().collect()
+    };
+    if table_opts.form_discriminator {
+        logical = pdfparser_tables::scrub_document_table_fps(logical);
+    }
+    Ok((page_tables, logical))
 }
 
 /// Extract whole document (text + optional tables).

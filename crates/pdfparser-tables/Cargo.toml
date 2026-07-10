@@ -1,6 +1,6 @@
 [package]
 name = "pdfparser-tables"
-description = "Multi-strategy PDF table extraction (Phase U: lattice foundation)"
+description = "Multi-strategy PDF table extraction (Phase V: multi-strategy tables)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

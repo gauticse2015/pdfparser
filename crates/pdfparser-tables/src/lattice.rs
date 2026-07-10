@@ -58,7 +58,8 @@ pub fn detect_lattice_tables(
 
     let nrows = y_top_to_bottom.len() - 1;
     let ncols = xs.len() - 1;
-    if nrows == 0 || ncols == 0 {
+    // Require a real grid (cols>=2, rows>=2). Outer-only frames are hybrid/S4 territory.
+    if nrows < 2 || ncols < 2 {
         return Vec::new();
     }
     // Cap absurd grids (form FP protection light)
@@ -147,6 +148,7 @@ pub fn detect_lattice_tables(
         header_rows: 1,
         continued_from_previous_page: false,
         continued_to_next_page: false,
+        logical_table_id: None,
         strategy_provenance: vec![PipelineId::S2Lattice],
         notes: vec![format!("lattice_lines xs={} ys={}", xs.len(), ys.len())],
     });
@@ -229,11 +231,21 @@ fn assign_text(runs: &[TextRun], cell: Rect) -> String {
     let mut out = String::new();
     for (i, (_, _, t)) in parts.iter().enumerate() {
         if i > 0 {
-            // newline if large y jump else space
             let prev_y = parts[i - 1].0;
             let y = parts[i].0;
             if (prev_y - y).abs() > 2.0 {
-                out.push('\n');
+                let cont = out
+                    .chars()
+                    .last()
+                    .map(|c| c.is_alphanumeric() || c == '_')
+                    .unwrap_or(false)
+                    && t.chars()
+                        .next()
+                        .map(|c| c.is_alphanumeric() || c == '_')
+                        .unwrap_or(false);
+                if !cont {
+                    out.push('\n');
+                }
             } else if !out.ends_with(' ') && !t.starts_with(' ') {
                 out.push(' ');
             }
