@@ -1,4 +1,4 @@
-//! pdfparser — native PDF extraction library (Phase T text + Phase V tables).
+//! pdfparser — native PDF extraction (text, tables, images/links/forms/outline).
 //!
 //! # Example
 //! ```no_run
@@ -17,7 +17,10 @@ mod options;
 pub use document::{Document, Page};
 pub use extract::extract_document;
 pub use options::{ExtractOptions, OpenOptions, TextOptions};
-pub use pdfparser_core::{Error, LimitKind, ResourceLimits, Result};
+pub use pdfparser_core::{
+    DocumentObjects, Error, FormField, ImageObject, LimitKind, LinkAnnotation, ResourceLimits,
+    Result,
+};
 pub use pdfparser_export::{to_json, to_json_pretty};
 pub use pdfparser_ir::{
     DocumentMetadata, Element, ExtractWarning, ExtractedDocument, ExtractedPage, Matrix3x2,

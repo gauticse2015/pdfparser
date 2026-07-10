@@ -13,6 +13,7 @@
 | **Available (Phase T)** | Text extraction (reading order, `/Rotate`, encodings / Differences / ToUnicode) |
 | **Available (Phase U)** | Lattice (ruled) table extraction |
 | **Available (Phase V)** | Stream / hybrid / multi-table / multi-page stitch + form FP control — opt-in via `TableOptions` / CLI `--tables` |
+| **Available (Phase O)** | Images (count/meta), URI links, AcroForm fields, outline titles |
 
 > Not an OCR engine and not a full PDF renderer. Scanned/image-only PDFs are out of scope for v0.1.
 
@@ -156,7 +157,7 @@ Outputs:
 - `benchmark/results/accuracy_results.json`
 - `docs/accuracy-scoreboard.md`
 
-See [docs/phase-t-report.md](docs/phase-t-report.md), [docs/phase-u-report.md](docs/phase-u-report.md), [docs/phase-v-report.md](docs/phase-v-report.md) for phase results.
+See [docs/phase-t-report.md](docs/phase-t-report.md), [docs/phase-u-report.md](docs/phase-u-report.md), [docs/phase-v-report.md](docs/phase-v-report.md), [docs/phase-o-report.md](docs/phase-o-report.md) for phase results.
 
 ---
 
@@ -177,7 +178,8 @@ See [docs/phase-t-report.md](docs/phase-t-report.md), [docs/phase-u-report.md](d
 1. **Phase T (done)** — text path, encodings, layout, CLI, scoreboard adapter  
 2. **Phase U (done)** — lattice tables + cell geometry assign  
 3. **Phase V (done)** — stream/hybrid tables, FP control, multi-page stitch  
-4. **Later** — encryption subset, richer objects (forms/outline/images), crates.io publish  
+4. **Phase O (done)** — images, URI links, AcroForm fields, outline  
+5. **Later** — encryption subset, richer structure tree, crates.io publish  
 
 ---
 

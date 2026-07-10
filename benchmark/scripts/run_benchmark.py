@@ -522,14 +522,14 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
         "text": True,
         "chars_geometry": True,
         "tables": True,
-        "images_meta": False,
+        "images_meta": True,
         "lines_rects": False,
-        "annots_hyperlinks": False,
-        "forms": False,
-        "outline": False,
+        "annots_hyperlinks": True,
+        "forms": True,
+        "outline": True,
         "encrypted_password": False,
     }
-    notes = ["phase_v_full_tables"]
+    notes = ["phase_v_tables_phase_o_objects"]
     root = ROOT.parent
     bin_path = root / "target" / "release" / "pdfparser"
     if not bin_path.exists():
@@ -614,6 +614,15 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
     if page_count is None:
         page_count = len(pages)
 
+    image_count = payload.get("image_count")
+    if image_count is None and isinstance(payload.get("images"), list):
+        image_count = len(payload.get("images") or [])
+    links = list(payload.get("links") or [])
+    form_fields = list(payload.get("form_fields") or [])
+    outline = list(payload.get("outline") or [])
+    if image_count is not None or links or form_fields or outline:
+        notes.append("objects_from_json")
+
     return ExtractResult(
         library="pdfparser",
         doc_id=gt["id"],
@@ -622,7 +631,10 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
         text=text,
         text_chars=len(text),
         tables=tables_all,
-        image_count=None,
+        image_count=image_count if image_count is not None else None,
+        form_fields=form_fields,
+        links=links,
+        outline=outline,
         notes=notes,
         supports=supports,
     )

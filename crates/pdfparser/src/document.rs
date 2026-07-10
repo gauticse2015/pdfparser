@@ -84,6 +84,11 @@ impl Document {
         let (_, logical) = self.tables(text_opts, table_opts)?;
         Ok(logical)
     }
+
+    /// Images, URI links, AcroForm fields, and outline titles.
+    pub fn objects(&self) -> Result<pdfparser_core::DocumentObjects> {
+        self.inner.objects()
+    }
 }
 
 /// Lazy page handle.

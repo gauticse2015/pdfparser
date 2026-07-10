@@ -4,10 +4,12 @@
 mod error;
 mod filters;
 mod limits;
+mod objects;
 mod page_tree;
 
 pub use error::{Error, Result};
 pub use limits::{hard_max, LimitKind, ResourceGovernor, ResourceLimits};
+pub use objects::{extract_objects, DocumentObjects, FormField, ImageObject, LinkAnnotation};
 pub use page_tree::{PageInfo, PageTree};
 
 use lopdf::{Document as LopdfDocument, Object, ObjectId as LopdfId};
@@ -71,6 +73,15 @@ impl PdfDocument {
     /// Page count.
     pub fn page_count(&self) -> u32 {
         self.pages.len() as u32
+    }
+
+    /// Extract images, URI links, AcroForm fields, and outline titles.
+    pub fn objects(&self) -> Result<DocumentObjects> {
+        let doc = self
+            .inner
+            .lock()
+            .map_err(|_| Error::Internal("lock".into()))?;
+        extract_objects(&doc, &self.pages)
     }
 
     /// Metadata from Info dict.

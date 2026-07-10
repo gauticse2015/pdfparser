@@ -157,6 +157,25 @@ fn run_extract(
                 }
                 pages_out.push(page_json);
             }
+            // Document objects (images / links / forms / outline) — always in JSON
+            let objects = doc.objects().map_err(|e| e.to_string())?;
+            let image_count = objects.image_count();
+            let links: Vec<String> = objects.link_uris();
+            let form_fields: Vec<String> = objects.form_field_labels();
+            let outline: Vec<String> = objects.outline_titles.clone();
+            let images_meta: Vec<serde_json::Value> = objects
+                .images
+                .iter()
+                .map(|im| {
+                    serde_json::json!({
+                        "name": im.name,
+                        "width": im.width,
+                        "height": im.height,
+                        "page": im.page,
+                    })
+                })
+                .collect();
+
             let mut v = serde_json::json!({
                 "schema_version": pdfparser::SCHEMA_VERSION,
                 "page_count": doc.page_count(),
@@ -166,9 +185,14 @@ fn run_extract(
                 "elapsed_ms": t0.elapsed().as_secs_f64() * 1000.0,
                 "library": "pdfparser",
                 "library_version": pdfparser::VERSION,
+                "image_count": image_count,
+                "images": images_meta,
+                "links": links,
+                "form_fields": form_fields,
+                "outline": outline,
             });
             if tables {
-                // Scoreboard adapter prefers document-level stitched tables
+                // Document-level stitched tables when enabled
                 v["tables"] = serde_json::to_value(&logical).map_err(|e| e.to_string())?;
                 v["table_count"] = serde_json::json!(logical.len());
             }
