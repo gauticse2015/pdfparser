@@ -1,0 +1,36 @@
+{
+  "id": "35_real_camelot_fuel",
+  "category": "real_lattice_document",
+  "tier": "real",
+  "description": "Camelot foo.pdf \u2014 multi-table fuel savings research pages",
+  "challenges": [
+    "multiple_tables",
+    "scientific_layout",
+    "figure_plus_table"
+  ],
+  "source": "real",
+  "source_file": "camelot_foo.pdf",
+  "source_url": "camelot docs sample",
+  "license_note": "Camelot project sample",
+  "path": "corpus/real/35_real_camelot_fuel.pdf",
+  "must_contain": [
+    "Fuel"
+  ],
+  "must_contain_any": [
+    "Savings",
+    "Driving",
+    "Table",
+    "Quantifying"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 1,
+  "page_count_observed": 1,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 1,
+  "table_count_tolerance": 2,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

@@ -1,0 +1,17 @@
+[package]
+name = "pdfparser-cli"
+description = "CLI for pdfparser (secondary surface)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[[bin]]
+name = "pdfparser"
+path = "src/main.rs"
+
+[dependencies]
+pdfparser = { workspace = true }
+clap = { workspace = true }
+serde_json = { workspace = true }

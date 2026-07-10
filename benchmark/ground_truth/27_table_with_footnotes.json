@@ -1,0 +1,67 @@
+{
+  "id": "27_table_with_footnotes",
+  "category": "table_footnotes",
+  "tier": "stress",
+  "description": "Table with superscript markers + footnote block below",
+  "challenges": [
+    "footnotes",
+    "superscripts",
+    "table_boundary",
+    "annotation_like_text"
+  ],
+  "source": "synthetic",
+  "path": "corpus/stress/27_table_with_footnotes.pdf",
+  "must_contain": [
+    "TOKEN_FN_DOC",
+    "TOKEN_FN_USA",
+    "TOKEN_FN_IND",
+    "TOKEN_FN_1",
+    "TOKEN_FN_3"
+  ],
+  "table_cells_must_include": [
+    "TOKEN_FN_USA",
+    "TOKEN_FN_IND",
+    "GDP",
+    "USA"
+  ],
+  "expected_tables_min": 1,
+  "our_library_priority": "P2 table boundary",
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "Country",
+          "GDP",
+          "Pop"
+        ],
+        [
+          "USA\u00b9 TOKEN_FN_USA",
+          "25.5",
+          "331"
+        ],
+        [
+          "CHN\u00b2",
+          "18.1",
+          "1412"
+        ],
+        [
+          "DEU",
+          "4.1",
+          "83"
+        ],
+        [
+          "IND\u00b3 TOKEN_FN_IND",
+          "3.4",
+          "1408"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0
+}

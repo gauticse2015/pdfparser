@@ -1,0 +1,37 @@
+{
+  "id": "33_real_argentina_votes",
+  "category": "real_complex_grid",
+  "tier": "real",
+  "description": "Argentina diputados voting record \u2014 irregular grid, multi-section",
+  "challenges": [
+    "irregular_grid",
+    "political_layout",
+    "sectioned_tables",
+    "spanish"
+  ],
+  "source": "real",
+  "source_file": "tabula_argentina_diputados_voting.pdf",
+  "source_url": "tabula-java test resources",
+  "license_note": "Tabula test fixture",
+  "path": "corpus/real/33_real_argentina_votes.pdf",
+  "must_contain": [
+    "Votos"
+  ],
+  "must_contain_any": [
+    "Afirmativos",
+    "Negativos",
+    "Abstenciones",
+    "Diputados"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 1,
+  "page_count_observed": 1,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 1,
+  "table_count_tolerance": 1,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

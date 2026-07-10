@@ -1,0 +1,36 @@
+{
+  "id": "34_real_schools_contributions",
+  "category": "real_campaign_finance",
+  "tier": "real",
+  "description": "Campaign contribution report multi-page \u2014 stream-like rows",
+  "challenges": [
+    "multi_page",
+    "stream_like",
+    "name_address_money",
+    "period_headers"
+  ],
+  "source": "real",
+  "source_file": "tabula_schools.pdf",
+  "source_url": "tabula-java test resources",
+  "license_note": "Tabula test fixture",
+  "path": "corpus/real/34_real_schools_contributions.pdf",
+  "must_contain": [
+    "Schools"
+  ],
+  "must_contain_any": [
+    "Contribution",
+    "Amount",
+    "Name",
+    "Committee",
+    "Yes"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 3,
+  "page_count_observed": 5,
+  "our_library_priority": "stress real-world",
+  "weight_text": 0.4,
+  "weight_tables": 0.6,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

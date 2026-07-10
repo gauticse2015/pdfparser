@@ -1,0 +1,34 @@
+{
+  "id": "42_real_insurance_italian",
+  "category": "real_insurance_prose_tables",
+  "tier": "real",
+  "description": "Italian insurance product PDF with embedded tables/regions",
+  "challenges": [
+    "non_english",
+    "prose_plus_tables",
+    "multi_region",
+    "complex_layout"
+  ],
+  "source": "real",
+  "source_file": "camelot_table_regions.pdf",
+  "source_url": "camelot sample / related",
+  "license_note": "Third-party sample used in open-source tests; verify before shipping",
+  "path": "corpus/real/42_real_insurance_italian.pdf",
+  "must_contain": [],
+  "must_contain_any": [
+    "Vittoria",
+    "PIR",
+    "assicurazione",
+    "contratto",
+    "FINAL"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 0,
+  "expected_pages_min": 1,
+  "page_count_observed": 1,
+  "our_library_priority": "stress real-world",
+  "weight_text": 1.0,
+  "weight_tables": 0.0,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

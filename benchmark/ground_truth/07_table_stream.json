@@ -1,0 +1,81 @@
+{
+  "id": "07_table_stream",
+  "category": "table_stream",
+  "description": "Whitespace-aligned columns without vector borders",
+  "page_count": 1,
+  "must_contain": [
+    "STREAM_TABLE_TOKEN",
+    "Alice",
+    "Engineer",
+    "Seattle",
+    "130000",
+    "Name"
+  ],
+  "expected_tables": [
+    {
+      "rows": 6,
+      "cols": 4,
+      "cells": [
+        [
+          "Name",
+          "Role",
+          "Office",
+          "Salary"
+        ],
+        [
+          "Alice",
+          "Engineer",
+          "NYC",
+          "120000"
+        ],
+        [
+          "Bob",
+          "Designer",
+          "SF",
+          "110000"
+        ],
+        [
+          "Carol",
+          "PM",
+          "Austin",
+          "125000"
+        ],
+        [
+          "Dave",
+          "Analyst",
+          "Boston",
+          "95000"
+        ],
+        [
+          "Eve",
+          "SRE",
+          "Seattle",
+          "130000"
+        ]
+      ]
+    }
+  ],
+  "table_shape": [
+    6,
+    4
+  ],
+  "table_method_hint": "stream",
+  "table_cells_must_include": [
+    "Name",
+    "Alice",
+    "Eve",
+    "130000",
+    "Salary"
+  ],
+  "our_library_priority": "P2 stream tables",
+  "tier": "basic",
+  "path": "corpus/07_table_stream.pdf",
+  "challenges": [
+    "table_stream"
+  ],
+  "expected_table_count": 1,
+  "expected_images": 0,
+  "weight_text": 0.25,
+  "weight_tables": 0.75,
+  "weight_objects": 0.0
+}

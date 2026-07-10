@@ -1,0 +1,40 @@
+{
+  "id": "30_real_ca_warn_report",
+  "category": "real_government_table_dump",
+  "tier": "real",
+  "description": "CA WARN multi-page layoff notices \u2014 classic pdfplumber demo (wide tables, many rows)",
+  "challenges": [
+    "wide_tables",
+    "multi_page",
+    "many_rows",
+    "government_layout"
+  ],
+  "source": "real",
+  "source_file": "plumber_ca_warn_report.pdf",
+  "source_url": "https://github.com/jsvine/pdfplumber/blob/stable/examples/pdfs/ca-warn-report.pdf",
+  "license_note": "Example from pdfplumber project (public demo data)",
+  "path": "corpus/real/30_real_ca_warn_report.pdf",
+  "must_contain": [
+    "Notice Date",
+    "Company"
+  ],
+  "must_contain_any": [
+    "Employees",
+    "WARN",
+    "Layoff",
+    "Closure",
+    "Location"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 10,
+  "page_count_observed": 16,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": null,
+  "table_count_tolerance": 0,
+  "expected_images": null,
+  "weight_text": 0.4,
+  "weight_tables": 0.6,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

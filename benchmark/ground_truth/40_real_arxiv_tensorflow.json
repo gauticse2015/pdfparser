@@ -1,0 +1,39 @@
+{
+  "id": "40_real_arxiv_tensorflow",
+  "category": "real_scientific_multicol",
+  "tier": "real",
+  "description": "TensorFlow whitepaper (arXiv) \u2014 multi-column scientific layout, figures, refs",
+  "challenges": [
+    "multi_column",
+    "scientific",
+    "figures",
+    "references",
+    "equations_possible"
+  ],
+  "source": "real",
+  "source_file": "arxiv_1603.04467.pdf",
+  "source_url": "https://arxiv.org/abs/1603.04467",
+  "license_note": "arXiv paper \u2014 check paper license for redistribution",
+  "path": "corpus/real/40_real_arxiv_tensorflow.pdf",
+  "must_contain": [
+    "TensorFlow"
+  ],
+  "must_contain_any": [
+    "machine learning",
+    "Distributed",
+    "Abstract",
+    "Google"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 0,
+  "expected_pages_min": 10,
+  "page_count_observed": 19,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": null,
+  "expected_images": null,
+  "weight_text": 1.0,
+  "weight_tables": 0.0,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real",
+  "accuracy_notes": "Text-primary scientific paper; tables not gold-labeled"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "32_real_census_table324",
+  "category": "real_statistical_abstract",
+  "tier": "real",
+  "description": "US Census Statistical Abstract table \u2014 classic Tabula lattice sample",
+  "challenges": [
+    "statistical_table",
+    "footnotes_likely",
+    "numeric_columns",
+    "title_above_table"
+  ],
+  "source": "real",
+  "source_file": "tabula_12s0324.pdf",
+  "source_url": "tabula-java test resources",
+  "license_note": "US government work / Tabula test fixture",
+  "path": "corpus/real/32_real_census_table324.pdf",
+  "must_contain": [
+    "Law Enforcement"
+  ],
+  "must_contain_any": [
+    "Table 324",
+    "Census",
+    "Prison",
+    "Arrest"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 1,
+  "page_count_observed": 1,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 1,
+  "table_count_tolerance": 1,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

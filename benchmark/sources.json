@@ -1,0 +1,335 @@
+{
+  "real_pdfs": [
+    {
+      "id": "30_real_ca_warn_report",
+      "src": "plumber_ca_warn_report.pdf",
+      "category": "real_government_table_dump",
+      "description": "CA WARN multi-page layoff notices \u2014 classic pdfplumber demo (wide tables, many rows)",
+      "challenges": [
+        "wide_tables",
+        "multi_page",
+        "many_rows",
+        "government_layout"
+      ],
+      "must_contain": [
+        "Notice Date",
+        "Company"
+      ],
+      "must_contain_any": [
+        "Employees",
+        "WARN",
+        "Layoff",
+        "Closure",
+        "Location"
+      ],
+      "expected_pages_min": 10,
+      "expected_tables_min": 1,
+      "table_cells_must_include": [],
+      "source_url": "https://github.com/jsvine/pdfplumber/blob/stable/examples/pdfs/ca-warn-report.pdf",
+      "license_note": "Example from pdfplumber project (public demo data)"
+    },
+    {
+      "id": "31_real_background_checks",
+      "src": "plumber_background_checks.pdf",
+      "category": "real_wide_header_table",
+      "description": "NICS background checks table \u2014 multi-line headers, dense columns",
+      "challenges": [
+        "multi_line_headers",
+        "dense_columns",
+        "abbreviations",
+        "single_page_wide"
+      ],
+      "must_contain": [
+        "Handgun",
+        "Long Gun"
+      ],
+      "must_contain_any": [
+        "Permit",
+        "State",
+        "Multiple",
+        "Admin"
+      ],
+      "expected_pages_min": 1,
+      "expected_tables_min": 1,
+      "source_url": "https://github.com/jsvine/pdfplumber/blob/stable/examples/pdfs/background-checks.pdf",
+      "license_note": "pdfplumber examples"
+    },
+    {
+      "id": "32_real_census_table324",
+      "src": "tabula_12s0324.pdf",
+      "category": "real_statistical_abstract",
+      "description": "US Census Statistical Abstract table \u2014 classic Tabula lattice sample",
+      "challenges": [
+        "statistical_table",
+        "footnotes_likely",
+        "numeric_columns",
+        "title_above_table"
+      ],
+      "must_contain": [
+        "Law Enforcement"
+      ],
+      "must_contain_any": [
+        "Table 324",
+        "Census",
+        "Prison",
+        "Arrest"
+      ],
+      "expected_pages_min": 1,
+      "expected_tables_min": 1,
+      "source_url": "tabula-java test resources",
+      "license_note": "US government work / Tabula test fixture"
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "src": "tabula_argentina_diputados_voting.pdf",
+      "category": "real_complex_grid",
+      "description": "Argentina diputados voting record \u2014 irregular grid, multi-section",
+      "challenges": [
+        "irregular_grid",
+        "political_layout",
+        "sectioned_tables",
+        "spanish"
+      ],
+      "must_contain": [
+        "Votos"
+      ],
+      "must_contain_any": [
+        "Afirmativos",
+        "Negativos",
+        "Abstenciones",
+        "Diputados"
+      ],
+      "expected_pages_min": 1,
+      "expected_tables_min": 1,
+      "source_url": "tabula-java test resources",
+      "license_note": "Tabula test fixture"
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "src": "tabula_schools.pdf",
+      "category": "real_campaign_finance",
+      "description": "Campaign contribution report multi-page \u2014 stream-like rows",
+      "challenges": [
+        "multi_page",
+        "stream_like",
+        "name_address_money",
+        "period_headers"
+      ],
+      "must_contain": [
+        "Schools"
+      ],
+      "must_contain_any": [
+        "Contribution",
+        "Amount",
+        "Name",
+        "Committee",
+        "Yes"
+      ],
+      "expected_pages_min": 3,
+      "expected_tables_min": 1,
+      "source_url": "tabula-java test resources",
+      "license_note": "Tabula test fixture"
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "src": "camelot_foo.pdf",
+      "category": "real_lattice_document",
+      "description": "Camelot foo.pdf \u2014 multi-table fuel savings research pages",
+      "challenges": [
+        "multiple_tables",
+        "scientific_layout",
+        "figure_plus_table"
+      ],
+      "must_contain": [
+        "Fuel"
+      ],
+      "must_contain_any": [
+        "Savings",
+        "Driving",
+        "Table",
+        "Quantifying"
+      ],
+      "expected_pages_min": 1,
+      "expected_tables_min": 1,
+      "source_url": "camelot docs sample",
+      "license_note": "Camelot project sample"
+    },
+    {
+      "id": "36_real_two_tables",
+      "src": "camelot_left_twocol.pdf",
+      "category": "real_two_tables",
+      "description": "Camelot twotables \u2014 disease outbreak table(s)",
+      "challenges": [
+        "two_tables",
+        "district_disease_counts",
+        "government_health"
+      ],
+      "must_contain": [
+        "District"
+      ],
+      "must_contain_any": [
+        "Disease",
+        "Cases",
+        "Deaths",
+        "State"
+      ],
+      "expected_pages_min": 1,
+      "expected_tables_min": 1,
+      "source_url": "camelot tests/files/twotables_1.pdf",
+      "license_note": "Camelot test fixture"
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "src": "camelot_superscript.pdf",
+      "category": "real_superscript_table",
+      "description": "State-wise liabilities table with superscripts (Contd.)",
+      "challenges": [
+        "superscripts",
+        "continued_table",
+        "financial_columns",
+        "contd_marker"
+      ],
+      "must_contain": [
+        "TABLE"
+      ],
+      "must_contain_any": [
+        "LIABILITIES",
+        "States",
+        "Billion",
+        "1997"
+      ],
+      "expected_pages_min": 1,
+      "expected_tables_min": 1,
+      "source_url": "camelot tests/files/superscript.pdf",
+      "license_note": "Camelot test fixture"
+    },
+    {
+      "id": "38_real_irs_f1040",
+      "src": "irs_f1040.pdf",
+      "category": "real_tax_form",
+      "description": "IRS Form 1040 \u2014 form fields, lines, labels, not a clean data table",
+      "challenges": [
+        "acroform_like_lines",
+        "tax_form_layout",
+        "label_value_pairs",
+        "multi_column_form"
+      ],
+      "must_contain": [
+        "1040"
+      ],
+      "must_contain_any": [
+        "Income",
+        "Tax",
+        "Return",
+        "IRS",
+        "Spouse"
+      ],
+      "expected_pages_min": 1,
+      "expected_tables_min": 0,
+      "source_url": "https://www.irs.gov/pub/irs-pdf/f1040.pdf",
+      "license_note": "US government work"
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "src": "fed_beigebook.pdf",
+      "category": "real_long_report",
+      "description": "Fed Beige Book (~50+ pages) \u2014 long narrative + district sections",
+      "challenges": [
+        "long_document",
+        "section_headers",
+        "narrative_heavy",
+        "mixed_layout"
+      ],
+      "must_contain": [
+        "Beige Book"
+      ],
+      "must_contain_any": [
+        "Federal Reserve",
+        "District",
+        "Economic",
+        "employment",
+        "inflation"
+      ],
+      "expected_pages_min": 40,
+      "expected_tables_min": 0,
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/files/BeigeBook_20240306.pdf",
+      "license_note": "US government work"
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "src": "arxiv_1603.04467.pdf",
+      "category": "real_scientific_multicol",
+      "description": "TensorFlow whitepaper (arXiv) \u2014 multi-column scientific layout, figures, refs",
+      "challenges": [
+        "multi_column",
+        "scientific",
+        "figures",
+        "references",
+        "equations_possible"
+      ],
+      "must_contain": [
+        "TensorFlow"
+      ],
+      "must_contain_any": [
+        "machine learning",
+        "Distributed",
+        "Abstract",
+        "Google"
+      ],
+      "expected_pages_min": 10,
+      "expected_tables_min": 0,
+      "source_url": "https://arxiv.org/abs/1603.04467",
+      "license_note": "arXiv paper \u2014 check paper license for redistribution"
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "src": "nist_fips197.pdf",
+      "category": "real_technical_long",
+      "description": "NIST technical series PDF (may be withdrawal wrapper + body) \u2014 long formal doc",
+      "challenges": [
+        "long_document",
+        "formal_publication",
+        "headers_footers"
+      ],
+      "must_contain_any": [
+        "NIST",
+        "FIPS",
+        "AES",
+        "Publication",
+        "Withdrawn",
+        "Federal"
+      ],
+      "must_contain": [],
+      "expected_pages_min": 5,
+      "expected_tables_min": 0,
+      "source_url": "NIST publication portal",
+      "license_note": "US government work"
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "src": "camelot_table_regions.pdf",
+      "category": "real_insurance_prose_tables",
+      "description": "Italian insurance product PDF with embedded tables/regions",
+      "challenges": [
+        "non_english",
+        "prose_plus_tables",
+        "multi_region",
+        "complex_layout"
+      ],
+      "must_contain_any": [
+        "Vittoria",
+        "PIR",
+        "assicurazione",
+        "contratto",
+        "FINAL"
+      ],
+      "must_contain": [],
+      "expected_pages_min": 1,
+      "expected_tables_min": 0,
+      "source_url": "camelot sample / related",
+      "license_note": "Third-party sample used in open-source tests; verify before shipping"
+    }
+  ],
+  "downloads_dir": "benchmark/downloads",
+  "notes": "Real PDFs copied into corpus/real; do not commit if license uncertain for your use."
+}

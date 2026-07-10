@@ -1,0 +1,3 @@
+# Local cargo config for this workspace
+[alias]
+xtask = "run --package pdfparser-cli --"

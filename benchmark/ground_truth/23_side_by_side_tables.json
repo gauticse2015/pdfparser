@@ -1,0 +1,82 @@
+{
+  "id": "23_side_by_side_tables",
+  "category": "side_by_side_tables",
+  "tier": "stress",
+  "description": "Two adjacent tables with different row counts",
+  "challenges": [
+    "multiple_tables_per_page",
+    "horizontal_layout",
+    "asymmetric_rows"
+  ],
+  "source": "synthetic",
+  "path": "corpus/stress/23_side_by_side_tables.pdf",
+  "must_contain": [
+    "TOKEN_SIDE_DOC",
+    "TOKEN_SIDE_L",
+    "TOKEN_SIDE_R",
+    "Extra row only on right"
+  ],
+  "table_cells_must_include": [
+    "TOKEN_SIDE_L",
+    "TOKEN_SIDE_R",
+    "Temp",
+    "Pop(M)"
+  ],
+  "expected_tables_min": 2,
+  "our_library_priority": "P2 multi-table NMS",
+  "expected_table_count": 2,
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 2,
+      "cells": [
+        [
+          "City",
+          "Temp"
+        ],
+        [
+          "NYC TOKEN_SIDE_L",
+          "72"
+        ],
+        [
+          "SF",
+          "68"
+        ],
+        [
+          "CHI",
+          "70"
+        ]
+      ]
+    },
+    {
+      "rows": 5,
+      "cols": 2,
+      "cells": [
+        [
+          "City",
+          "Pop(M)"
+        ],
+        [
+          "NYC TOKEN_SIDE_R",
+          "8.3"
+        ],
+        [
+          "SF",
+          "0.8"
+        ],
+        [
+          "CHI",
+          "2.7"
+        ],
+        [
+          "Extra row only on right",
+          "\u2014"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0
+}

@@ -1,0 +1,43 @@
+{
+  "id": "20_bank_statement_multipage",
+  "category": "bank_statement",
+  "tier": "stress",
+  "description": "Multi-page bank ledger with long wrapped descriptions, ACH/wire/POS, repeating header",
+  "challenges": [
+    "long_cell_wrap",
+    "multi_page_table",
+    "dense_rows",
+    "mixed_transaction_types",
+    "numeric_alignment",
+    "repeating_header"
+  ],
+  "source": "synthetic",
+  "path": "corpus/stress/20_bank_statement_multipage.pdf",
+  "must_contain": [
+    "TOKEN_BANK_STATEMENT_HEADER",
+    "TOKEN_BANK_OVERFLOW_DESC",
+    "TOKEN_BANK_WIRE",
+    "TOKEN_BANK_PAYROLL",
+    "TOKEN_BANK_BEGIN_BAL",
+    "TOKEN_BANK_END",
+    "NORTHSTAR NATIONAL BANK"
+  ],
+  "table_cells_must_include": [
+    "TOKEN_BANK_OVERFLOW_DESC",
+    "TOKEN_BANK_WIRE",
+    "Description",
+    "Balance",
+    "WIRE",
+    "ACH"
+  ],
+  "expected_tables_min": 1,
+  "expected_pages_min": 2,
+  "our_library_priority": "P2 tables + multi-page",
+  "expected_table_count": 1,
+  "table_count_tolerance": 1,
+  "expected_images": 0,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0,
+  "accuracy_notes": "Logical single ledger; page split into 2 tables scores detection within tolerance"
+}

@@ -1,0 +1,122 @@
+{
+  "id": "21_table_overflow_cells",
+  "category": "table_overflow",
+  "tier": "stress",
+  "description": "Narrow columns + multi-line overflowing cells; row-split failure mode",
+  "challenges": [
+    "cell_text_wrap",
+    "uneven_row_heights",
+    "narrow_columns",
+    "multiline_cells",
+    "row_segmentation"
+  ],
+  "source": "synthetic",
+  "path": "corpus/stress/21_table_overflow_cells.pdf",
+  "must_contain": [
+    "TOKEN_OVERFLOW_DOC",
+    "TOKEN_OVERFLOW_MEGA",
+    "END_OVERFLOW_MEGA",
+    "TOKEN_OVERFLOW_MULTILINE",
+    "TOKEN_OVERFLOW_ROW_1"
+  ],
+  "table_cells_must_include": [
+    "TOKEN_OVERFLOW_MEGA",
+    "TOKEN_OVERFLOW_MULTILINE",
+    "Overflowing Description",
+    "R99"
+  ],
+  "expected_tables_min": 1,
+  "quality_notes": "Success only if mega text stays in ONE cell / same row structure",
+  "our_library_priority": "P2 table cell integrity",
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 13,
+      "cols": 4,
+      "cells": [
+        [
+          "ID",
+          "Short",
+          "Overflowing Description",
+          "Amt"
+        ],
+        [
+          "R01",
+          "OK",
+          "TOKEN_OVERFLOW_ROW_1",
+          "99.99"
+        ],
+        [
+          "R02",
+          "LONGSHORTLABEL_TOKEN",
+          "TOKEN_OVERFLOW_ROW_2",
+          "199.98"
+        ],
+        [
+          "R03",
+          "OK",
+          "TOKEN_OVERFLOW_MEGA",
+          "299.97"
+        ],
+        [
+          "R04",
+          "LONGSHORTLABEL_TOKEN",
+          "TOKEN_OVERFLOW_ROW_4",
+          "399.96"
+        ],
+        [
+          "R05",
+          "OK",
+          "TOKEN_OVERFLOW_ROW_5",
+          "499.95"
+        ],
+        [
+          "R06",
+          "LONGSHORTLABEL_TOKEN",
+          "TOKEN_OVERFLOW_ROW_6",
+          "599.94"
+        ],
+        [
+          "R07",
+          "OK",
+          "TOKEN_OVERFLOW_MEGA7",
+          "699.93"
+        ],
+        [
+          "R08",
+          "LONGSHORTLABEL_TOKEN",
+          "TOKEN_OVERFLOW_ROW_8",
+          "799.92"
+        ],
+        [
+          "R09",
+          "OK",
+          "TOKEN_OVERFLOW_ROW_9",
+          "899.91"
+        ],
+        [
+          "R10",
+          "LONGSHORTLABEL_TOKEN",
+          "TOKEN_OVERFLOW_MEGA10",
+          "999.90"
+        ],
+        [
+          "R11",
+          "OK",
+          "TOKEN_OVERFLOW_ROW_11",
+          "1099.89"
+        ],
+        [
+          "R99",
+          "X",
+          "TOKEN_OVERFLOW_MULTILINE",
+          "0.01"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0
+}

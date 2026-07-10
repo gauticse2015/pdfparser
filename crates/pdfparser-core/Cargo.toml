@@ -1,0 +1,16 @@
+[package]
+name = "pdfparser-core"
+description = "PDF object backend, governor, filters, page tree"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+pdfparser-ir = { workspace = true }
+lopdf = { workspace = true }
+flate2 = { workspace = true }
+thiserror = { workspace = true }
+weezl = { workspace = true }
+tracing = { workspace = true }

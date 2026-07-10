@@ -1,0 +1,22 @@
+{
+  "id": "11_rotated_page",
+  "category": "rotated_page",
+  "description": "Second page has /Rotate 90",
+  "page_count": 2,
+  "must_contain": [
+    "NORMAL_PAGE_TOKEN",
+    "ROTATED_PAGE_TOKEN"
+  ],
+  "page_rotations": [
+    0,
+    90
+  ],
+  "expected_images": 0,
+  "expected_tables": 0,
+  "our_library_priority": "P1 coordinate spaces",
+  "tier": "basic",
+  "expected_table_count": 0,
+  "weight_text": 1.0,
+  "weight_tables": 0.0,
+  "weight_objects": 0.0
+}

@@ -1,0 +1,34 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.toml.orig
+
+# Python benchmark env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Benchmark artifacts (regenerable)
+benchmark/results/*.log
+benchmark/assets/_plain_enc.pdf
+
+# Optional large raw downloads (regenerate via scripts)
+# Keep corpus/ fixtures committed for CI tests.

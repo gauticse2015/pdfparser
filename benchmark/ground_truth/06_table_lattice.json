@@ -1,0 +1,76 @@
+{
+  "id": "06_table_lattice",
+  "category": "table_lattice",
+  "description": "Fully ruled 5x4 table with header row",
+  "page_count": 1,
+  "must_contain": [
+    "LATTICE_TABLE_TOKEN",
+    "SKU",
+    "Widget",
+    "Thingamajig",
+    "15.00",
+    "A-100"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "SKU",
+          "Product",
+          "Qty",
+          "Price"
+        ],
+        [
+          "A-100",
+          "Widget",
+          "10",
+          "2.50"
+        ],
+        [
+          "B-200",
+          "Gadget",
+          "5",
+          "9.99"
+        ],
+        [
+          "C-300",
+          "Doohickey",
+          "12",
+          "1.25"
+        ],
+        [
+          "D-400",
+          "Thingamajig",
+          "3",
+          "15.00"
+        ]
+      ]
+    }
+  ],
+  "table_shape": [
+    5,
+    4
+  ],
+  "table_method_hint": "lattice",
+  "table_cells_must_include": [
+    "SKU",
+    "Product",
+    "A-100",
+    "Widget",
+    "D-400",
+    "15.00"
+  ],
+  "our_library_priority": "P2 lattice tables",
+  "tier": "basic",
+  "path": "corpus/06_table_lattice.pdf",
+  "challenges": [
+    "table_lattice"
+  ],
+  "expected_table_count": 1,
+  "expected_images": 0,
+  "weight_text": 0.25,
+  "weight_tables": 0.75,
+  "weight_objects": 0.0
+}

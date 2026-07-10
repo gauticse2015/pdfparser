@@ -1,0 +1,37 @@
+{
+  "id": "36_real_two_tables",
+  "category": "real_two_tables",
+  "tier": "real",
+  "description": "Camelot twotables \u2014 disease outbreak table(s)",
+  "challenges": [
+    "two_tables",
+    "district_disease_counts",
+    "government_health"
+  ],
+  "source": "real",
+  "source_file": "camelot_left_twocol.pdf",
+  "source_url": "camelot tests/files/twotables_1.pdf",
+  "license_note": "Camelot test fixture",
+  "path": "corpus/real/36_real_two_tables.pdf",
+  "must_contain": [
+    "District"
+  ],
+  "must_contain_any": [
+    "Disease",
+    "Cases",
+    "Deaths",
+    "State"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 1,
+  "page_count_observed": 1,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 2,
+  "table_count_tolerance": 0,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real",
+  "accuracy_notes": "Ideal ~2 tables; over-segmentation heavily penalized via detection precision"
+}

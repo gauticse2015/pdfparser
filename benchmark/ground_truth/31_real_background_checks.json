@@ -1,0 +1,38 @@
+{
+  "id": "31_real_background_checks",
+  "category": "real_wide_header_table",
+  "tier": "real",
+  "description": "NICS background checks table \u2014 multi-line headers, dense columns",
+  "challenges": [
+    "multi_line_headers",
+    "dense_columns",
+    "abbreviations",
+    "single_page_wide"
+  ],
+  "source": "real",
+  "source_file": "plumber_background_checks.pdf",
+  "source_url": "https://github.com/jsvine/pdfplumber/blob/stable/examples/pdfs/background-checks.pdf",
+  "license_note": "pdfplumber examples",
+  "path": "corpus/real/31_real_background_checks.pdf",
+  "must_contain": [
+    "Handgun",
+    "Long Gun"
+  ],
+  "must_contain_any": [
+    "Permit",
+    "State",
+    "Multiple",
+    "Admin"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 1,
+  "page_count_observed": 1,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 1,
+  "table_count_tolerance": 0,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

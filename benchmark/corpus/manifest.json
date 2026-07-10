@@ -1,0 +1,966 @@
+{
+  "name": "pdfparser-competitive-corpus-v2",
+  "description": "Basic + stress synthetic + real-world complex PDFs",
+  "document_count": 33,
+  "tiers": {
+    "basic": 12,
+    "stress": 8,
+    "real": 13
+  },
+  "documents": [
+    {
+      "id": "01_simple_text",
+      "category": "simple_text",
+      "description": "Single-page single-column digital text",
+      "page_count": 1,
+      "must_contain": [
+        "SIMPLE_TOKEN_ALPHA",
+        "SIMPLE_TOKEN_BETA",
+        "12345",
+        "99.50",
+        "2026-07-10",
+        "Simple Digital PDF"
+      ],
+      "expected_images": 0,
+      "expected_tables": 0,
+      "table_cells": null,
+      "reading_order_sensitive": false,
+      "our_library_priority": "P1/0.1",
+      "tier": "basic",
+      "path": "corpus/01_simple_text.pdf",
+      "challenges": [
+        "simple_text"
+      ]
+    },
+    {
+      "id": "02_multi_column",
+      "category": "multi_column",
+      "description": "Two-column text; reading order should prefer left then right",
+      "page_count": 1,
+      "must_contain": [
+        "LEFT_COL_START",
+        "LEFT_TOKEN_ONE",
+        "LEFT_COL_END",
+        "RIGHT_COL_START",
+        "RIGHT_TOKEN_TWO",
+        "RIGHT_COL_END"
+      ],
+      "reading_order_sensitive": true,
+      "ideal_order_substrings": [
+        "LEFT_COL_START",
+        "LEFT_COL_END",
+        "RIGHT_COL_START",
+        "RIGHT_COL_END"
+      ],
+      "expected_images": 0,
+      "expected_tables": 0,
+      "our_library_priority": "P1/0.1 layout",
+      "tier": "basic",
+      "path": "corpus/02_multi_column.pdf",
+      "challenges": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "03_large_multipage",
+      "category": "large_multipage",
+      "description": "80-page digital text for throughput and memory",
+      "page_count": 80,
+      "must_contain": [
+        "PAGE_TOKEN_0001",
+        "PAGE_TOKEN_0080",
+        "LARGE_BODY_TOKEN"
+      ],
+      "expected_images": 0,
+      "expected_tables": 0,
+      "our_library_priority": "P0/P1 perf",
+      "tier": "basic",
+      "path": "corpus/03_large_multipage.pdf",
+      "challenges": [
+        "large_multipage"
+      ]
+    },
+    {
+      "id": "04_image_heavy",
+      "category": "image_heavy",
+      "description": "Four embedded raster images with captions",
+      "page_count": 1,
+      "must_contain": [
+        "IMAGE_HEAVY_TOKEN",
+        "Image-Heavy Digital PDF",
+        "Caption for img_1"
+      ],
+      "expected_images": 4,
+      "expected_tables": 0,
+      "our_library_priority": "P1/0.1 images encoded",
+      "tier": "basic",
+      "path": "corpus/04_image_heavy.pdf",
+      "challenges": [
+        "image_heavy"
+      ]
+    },
+    {
+      "id": "05_special_objects",
+      "category": "special_objects",
+      "description": "URI link, AcroForm text+checkbox, outline bookmarks",
+      "page_count": 2,
+      "must_contain": [
+        "SPECIAL_OBJ_TOKEN",
+        "SPECIAL_PAGE2_TOKEN",
+        "customer_name"
+      ],
+      "expected_images": 0,
+      "expected_tables": 0,
+      "expected_form_fields": [
+        "customer_name",
+        "agree_terms"
+      ],
+      "expected_link_uri_contains": "example.com/pdfparser-bench",
+      "expected_outline_titles": [
+        "Section 1 Special Objects",
+        "Section 2 Continuation"
+      ],
+      "our_library_priority": "P2 annots/forms/outline",
+      "tier": "basic",
+      "path": "corpus/05_special_objects.pdf",
+      "challenges": [
+        "special_objects"
+      ]
+    },
+    {
+      "id": "06_table_lattice",
+      "category": "table_lattice",
+      "description": "Fully ruled 5x4 table with header row",
+      "page_count": 1,
+      "must_contain": [
+        "LATTICE_TABLE_TOKEN",
+        "SKU",
+        "Widget",
+        "Thingamajig",
+        "15.00",
+        "A-100"
+      ],
+      "expected_tables": 1,
+      "table_shape": [
+        5,
+        4
+      ],
+      "table_method_hint": "lattice",
+      "table_cells_must_include": [
+        "SKU",
+        "Product",
+        "A-100",
+        "Widget",
+        "D-400",
+        "15.00"
+      ],
+      "our_library_priority": "P2 lattice tables",
+      "tier": "basic",
+      "path": "corpus/06_table_lattice.pdf",
+      "challenges": [
+        "table_lattice"
+      ]
+    },
+    {
+      "id": "07_table_stream",
+      "category": "table_stream",
+      "description": "Whitespace-aligned columns without vector borders",
+      "page_count": 1,
+      "must_contain": [
+        "STREAM_TABLE_TOKEN",
+        "Alice",
+        "Engineer",
+        "Seattle",
+        "130000",
+        "Name"
+      ],
+      "expected_tables": 1,
+      "table_shape": [
+        6,
+        4
+      ],
+      "table_method_hint": "stream",
+      "table_cells_must_include": [
+        "Name",
+        "Alice",
+        "Eve",
+        "130000",
+        "Salary"
+      ],
+      "our_library_priority": "P2 stream tables",
+      "tier": "basic",
+      "path": "corpus/07_table_stream.pdf",
+      "challenges": [
+        "table_stream"
+      ]
+    },
+    {
+      "id": "08_table_partial_border",
+      "category": "table_partial_border",
+      "description": "Outer border + header rule only (hybrid lattice/stream)",
+      "page_count": 1,
+      "must_contain": [
+        "HYBRID_TABLE_TOKEN",
+        "Region",
+        "North",
+        "West",
+        "Q4",
+        "18"
+      ],
+      "expected_tables": 1,
+      "table_shape": [
+        5,
+        5
+      ],
+      "table_method_hint": "hybrid",
+      "table_cells_must_include": [
+        "Region",
+        "North",
+        "West",
+        "18"
+      ],
+      "our_library_priority": "P2 hybrid tables",
+      "tier": "basic",
+      "path": "corpus/08_table_partial_border.pdf",
+      "challenges": [
+        "table_partial_border"
+      ]
+    },
+    {
+      "id": "09_table_complex",
+      "category": "table_complex",
+      "description": "7x5 financial lattice with commas, percents, notes",
+      "page_count": 1,
+      "must_contain": [
+        "COMPLEX_TABLE_TOKEN",
+        "Revenue",
+        "EBITDA",
+        "1,450,000",
+        "38.1%",
+        "Net Income"
+      ],
+      "expected_tables": 1,
+      "table_shape": [
+        7,
+        5
+      ],
+      "table_method_hint": "lattice",
+      "table_cells_must_include": [
+        "Revenue",
+        "EBITDA",
+        "Net Income",
+        "1,450,000",
+        "38.1%"
+      ],
+      "our_library_priority": "P2 tables fidelity",
+      "tier": "basic",
+      "path": "corpus/09_table_complex.pdf",
+      "challenges": [
+        "table_complex"
+      ]
+    },
+    {
+      "id": "10_mixed_document",
+      "category": "mixed_document",
+      "description": "Text + image + small lattice table on one page",
+      "page_count": 1,
+      "must_contain": [
+        "MIXED_DOC_TOKEN",
+        "MIXED_END_TOKEN",
+        "Apples",
+        "Bananas",
+        "15"
+      ],
+      "expected_images": 1,
+      "expected_tables": 1,
+      "table_shape": [
+        4,
+        2
+      ],
+      "table_cells_must_include": [
+        "Item",
+        "Apples",
+        "Bananas",
+        "15"
+      ],
+      "our_library_priority": "P1+P2 integration"
+    },
+    {
+      "id": "11_rotated_page",
+      "category": "rotated_page",
+      "description": "Second page has /Rotate 90",
+      "page_count": 2,
+      "must_contain": [
+        "NORMAL_PAGE_TOKEN",
+        "ROTATED_PAGE_TOKEN"
+      ],
+      "page_rotations": [
+        0,
+        90
+      ],
+      "expected_images": 0,
+      "expected_tables": 0,
+      "our_library_priority": "P1 coordinate spaces"
+    },
+    {
+      "id": "12_encrypted_password",
+      "category": "encrypted_password",
+      "description": "AES encrypted PDF; password 'benchpass'",
+      "page_count": 1,
+      "must_contain": [
+        "ENCRYPT_SECRET_TOKEN"
+      ],
+      "password": "benchpass",
+      "expected_open_without_password": "error_or_empty",
+      "expected_images": 0,
+      "expected_tables": 0,
+      "our_library_priority": "0.1: Error::Encryption; 0.2: decrypt subset"
+    },
+    {
+      "id": "20_bank_statement_multipage",
+      "category": "bank_statement",
+      "tier": "stress",
+      "description": "Multi-page bank ledger with long wrapped descriptions, ACH/wire/POS, repeating header",
+      "challenges": [
+        "long_cell_wrap",
+        "multi_page_table",
+        "dense_rows",
+        "mixed_transaction_types",
+        "numeric_alignment",
+        "repeating_header"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/20_bank_statement_multipage.pdf",
+      "must_contain": [
+        "TOKEN_BANK_STATEMENT_HEADER",
+        "TOKEN_BANK_OVERFLOW_DESC",
+        "TOKEN_BANK_WIRE",
+        "TOKEN_BANK_PAYROLL",
+        "TOKEN_BANK_BEGIN_BAL",
+        "TOKEN_BANK_END",
+        "NORTHSTAR NATIONAL BANK"
+      ],
+      "table_cells_must_include": [
+        "TOKEN_BANK_OVERFLOW_DESC",
+        "TOKEN_BANK_WIRE",
+        "Description",
+        "Balance",
+        "WIRE",
+        "ACH"
+      ],
+      "expected_tables_min": 1,
+      "expected_pages_min": 2,
+      "our_library_priority": "P2 tables + multi-page"
+    },
+    {
+      "id": "21_table_overflow_cells",
+      "category": "table_overflow",
+      "tier": "stress",
+      "description": "Narrow columns + multi-line overflowing cells; row-split failure mode",
+      "challenges": [
+        "cell_text_wrap",
+        "uneven_row_heights",
+        "narrow_columns",
+        "multiline_cells",
+        "row_segmentation"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/21_table_overflow_cells.pdf",
+      "must_contain": [
+        "TOKEN_OVERFLOW_DOC",
+        "TOKEN_OVERFLOW_MEGA",
+        "END_OVERFLOW_MEGA",
+        "TOKEN_OVERFLOW_MULTILINE",
+        "TOKEN_OVERFLOW_ROW_1"
+      ],
+      "table_cells_must_include": [
+        "TOKEN_OVERFLOW_MEGA",
+        "TOKEN_OVERFLOW_MULTILINE",
+        "Overflowing Description",
+        "R99"
+      ],
+      "expected_tables_min": 1,
+      "quality_notes": "Success only if mega text stays in ONE cell / same row structure",
+      "our_library_priority": "P2 table cell integrity"
+    },
+    {
+      "id": "22_table_merged_headers",
+      "category": "table_merged_headers",
+      "tier": "stress",
+      "description": "Two-row headers with horizontal and vertical spans",
+      "challenges": [
+        "colspan",
+        "rowspan",
+        "multi_level_header",
+        "wrapped_stub_column",
+        "empty_placeholder_cells"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/22_table_merged_headers.pdf",
+      "must_contain": [
+        "TOKEN_MERGE_DOC",
+        "TOKEN_MERGE_REV",
+        "TOKEN_MERGE_GP",
+        "TOKEN_MERGE_EBITDA",
+        "FY2024",
+        "FY2025",
+        "Actual",
+        "Budget"
+      ],
+      "table_cells_must_include": [
+        "Revenue",
+        "EBITDA",
+        "1,450",
+        "TOKEN_MERGE_EBITDA",
+        "FY2024"
+      ],
+      "expected_tables_min": 1,
+      "our_library_priority": "P2 structure/spans"
+    },
+    {
+      "id": "23_side_by_side_tables",
+      "category": "side_by_side_tables",
+      "tier": "stress",
+      "description": "Two adjacent tables with different row counts",
+      "challenges": [
+        "multiple_tables_per_page",
+        "horizontal_layout",
+        "asymmetric_rows"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/23_side_by_side_tables.pdf",
+      "must_contain": [
+        "TOKEN_SIDE_DOC",
+        "TOKEN_SIDE_L",
+        "TOKEN_SIDE_R",
+        "Extra row only on right"
+      ],
+      "table_cells_must_include": [
+        "TOKEN_SIDE_L",
+        "TOKEN_SIDE_R",
+        "Temp",
+        "Pop(M)"
+      ],
+      "expected_tables_min": 2,
+      "our_library_priority": "P2 multi-table NMS"
+    },
+    {
+      "id": "24_invoice_line_items",
+      "category": "invoice",
+      "tier": "stress",
+      "description": "Invoice with long line-item descriptions + totals spans",
+      "challenges": [
+        "long_line_items",
+        "totals_section",
+        "span_rows",
+        "mixed_header_body_footer",
+        "currency_formatting"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/24_invoice_line_items.pdf",
+      "must_contain": [
+        "TOKEN_INV_HEADER",
+        "TOKEN_INV_SVC",
+        "TOKEN_INV_CLOUD",
+        "TOKEN_INV_DUE",
+        "TOKEN_INV_NOTES",
+        "INV-2026-00421"
+      ],
+      "table_cells_must_include": [
+        "TOKEN_INV_SVC",
+        "TOKEN_INV_CLOUD",
+        "TOKEN_INV_DUE",
+        "SKU-101",
+        "Description"
+      ],
+      "expected_tables_min": 1,
+      "our_library_priority": "P2 invoices"
+    },
+    {
+      "id": "25_dense_numeric_grid",
+      "category": "dense_numeric",
+      "tier": "stress",
+      "description": "Landscape 12x30 dense numeric grid",
+      "challenges": [
+        "high_cell_count",
+        "tiny_fonts",
+        "numeric_only",
+        "landscape"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/25_dense_numeric_grid.pdf",
+      "must_contain": [
+        "TOKEN_DENSE_DOC",
+        "TOKEN_DENSE",
+        "C0",
+        "C11"
+      ],
+      "table_cells_must_include": [
+        "TOKEN_DENSE",
+        "C0",
+        "C6"
+      ],
+      "expected_tables_min": 1,
+      "expected_min_cells": 300,
+      "our_library_priority": "P2 performance/quality"
+    },
+    {
+      "id": "26_watermark_overlap",
+      "category": "watermark_overlap",
+      "tier": "stress",
+      "description": "Diagonal watermark overlapping table-like text",
+      "challenges": [
+        "overlapping_text",
+        "watermark",
+        "z_order",
+        "reading_order_noise"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/26_watermark_overlap.pdf",
+      "must_contain": [
+        "TOKEN_WM_DOC",
+        "TOKEN_WM_ROW",
+        "TOKEN_WM_FOOTER",
+        "TOKEN_WM_MARK"
+      ],
+      "expected_tables_min": 0,
+      "quality_notes": "Watermark text may interleave; libraries differ on order",
+      "our_library_priority": "P1 reading order / artifacts"
+    },
+    {
+      "id": "27_table_with_footnotes",
+      "category": "table_footnotes",
+      "tier": "stress",
+      "description": "Table with superscript markers + footnote block below",
+      "challenges": [
+        "footnotes",
+        "superscripts",
+        "table_boundary",
+        "annotation_like_text"
+      ],
+      "source": "synthetic",
+      "path": "corpus/stress/27_table_with_footnotes.pdf",
+      "must_contain": [
+        "TOKEN_FN_DOC",
+        "TOKEN_FN_USA",
+        "TOKEN_FN_IND",
+        "TOKEN_FN_1",
+        "TOKEN_FN_3"
+      ],
+      "table_cells_must_include": [
+        "TOKEN_FN_USA",
+        "TOKEN_FN_IND",
+        "GDP",
+        "USA"
+      ],
+      "expected_tables_min": 1,
+      "our_library_priority": "P2 table boundary"
+    },
+    {
+      "id": "30_real_ca_warn_report",
+      "category": "real_government_table_dump",
+      "tier": "real",
+      "description": "CA WARN multi-page layoff notices \u2014 classic pdfplumber demo (wide tables, many rows)",
+      "challenges": [
+        "wide_tables",
+        "multi_page",
+        "many_rows",
+        "government_layout"
+      ],
+      "source": "real",
+      "source_file": "plumber_ca_warn_report.pdf",
+      "source_url": "https://github.com/jsvine/pdfplumber/blob/stable/examples/pdfs/ca-warn-report.pdf",
+      "license_note": "Example from pdfplumber project (public demo data)",
+      "path": "corpus/real/30_real_ca_warn_report.pdf",
+      "must_contain": [
+        "Notice Date",
+        "Company"
+      ],
+      "must_contain_any": [
+        "Employees",
+        "WARN",
+        "Layoff",
+        "Closure",
+        "Location"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 10,
+      "page_count_observed": 16,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "31_real_background_checks",
+      "category": "real_wide_header_table",
+      "tier": "real",
+      "description": "NICS background checks table \u2014 multi-line headers, dense columns",
+      "challenges": [
+        "multi_line_headers",
+        "dense_columns",
+        "abbreviations",
+        "single_page_wide"
+      ],
+      "source": "real",
+      "source_file": "plumber_background_checks.pdf",
+      "source_url": "https://github.com/jsvine/pdfplumber/blob/stable/examples/pdfs/background-checks.pdf",
+      "license_note": "pdfplumber examples",
+      "path": "corpus/real/31_real_background_checks.pdf",
+      "must_contain": [
+        "Handgun",
+        "Long Gun"
+      ],
+      "must_contain_any": [
+        "Permit",
+        "State",
+        "Multiple",
+        "Admin"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 1,
+      "page_count_observed": 1,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "32_real_census_table324",
+      "category": "real_statistical_abstract",
+      "tier": "real",
+      "description": "US Census Statistical Abstract table \u2014 classic Tabula lattice sample",
+      "challenges": [
+        "statistical_table",
+        "footnotes_likely",
+        "numeric_columns",
+        "title_above_table"
+      ],
+      "source": "real",
+      "source_file": "tabula_12s0324.pdf",
+      "source_url": "tabula-java test resources",
+      "license_note": "US government work / Tabula test fixture",
+      "path": "corpus/real/32_real_census_table324.pdf",
+      "must_contain": [
+        "Law Enforcement"
+      ],
+      "must_contain_any": [
+        "Table 324",
+        "Census",
+        "Prison",
+        "Arrest"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 1,
+      "page_count_observed": 1,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "category": "real_complex_grid",
+      "tier": "real",
+      "description": "Argentina diputados voting record \u2014 irregular grid, multi-section",
+      "challenges": [
+        "irregular_grid",
+        "political_layout",
+        "sectioned_tables",
+        "spanish"
+      ],
+      "source": "real",
+      "source_file": "tabula_argentina_diputados_voting.pdf",
+      "source_url": "tabula-java test resources",
+      "license_note": "Tabula test fixture",
+      "path": "corpus/real/33_real_argentina_votes.pdf",
+      "must_contain": [
+        "Votos"
+      ],
+      "must_contain_any": [
+        "Afirmativos",
+        "Negativos",
+        "Abstenciones",
+        "Diputados"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 1,
+      "page_count_observed": 1,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "category": "real_campaign_finance",
+      "tier": "real",
+      "description": "Campaign contribution report multi-page \u2014 stream-like rows",
+      "challenges": [
+        "multi_page",
+        "stream_like",
+        "name_address_money",
+        "period_headers"
+      ],
+      "source": "real",
+      "source_file": "tabula_schools.pdf",
+      "source_url": "tabula-java test resources",
+      "license_note": "Tabula test fixture",
+      "path": "corpus/real/34_real_schools_contributions.pdf",
+      "must_contain": [
+        "Schools"
+      ],
+      "must_contain_any": [
+        "Contribution",
+        "Amount",
+        "Name",
+        "Committee",
+        "Yes"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 3,
+      "page_count_observed": 5,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "category": "real_lattice_document",
+      "tier": "real",
+      "description": "Camelot foo.pdf \u2014 multi-table fuel savings research pages",
+      "challenges": [
+        "multiple_tables",
+        "scientific_layout",
+        "figure_plus_table"
+      ],
+      "source": "real",
+      "source_file": "camelot_foo.pdf",
+      "source_url": "camelot docs sample",
+      "license_note": "Camelot project sample",
+      "path": "corpus/real/35_real_camelot_fuel.pdf",
+      "must_contain": [
+        "Fuel"
+      ],
+      "must_contain_any": [
+        "Savings",
+        "Driving",
+        "Table",
+        "Quantifying"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 1,
+      "page_count_observed": 1,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "36_real_two_tables",
+      "category": "real_two_tables",
+      "tier": "real",
+      "description": "Camelot twotables \u2014 disease outbreak table(s)",
+      "challenges": [
+        "two_tables",
+        "district_disease_counts",
+        "government_health"
+      ],
+      "source": "real",
+      "source_file": "camelot_left_twocol.pdf",
+      "source_url": "camelot tests/files/twotables_1.pdf",
+      "license_note": "Camelot test fixture",
+      "path": "corpus/real/36_real_two_tables.pdf",
+      "must_contain": [
+        "District"
+      ],
+      "must_contain_any": [
+        "Disease",
+        "Cases",
+        "Deaths",
+        "State"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 1,
+      "page_count_observed": 1,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "category": "real_superscript_table",
+      "tier": "real",
+      "description": "State-wise liabilities table with superscripts (Contd.)",
+      "challenges": [
+        "superscripts",
+        "continued_table",
+        "financial_columns",
+        "contd_marker"
+      ],
+      "source": "real",
+      "source_file": "camelot_superscript.pdf",
+      "source_url": "camelot tests/files/superscript.pdf",
+      "license_note": "Camelot test fixture",
+      "path": "corpus/real/37_real_liabilities_superscript.pdf",
+      "must_contain": [
+        "TABLE"
+      ],
+      "must_contain_any": [
+        "LIABILITIES",
+        "States",
+        "Billion",
+        "1997"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 1,
+      "expected_pages_min": 1,
+      "page_count_observed": 1,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "38_real_irs_f1040",
+      "category": "real_tax_form",
+      "tier": "real",
+      "description": "IRS Form 1040 \u2014 form fields, lines, labels, not a clean data table",
+      "challenges": [
+        "acroform_like_lines",
+        "tax_form_layout",
+        "label_value_pairs",
+        "multi_column_form"
+      ],
+      "source": "real",
+      "source_file": "irs_f1040.pdf",
+      "source_url": "https://www.irs.gov/pub/irs-pdf/f1040.pdf",
+      "license_note": "US government work",
+      "path": "corpus/real/38_real_irs_f1040.pdf",
+      "must_contain": [
+        "1040"
+      ],
+      "must_contain_any": [
+        "Income",
+        "Tax",
+        "Return",
+        "IRS",
+        "Spouse"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 0,
+      "expected_pages_min": 1,
+      "page_count_observed": 2,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "category": "real_long_report",
+      "tier": "real",
+      "description": "Fed Beige Book (~50+ pages) \u2014 long narrative + district sections",
+      "challenges": [
+        "long_document",
+        "section_headers",
+        "narrative_heavy",
+        "mixed_layout"
+      ],
+      "source": "real",
+      "source_file": "fed_beigebook.pdf",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/files/BeigeBook_20240306.pdf",
+      "license_note": "US government work",
+      "path": "corpus/real/39_real_fed_beigebook.pdf",
+      "must_contain": [
+        "Beige Book"
+      ],
+      "must_contain_any": [
+        "Federal Reserve",
+        "District",
+        "Economic",
+        "employment",
+        "inflation"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 0,
+      "expected_pages_min": 40,
+      "page_count_observed": 56,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "category": "real_scientific_multicol",
+      "tier": "real",
+      "description": "TensorFlow whitepaper (arXiv) \u2014 multi-column scientific layout, figures, refs",
+      "challenges": [
+        "multi_column",
+        "scientific",
+        "figures",
+        "references",
+        "equations_possible"
+      ],
+      "source": "real",
+      "source_file": "arxiv_1603.04467.pdf",
+      "source_url": "https://arxiv.org/abs/1603.04467",
+      "license_note": "arXiv paper \u2014 check paper license for redistribution",
+      "path": "corpus/real/40_real_arxiv_tensorflow.pdf",
+      "must_contain": [
+        "TensorFlow"
+      ],
+      "must_contain_any": [
+        "machine learning",
+        "Distributed",
+        "Abstract",
+        "Google"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 0,
+      "expected_pages_min": 10,
+      "page_count_observed": 19,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "category": "real_technical_long",
+      "tier": "real",
+      "description": "NIST technical series PDF (may be withdrawal wrapper + body) \u2014 long formal doc",
+      "challenges": [
+        "long_document",
+        "formal_publication",
+        "headers_footers"
+      ],
+      "source": "real",
+      "source_file": "nist_fips197.pdf",
+      "source_url": "NIST publication portal",
+      "license_note": "US government work",
+      "path": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "must_contain": [],
+      "must_contain_any": [
+        "NIST",
+        "FIPS",
+        "AES",
+        "Publication",
+        "Withdrawn",
+        "Federal"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 0,
+      "expected_pages_min": 5,
+      "page_count_observed": 52,
+      "our_library_priority": "stress real-world"
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "category": "real_insurance_prose_tables",
+      "tier": "real",
+      "description": "Italian insurance product PDF with embedded tables/regions",
+      "challenges": [
+        "non_english",
+        "prose_plus_tables",
+        "multi_region",
+        "complex_layout"
+      ],
+      "source": "real",
+      "source_file": "camelot_table_regions.pdf",
+      "source_url": "camelot sample / related",
+      "license_note": "Third-party sample used in open-source tests; verify before shipping",
+      "path": "corpus/real/42_real_insurance_italian.pdf",
+      "must_contain": [],
+      "must_contain_any": [
+        "Vittoria",
+        "PIR",
+        "assicurazione",
+        "contratto",
+        "FINAL"
+      ],
+      "table_cells_must_include": [],
+      "expected_tables_min": 0,
+      "expected_pages_min": 1,
+      "page_count_observed": 1,
+      "our_library_priority": "stress real-world"
+    }
+  ]
+}

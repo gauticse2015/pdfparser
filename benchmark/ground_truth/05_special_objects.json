@@ -1,0 +1,35 @@
+{
+  "id": "05_special_objects",
+  "category": "special_objects",
+  "description": "URI link, AcroForm text+checkbox, outline bookmarks",
+  "page_count": 2,
+  "must_contain": [
+    "SPECIAL_OBJ_TOKEN",
+    "SPECIAL_PAGE2_TOKEN",
+    "customer_name"
+  ],
+  "expected_images": 0,
+  "expected_tables": 0,
+  "expected_form_fields": [
+    "customer_name",
+    "agree_terms"
+  ],
+  "expected_link_uri_contains": "example.com/pdfparser-bench",
+  "expected_outline_titles": [
+    "Section 1 Special Objects",
+    "Section 2 Continuation"
+  ],
+  "our_library_priority": "P2 annots/forms/outline",
+  "tier": "basic",
+  "path": "corpus/05_special_objects.pdf",
+  "challenges": [
+    "special_objects"
+  ],
+  "expected_table_count": 0,
+  "expected_links": [
+    "https://example.com/pdfparser-bench"
+  ],
+  "weight_text": 0.3,
+  "weight_tables": 0.0,
+  "weight_objects": 0.7
+}

@@ -1,0 +1,38 @@
+{
+  "id": "39_real_fed_beigebook",
+  "category": "real_long_report",
+  "tier": "real",
+  "description": "Fed Beige Book (~50+ pages) \u2014 long narrative + district sections",
+  "challenges": [
+    "long_document",
+    "section_headers",
+    "narrative_heavy",
+    "mixed_layout"
+  ],
+  "source": "real",
+  "source_file": "fed_beigebook.pdf",
+  "source_url": "https://www.federalreserve.gov/monetarypolicy/files/BeigeBook_20240306.pdf",
+  "license_note": "US government work",
+  "path": "corpus/real/39_real_fed_beigebook.pdf",
+  "must_contain": [
+    "Beige Book"
+  ],
+  "must_contain_any": [
+    "Federal Reserve",
+    "District",
+    "Economic",
+    "employment",
+    "inflation"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 0,
+  "expected_pages_min": 40,
+  "page_count_observed": 56,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 0,
+  "table_count_tolerance": 2,
+  "weight_text": 0.9,
+  "weight_tables": 0.1,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}

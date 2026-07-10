@@ -1,0 +1,29 @@
+[package]
+name = "pdfparser"
+description = "Native PDF parser — library-first text extraction (Phase T)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+readme = "../../README.md"
+
+[dependencies]
+pdfparser-ir = { workspace = true }
+pdfparser-core = { workspace = true }
+pdfparser-fonts = { workspace = true }
+pdfparser-content = { workspace = true }
+pdfparser-layout = { workspace = true }
+pdfparser-export = { workspace = true }
+pdfparser-tables = { workspace = true }
+lopdf = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
+flate2 = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[[example]]
+name = "extract_text"
+path = "../../examples/extract_text.rs"

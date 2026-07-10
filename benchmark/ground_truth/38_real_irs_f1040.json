@@ -1,0 +1,39 @@
+{
+  "id": "38_real_irs_f1040",
+  "category": "real_tax_form",
+  "tier": "real",
+  "description": "IRS Form 1040 \u2014 form fields, lines, labels, not a clean data table",
+  "challenges": [
+    "acroform_like_lines",
+    "tax_form_layout",
+    "label_value_pairs",
+    "multi_column_form"
+  ],
+  "source": "real",
+  "source_file": "irs_f1040.pdf",
+  "source_url": "https://www.irs.gov/pub/irs-pdf/f1040.pdf",
+  "license_note": "US government work",
+  "path": "corpus/real/38_real_irs_f1040.pdf",
+  "must_contain": [
+    "1040"
+  ],
+  "must_contain_any": [
+    "Income",
+    "Tax",
+    "Return",
+    "IRS",
+    "Spouse"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 0,
+  "expected_pages_min": 1,
+  "page_count_observed": 2,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 0,
+  "table_count_tolerance": 0,
+  "weight_text": 0.6,
+  "weight_tables": 0.4,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real",
+  "accuracy_notes": "Tax form: expected_table_count=0 to penalize false-positive tables"
+}

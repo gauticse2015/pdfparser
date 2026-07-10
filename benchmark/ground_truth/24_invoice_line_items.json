@@ -1,0 +1,87 @@
+{
+  "id": "24_invoice_line_items",
+  "category": "invoice",
+  "tier": "stress",
+  "description": "Invoice with long line-item descriptions + totals spans",
+  "challenges": [
+    "long_line_items",
+    "totals_section",
+    "span_rows",
+    "mixed_header_body_footer",
+    "currency_formatting"
+  ],
+  "source": "synthetic",
+  "path": "corpus/stress/24_invoice_line_items.pdf",
+  "must_contain": [
+    "TOKEN_INV_HEADER",
+    "TOKEN_INV_SVC",
+    "TOKEN_INV_CLOUD",
+    "TOKEN_INV_DUE",
+    "TOKEN_INV_NOTES",
+    "INV-2026-00421"
+  ],
+  "table_cells_must_include": [
+    "TOKEN_INV_SVC",
+    "TOKEN_INV_CLOUD",
+    "TOKEN_INV_DUE",
+    "SKU-101",
+    "Description"
+  ],
+  "expected_tables_min": 1,
+  "our_library_priority": "P2 invoices",
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 6,
+      "cells": [
+        [
+          "#",
+          "SKU",
+          "Description",
+          "Qty",
+          "Unit",
+          "Total"
+        ],
+        [
+          "1",
+          "SKU-101",
+          "TOKEN_INV_SVC",
+          "1",
+          "15000.00",
+          "15000.00"
+        ],
+        [
+          "2",
+          "SKU-102",
+          "TOKEN_INV_CLOUD",
+          "12480",
+          "0.04",
+          "524.16"
+        ],
+        [
+          "3",
+          "SKU-103",
+          "TOKEN_INV_SUPPORT",
+          "1",
+          "4500.00",
+          "4500.00"
+        ],
+        [
+          "4",
+          "SKU-104",
+          "TOKEN_INV_TRAVEL",
+          "1",
+          "2187.55",
+          "2187.55"
+        ]
+      ]
+    }
+  ],
+  "table_count_tolerance": 0,
+  "expected_images": 0,
+  "weight_text": 0.25,
+  "weight_tables": 0.75,
+  "weight_objects": 0.0,
+  "accuracy_notes": "Gold grid is line-item body (5x6); totals span rows may expand predicted shape"
+}

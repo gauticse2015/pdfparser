@@ -1,0 +1,29 @@
+{
+  "id": "01_simple_text",
+  "category": "simple_text",
+  "description": "Single-page single-column digital text",
+  "page_count": 1,
+  "must_contain": [
+    "SIMPLE_TOKEN_ALPHA",
+    "SIMPLE_TOKEN_BETA",
+    "12345",
+    "99.50",
+    "2026-07-10",
+    "Simple Digital PDF"
+  ],
+  "expected_images": 0,
+  "expected_tables": 0,
+  "table_cells": null,
+  "reading_order_sensitive": false,
+  "our_library_priority": "P1/0.1",
+  "tier": "basic",
+  "path": "corpus/01_simple_text.pdf",
+  "challenges": [
+    "simple_text"
+  ],
+  "reference_text": "Simple Digital PDF\nThis is a born-digital single-column PDF used for baseline text extraction.\nIt contains the unique token SIMPLE_TOKEN_ALPHA and another SIMPLE_TOKEN_BETA.\nNumbers: 12345, currency $99.50, and a date 2026-07-10 should survive extraction.\nThe quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
+  "expected_table_count": 0,
+  "weight_text": 0.8,
+  "weight_tables": 0.0,
+  "weight_objects": 0.2
+}

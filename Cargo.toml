@@ -1,0 +1,46 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/pdfparser-ir",
+    "crates/pdfparser-core",
+    "crates/pdfparser-fonts",
+    "crates/pdfparser-content",
+    "crates/pdfparser-layout",
+    "crates/pdfparser-export",
+    "crates/pdfparser-tables",
+    "crates/pdfparser",
+    "crates/pdfparser-cli",
+]
+default-members = ["crates/pdfparser", "crates/pdfparser-cli"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+rust-version = "1.75"
+authors = ["pdfparser contributors"]
+repository = "https://github.com/example/pdfparser"
+
+[workspace.dependencies]
+pdfparser-ir = { path = "crates/pdfparser-ir", version = "0.1.0" }
+pdfparser-core = { path = "crates/pdfparser-core", version = "0.1.0" }
+pdfparser-fonts = { path = "crates/pdfparser-fonts", version = "0.1.0" }
+pdfparser-content = { path = "crates/pdfparser-content", version = "0.1.0" }
+pdfparser-layout = { path = "crates/pdfparser-layout", version = "0.1.0" }
+pdfparser-export = { path = "crates/pdfparser-export", version = "0.1.0" }
+pdfparser-tables = { path = "crates/pdfparser-tables", version = "0.1.0" }
+pdfparser = { path = "crates/pdfparser", version = "0.1.0" }
+
+lopdf = "0.34"
+flate2 = "1.0"
+thiserror = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+tracing = "0.1"
+byteorder = "1.5"
+weezl = "0.1"
+
+[profile.release]
+lto = true
+codegen-units = 1

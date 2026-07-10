@@ -1,0 +1,103 @@
+{
+  "id": "22_table_merged_headers",
+  "category": "table_merged_headers",
+  "tier": "stress",
+  "description": "Two-row headers with horizontal and vertical spans",
+  "challenges": [
+    "colspan",
+    "rowspan",
+    "multi_level_header",
+    "wrapped_stub_column",
+    "empty_placeholder_cells"
+  ],
+  "source": "synthetic",
+  "path": "corpus/stress/22_table_merged_headers.pdf",
+  "must_contain": [
+    "TOKEN_MERGE_DOC",
+    "TOKEN_MERGE_REV",
+    "TOKEN_MERGE_GP",
+    "TOKEN_MERGE_EBITDA",
+    "FY2024",
+    "FY2025",
+    "Actual",
+    "Budget"
+  ],
+  "table_cells_must_include": [
+    "Revenue",
+    "EBITDA",
+    "1,450",
+    "TOKEN_MERGE_EBITDA",
+    "FY2024"
+  ],
+  "expected_tables_min": 1,
+  "our_library_priority": "P2 structure/spans",
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 7,
+      "cols": 6,
+      "cells": [
+        [
+          "Metric",
+          "FY2024",
+          "",
+          "FY2025",
+          "",
+          "Notes"
+        ],
+        [
+          "",
+          "Actual",
+          "Budget",
+          "Actual",
+          "Budget",
+          ""
+        ],
+        [
+          "Revenue",
+          "1,200",
+          "1,100",
+          "1,450",
+          "1,400",
+          "TOKEN_MERGE_REV organic growth"
+        ],
+        [
+          "COGS",
+          "480",
+          "500",
+          "560",
+          "550",
+          "supply"
+        ],
+        [
+          "Gross Profit",
+          "720",
+          "600",
+          "890",
+          "850",
+          "TOKEN_MERGE_GP"
+        ],
+        [
+          "Operating Expenses \u2014 Sales & Marketing plus G&A combined line that wraps",
+          "400",
+          "420",
+          "470",
+          "460",
+          "hiring TOKEN_MERGE_OPEX"
+        ],
+        [
+          "EBITDA",
+          "320",
+          "180",
+          "420",
+          "390",
+          "TOKEN_MERGE_EBITDA"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0
+}

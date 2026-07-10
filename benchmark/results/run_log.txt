@@ -1,0 +1,257 @@
+Ignoring wrong pointing object 11 0 (offset 0)
+=== 01_simple_text (basic/simple_text) 01_simple_text.pdf ===
+  pdfplumber   OK       49.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pdfminer.six OK        3.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       26.8ms  recall=1.0 tables=0 imgs=0 err=None
+Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+  pymupdf      OK       35.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK       75.5ms  recall=1.0 tables=0 imgs=None err=None
+=== 02_multi_column (basic/multi_column) 02_multi_column.pdf ===
+  pdfplumber   OK        4.1ms  recall=1.0 tables=0 imgs=0 err=None
+  pdfminer.six OK        4.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        0.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        4.5ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK        0.6ms  recall=1.0 tables=0 imgs=None err=None
+=== 03_large_multipage (basic/large_multipage) 03_large_multipage.pdf ===
+  pdfplumber   OK     1484.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pdfminer.six OK     1216.5ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK      111.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK     1618.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK       28.1ms  recall=1.0 tables=0 imgs=None err=None
+=== 04_image_heavy (basic/image_heavy) 04_image_heavy.pdf ===
+  pdfplumber   OK        3.0ms  recall=1.0 tables=0 imgs=4 err=None
+  pdfminer.six OK        3.7ms  recall=1.0 tables=0 imgs=4 err=None
+  pypdf        OK        1.0ms  recall=1.0 tables=0 imgs=4 err=None
+  pymupdf      OK        3.3ms  recall=1.0 tables=0 imgs=4 err=None
+  pypdfium2    OK        0.8ms  recall=1.0 tables=0 imgs=None err=None
+=== 05_special_objects (basic/special_objects) 05_special_objects.pdf ===
+  pdfplumber   OK        4.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pdfminer.six OK        4.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.4ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        5.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK        0.7ms  recall=1.0 tables=0 imgs=None err=None
+=== 06_table_lattice (basic/table_lattice) 06_table_lattice.pdf ===
+  pdfplumber   OK        4.4ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK        5.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        6.2ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        0.7ms  recall=1.0 tables=0 imgs=None err=None
+=== 07_table_stream (basic/table_stream) 07_table_stream.pdf ===
+  pdfplumber   OK        3.5ms  recall=1.0 tables=0 imgs=0 err=None
+  pdfminer.six OK        5.7ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.1ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        3.4ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK        0.6ms  recall=1.0 tables=0 imgs=None err=None
+=== 08_table_partial_border (basic/table_partial_border) 08_table_partial_border.pdf ===
+  pdfplumber   OK        3.2ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK        5.5ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.1ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        3.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK        0.6ms  recall=1.0 tables=0 imgs=None err=None
+=== 09_table_complex (basic/table_complex) 09_table_complex.pdf ===
+  pdfplumber   OK        7.2ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK        8.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.7ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK       10.1ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        0.6ms  recall=1.0 tables=0 imgs=None err=None
+=== 10_mixed_document (?/mixed_document) 10_mixed_document.pdf ===
+  pdfplumber   OK        4.0ms  recall=1.0 tables=1 imgs=1 err=None
+  pdfminer.six OK        5.0ms  recall=1.0 tables=0 imgs=1 err=None
+  pypdf        OK        1.2ms  recall=1.0 tables=0 imgs=1 err=None
+  pymupdf      OK        5.4ms  recall=1.0 tables=1 imgs=1 err=None
+  pypdfium2    OK        0.7ms  recall=1.0 tables=0 imgs=None err=None
+=== 11_rotated_page (?/rotated_page) 11_rotated_page.pdf ===
+  pdfplumber   OK        2.3ms  recall=1.0 tables=0 imgs=0 err=None
+  pdfminer.six OK        4.3ms  recall=0.5 tables=0 imgs=0 err=None
+  pypdf        OK        0.7ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        3.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK        0.6ms  recall=1.0 tables=0 imgs=None err=None
+=== 12_encrypted_password (?/encrypted_password) 12_encrypted_password.pdf ===
+  pdfplumber   FAIL      2.4ms  recall=None tables=None imgs=None err=PdfminerException: 
+  pdfplumber   PW        7.6ms  recall=1.0 err=None
+  pdfminer.six FAIL      1.5ms  recall=None tables=None imgs=None err=PDFPasswordIncorrect: 
+  pdfminer.six PW        5.4ms  recall=1.0 err=None
+  pypdf        FAIL      2.5ms  recall=None tables=None imgs=None err=FileNotDecryptedError: File has not been decrypted
+  pypdf        PW        3.5ms  recall=1.0 err=None
+  pymupdf      FAIL     14.7ms  recall=None tables=None imgs=None err=ValueError: document closed or encrypted
+  pymupdf      PW       18.9ms  recall=1.0 err=None
+  pypdfium2    FAIL      0.9ms  recall=None tables=None imgs=None err=PdfiumError: Failed to load document (PDFium: Incorrect password error).
+  pypdfium2    PW        3.9ms  recall=1.0 err=None
+=== 20_bank_statement_multipage (stress/bank_statement) 20_bank_statement_multipage.pdf ===
+  pdfplumber   OK      103.1ms  recall=1.0 tables=2 imgs=0 err=None
+  pdfminer.six OK      152.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       14.3ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK      169.6ms  recall=1.0 tables=2 imgs=0 err=None
+  pypdfium2    OK        2.5ms  recall=1.0 tables=0 imgs=None err=None
+=== 21_table_overflow_cells (stress/table_overflow) 21_table_overflow_cells.pdf ===
+  pdfplumber   OK       49.1ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK       38.3ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        4.7ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK       90.3ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        1.5ms  recall=1.0 tables=0 imgs=None err=None
+=== 22_table_merged_headers (stress/table_merged_headers) 22_table_merged_headers.pdf ===
+  pdfplumber   OK       10.0ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK       13.6ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        2.7ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK       13.3ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        0.8ms  recall=1.0 tables=0 imgs=None err=None
+=== 23_side_by_side_tables (stress/side_by_side_tables) 23_side_by_side_tables.pdf ===
+  pdfplumber   OK        6.1ms  recall=1.0 tables=2 imgs=0 err=None
+  pdfminer.six OK        7.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.7ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        8.4ms  recall=1.0 tables=2 imgs=0 err=None
+  pypdfium2    OK        0.7ms  recall=1.0 tables=0 imgs=None err=None
+=== 24_invoice_line_items (stress/invoice) 24_invoice_line_items.pdf ===
+  pdfplumber   OK       14.6ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK       16.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        2.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK       20.2ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        1.0ms  recall=1.0 tables=0 imgs=None err=None
+=== 25_dense_numeric_grid (stress/dense_numeric) 25_dense_numeric_grid.pdf ===
+  pdfplumber   OK       77.7ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK      392.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       18.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK       97.3ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        1.7ms  recall=1.0 tables=0 imgs=None err=None
+=== 26_watermark_overlap (stress/watermark_overlap) 26_watermark_overlap.pdf ===
+  pdfplumber   OK        3.3ms  recall=0.75 tables=0 imgs=0 err=None
+  pdfminer.six OK       10.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        3.7ms  recall=0.75 tables=0 imgs=0 err=None
+  pypdfium2    OK        0.7ms  recall=0.75 tables=0 imgs=None err=None
+=== 27_table_with_footnotes (stress/table_footnotes) 27_table_with_footnotes.pdf ===
+  pdfplumber   OK        5.6ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK        7.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        1.6ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK        7.2ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        0.7ms  recall=1.0 tables=0 imgs=None err=None
+=== 30_real_ca_warn_report (real/real_government_table_dump) 30_real_ca_warn_report.pdf ===
+  pdfplumber   OK     1998.5ms  recall=1.0 tables=17 imgs=1 err=None
+  pdfminer.six OK     1724.9ms  recall=1.0 tables=0 imgs=1 err=None
+  pypdf        OK      557.7ms  recall=1.0 tables=0 imgs=1 err=None
+  pymupdf      OK     2348.7ms  recall=1.0 tables=17 imgs=1 err=None
+  pypdfium2    OK       32.3ms  recall=1.0 tables=0 imgs=None err=None
+=== 31_real_background_checks (real/real_wide_header_table) 31_real_background_checks.pdf ===
+  pdfplumber   OK      137.1ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK      187.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       51.7ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK      168.0ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        3.9ms  recall=1.0 tables=0 imgs=None err=None
+=== 32_real_census_table324 (real/real_statistical_abstract) 32_real_census_table324.pdf ===
+  pdfplumber   OK      116.2ms  recall=1.0 tables=2 imgs=0 err=None
+  pdfminer.six OK      150.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       41.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK      266.3ms  recall=1.0 tables=2 imgs=0 err=None
+  pypdfium2    OK        4.4ms  recall=1.0 tables=0 imgs=None err=None
+=== 33_real_argentina_votes (real/real_complex_grid) 33_real_argentina_votes.pdf ===
+  pdfplumber   OK       73.5ms  recall=1.0 tables=1 imgs=1 err=None
+  pdfminer.six OK      133.2ms  recall=1.0 tables=0 imgs=1 err=None
+  pypdf        OK       25.9ms  recall=1.0 tables=0 imgs=1 err=None
+  pymupdf      OK      115.2ms  recall=1.0 tables=2 imgs=1 err=None
+  pypdfium2    OK        1.9ms  recall=1.0 tables=0 imgs=None err=None
+=== 34_real_schools_contributions (real/real_campaign_finance) 34_real_schools_contributions.pdf ===
+  pdfplumber   OK      481.9ms  recall=1.0 tables=5 imgs=0 err=None
+  pdfminer.six OK      415.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       70.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK      831.8ms  recall=1.0 tables=5 imgs=0 err=None
+  pypdfium2    OK        7.4ms  recall=1.0 tables=0 imgs=None err=None
+=== 35_real_camelot_fuel (real/real_lattice_document) 35_real_camelot_fuel.pdf ===
+  pdfplumber   OK       47.0ms  recall=1.0 tables=1 imgs=0 err=None
+  pdfminer.six OK       53.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       16.4ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK       67.2ms  recall=1.0 tables=1 imgs=0 err=None
+  pypdfium2    OK        2.0ms  recall=1.0 tables=0 imgs=None err=None
+=== 36_real_two_tables (real/real_two_tables) 36_real_two_tables.pdf ===
+  pdfplumber   OK       97.5ms  recall=1.0 tables=20 imgs=0 err=None
+  pdfminer.six OK       89.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       35.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK      108.4ms  recall=1.0 tables=2 imgs=0 err=None
+  pypdfium2    OK        2.8ms  recall=1.0 tables=0 imgs=None err=None
+=== 37_real_liabilities_superscript (real/real_superscript_table) 37_real_liabilities_superscript.pdf ===
+  pdfplumber   OK       24.8ms  recall=1.0 tables=0 imgs=0 err=None
+  pdfminer.six OK      291.1ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK        6.1ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK       37.5ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK        1.3ms  recall=1.0 tables=0 imgs=None err=None
+=== 38_real_irs_f1040 (real/real_tax_form) 38_real_irs_f1040.pdf ===
+  pdfplumber   OK      305.6ms  recall=1.0 tables=15 imgs=0 err=None
+  pdfminer.six OK     1469.9ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdf        OK       82.2ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK      765.7ms  recall=1.0 tables=7 imgs=0 err=None
+  pypdfium2    OK        7.1ms  recall=1.0 tables=0 imgs=None err=None
+=== 39_real_fed_beigebook (real/real_long_report) 39_real_fed_beigebook.pdf ===
+  pdfplumber   OK     2053.4ms  recall=1.0 tables=2 imgs=0 err=None
+  pdfminer.six OK     2524.6ms  recall=1.0 tables=0 imgs=16 err=None
+  pypdf        OK      558.0ms  recall=1.0 tables=0 imgs=0 err=None
+  pymupdf      OK     1540.1ms  recall=1.0 tables=0 imgs=0 err=None
+  pypdfium2    OK       41.3ms  recall=1.0 tables=0 imgs=None err=None
+=== 40_real_arxiv_tensorflow (real/real_scientific_multicol) 40_real_arxiv_tensorflow.pdf ===
+  pdfplumber   OK      817.6ms  recall=1.0 tables=3 imgs=5 err=None
+  pdfminer.six OK      787.2ms  recall=1.0 tables=0 imgs=13 err=None
+  pypdf        OK      222.8ms  recall=1.0 tables=0 imgs=5 err=None
+  pymupdf      OK     1200.2ms  recall=1.0 tables=6 imgs=5 err=None
+  pypdfium2    OK       24.6ms  recall=1.0 tables=0 imgs=None err=None
+=== 41_real_nist_withdrawn_notice (real/real_technical_long) 41_real_nist_withdrawn_notice.pdf ===
+  pdfplumber   OK     1935.0ms  recall=None tables=99 imgs=1 err=None
+  pdfminer.six OK     2275.8ms  recall=None tables=0 imgs=1 err=None
+  pypdf        OK      418.1ms  recall=None tables=0 imgs=1 err=None
+  pymupdf      OK     3146.2ms  recall=None tables=83 imgs=1 err=None
+  pypdfium2    OK       42.6ms  recall=None tables=0 imgs=None err=None
+=== 42_real_insurance_italian (real/real_insurance_prose_tables) 42_real_insurance_italian.pdf ===
+  pdfplumber   OK       30.6ms  recall=None tables=2 imgs=0 err=None
+  pdfminer.six OK       25.9ms  recall=None tables=0 imgs=1 err=None
+  pypdf        OK        5.0ms  recall=None tables=0 imgs=0 err=None
+  pymupdf      OK       63.1ms  recall=None tables=2 imgs=0 err=None
+  pypdfium2    OK        5.0ms  recall=None tables=0 imgs=None err=None
+
+Wrote /Users/gautamkumar/Desktop/pdfParser/benchmark/results/benchmark_results.json
+Wrote /Users/gautamkumar/Desktop/pdfParser/benchmark/results/benchmark_results.tsv
+
+SUMMARY:
+{
+  "pdfplumber": {
+    "runs": 34,
+    "successes": 33,
+    "failures": 1,
+    "mean_token_recall": 0.9919354838709677,
+    "mean_wall_ms": 301.9840202389539,
+    "median_wall_ms": 30.64845799235627,
+    "total_wall_ms": 9965.472667885479
+  },
+  "pdfminer.six": {
+    "runs": 34,
+    "successes": 33,
+    "failures": 1,
+    "mean_token_recall": 0.9838709677419355,
+    "mean_wall_ms": 364.91741796701467,
+    "median_wall_ms": 25.874750048387796,
+    "total_wall_ms": 12042.274792911485
+  },
+  "pypdf": {
+    "runs": 34,
+    "successes": 33,
+    "failures": 1,
+    "mean_token_recall": 1.0,
+    "mean_wall_ms": 69.37305942340049,
+    "median_wall_ms": 5.0380839966237545,
+    "total_wall_ms": 2289.310960972216
+  },
+  "pymupdf": {
+    "runs": 34,
+    "successes": 33,
+    "failures": 1,
+    "mean_token_recall": 0.9919354838709677,
+    "mean_wall_ms": 387.4550883333678,
+    "median_wall_ms": 37.48566599097103,
+    "total_wall_ms": 12786.017915001139
+  },
+  "pypdfium2": {
+    "runs": 34,
+    "successes": 33,
+    "failures": 1,
+    "mean_token_recall": 0.9919354838709677,
+    "mean_wall_ms": 9.07983842559836,
+    "median_wall_ms": 1.6908750403672457,
+    "total_wall_ms": 299.6346680447459
+  }
+}

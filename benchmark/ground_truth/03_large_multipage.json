@@ -1,0 +1,23 @@
+{
+  "id": "03_large_multipage",
+  "category": "large_multipage",
+  "description": "80-page digital text for throughput and memory",
+  "page_count": 80,
+  "must_contain": [
+    "PAGE_TOKEN_0001",
+    "PAGE_TOKEN_0080",
+    "LARGE_BODY_TOKEN"
+  ],
+  "expected_images": 0,
+  "expected_tables": 0,
+  "our_library_priority": "P0/P1 perf",
+  "tier": "basic",
+  "path": "corpus/03_large_multipage.pdf",
+  "challenges": [
+    "large_multipage"
+  ],
+  "expected_table_count": 0,
+  "weight_text": 1.0,
+  "weight_tables": 0.0,
+  "weight_objects": 0.0
+}

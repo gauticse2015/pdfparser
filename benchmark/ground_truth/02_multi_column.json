@@ -1,0 +1,34 @@
+{
+  "id": "02_multi_column",
+  "category": "multi_column",
+  "description": "Two-column text; reading order should prefer left then right",
+  "page_count": 1,
+  "must_contain": [
+    "LEFT_COL_START",
+    "LEFT_TOKEN_ONE",
+    "LEFT_COL_END",
+    "RIGHT_COL_START",
+    "RIGHT_TOKEN_TWO",
+    "RIGHT_COL_END"
+  ],
+  "reading_order_sensitive": true,
+  "ideal_order_substrings": [
+    "LEFT_COL_START",
+    "LEFT_COL_END",
+    "RIGHT_COL_START",
+    "RIGHT_COL_END"
+  ],
+  "expected_images": 0,
+  "expected_tables": 0,
+  "our_library_priority": "P1/0.1 layout",
+  "tier": "basic",
+  "path": "corpus/02_multi_column.pdf",
+  "challenges": [
+    "multi_column"
+  ],
+  "reference_text": "Two-Column Reading Order Stress\nLEFT_COL_START\nLeft column paragraph one about finance.\nLeft continues with LEFT_TOKEN_ONE.\nMore left text to fill the column height.\nLEFT_COL_END\nRIGHT_COL_START\nRight column paragraph one about markets.\nRight continues with RIGHT_TOKEN_TWO.\nMore right text to fill the column height.\nRIGHT_COL_END",
+  "expected_table_count": 0,
+  "weight_text": 1.0,
+  "weight_tables": 0.0,
+  "weight_objects": 0.0
+}

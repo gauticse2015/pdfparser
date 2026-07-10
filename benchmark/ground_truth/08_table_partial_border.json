@@ -1,0 +1,79 @@
+{
+  "id": "08_table_partial_border",
+  "category": "table_partial_border",
+  "description": "Outer border + header rule only (hybrid lattice/stream)",
+  "page_count": 1,
+  "must_contain": [
+    "HYBRID_TABLE_TOKEN",
+    "Region",
+    "North",
+    "West",
+    "Q4",
+    "18"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 5,
+      "cells": [
+        [
+          "Region",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ],
+        [
+          "North",
+          "10",
+          "12",
+          "11",
+          "15"
+        ],
+        [
+          "South",
+          "8",
+          "9",
+          "10",
+          "12"
+        ],
+        [
+          "East",
+          "14",
+          "13",
+          "16",
+          "18"
+        ],
+        [
+          "West",
+          "7",
+          "8",
+          "9",
+          "11"
+        ]
+      ]
+    }
+  ],
+  "table_shape": [
+    5,
+    5
+  ],
+  "table_method_hint": "hybrid",
+  "table_cells_must_include": [
+    "Region",
+    "North",
+    "West",
+    "18"
+  ],
+  "our_library_priority": "P2 hybrid tables",
+  "tier": "basic",
+  "path": "corpus/08_table_partial_border.pdf",
+  "challenges": [
+    "table_partial_border"
+  ],
+  "expected_table_count": 1,
+  "expected_images": 0,
+  "weight_text": 0.25,
+  "weight_tables": 0.75,
+  "weight_objects": 0.0
+}

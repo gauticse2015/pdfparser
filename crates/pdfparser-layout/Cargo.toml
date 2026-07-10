@@ -1,0 +1,11 @@
+[package]
+name = "pdfparser-layout"
+description = "Reading order, spaces, page rotate normalize"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+pdfparser-ir = { workspace = true }

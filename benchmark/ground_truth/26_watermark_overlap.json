@@ -1,0 +1,28 @@
+{
+  "id": "26_watermark_overlap",
+  "category": "watermark_overlap",
+  "tier": "stress",
+  "description": "Diagonal watermark overlapping table-like text",
+  "challenges": [
+    "overlapping_text",
+    "watermark",
+    "z_order",
+    "reading_order_noise"
+  ],
+  "source": "synthetic",
+  "path": "corpus/stress/26_watermark_overlap.pdf",
+  "must_contain": [
+    "TOKEN_WM_DOC",
+    "TOKEN_WM_ROW",
+    "TOKEN_WM_FOOTER",
+    "TOKEN_WM_MARK"
+  ],
+  "expected_tables_min": 0,
+  "quality_notes": "Watermark text may interleave; libraries differ on order",
+  "our_library_priority": "P1 reading order / artifacts",
+  "expected_table_count": 0,
+  "expected_images": 0,
+  "weight_text": 1.0,
+  "weight_tables": 0.0,
+  "weight_objects": 0.0
+}

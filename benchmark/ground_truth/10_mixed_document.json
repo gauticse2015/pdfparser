@@ -1,0 +1,54 @@
+{
+  "id": "10_mixed_document",
+  "category": "mixed_document",
+  "description": "Text + image + small lattice table on one page",
+  "page_count": 1,
+  "must_contain": [
+    "MIXED_DOC_TOKEN",
+    "MIXED_END_TOKEN",
+    "Apples",
+    "Bananas",
+    "15"
+  ],
+  "expected_images": 1,
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 2,
+      "cells": [
+        [
+          "Item",
+          "Count"
+        ],
+        [
+          "Apples",
+          "12"
+        ],
+        [
+          "Oranges",
+          "8"
+        ],
+        [
+          "Bananas",
+          "15"
+        ]
+      ]
+    }
+  ],
+  "table_shape": [
+    4,
+    2
+  ],
+  "table_cells_must_include": [
+    "Item",
+    "Apples",
+    "Bananas",
+    "15"
+  ],
+  "our_library_priority": "P1+P2 integration",
+  "tier": "basic",
+  "expected_table_count": 1,
+  "weight_text": 0.3,
+  "weight_tables": 0.5,
+  "weight_objects": 0.2
+}

@@ -1,0 +1,37 @@
+{
+  "id": "41_real_nist_withdrawn_notice",
+  "category": "real_technical_long",
+  "tier": "real",
+  "description": "NIST technical series PDF (may be withdrawal wrapper + body) \u2014 long formal doc",
+  "challenges": [
+    "long_document",
+    "formal_publication",
+    "headers_footers"
+  ],
+  "source": "real",
+  "source_file": "nist_fips197.pdf",
+  "source_url": "NIST publication portal",
+  "license_note": "US government work",
+  "path": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+  "must_contain": [],
+  "must_contain_any": [
+    "NIST",
+    "FIPS",
+    "AES",
+    "Publication",
+    "Withdrawn",
+    "Federal"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 0,
+  "expected_pages_min": 5,
+  "page_count_observed": 52,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 0,
+  "table_count_tolerance": 5,
+  "weight_text": 0.7,
+  "weight_tables": 0.3,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real",
+  "accuracy_notes": "Penalize mass false-positive table detection"
+}

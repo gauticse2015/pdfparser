@@ -1,0 +1,23 @@
+{
+  "id": "04_image_heavy",
+  "category": "image_heavy",
+  "description": "Four embedded raster images with captions",
+  "page_count": 1,
+  "must_contain": [
+    "IMAGE_HEAVY_TOKEN",
+    "Image-Heavy Digital PDF",
+    "Caption for img_1"
+  ],
+  "expected_images": 4,
+  "expected_tables": 0,
+  "our_library_priority": "P1/0.1 images encoded",
+  "tier": "basic",
+  "path": "corpus/04_image_heavy.pdf",
+  "challenges": [
+    "image_heavy"
+  ],
+  "expected_table_count": 0,
+  "weight_text": 0.4,
+  "weight_tables": 0.0,
+  "weight_objects": 0.6
+}

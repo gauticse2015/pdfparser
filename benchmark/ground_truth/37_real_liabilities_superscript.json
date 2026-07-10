@@ -1,0 +1,37 @@
+{
+  "id": "37_real_liabilities_superscript",
+  "category": "real_superscript_table",
+  "tier": "real",
+  "description": "State-wise liabilities table with superscripts (Contd.)",
+  "challenges": [
+    "superscripts",
+    "continued_table",
+    "financial_columns",
+    "contd_marker"
+  ],
+  "source": "real",
+  "source_file": "camelot_superscript.pdf",
+  "source_url": "camelot tests/files/superscript.pdf",
+  "license_note": "Camelot test fixture",
+  "path": "corpus/real/37_real_liabilities_superscript.pdf",
+  "must_contain": [
+    "TABLE"
+  ],
+  "must_contain_any": [
+    "LIABILITIES",
+    "States",
+    "Billion",
+    "1997"
+  ],
+  "table_cells_must_include": [],
+  "expected_tables_min": 1,
+  "expected_pages_min": 1,
+  "page_count_observed": 1,
+  "our_library_priority": "stress real-world",
+  "expected_table_count": 1,
+  "table_count_tolerance": 0,
+  "weight_text": 0.3,
+  "weight_tables": 0.7,
+  "weight_objects": 0.0,
+  "accuracy_mode": "weak_real"
+}
