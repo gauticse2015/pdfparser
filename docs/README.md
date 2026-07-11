@@ -14,3 +14,4 @@
 
 Design docs use **ASCII diagrams** (no Mermaid) for IDE readability.
 | [research-table-extraction-sota.md](research-table-extraction-sota.md) | Research: table extractors vs pdfparser + vision systems |
+| [camelot-comparison-replication.md](camelot-comparison-replication.md) | **Honest** Camelot ICDAR replication (we do not beat Camelot there) |

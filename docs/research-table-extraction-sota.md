@@ -9,6 +9,11 @@
 
 ---
 
+> **Publication integrity (2026-07-11):** Claims of superiority over Camelot must **not** cite this document alone.  
+> On Camelot’s **ICDAR-2013** evaluation (same gold + metrics as their docs), **Camelot currently outperforms pdfparser**.  
+> See [`camelot-comparison-replication.md`](camelot-comparison-replication.md) for the actual replication.
+>
+
 ## 1. Executive summary
 
 ### 1.1 Empirical ranking on our grid-gold harness (measured)
