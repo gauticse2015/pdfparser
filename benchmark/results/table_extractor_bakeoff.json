@@ -1,0 +1,767 @@
+{
+  "summary": [
+    {
+      "library": "pdfparser",
+      "detect_f1_mean": 1.0,
+      "cell_f1_mean": 0.9899092359388457,
+      "shape_exact_mean": 0.9090909090909091,
+      "ms_mean": 8.416284214366566,
+      "n_docs": 11
+    },
+    {
+      "library": "pdfplumber",
+      "detect_f1_mean": 0.9090909090909091,
+      "cell_f1_mean": 0.8258463422099787,
+      "shape_exact_mean": 0.7272727272727273,
+      "ms_mean": 17.46169003573331,
+      "n_docs": 11
+    },
+    {
+      "library": "pymupdf",
+      "detect_f1_mean": 0.8181818181818182,
+      "cell_f1_mean": 0.7742021114104304,
+      "shape_exact_mean": 0.7272727272727273,
+      "ms_mean": 23.73225038701838,
+      "n_docs": 11
+    },
+    {
+      "library": "camelot_lattice",
+      "detect_f1_mean": 0.9090909090909091,
+      "cell_f1_mean": 0.8258463422099787,
+      "shape_exact_mean": 0.7272727272727273,
+      "ms_mean": 223.86262633583763,
+      "n_docs": 11
+    },
+    {
+      "library": "camelot_stream",
+      "detect_f1_mean": 0.9696969696969696,
+      "cell_f1_mean": 0.23272727272727273,
+      "shape_exact_mean": 0.18181818181818182,
+      "ms_mean": 19.60424943403764,
+      "n_docs": 11
+    },
+    {
+      "library": "img2table_opencv",
+      "detect_f1_mean": 1.0,
+      "cell_f1_mean": 0.8521157345314396,
+      "shape_exact_mean": 0.7272727272727273,
+      "ms_mean": 107.69737850535999,
+      "n_docs": 11
+    },
+    {
+      "library": "camelot_best",
+      "detect_f1_mean": 1.0,
+      "cell_f1_mean": 0.903287419651056,
+      "shape_exact_mean": 0.8181818181818182,
+      "ms_mean": 195.08788802407005,
+      "n_docs": 11
+    }
+  ],
+  "per_doc": [
+    {
+      "doc": "06_table_lattice",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 5.25212287902832
+    },
+    {
+      "doc": "06_table_lattice",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 4.495859146118164
+    },
+    {
+      "doc": "06_table_lattice",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 7.131099700927734
+    },
+    {
+      "doc": "06_table_lattice",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 672.741174697876
+    },
+    {
+      "doc": "06_table_lattice",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 2.3047924041748047
+    },
+    {
+      "doc": "06_table_lattice",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 130.04422187805176
+    },
+    {
+      "doc": "06_table_lattice",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 672.741174697876,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "07_table_stream",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 8.939981460571289
+    },
+    {
+      "doc": "07_table_stream",
+      "lib": "pdfplumber",
+      "detect_f1": 0.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 0,
+      "ms": 3.4041404724121094
+    },
+    {
+      "doc": "07_table_stream",
+      "lib": "pymupdf",
+      "detect_f1": 0.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 0,
+      "ms": 5.324840545654297
+    },
+    {
+      "doc": "07_table_stream",
+      "lib": "camelot_lattice",
+      "detect_f1": 0.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 0,
+      "ms": 165.79103469848633
+    },
+    {
+      "doc": "07_table_stream",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 6.234884262084961
+    },
+    {
+      "doc": "07_table_stream",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 91.14694595336914
+    },
+    {
+      "doc": "07_table_stream",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 6.234884262084961,
+      "picked": "camelot_stream"
+    },
+    {
+      "doc": "08_table_partial_border",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 7.462739944458008
+    },
+    {
+      "doc": "08_table_partial_border",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 0.14814814814814814,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 3.2320022583007812
+    },
+    {
+      "doc": "08_table_partial_border",
+      "lib": "pymupdf",
+      "detect_f1": 0.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 0,
+      "ms": 3.5080909729003906
+    },
+    {
+      "doc": "08_table_partial_border",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 0.14814814814814814,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 162.92595863342285
+    },
+    {
+      "doc": "08_table_partial_border",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 5.959987640380859
+    },
+    {
+      "doc": "08_table_partial_border",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 92.80276298522949
+    },
+    {
+      "doc": "08_table_partial_border",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 5.959987640380859,
+      "picked": "camelot_stream"
+    },
+    {
+      "doc": "09_table_complex",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 7.6141357421875
+    },
+    {
+      "doc": "09_table_complex",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 6.97779655456543
+    },
+    {
+      "doc": "09_table_complex",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9850746268656716,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 10.142087936401367
+    },
+    {
+      "doc": "09_table_complex",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 164.91198539733887
+    },
+    {
+      "doc": "09_table_complex",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 3.5042762756347656
+    },
+    {
+      "doc": "09_table_complex",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 90.96193313598633
+    },
+    {
+      "doc": "09_table_complex",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 164.91198539733887,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "10_mixed_document",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 7.29823112487793
+    },
+    {
+      "doc": "10_mixed_document",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 4.003047943115234
+    },
+    {
+      "doc": "10_mixed_document",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 5.383014678955078
+    },
+    {
+      "doc": "10_mixed_document",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 160.599946975708
+    },
+    {
+      "doc": "10_mixed_document",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 1.80816650390625
+    },
+    {
+      "doc": "10_mixed_document",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 93.25814247131348
+    },
+    {
+      "doc": "10_mixed_document",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 160.599946975708,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "21_table_overflow_cells",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 8.996963500976562
+    },
+    {
+      "doc": "21_table_overflow_cells",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9494949494949495,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 53.48372459411621
+    },
+    {
+      "doc": "21_table_overflow_cells",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 0.8045977011494253,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 85.6020450592041
+    },
+    {
+      "doc": "21_table_overflow_cells",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9494949494949495,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 183.16173553466797
+    },
+    {
+      "doc": "21_table_overflow_cells",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 12.655019760131836
+    },
+    {
+      "doc": "21_table_overflow_cells",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 0.375,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 123.28505516052246
+    },
+    {
+      "doc": "21_table_overflow_cells",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9494949494949495,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 183.16173553466797,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "22_table_merged_headers",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 0.918918918918919,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 8.527040481567383
+    },
+    {
+      "doc": "22_table_merged_headers",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9866666666666666,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 9.938955307006836
+    },
+    {
+      "doc": "22_table_merged_headers",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9295774647887324,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 13.258934020996094
+    },
+    {
+      "doc": "22_table_merged_headers",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9866666666666666,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 163.92874717712402
+    },
+    {
+      "doc": "22_table_merged_headers",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 9.018182754516602
+    },
+    {
+      "doc": "22_table_merged_headers",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9367088607594938,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 91.67909622192383
+    },
+    {
+      "doc": "22_table_merged_headers",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9866666666666666,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 163.92874717712402,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "23_side_by_side_tables",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9714285714285714,
+      "shape_exact": 1.0,
+      "n_tables": 2,
+      "ms": 7.821083068847656
+    },
+    {
+      "doc": "23_side_by_side_tables",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 2,
+      "ms": 5.70988655090332
+    },
+    {
+      "doc": "23_side_by_side_tables",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9411764705882353,
+      "shape_exact": 1.0,
+      "n_tables": 2,
+      "ms": 9.507894515991211
+    },
+    {
+      "doc": "23_side_by_side_tables",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 2,
+      "ms": 162.78505325317383
+    },
+    {
+      "doc": "23_side_by_side_tables",
+      "lib": "camelot_stream",
+      "detect_f1": 0.6666666666666666,
+      "cell_f1": 0.56,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 7.233858108520508
+    },
+    {
+      "doc": "23_side_by_side_tables",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 2,
+      "ms": 87.91804313659668
+    },
+    {
+      "doc": "23_side_by_side_tables",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 2,
+      "ms": 162.78505325317383,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "24_invoice_line_items",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 9.11092758178711
+    },
+    {
+      "doc": "24_invoice_line_items",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 21.25096321105957
+    },
+    {
+      "doc": "24_invoice_line_items",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9285714285714286,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 20.059823989868164
+    },
+    {
+      "doc": "24_invoice_line_items",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 170.23205757141113
+    },
+    {
+      "doc": "24_invoice_line_items",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 9.756803512573242
+    },
+    {
+      "doc": "24_invoice_line_items",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 0.37837837837837834,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 93.46818923950195
+    },
+    {
+      "doc": "24_invoice_line_items",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 170.23205757141113,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "25_dense_numeric_grid",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9986541049798116,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 12.404918670654297
+    },
+    {
+      "doc": "25_dense_numeric_grid",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 73.65918159484863
+    },
+    {
+      "doc": "25_dense_numeric_grid",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9986541049798116,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 93.31989288330078
+    },
+    {
+      "doc": "25_dense_numeric_grid",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 293.70999336242676
+    },
+    {
+      "doc": "25_dense_numeric_grid",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 150.22587776184082
+    },
+    {
+      "doc": "25_dense_numeric_grid",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 0.6831858407079646,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 204.32066917419434
+    },
+    {
+      "doc": "25_dense_numeric_grid",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 293.70999336242676,
+      "picked": "camelot_lattice"
+    },
+    {
+      "doc": "27_table_with_footnotes",
+      "lib": "pdfparser",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 9.150981903076172
+    },
+    {
+      "doc": "27_table_with_footnotes",
+      "lib": "pdfplumber",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 5.923032760620117
+    },
+    {
+      "doc": "27_table_with_footnotes",
+      "lib": "pymupdf",
+      "detect_f1": 1.0,
+      "cell_f1": 0.9285714285714286,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 7.81702995300293
+    },
+    {
+      "doc": "27_table_with_footnotes",
+      "lib": "camelot_lattice",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 161.70120239257812
+    },
+    {
+      "doc": "27_table_with_footnotes",
+      "lib": "camelot_stream",
+      "detect_f1": 1.0,
+      "cell_f1": 0.0,
+      "shape_exact": 0.0,
+      "n_tables": 1,
+      "ms": 6.944894790649414
+    },
+    {
+      "doc": "27_table_with_footnotes",
+      "lib": "img2table_opencv",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 85.78610420227051
+    },
+    {
+      "doc": "27_table_with_footnotes",
+      "lib": "camelot_best",
+      "detect_f1": 1.0,
+      "cell_f1": 1.0,
+      "shape_exact": 1.0,
+      "n_tables": 1,
+      "ms": 161.70120239257812,
+      "picked": "camelot_lattice"
+    }
+  ],
+  "note": "Grid-gold only. Shared metrics.py. Tabula N/A (no JRE). TATR/Docling/MinerU not run (GPU/torch); literature comparison in report."
+}

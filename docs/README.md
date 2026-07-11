@@ -13,3 +13,4 @@
 | [phase-o-report.md](phase-o-report.md) | Phase O images/links/forms/outline |
 
 Design docs use **ASCII diagrams** (no Mermaid) for IDE readability.
+| [research-table-extraction-sota.md](research-table-extraction-sota.md) | Research: table extractors vs pdfparser + vision systems |
