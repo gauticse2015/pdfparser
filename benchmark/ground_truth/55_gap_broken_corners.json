@@ -1,0 +1,88 @@
+{
+  "id": "55_gap_broken_corners",
+  "category": "gap_broken_corners",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Lattice table whose H/V strokes do not meet at corners (3pt gaps)",
+  "challenges": [
+    "broken_lines",
+    "gap_close",
+    "lattice",
+    "incomplete_joints"
+  ],
+  "failure_modes_covered": [
+    "MISS_ALL",
+    "BAD_STRUCTURE",
+    "UNDER_DETECT",
+    "WRONG_SHAPE"
+  ],
+  "path": "corpus/hard/55_gap_broken_corners.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD55_DOC",
+    "TOKEN_H55_P1",
+    "TOKEN_H55_P3",
+    "Charlie"
+  ],
+  "table_cells_must_include": [
+    "Code",
+    "Name",
+    "Qty",
+    "Price",
+    "P1 TOKEN_H55_P1",
+    "Alpha",
+    "3",
+    "1.50",
+    "P2",
+    "Bravo",
+    "7",
+    "2.25"
+  ],
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "Code",
+          "Name",
+          "Qty",
+          "Price"
+        ],
+        [
+          "P1 TOKEN_H55_P1",
+          "Alpha",
+          "3",
+          "1.50"
+        ],
+        [
+          "P2",
+          "Bravo",
+          "7",
+          "2.25"
+        ],
+        [
+          "P3 TOKEN_H55_P3",
+          "Charlie",
+          "2",
+          "9.99"
+        ],
+        [
+          "P4",
+          "Delta",
+          "11",
+          "0.40"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Vector joiners without gap-close may miss the table or invent wrong cell count."
+}

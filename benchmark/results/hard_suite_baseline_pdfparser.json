@@ -1,0 +1,304 @@
+{
+  "tool": "pdfparser",
+  "suite": "regression_hard",
+  "docs": [
+    {
+      "id": "50_multi_table_stacked_page",
+      "n_gt": 3,
+      "n_pred": 1,
+      "det_ok": false,
+      "gt_shapes": [
+        [
+          5,
+          5
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          6,
+          3
+        ]
+      ],
+      "pred_shapes": [
+        [
+          17,
+          10
+        ]
+      ]
+    },
+    {
+      "id": "51_multi_table_multipage",
+      "n_gt": 4,
+      "n_pred": 2,
+      "det_ok": false,
+      "gt_shapes": [
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "pred_shapes": [
+        [
+          10,
+          3
+        ],
+        [
+          9,
+          7
+        ]
+      ]
+    },
+    {
+      "id": "52_page_border_noise",
+      "n_gt": 1,
+      "n_pred": 1,
+      "det_ok": true,
+      "gt_shapes": [
+        [
+          5,
+          4
+        ]
+      ],
+      "pred_shapes": [
+        [
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "53_column_span_header",
+      "n_gt": 1,
+      "n_pred": 1,
+      "det_ok": true,
+      "gt_shapes": [
+        [
+          7,
+          6
+        ]
+      ],
+      "pred_shapes": [
+        [
+          7,
+          6
+        ]
+      ]
+    },
+    {
+      "id": "54_row_span_categories",
+      "n_gt": 1,
+      "n_pred": 1,
+      "det_ok": true,
+      "gt_shapes": [
+        [
+          8,
+          4
+        ]
+      ],
+      "pred_shapes": [
+        [
+          8,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "55_gap_broken_corners",
+      "n_gt": 1,
+      "n_pred": 1,
+      "det_ok": true,
+      "gt_shapes": [
+        [
+          5,
+          4
+        ]
+      ],
+      "pred_shapes": [
+        [
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "56_stacked_uneven_tables",
+      "n_gt": 2,
+      "n_pred": 1,
+      "det_ok": false,
+      "gt_shapes": [
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          2
+        ]
+      ],
+      "pred_shapes": [
+        [
+          10,
+          8
+        ]
+      ]
+    },
+    {
+      "id": "57_wide_statistical_grid",
+      "n_gt": 1,
+      "n_pred": 1,
+      "det_ok": true,
+      "gt_shapes": [
+        [
+          16,
+          13
+        ]
+      ],
+      "pred_shapes": [
+        [
+          16,
+          13
+        ]
+      ]
+    },
+    {
+      "id": "58_multipage_continued_table",
+      "n_gt": 3,
+      "n_pred": 3,
+      "det_ok": true,
+      "gt_shapes": [
+        [
+          13,
+          4
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          13,
+          4
+        ]
+      ],
+      "pred_shapes": [
+        [
+          13,
+          4
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          13,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "59_stream_multi_region",
+      "n_gt": 2,
+      "n_pred": 1,
+      "det_ok": false,
+      "gt_shapes": [
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          3
+        ]
+      ],
+      "pred_shapes": [
+        [
+          13,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "60_mixed_lattice_stream_page",
+      "n_gt": 2,
+      "n_pred": 1,
+      "det_ok": false,
+      "gt_shapes": [
+        [
+          5,
+          3
+        ],
+        [
+          6,
+          3
+        ]
+      ],
+      "pred_shapes": [
+        [
+          5,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "61_decorative_hline_noise",
+      "n_gt": 1,
+      "n_pred": 1,
+      "det_ok": true,
+      "gt_shapes": [
+        [
+          6,
+          3
+        ]
+      ],
+      "pred_shapes": [
+        [
+          6,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "62_two_close_grids",
+      "n_gt": 3,
+      "n_pred": 2,
+      "det_ok": false,
+      "gt_shapes": [
+        [
+          5,
+          2
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "pred_shapes": [
+        [
+          10,
+          3
+        ],
+        [
+          9,
+          5
+        ]
+      ]
+    }
+  ]
+}

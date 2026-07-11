@@ -1,0 +1,136 @@
+{
+  "id": "59_stream_multi_region",
+  "category": "stream_multi_region",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Two borderless stream tables separated by prose on one page",
+  "challenges": [
+    "stream",
+    "multiple_tables_per_page",
+    "prose_rejection",
+    "borderless"
+  ],
+  "failure_modes_covered": [
+    "UNDER_DETECT",
+    "MULTI_TABLE_PAGE",
+    "OVER_DETECT",
+    "BAD_STRUCTURE"
+  ],
+  "path": "corpus/hard/59_stream_multi_region.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD59_DOC",
+    "TOKEN_H59_PROSE",
+    "TOKEN_H59_MID",
+    "TOKEN_H59_T1",
+    "TOKEN_H59_T2"
+  ],
+  "table_cells_must_include": [
+    "Name",
+    "Role",
+    "Office",
+    "Level",
+    "Ada TOKEN_H59_T1",
+    "Eng",
+    "NYC",
+    "L5",
+    "Lin",
+    "Design",
+    "SF",
+    "L4"
+  ],
+  "expected_table_count": 2,
+  "expected_tables": [
+    {
+      "rows": 6,
+      "cols": 4,
+      "cells": [
+        [
+          "Name",
+          "Role",
+          "Office",
+          "Level"
+        ],
+        [
+          "Ada TOKEN_H59_T1",
+          "Eng",
+          "NYC",
+          "L5"
+        ],
+        [
+          "Lin",
+          "Design",
+          "SF",
+          "L4"
+        ],
+        [
+          "Sam",
+          "PM",
+          "Austin",
+          "L5"
+        ],
+        [
+          "Pat",
+          "SRE",
+          "SEA",
+          "L4"
+        ],
+        [
+          "Kim",
+          "Data",
+          "BOS",
+          "L3"
+        ]
+      ]
+    },
+    {
+      "rows": 7,
+      "cols": 3,
+      "cells": [
+        [
+          "City",
+          "Temp",
+          "Humidity"
+        ],
+        [
+          "NYC TOKEN_H59_T2",
+          "72",
+          "55%"
+        ],
+        [
+          "SF",
+          "68",
+          "70%"
+        ],
+        [
+          "CHI",
+          "70",
+          "48%"
+        ],
+        [
+          "MIA",
+          "84",
+          "80%"
+        ],
+        [
+          "DEN",
+          "65",
+          "30%"
+        ],
+        [
+          "SEA",
+          "60",
+          "75%"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Detect 2 stream tables; prose must not form a third table."
+}

@@ -1,0 +1,107 @@
+{
+  "id": "54_row_span_categories",
+  "category": "row_span_categories",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Inventory table with rowspan category labels in column 0",
+  "challenges": [
+    "rowspan",
+    "merged_cells",
+    "lattice",
+    "span_text_assign"
+  ],
+  "failure_modes_covered": [
+    "WRONG_SHAPE",
+    "ROW_MISCOUNT",
+    "BAD_STRUCTURE"
+  ],
+  "path": "corpus/hard/54_row_span_categories.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD54_DOC",
+    "TOKEN_H54_FRUIT",
+    "TOKEN_H54_VEG",
+    "TOKEN_H54_DAIRY",
+    "TOKEN_H54_CHERRY",
+    "TOKEN_H54_CHEESE"
+  ],
+  "table_cells_must_include": [
+    "Category",
+    "Item",
+    "Qty",
+    "Unit",
+    "Fruit TOKEN_H54_FRUIT",
+    "Apples",
+    "10",
+    "kg",
+    "Bananas",
+    "8",
+    "kg",
+    "Cherries TOKEN_H54_CHERRY"
+  ],
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 8,
+      "cols": 4,
+      "cells": [
+        [
+          "Category",
+          "Item",
+          "Qty",
+          "Unit"
+        ],
+        [
+          "Fruit TOKEN_H54_FRUIT",
+          "Apples",
+          "10",
+          "kg"
+        ],
+        [
+          "",
+          "Bananas",
+          "8",
+          "kg"
+        ],
+        [
+          "",
+          "Cherries TOKEN_H54_CHERRY",
+          "3",
+          "kg"
+        ],
+        [
+          "Veg TOKEN_H54_VEG",
+          "Carrots",
+          "12",
+          "kg"
+        ],
+        [
+          "",
+          "Peas",
+          "5",
+          "kg"
+        ],
+        [
+          "Dairy TOKEN_H54_DAIRY",
+          "Milk",
+          "20",
+          "L"
+        ],
+        [
+          "",
+          "Cheese TOKEN_H54_CHEESE",
+          "4",
+          "kg"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "8×4 visual grid with empty category placeholders under spans."
+}

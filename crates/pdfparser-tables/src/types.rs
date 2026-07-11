@@ -101,6 +101,16 @@ pub struct Table {
     pub logical_table_id: Option<u32>,
     /// Strategy tags.
     pub strategy_provenance: Vec<PipelineId>,
-    /// Notes.
+    /// Notes (diagnostic only — do not drive control flow).
     pub notes: Vec<String>,
+    /// Fraction of ruled cell sides present (0..1). Lattice/hybrid; 0 if unknown.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub edge_score: f32,
+    /// Non-empty cell fraction (0..1).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub fill_rate: f32,
+    /// True when edge_score is below the lattice weak-edge threshold.
+    /// Typed signal for orchestration (not string notes).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub weak_edges: bool,
 }

@@ -56,7 +56,10 @@ Source: Camelot docs “Head-to-head on ruled tables”, last verified 2026-05-2
 | 3 | **camelot lattice/vector** | **0.766** | **0.784** | **0.748** | **0.806** | 3.2 |
 | 4 | camelot hybrid/vector | 0.726 | 0.755 | 0.464 | 0.715 | 4.9 |
 | 5 | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.4 |
-| **6** | **pdfparser (current)** | **0.627** | **0.238** | **0.090** | **0.191** | **0.6** |
+| **5** | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.4 |
+| **6** | **pdfparser (pre multi-region baseline)** | **0.627** | **0.238** | **0.090** | **0.191** | **0.6** |
+
+**Latest re-run (post multi-region + review fixes):** pdfparser **F1=0.601 TEDS=0.210 row=0.134 col=0.193** (~0.5 s). Full write-up: [`icdar-competitive-report.md`](icdar-competitive-report.md).
 | 7 | camelot stream | 0.585 | 0.470 | 0.053 | 0.490 | 3.3 |
 
 Machine-readable: `benchmark/results/camelot_icdar_headtohead.json`.

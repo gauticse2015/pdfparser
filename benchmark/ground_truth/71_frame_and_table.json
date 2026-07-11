@@ -1,0 +1,62 @@
+{
+  "id": "71_frame_and_table",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/71_frame_and_table.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "frame_and_table",
+  "description": "Full page border + header rule + one table",
+  "challenges": [
+    "page_border",
+    "over_detect",
+    "noise_lines"
+  ],
+  "failure_modes_covered": [
+    "OVER_DETECT",
+    "MEGA_GRID"
+  ],
+  "must_contain": [
+    "TOKEN_P71_DOC",
+    "TOKEN_P71_R"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "Item",
+          "Owner",
+          "Status"
+        ],
+        [
+          "Design TOKEN_P71_R",
+          "Ada",
+          "Done"
+        ],
+        [
+          "Build",
+          "Lin",
+          "WIP"
+        ],
+        [
+          "Test",
+          "Sam",
+          "Todo"
+        ],
+        [
+          "Ship",
+          "Pat",
+          "Todo"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

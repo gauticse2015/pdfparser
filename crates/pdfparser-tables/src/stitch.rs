@@ -186,6 +186,8 @@ fn merge_fragments(frags: &[&Table]) -> Option<Table> {
     if !prov.contains(&PipelineId::D1Stitch) {
         prov.push(PipelineId::D1Stitch);
     }
+    let filled = cells.iter().filter(|c| !c.text.trim().is_empty()).count();
+    let fill_rate = filled as f32 / cells.len().max(1) as f32;
     Some(Table {
         bbox,
         page: first.page,
@@ -200,6 +202,9 @@ fn merge_fragments(frags: &[&Table]) -> Option<Table> {
         logical_table_id: first.logical_table_id,
         strategy_provenance: prov,
         notes,
+        edge_score: first.edge_score,
+        fill_rate,
+        weak_edges: first.weak_edges,
     })
 }
 

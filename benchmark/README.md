@@ -3,6 +3,29 @@
 Reproducible market analysis harness for comparing popular PDF libraries
 against the scenarios `pdfparser` intends to support.
 
+## Suite policy (important)
+
+| Suite | Purpose | Contents |
+|-------|---------|----------|
+| **`regression`** (default) | Day-to-day accuracy, algorithm improvement, no competitive bias | **Synthetic only:** basic (01–12) + stress (20–27) + **hard (50–62)** |
+| **`regression_hard`** | Structure/quality stress for lattice multi-region, spans, noise | Hard tier only |
+| **`regression_precision`** | OVER_DETECT / phantom lines / stream FPs (ICDAR-like *modes*, original PDFs) | `hard_precision` 70–82 |
+| **`regression_grid_gold`** | Full cell-grid gold only | Synthetic docs with `expected_tables` |
+| **`competitive_icdar`** | Head-to-head vs Camelot/peers | **External only** — ICDAR PDFs are **never** stored under `benchmark/corpus/` |
+
+**Hard rule:** ICDAR-2013 documents and gold XML are **not** part of the regression corpus.  
+Use them only for competitive analysis (see `docs/camelot-comparison-replication.md`).  
+Hard / precision fixtures **synthesize** failure modes with original content so we improve without overfitting to ICDAR files.
+
+Suite definitions: `corpus/suites.json`.
+
+```bash
+# Precision suite (must generate once)
+python benchmark/scripts/generate_precision_corpus.py
+python benchmark/scripts/run_accuracy_benchmark.py --suite regression_precision \
+  --libs pdfparser,pdfplumber,camelot_lattice,camelot_auto
+```
+
 ## Quick start
 
 ```bash
@@ -13,16 +36,41 @@ pip install -r benchmark/requirements.txt
 
 # 1) Build multi-scenario corpus
 python benchmark/scripts/generate_corpus.py
+python benchmark/scripts/generate_complex_corpus.py
+python benchmark/scripts/generate_hard_corpus.py   # hard regression (50–62)
+python benchmark/scripts/generate_precision_corpus.py  # precision suite (70–82)
 
-# 2) Run competitors
+# 2) Run competitors (extract probe)
 python benchmark/scripts/run_benchmark.py
 
-# 3) Read results
-ls benchmark/results/
-# open docs/market-analysis-pdf-parsers.md for the full write-up
+# 3) Full accuracy scoreboard (pdfparser + Camelot + top peers; no ICDAR)
+cargo build --release -p pdfparser-cli
+python benchmark/scripts/run_accuracy_benchmark.py --suite regression \
+  --libs pdfparser,camelot_lattice,camelot_stream,camelot_auto,img2table,pdfplumber,pymupdf,pdfminer.six,pypdf,pypdfium2
+python benchmark/scripts/run_accuracy_benchmark.py --suite regression_hard
+
+# 4) Read results
+ls benchmark/results/accuracy_scoreboard*.md
+# docs/accuracy-scoreboard.md  docs/accuracy-scoreboard-hard.md
 ```
 
+### Libraries in the accuracy pipeline
+
+| Library | Role |
+|---------|------|
+| **pdfparser** | Ours (CLI JSON + tables) |
+| **camelot_lattice** | Camelot lattice / vector engine |
+| **camelot_stream** | Camelot stream |
+| **camelot_auto** | Camelot auto flavor pick |
+| **img2table** | OpenCV table detector |
+| **pdfplumber** | Lines/text tables |
+| **pymupdf** | `find_tables` |
+| pdfminer.six / pypdf / pypdfium2 | Text baselines (no table API) |
+| tabula | Registered; **skipped** without a working JRE |
+
 ## Corpus scenarios
+
+### Basic (01–12)
 
 | ID | Category |
 |----|----------|
@@ -38,6 +86,26 @@ ls benchmark/results/
 | 10 | Mixed text + image + table |
 | 11 | Rotated page |
 | 12 | Encrypted (password `benchpass`) |
+
+### Hard synthetic (50–62) — regression improvement targets
+
+Original PDFs (reportlab). Difficulty modes inspired by competitive gaps, **not** copies of ICDAR docs.
+
+| ID | Challenge | Failure modes covered |
+|----|-----------|------------------------|
+| 50 | 3 stacked lattice tables (different shapes) | MULTI_TABLE, mega-grid |
+| 51 | 2 pages × 2 tables | MULTI_TABLE + MULTI_PAGE |
+| 52 | Page border / margin rules + 1 real table | noise lines, OVER_DETECT |
+| 53 | Colspan group headers | WRONG_SHAPE, spans |
+| 54 | Rowspan category column | rowspan |
+| 55 | Broken corner gaps in rulings | MISS_ALL / gap-close |
+| 56 | Tight-gap stacked uneven tables | mega-grid fusion |
+| 57 | Wide 16×13 statistical grid | COL/ROW miscount |
+| 58 | Multipage continued ledger (stitch) | MULTI_PAGE |
+| 59 | Two stream tables + prose | stream multi-region |
+| 60 | Lattice + stream on one page | mixed methods |
+| 61 | Decorative H-lines around table | false rows |
+| 62 | Side-by-side + third table below | multi-region NMS |
 
 ## Libraries under test
 
@@ -85,15 +153,17 @@ python benchmark/scripts/run_benchmark.py
 |------|---------|
 | `corpus/*.pdf` | Basic scenarios (01–12) |
 | `corpus/stress/` | Bank statements, overflow, merges, invoices, dense grids, watermarks |
+| `corpus/hard/` | Hard synthetic structure suite (50–62) — **regression**, not ICDAR |
+| `corpus/suites.json` | Suite membership + ICDAR-exclusion policy |
 | `corpus/real/` | Real public PDFs (WARN, Census, IRS, Fed, arXiv, Camelot/Tabula fixtures) |
 | `downloads/` | Original downloaded bytes |
 | `sources.json` | Provenance |
 
-### Why v2 exists
+### Why v2 / v3 exist
 
-Basic PDFs do **not** expose production failures. v2 includes overflowing cells, multi-page ledgers, merged headers, side-by-side tables, and real government/scientific/form PDFs that cause false positives, over-segmentation, and cell-text corruption in pdfplumber/PyMuPDF.
+Basic PDFs do **not** expose production failures. v2 adds overflowing cells, multi-page ledgers, merged headers, side-by-side tables, and real government/scientific/form PDFs. **v3** adds the **hard** synthetic tier so multi-table / span / noise-line gaps can be fixed without using ICDAR competition files as regression targets.
 
-See `docs/market-analysis-pdf-parsers.md` **Part II**.
+See `docs/market-analysis-pdf-parsers.md` **Part II** and `corpus/suites.json`.
 
 ## Quantitative accuracy scoreboard
 

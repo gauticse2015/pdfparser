@@ -1,0 +1,62 @@
+{
+  "id": "80_form_boxes_above_table",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/80_form_boxes_above_table.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "form_boxes_above_table",
+  "description": "Empty form field boxes + one data table; expect 1 table only",
+  "challenges": [
+    "form_fp",
+    "over_detect",
+    "empty_grid"
+  ],
+  "failure_modes_covered": [
+    "OVER_DETECT"
+  ],
+  "must_contain": [
+    "TOKEN_P80_DOC",
+    "TOKEN_P80_A",
+    "TOKEN_P80_C"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "SKU",
+          "Qty",
+          "Price"
+        ],
+        [
+          "A1 TOKEN_P80_A",
+          "2",
+          "9.99"
+        ],
+        [
+          "B2",
+          "5",
+          "1.50"
+        ],
+        [
+          "C3 TOKEN_P80_C",
+          "1",
+          "20.00"
+        ],
+        [
+          "D4",
+          "3",
+          "4.25"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

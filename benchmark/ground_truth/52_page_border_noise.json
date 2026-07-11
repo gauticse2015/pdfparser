@@ -1,0 +1,88 @@
+{
+  "id": "52_page_border_noise",
+  "category": "page_border_noise",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Full-page decorative frame + margin rules surrounding one real lattice table",
+  "challenges": [
+    "decorative_lines",
+    "page_border",
+    "noise_lines",
+    "lattice",
+    "false_positive_grid"
+  ],
+  "failure_modes_covered": [
+    "OVER_DETECT",
+    "WRONG_SHAPE",
+    "MEGA_GRID",
+    "BAD_STRUCTURE"
+  ],
+  "path": "corpus/hard/52_page_border_noise.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD52_DOC",
+    "TOKEN_H52_ROW",
+    "Confidential Brief"
+  ],
+  "table_cells_must_include": [
+    "Item",
+    "Owner",
+    "Status",
+    "Due",
+    "Design TOKEN_H52_ROW",
+    "Ada",
+    "Done",
+    "Jan",
+    "Build",
+    "Lin",
+    "WIP",
+    "Feb"
+  ],
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "Item",
+          "Owner",
+          "Status",
+          "Due"
+        ],
+        [
+          "Design TOKEN_H52_ROW",
+          "Ada",
+          "Done",
+          "Jan"
+        ],
+        [
+          "Build",
+          "Lin",
+          "WIP",
+          "Feb"
+        ],
+        [
+          "Test",
+          "Sam",
+          "Todo",
+          "Mar"
+        ],
+        [
+          "Ship",
+          "Pat",
+          "Todo",
+          "Apr"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "expected_table_count=1. Page border must not create a second table or inflate rows/cols."
+}

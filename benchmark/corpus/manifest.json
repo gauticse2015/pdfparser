@@ -1,12 +1,15 @@
 {
-  "name": "pdfparser-competitive-corpus-v2",
-  "description": "Basic + stress synthetic + real-world complex PDFs",
-  "document_count": 33,
+  "name": "pdfparser-competitive-corpus-v3",
+  "description": "Basic + stress + hard + hard_precision synthetic; optional real. No ICDAR.",
+  "document_count": 59,
   "tiers": {
     "basic": 12,
     "stress": 8,
-    "real": 13
+    "real": 13,
+    "hard": 13,
+    "hard_precision": 13
   },
+  "suites_file": "corpus/suites.json",
   "documents": [
     {
       "id": "01_simple_text",
@@ -30,7 +33,12 @@
       "path": "corpus/01_simple_text.pdf",
       "challenges": [
         "simple_text"
-      ]
+      ],
+      "reference_text": "Simple Digital PDF\nThis is a born-digital single-column PDF used for baseline text extraction.\nIt contains the unique token SIMPLE_TOKEN_ALPHA and another SIMPLE_TOKEN_BETA.\nNumbers: 12345, currency $99.50, and a date 2026-07-10 should survive extraction.\nThe quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
+      "expected_table_count": 0,
+      "weight_text": 0.8,
+      "weight_tables": 0.0,
+      "weight_objects": 0.2
     },
     {
       "id": "02_multi_column",
@@ -59,7 +67,12 @@
       "path": "corpus/02_multi_column.pdf",
       "challenges": [
         "multi_column"
-      ]
+      ],
+      "reference_text": "Two-Column Reading Order Stress\nLEFT_COL_START\nLeft column paragraph one about finance.\nLeft continues with LEFT_TOKEN_ONE.\nMore left text to fill the column height.\nLEFT_COL_END\nRIGHT_COL_START\nRight column paragraph one about markets.\nRight continues with RIGHT_TOKEN_TWO.\nMore right text to fill the column height.\nRIGHT_COL_END",
+      "expected_table_count": 0,
+      "weight_text": 1.0,
+      "weight_tables": 0.0,
+      "weight_objects": 0.0
     },
     {
       "id": "03_large_multipage",
@@ -78,7 +91,11 @@
       "path": "corpus/03_large_multipage.pdf",
       "challenges": [
         "large_multipage"
-      ]
+      ],
+      "expected_table_count": 0,
+      "weight_text": 1.0,
+      "weight_tables": 0.0,
+      "weight_objects": 0.0
     },
     {
       "id": "04_image_heavy",
@@ -97,7 +114,11 @@
       "path": "corpus/04_image_heavy.pdf",
       "challenges": [
         "image_heavy"
-      ]
+      ],
+      "expected_table_count": 0,
+      "weight_text": 0.4,
+      "weight_tables": 0.0,
+      "weight_objects": 0.6
     },
     {
       "id": "05_special_objects",
@@ -125,7 +146,14 @@
       "path": "corpus/05_special_objects.pdf",
       "challenges": [
         "special_objects"
-      ]
+      ],
+      "expected_table_count": 0,
+      "expected_links": [
+        "https://example.com/pdfparser-bench"
+      ],
+      "weight_text": 0.3,
+      "weight_tables": 0.0,
+      "weight_objects": 0.7
     },
     {
       "id": "06_table_lattice",
@@ -140,7 +168,44 @@
         "15.00",
         "A-100"
       ],
-      "expected_tables": 1,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 4,
+          "cells": [
+            [
+              "SKU",
+              "Product",
+              "Qty",
+              "Price"
+            ],
+            [
+              "A-100",
+              "Widget",
+              "10",
+              "2.50"
+            ],
+            [
+              "B-200",
+              "Gadget",
+              "5",
+              "9.99"
+            ],
+            [
+              "C-300",
+              "Doohickey",
+              "12",
+              "1.25"
+            ],
+            [
+              "D-400",
+              "Thingamajig",
+              "3",
+              "15.00"
+            ]
+          ]
+        }
+      ],
       "table_shape": [
         5,
         4
@@ -159,7 +224,12 @@
       "path": "corpus/06_table_lattice.pdf",
       "challenges": [
         "table_lattice"
-      ]
+      ],
+      "expected_table_count": 1,
+      "expected_images": 0,
+      "weight_text": 0.25,
+      "weight_tables": 0.75,
+      "weight_objects": 0.0
     },
     {
       "id": "07_table_stream",
@@ -174,7 +244,50 @@
         "130000",
         "Name"
       ],
-      "expected_tables": 1,
+      "expected_tables": [
+        {
+          "rows": 6,
+          "cols": 4,
+          "cells": [
+            [
+              "Name",
+              "Role",
+              "Office",
+              "Salary"
+            ],
+            [
+              "Alice",
+              "Engineer",
+              "NYC",
+              "120000"
+            ],
+            [
+              "Bob",
+              "Designer",
+              "SF",
+              "110000"
+            ],
+            [
+              "Carol",
+              "PM",
+              "Austin",
+              "125000"
+            ],
+            [
+              "Dave",
+              "Analyst",
+              "Boston",
+              "95000"
+            ],
+            [
+              "Eve",
+              "SRE",
+              "Seattle",
+              "130000"
+            ]
+          ]
+        }
+      ],
       "table_shape": [
         6,
         4
@@ -192,7 +305,12 @@
       "path": "corpus/07_table_stream.pdf",
       "challenges": [
         "table_stream"
-      ]
+      ],
+      "expected_table_count": 1,
+      "expected_images": 0,
+      "weight_text": 0.25,
+      "weight_tables": 0.75,
+      "weight_objects": 0.0
     },
     {
       "id": "08_table_partial_border",
@@ -207,7 +325,49 @@
         "Q4",
         "18"
       ],
-      "expected_tables": 1,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 5,
+          "cells": [
+            [
+              "Region",
+              "Q1",
+              "Q2",
+              "Q3",
+              "Q4"
+            ],
+            [
+              "North",
+              "10",
+              "12",
+              "11",
+              "15"
+            ],
+            [
+              "South",
+              "8",
+              "9",
+              "10",
+              "12"
+            ],
+            [
+              "East",
+              "14",
+              "13",
+              "16",
+              "18"
+            ],
+            [
+              "West",
+              "7",
+              "8",
+              "9",
+              "11"
+            ]
+          ]
+        }
+      ],
       "table_shape": [
         5,
         5
@@ -224,7 +384,12 @@
       "path": "corpus/08_table_partial_border.pdf",
       "challenges": [
         "table_partial_border"
-      ]
+      ],
+      "expected_table_count": 1,
+      "expected_images": 0,
+      "weight_text": 0.25,
+      "weight_tables": 0.75,
+      "weight_objects": 0.0
     },
     {
       "id": "09_table_complex",
@@ -239,7 +404,63 @@
         "38.1%",
         "Net Income"
       ],
-      "expected_tables": 1,
+      "expected_tables": [
+        {
+          "rows": 7,
+          "cols": 5,
+          "cells": [
+            [
+              "Metric",
+              "FY2023",
+              "FY2024",
+              "YoY%",
+              "Notes"
+            ],
+            [
+              "Revenue",
+              "1,200,000",
+              "1,450,000",
+              "20.8%",
+              "Organic + M&A"
+            ],
+            [
+              "COGS",
+              "480,000",
+              "560,000",
+              "16.7%",
+              "Supply costs"
+            ],
+            [
+              "Gross Profit",
+              "720,000",
+              "890,000",
+              "23.6%",
+              ""
+            ],
+            [
+              "OpEx",
+              "400,000",
+              "470,000",
+              "17.5%",
+              "Hiring"
+            ],
+            [
+              "EBITDA",
+              "320,000",
+              "420,000",
+              "31.3%",
+              "COMPLEX_TABLE_TOKEN"
+            ],
+            [
+              "Net Income",
+              "210,000",
+              "290,000",
+              "38.1%",
+              "Tax rate 21%"
+            ]
+          ]
+        }
+      ],
       "table_shape": [
         7,
         5
@@ -257,7 +478,12 @@
       "path": "corpus/09_table_complex.pdf",
       "challenges": [
         "table_complex"
-      ]
+      ],
+      "expected_table_count": 1,
+      "expected_images": 0,
+      "weight_text": 0.2,
+      "weight_tables": 0.8,
+      "weight_objects": 0.0
     },
     {
       "id": "10_mixed_document",
@@ -272,7 +498,30 @@
         "15"
       ],
       "expected_images": 1,
-      "expected_tables": 1,
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 2,
+          "cells": [
+            [
+              "Item",
+              "Count"
+            ],
+            [
+              "Apples",
+              "12"
+            ],
+            [
+              "Oranges",
+              "8"
+            ],
+            [
+              "Bananas",
+              "15"
+            ]
+          ]
+        }
+      ],
       "table_shape": [
         4,
         2
@@ -283,7 +532,12 @@
         "Bananas",
         "15"
       ],
-      "our_library_priority": "P1+P2 integration"
+      "our_library_priority": "P1+P2 integration",
+      "tier": "basic",
+      "expected_table_count": 1,
+      "weight_text": 0.3,
+      "weight_tables": 0.5,
+      "weight_objects": 0.2
     },
     {
       "id": "11_rotated_page",
@@ -300,7 +554,12 @@
       ],
       "expected_images": 0,
       "expected_tables": 0,
-      "our_library_priority": "P1 coordinate spaces"
+      "our_library_priority": "P1 coordinate spaces",
+      "tier": "basic",
+      "expected_table_count": 0,
+      "weight_text": 1.0,
+      "weight_tables": 0.0,
+      "weight_objects": 0.0
     },
     {
       "id": "12_encrypted_password",
@@ -314,7 +573,12 @@
       "expected_open_without_password": "error_or_empty",
       "expected_images": 0,
       "expected_tables": 0,
-      "our_library_priority": "0.1: Error::Encryption; 0.2: decrypt subset"
+      "our_library_priority": "0.1: Error::Encryption; 0.2: decrypt subset",
+      "tier": "basic",
+      "expected_table_count": 0,
+      "weight_text": 1.0,
+      "weight_tables": 0.0,
+      "weight_objects": 0.0
     },
     {
       "id": "20_bank_statement_multipage",
@@ -350,7 +614,14 @@
       ],
       "expected_tables_min": 1,
       "expected_pages_min": 2,
-      "our_library_priority": "P2 tables + multi-page"
+      "our_library_priority": "P2 tables + multi-page",
+      "expected_table_count": 1,
+      "table_count_tolerance": 1,
+      "expected_images": 0,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0,
+      "accuracy_notes": "Logical single ledger; page split into 2 tables scores detection within tolerance"
     },
     {
       "id": "21_table_overflow_cells",
@@ -381,7 +652,98 @@
       ],
       "expected_tables_min": 1,
       "quality_notes": "Success only if mega text stays in ONE cell / same row structure",
-      "our_library_priority": "P2 table cell integrity"
+      "our_library_priority": "P2 table cell integrity",
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 13,
+          "cols": 4,
+          "cells": [
+            [
+              "ID",
+              "Short",
+              "Overflowing Description",
+              "Amt"
+            ],
+            [
+              "R01",
+              "OK",
+              "TOKEN_OVERFLOW_ROW_1",
+              "99.99"
+            ],
+            [
+              "R02",
+              "LONGSHORTLABEL_TOKEN",
+              "TOKEN_OVERFLOW_ROW_2",
+              "199.98"
+            ],
+            [
+              "R03",
+              "OK",
+              "TOKEN_OVERFLOW_MEGA",
+              "299.97"
+            ],
+            [
+              "R04",
+              "LONGSHORTLABEL_TOKEN",
+              "TOKEN_OVERFLOW_ROW_4",
+              "399.96"
+            ],
+            [
+              "R05",
+              "OK",
+              "TOKEN_OVERFLOW_ROW_5",
+              "499.95"
+            ],
+            [
+              "R06",
+              "LONGSHORTLABEL_TOKEN",
+              "TOKEN_OVERFLOW_ROW_6",
+              "599.94"
+            ],
+            [
+              "R07",
+              "OK",
+              "TOKEN_OVERFLOW_MEGA7",
+              "699.93"
+            ],
+            [
+              "R08",
+              "LONGSHORTLABEL_TOKEN",
+              "TOKEN_OVERFLOW_ROW_8",
+              "799.92"
+            ],
+            [
+              "R09",
+              "OK",
+              "TOKEN_OVERFLOW_ROW_9",
+              "899.91"
+            ],
+            [
+              "R10",
+              "LONGSHORTLABEL_TOKEN",
+              "TOKEN_OVERFLOW_MEGA10",
+              "999.90"
+            ],
+            [
+              "R11",
+              "OK",
+              "TOKEN_OVERFLOW_ROW_11",
+              "1099.89"
+            ],
+            [
+              "R99",
+              "X",
+              "TOKEN_OVERFLOW_MULTILINE",
+              "0.01"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.2,
+      "weight_tables": 0.8,
+      "weight_objects": 0.0
     },
     {
       "id": "22_table_merged_headers",
@@ -415,7 +777,76 @@
         "FY2024"
       ],
       "expected_tables_min": 1,
-      "our_library_priority": "P2 structure/spans"
+      "our_library_priority": "P2 structure/spans",
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 7,
+          "cols": 6,
+          "cells": [
+            [
+              "Metric",
+              "FY2024",
+              "",
+              "FY2025",
+              "",
+              "Notes"
+            ],
+            [
+              "",
+              "Actual",
+              "Budget",
+              "Actual",
+              "Budget",
+              ""
+            ],
+            [
+              "Revenue",
+              "1,200",
+              "1,100",
+              "1,450",
+              "1,400",
+              "TOKEN_MERGE_REV organic growth"
+            ],
+            [
+              "COGS",
+              "480",
+              "500",
+              "560",
+              "550",
+              "supply"
+            ],
+            [
+              "Gross Profit",
+              "720",
+              "600",
+              "890",
+              "850",
+              "TOKEN_MERGE_GP"
+            ],
+            [
+              "Operating Expenses \u2014 Sales & Marketing plus G&A combined line that wraps",
+              "400",
+              "420",
+              "470",
+              "460",
+              "hiring TOKEN_MERGE_OPEX"
+            ],
+            [
+              "EBITDA",
+              "320",
+              "180",
+              "420",
+              "390",
+              "TOKEN_MERGE_EBITDA"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.2,
+      "weight_tables": 0.8,
+      "weight_objects": 0.0
     },
     {
       "id": "23_side_by_side_tables",
@@ -442,7 +873,62 @@
         "Pop(M)"
       ],
       "expected_tables_min": 2,
-      "our_library_priority": "P2 multi-table NMS"
+      "our_library_priority": "P2 multi-table NMS",
+      "expected_table_count": 2,
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 2,
+          "cells": [
+            [
+              "City",
+              "Temp"
+            ],
+            [
+              "NYC TOKEN_SIDE_L",
+              "72"
+            ],
+            [
+              "SF",
+              "68"
+            ],
+            [
+              "CHI",
+              "70"
+            ]
+          ]
+        },
+        {
+          "rows": 5,
+          "cols": 2,
+          "cells": [
+            [
+              "City",
+              "Pop(M)"
+            ],
+            [
+              "NYC TOKEN_SIDE_R",
+              "8.3"
+            ],
+            [
+              "SF",
+              "0.8"
+            ],
+            [
+              "CHI",
+              "2.7"
+            ],
+            [
+              "Extra row only on right",
+              "\u2014"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.2,
+      "weight_tables": 0.8,
+      "weight_objects": 0.0
     },
     {
       "id": "24_invoice_line_items",
@@ -474,7 +960,62 @@
         "Description"
       ],
       "expected_tables_min": 1,
-      "our_library_priority": "P2 invoices"
+      "our_library_priority": "P2 invoices",
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 6,
+          "cells": [
+            [
+              "#",
+              "SKU",
+              "Description",
+              "Qty",
+              "Unit",
+              "Total"
+            ],
+            [
+              "1",
+              "SKU-101",
+              "TOKEN_INV_SVC",
+              "1",
+              "15000.00",
+              "15000.00"
+            ],
+            [
+              "2",
+              "SKU-102",
+              "TOKEN_INV_CLOUD",
+              "12480",
+              "0.04",
+              "524.16"
+            ],
+            [
+              "3",
+              "SKU-103",
+              "TOKEN_INV_SUPPORT",
+              "1",
+              "4500.00",
+              "4500.00"
+            ],
+            [
+              "4",
+              "SKU-104",
+              "TOKEN_INV_TRAVEL",
+              "1",
+              "2187.55",
+              "2187.55"
+            ]
+          ]
+        }
+      ],
+      "table_count_tolerance": 0,
+      "expected_images": 0,
+      "weight_text": 0.25,
+      "weight_tables": 0.75,
+      "weight_objects": 0.0,
+      "accuracy_notes": "Gold grid is line-item body (5x6); totals span rows may expand predicted shape"
     },
     {
       "id": "25_dense_numeric_grid",
@@ -502,7 +1043,454 @@
       ],
       "expected_tables_min": 1,
       "expected_min_cells": 300,
-      "our_library_priority": "P2 performance/quality"
+      "our_library_priority": "P2 performance/quality",
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 31,
+          "cols": 12,
+          "cells": [
+            [
+              "C0",
+              "C1",
+              "C2",
+              "C3",
+              "C4",
+              "C5",
+              "C6",
+              "C7",
+              "C8",
+              "C9",
+              "C10",
+              "C11"
+            ],
+            [
+              "100.00",
+              "101.01",
+              "102.02",
+              "103.03",
+              "104.04",
+              "105.05",
+              "106.06",
+              "107.07",
+              "108.08",
+              "109.09",
+              "110.10",
+              "111.11"
+            ],
+            [
+              "200.12",
+              "201.13",
+              "202.14",
+              "203.15",
+              "204.16",
+              "205.17",
+              "206.18",
+              "207.19",
+              "208.20",
+              "209.21",
+              "210.22",
+              "211.23"
+            ],
+            [
+              "300.24",
+              "301.25",
+              "302.26",
+              "303.27",
+              "304.28",
+              "305.29",
+              "306.30",
+              "307.31",
+              "308.32",
+              "309.33",
+              "310.34",
+              "311.35"
+            ],
+            [
+              "400.36",
+              "401.37",
+              "402.38",
+              "403.39",
+              "404.40",
+              "405.41",
+              "406.42",
+              "407.43",
+              "408.44",
+              "409.45",
+              "410.46",
+              "411.47"
+            ],
+            [
+              "500.48",
+              "501.49",
+              "502.50",
+              "503.51",
+              "504.52",
+              "505.53",
+              "506.54",
+              "507.55",
+              "508.56",
+              "509.57",
+              "510.58",
+              "511.59"
+            ],
+            [
+              "600.60",
+              "601.61",
+              "602.62",
+              "603.63",
+              "604.64",
+              "605.65",
+              "606.66",
+              "607.67",
+              "608.68",
+              "609.69",
+              "610.70",
+              "611.71"
+            ],
+            [
+              "700.72",
+              "701.73",
+              "702.74",
+              "703.75",
+              "704.76",
+              "705.77",
+              "706.78",
+              "707.79",
+              "708.80",
+              "709.81",
+              "710.82",
+              "711.83"
+            ],
+            [
+              "800.84",
+              "801.85",
+              "802.86",
+              "803.87",
+              "804.88",
+              "805.89",
+              "806.90",
+              "807.91",
+              "808.92",
+              "809.93",
+              "810.94",
+              "811.95"
+            ],
+            [
+              "900.96",
+              "901.00",
+              "902.01",
+              "903.02",
+              "904.03",
+              "905.04",
+              "906.05",
+              "907.06",
+              "908.07",
+              "909.08",
+              "910.09",
+              "911.10"
+            ],
+            [
+              "1,000.11",
+              "1,001.12",
+              "1,002.13",
+              "1,003.14",
+              "1,004.15",
+              "1,005.16",
+              "1,006.17",
+              "1,007.18",
+              "1,008.19",
+              "1,009.20",
+              "1,010.21",
+              "1,011.22"
+            ],
+            [
+              "1,100.23",
+              "1,101.24",
+              "1,102.25",
+              "1,103.26",
+              "1,104.27",
+              "1,105.28",
+              "1,106.29",
+              "1,107.30",
+              "1,108.31",
+              "1,109.32",
+              "1,110.33",
+              "1,111.34"
+            ],
+            [
+              "1,200.35",
+              "1,201.36",
+              "1,202.37",
+              "1,203.38",
+              "1,204.39",
+              "1,205.40",
+              "1,206.41",
+              "1,207.42",
+              "1,208.43",
+              "1,209.44",
+              "1,210.45",
+              "1,211.46"
+            ],
+            [
+              "1,300.47",
+              "1,301.48",
+              "1,302.49",
+              "1,303.50",
+              "1,304.51",
+              "1,305.52",
+              "1,306.53",
+              "1,307.54",
+              "1,308.55",
+              "1,309.56",
+              "1,310.57",
+              "1,311.58"
+            ],
+            [
+              "1,400.59",
+              "1,401.60",
+              "1,402.61",
+              "1,403.62",
+              "1,404.63",
+              "1,405.64",
+              "1,406.65",
+              "1,407.66",
+              "1,408.67",
+              "1,409.68",
+              "1,410.69",
+              "1,411.70"
+            ],
+            [
+              "1,500.71",
+              "1,501.72",
+              "1,502.73",
+              "1,503.74",
+              "1,504.75",
+              "1,505.76",
+              "1,506.77",
+              "1,507.78",
+              "1,508.79",
+              "1,509.80",
+              "1,510.81",
+              "1,511.82"
+            ],
+            [
+              "1,600.83",
+              "1,601.84",
+              "1,602.85",
+              "1,603.86",
+              "1,604.87",
+              "1,605.88",
+              "1,606.89 TOKEN_DENSE",
+              "1,607.90",
+              "1,608.91",
+              "1,609.92",
+              "1,610.93",
+              "1,611.94"
+            ],
+            [
+              "1,700.95",
+              "1,701.96",
+              "1,702.00",
+              "1,703.01",
+              "1,704.02",
+              "1,705.03",
+              "1,706.04",
+              "1,707.05",
+              "1,708.06",
+              "1,709.07",
+              "1,710.08",
+              "1,711.09"
+            ],
+            [
+              "1,800.10",
+              "1,801.11",
+              "1,802.12",
+              "1,803.13",
+              "1,804.14",
+              "1,805.15",
+              "1,806.16",
+              "1,807.17",
+              "1,808.18",
+              "1,809.19",
+              "1,810.20",
+              "1,811.21"
+            ],
+            [
+              "1,900.22",
+              "1,901.23",
+              "1,902.24",
+              "1,903.25",
+              "1,904.26",
+              "1,905.27",
+              "1,906.28",
+              "1,907.29",
+              "1,908.30",
+              "1,909.31",
+              "1,910.32",
+              "1,911.33"
+            ],
+            [
+              "2,000.34",
+              "2,001.35",
+              "2,002.36",
+              "2,003.37",
+              "2,004.38",
+              "2,005.39",
+              "2,006.40",
+              "2,007.41",
+              "2,008.42",
+              "2,009.43",
+              "2,010.44",
+              "2,011.45"
+            ],
+            [
+              "2,100.46",
+              "2,101.47",
+              "2,102.48",
+              "2,103.49",
+              "2,104.50",
+              "2,105.51",
+              "2,106.52",
+              "2,107.53",
+              "2,108.54",
+              "2,109.55",
+              "2,110.56",
+              "2,111.57"
+            ],
+            [
+              "2,200.58",
+              "2,201.59",
+              "2,202.60",
+              "2,203.61",
+              "2,204.62",
+              "2,205.63",
+              "2,206.64",
+              "2,207.65",
+              "2,208.66",
+              "2,209.67",
+              "2,210.68",
+              "2,211.69"
+            ],
+            [
+              "2,300.70",
+              "2,301.71",
+              "2,302.72",
+              "2,303.73",
+              "2,304.74",
+              "2,305.75",
+              "2,306.76",
+              "2,307.77",
+              "2,308.78",
+              "2,309.79",
+              "2,310.80",
+              "2,311.81"
+            ],
+            [
+              "2,400.82",
+              "2,401.83",
+              "2,402.84",
+              "2,403.85",
+              "2,404.86",
+              "2,405.87",
+              "2,406.88",
+              "2,407.89",
+              "2,408.90",
+              "2,409.91",
+              "2,410.92",
+              "2,411.93"
+            ],
+            [
+              "2,500.94",
+              "2,501.95",
+              "2,502.96",
+              "2,503.00",
+              "2,504.01",
+              "2,505.02",
+              "2,506.03",
+              "2,507.04",
+              "2,508.05",
+              "2,509.06",
+              "2,510.07",
+              "2,511.08"
+            ],
+            [
+              "2,600.09",
+              "2,601.10",
+              "2,602.11",
+              "2,603.12",
+              "2,604.13",
+              "2,605.14",
+              "2,606.15",
+              "2,607.16",
+              "2,608.17",
+              "2,609.18",
+              "2,610.19",
+              "2,611.20"
+            ],
+            [
+              "2,700.21",
+              "2,701.22",
+              "2,702.23",
+              "2,703.24",
+              "2,704.25",
+              "2,705.26",
+              "2,706.27",
+              "2,707.28",
+              "2,708.29",
+              "2,709.30",
+              "2,710.31",
+              "2,711.32"
+            ],
+            [
+              "2,800.33",
+              "2,801.34",
+              "2,802.35",
+              "2,803.36",
+              "2,804.37",
+              "2,805.38",
+              "2,806.39",
+              "2,807.40",
+              "2,808.41",
+              "2,809.42",
+              "2,810.43",
+              "2,811.44"
+            ],
+            [
+              "2,900.45",
+              "2,901.46",
+              "2,902.47",
+              "2,903.48",
+              "2,904.49",
+              "2,905.50",
+              "2,906.51",
+              "2,907.52",
+              "2,908.53",
+              "2,909.54",
+              "2,910.55",
+              "2,911.56"
+            ],
+            [
+              "3,000.57",
+              "3,001.58",
+              "3,002.59",
+              "3,003.60",
+              "3,004.61",
+              "3,005.62",
+              "3,006.63",
+              "3,007.64",
+              "3,008.65",
+              "3,009.66",
+              "3,010.67",
+              "3,011.68"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0
     },
     {
       "id": "26_watermark_overlap",
@@ -525,7 +1513,12 @@
       ],
       "expected_tables_min": 0,
       "quality_notes": "Watermark text may interleave; libraries differ on order",
-      "our_library_priority": "P1 reading order / artifacts"
+      "our_library_priority": "P1 reading order / artifacts",
+      "expected_table_count": 0,
+      "expected_images": 0,
+      "weight_text": 1.0,
+      "weight_tables": 0.0,
+      "weight_objects": 0.0
     },
     {
       "id": "27_table_with_footnotes",
@@ -554,7 +1547,45 @@
         "USA"
       ],
       "expected_tables_min": 1,
-      "our_library_priority": "P2 table boundary"
+      "our_library_priority": "P2 table boundary",
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "Country",
+              "GDP",
+              "Pop"
+            ],
+            [
+              "USA\u00b9 TOKEN_FN_USA",
+              "25.5",
+              "331"
+            ],
+            [
+              "CHN\u00b2",
+              "18.1",
+              "1412"
+            ],
+            [
+              "DEU",
+              "4.1",
+              "83"
+            ],
+            [
+              "IND\u00b3 TOKEN_FN_IND",
+              "3.4",
+              "1408"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0
     },
     {
       "id": "30_real_ca_warn_report",
@@ -587,7 +1618,14 @@
       "expected_tables_min": 1,
       "expected_pages_min": 10,
       "page_count_observed": 16,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": null,
+      "table_count_tolerance": 0,
+      "expected_images": null,
+      "weight_text": 0.4,
+      "weight_tables": 0.6,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "31_real_background_checks",
@@ -619,7 +1657,13 @@
       "expected_tables_min": 1,
       "expected_pages_min": 1,
       "page_count_observed": 1,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 1,
+      "table_count_tolerance": 0,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "32_real_census_table324",
@@ -650,7 +1694,13 @@
       "expected_tables_min": 1,
       "expected_pages_min": 1,
       "page_count_observed": 1,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 1,
+      "table_count_tolerance": 1,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "33_real_argentina_votes",
@@ -681,7 +1731,13 @@
       "expected_tables_min": 1,
       "expected_pages_min": 1,
       "page_count_observed": 1,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 1,
+      "table_count_tolerance": 1,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "34_real_schools_contributions",
@@ -713,7 +1769,11 @@
       "expected_tables_min": 1,
       "expected_pages_min": 3,
       "page_count_observed": 5,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "weight_text": 0.4,
+      "weight_tables": 0.6,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "35_real_camelot_fuel",
@@ -743,7 +1803,13 @@
       "expected_tables_min": 1,
       "expected_pages_min": 1,
       "page_count_observed": 1,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 1,
+      "table_count_tolerance": 2,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "36_real_two_tables",
@@ -773,7 +1839,14 @@
       "expected_tables_min": 1,
       "expected_pages_min": 1,
       "page_count_observed": 1,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 2,
+      "table_count_tolerance": 0,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real",
+      "accuracy_notes": "Ideal ~2 tables; over-segmentation heavily penalized via detection precision"
     },
     {
       "id": "37_real_liabilities_superscript",
@@ -804,7 +1877,13 @@
       "expected_tables_min": 1,
       "expected_pages_min": 1,
       "page_count_observed": 1,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 1,
+      "table_count_tolerance": 0,
+      "weight_text": 0.3,
+      "weight_tables": 0.7,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "38_real_irs_f1040",
@@ -836,7 +1915,14 @@
       "expected_tables_min": 0,
       "expected_pages_min": 1,
       "page_count_observed": 2,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 0,
+      "table_count_tolerance": 0,
+      "weight_text": 0.6,
+      "weight_tables": 0.4,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real",
+      "accuracy_notes": "Tax form: expected_table_count=0 to penalize false-positive tables"
     },
     {
       "id": "39_real_fed_beigebook",
@@ -868,7 +1954,13 @@
       "expected_tables_min": 0,
       "expected_pages_min": 40,
       "page_count_observed": 56,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 0,
+      "table_count_tolerance": 2,
+      "weight_text": 0.9,
+      "weight_tables": 0.1,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
     },
     {
       "id": "40_real_arxiv_tensorflow",
@@ -900,7 +1992,14 @@
       "expected_tables_min": 0,
       "expected_pages_min": 10,
       "page_count_observed": 19,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": null,
+      "expected_images": null,
+      "weight_text": 1.0,
+      "weight_tables": 0.0,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real",
+      "accuracy_notes": "Text-primary scientific paper; tables not gold-labeled"
     },
     {
       "id": "41_real_nist_withdrawn_notice",
@@ -930,7 +2029,14 @@
       "expected_tables_min": 0,
       "expected_pages_min": 5,
       "page_count_observed": 52,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "expected_table_count": 0,
+      "table_count_tolerance": 5,
+      "weight_text": 0.7,
+      "weight_tables": 0.3,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real",
+      "accuracy_notes": "Penalize mass false-positive table detection"
     },
     {
       "id": "42_real_insurance_italian",
@@ -960,7 +2066,3232 @@
       "expected_tables_min": 0,
       "expected_pages_min": 1,
       "page_count_observed": 1,
-      "our_library_priority": "stress real-world"
+      "our_library_priority": "stress real-world",
+      "weight_text": 1.0,
+      "weight_tables": 0.0,
+      "weight_objects": 0.0,
+      "accuracy_mode": "weak_real"
+    },
+    {
+      "id": "50_multi_table_stacked_page",
+      "category": "multi_table_stacked",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Three vertically stacked lattice tables with different shapes on one page",
+      "challenges": [
+        "multiple_tables_per_page",
+        "vertical_stack",
+        "heterogeneous_shapes",
+        "lattice",
+        "anti_mega_grid"
+      ],
+      "failure_modes_covered": [
+        "MULTI_TABLE_PAGE",
+        "UNDER_DETECT",
+        "WRONG_SHAPE",
+        "ROW_MISCOUNT",
+        "COL_MISCOUNT"
+      ],
+      "path": "corpus/hard/50_multi_table_stacked_page.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD50_DOC",
+        "TOKEN_H50_T1",
+        "TOKEN_H50_T2",
+        "TOKEN_H50_T3"
+      ],
+      "table_cells_must_include": [
+        "Region",
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "North TOKEN_H50_T1",
+        "10",
+        "12",
+        "11",
+        "15",
+        "South",
+        "8"
+      ],
+      "expected_table_count": 3,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 5,
+          "cells": [
+            [
+              "Region",
+              "Q1",
+              "Q2",
+              "Q3",
+              "Q4"
+            ],
+            [
+              "North TOKEN_H50_T1",
+              "10",
+              "12",
+              "11",
+              "15"
+            ],
+            [
+              "South",
+              "8",
+              "9",
+              "10",
+              "12"
+            ],
+            [
+              "East",
+              "14",
+              "13",
+              "16",
+              "18"
+            ],
+            [
+              "West",
+              "7",
+              "8",
+              "9",
+              "11"
+            ]
+          ],
+          "label": "A"
+        },
+        {
+          "rows": 4,
+          "cols": 3,
+          "cells": [
+            [
+              "Dept",
+              "Headcount",
+              "Budget"
+            ],
+            [
+              "Eng TOKEN_H50_T2",
+              "42",
+              "1.2M"
+            ],
+            [
+              "Sales",
+              "18",
+              "0.9M"
+            ],
+            [
+              "Ops",
+              "25",
+              "0.6M"
+            ]
+          ],
+          "label": "B"
+        },
+        {
+          "rows": 6,
+          "cols": 3,
+          "cells": [
+            [
+              "SKU",
+              "OnHand",
+              "Reorder"
+            ],
+            [
+              "A-10 TOKEN_H50_T3",
+              "120",
+              "50"
+            ],
+            [
+              "B-20",
+              "40",
+              "30"
+            ],
+            [
+              "C-30",
+              "200",
+              "80"
+            ],
+            [
+              "D-40",
+              "15",
+              "20"
+            ],
+            [
+              "E-50",
+              "90",
+              "40"
+            ]
+          ],
+          "label": "C"
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Success: detect 3 tables with exact shapes 5x5, 4x3, 6x3. Fail: one fused mega-grid."
+    },
+    {
+      "id": "51_multi_table_multipage",
+      "category": "multi_table_multipage",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Two pages, two lattice tables each (4 tables total), heterogeneous shapes",
+      "challenges": [
+        "multiple_tables_per_page",
+        "multi_page_document",
+        "heterogeneous_shapes",
+        "lattice"
+      ],
+      "failure_modes_covered": [
+        "MULTI_TABLE_PAGE",
+        "MULTI_PAGE_DOC",
+        "UNDER_DETECT",
+        "WRONG_SHAPE"
+      ],
+      "path": "corpus/hard/51_multi_table_multipage.pdf",
+      "page_count": 2,
+      "must_contain": [
+        "TOKEN_HARD51_DOC",
+        "TOKEN_HARD51_P1",
+        "TOKEN_HARD51_P2",
+        "TOKEN_H51_A",
+        "TOKEN_H51_B",
+        "TOKEN_H51_C",
+        "TOKEN_H51_D"
+      ],
+      "table_cells_must_include": [
+        "Country",
+        "Sites",
+        "Staff",
+        "DE TOKEN_H51_A",
+        "12",
+        "340",
+        "FR",
+        "8",
+        "210",
+        "IT",
+        "6",
+        "180"
+      ],
+      "expected_table_count": 4,
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 3,
+          "cells": [
+            [
+              "Country",
+              "Sites",
+              "Staff"
+            ],
+            [
+              "DE TOKEN_H51_A",
+              "12",
+              "340"
+            ],
+            [
+              "FR",
+              "8",
+              "210"
+            ],
+            [
+              "IT",
+              "6",
+              "180"
+            ]
+          ],
+          "page": 1
+        },
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "Metric",
+              "2024",
+              "2025"
+            ],
+            [
+              "Revenue TOKEN_H51_B",
+              "4.2",
+              "4.8"
+            ],
+            [
+              "EBITDA",
+              "0.9",
+              "1.1"
+            ],
+            [
+              "Margin%",
+              "21",
+              "23"
+            ],
+            [
+              "NPS",
+              "42",
+              "48"
+            ]
+          ],
+          "page": 1
+        },
+        {
+          "rows": 3,
+          "cols": 3,
+          "cells": [
+            [
+              "Vendor",
+              "SLA",
+              "Score"
+            ],
+            [
+              "Alpha TOKEN_H51_C",
+              "99.9",
+              "A"
+            ],
+            [
+              "Beta",
+              "99.5",
+              "B"
+            ]
+          ],
+          "page": 2
+        },
+        {
+          "rows": 5,
+          "cols": 4,
+          "cells": [
+            [
+              "City",
+              "Lat",
+              "Lon",
+              "Pop"
+            ],
+            [
+              "Berlin TOKEN_H51_D",
+              "52.5",
+              "13.4",
+              "3.6M"
+            ],
+            [
+              "Paris",
+              "48.9",
+              "2.3",
+              "2.1M"
+            ],
+            [
+              "Rome",
+              "41.9",
+              "12.5",
+              "2.8M"
+            ],
+            [
+              "Madrid",
+              "40.4",
+              "-3.7",
+              "3.2M"
+            ]
+          ],
+          "page": 2
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Detect 4 tables; do not merge across vertical gaps or pages."
+    },
+    {
+      "id": "52_page_border_noise",
+      "category": "page_border_noise",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Full-page decorative frame + margin rules surrounding one real lattice table",
+      "challenges": [
+        "decorative_lines",
+        "page_border",
+        "noise_lines",
+        "lattice",
+        "false_positive_grid"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT",
+        "WRONG_SHAPE",
+        "MEGA_GRID",
+        "BAD_STRUCTURE"
+      ],
+      "path": "corpus/hard/52_page_border_noise.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD52_DOC",
+        "TOKEN_H52_ROW",
+        "Confidential Brief"
+      ],
+      "table_cells_must_include": [
+        "Item",
+        "Owner",
+        "Status",
+        "Due",
+        "Design TOKEN_H52_ROW",
+        "Ada",
+        "Done",
+        "Jan",
+        "Build",
+        "Lin",
+        "WIP",
+        "Feb"
+      ],
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 4,
+          "cells": [
+            [
+              "Item",
+              "Owner",
+              "Status",
+              "Due"
+            ],
+            [
+              "Design TOKEN_H52_ROW",
+              "Ada",
+              "Done",
+              "Jan"
+            ],
+            [
+              "Build",
+              "Lin",
+              "WIP",
+              "Feb"
+            ],
+            [
+              "Test",
+              "Sam",
+              "Todo",
+              "Mar"
+            ],
+            [
+              "Ship",
+              "Pat",
+              "Todo",
+              "Apr"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "expected_table_count=1. Page border must not create a second table or inflate rows/cols."
+    },
+    {
+      "id": "53_column_span_header",
+      "category": "column_span_header",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Financial table with colspan group headers (FY2024/FY2025 span 2 cols)",
+      "challenges": [
+        "colspan",
+        "merged_headers",
+        "multi_level_header",
+        "lattice",
+        "span_text_assign"
+      ],
+      "failure_modes_covered": [
+        "WRONG_SHAPE",
+        "COL_MISCOUNT",
+        "BAD_STRUCTURE",
+        "ROW_MISCOUNT"
+      ],
+      "path": "corpus/hard/53_column_span_header.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD53_DOC",
+        "TOKEN_H53_FY24",
+        "TOKEN_H53_FY25",
+        "TOKEN_H53_REV",
+        "TOKEN_H53_GP",
+        "TOKEN_H53_NI"
+      ],
+      "table_cells_must_include": [
+        "Metric",
+        "FY2024 TOKEN_H53_FY24",
+        "FY2025 TOKEN_H53_FY25",
+        "Notes",
+        "Actual",
+        "Budget",
+        "Actual",
+        "Budget",
+        "Revenue",
+        "1200",
+        "1100",
+        "1450"
+      ],
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 7,
+          "cols": 6,
+          "cells": [
+            [
+              "Metric",
+              "FY2024 TOKEN_H53_FY24",
+              "",
+              "FY2025 TOKEN_H53_FY25",
+              "",
+              "Notes"
+            ],
+            [
+              "",
+              "Actual",
+              "Budget",
+              "Actual",
+              "Budget",
+              ""
+            ],
+            [
+              "Revenue",
+              "1200",
+              "1100",
+              "1450",
+              "1400",
+              "TOKEN_H53_REV"
+            ],
+            [
+              "COGS",
+              "480",
+              "500",
+              "560",
+              "550",
+              "supply"
+            ],
+            [
+              "Gross Profit",
+              "720",
+              "600",
+              "890",
+              "850",
+              "TOKEN_H53_GP"
+            ],
+            [
+              "OpEx",
+              "310",
+              "300",
+              "340",
+              "330",
+              "ops"
+            ],
+            [
+              "Net Income",
+              "410",
+              "300",
+              "550",
+              "520",
+              "TOKEN_H53_NI"
+            ]
+          ],
+          "span_notes": "cols 1-2 header span FY2024; cols 3-4 header span FY2025"
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Primary gold is 7\u00d76 visual grid. Span-aware extractors may emit colspan metadata; cell tokens TOKEN_H53_* must land in correct columns.",
+      "alternate_acceptable_shapes": [
+        [
+          6,
+          6
+        ],
+        [
+          7,
+          6
+        ]
+      ]
+    },
+    {
+      "id": "54_row_span_categories",
+      "category": "row_span_categories",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Inventory table with rowspan category labels in column 0",
+      "challenges": [
+        "rowspan",
+        "merged_cells",
+        "lattice",
+        "span_text_assign"
+      ],
+      "failure_modes_covered": [
+        "WRONG_SHAPE",
+        "ROW_MISCOUNT",
+        "BAD_STRUCTURE"
+      ],
+      "path": "corpus/hard/54_row_span_categories.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD54_DOC",
+        "TOKEN_H54_FRUIT",
+        "TOKEN_H54_VEG",
+        "TOKEN_H54_DAIRY",
+        "TOKEN_H54_CHERRY",
+        "TOKEN_H54_CHEESE"
+      ],
+      "table_cells_must_include": [
+        "Category",
+        "Item",
+        "Qty",
+        "Unit",
+        "Fruit TOKEN_H54_FRUIT",
+        "Apples",
+        "10",
+        "kg",
+        "Bananas",
+        "8",
+        "kg",
+        "Cherries TOKEN_H54_CHERRY"
+      ],
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 8,
+          "cols": 4,
+          "cells": [
+            [
+              "Category",
+              "Item",
+              "Qty",
+              "Unit"
+            ],
+            [
+              "Fruit TOKEN_H54_FRUIT",
+              "Apples",
+              "10",
+              "kg"
+            ],
+            [
+              "",
+              "Bananas",
+              "8",
+              "kg"
+            ],
+            [
+              "",
+              "Cherries TOKEN_H54_CHERRY",
+              "3",
+              "kg"
+            ],
+            [
+              "Veg TOKEN_H54_VEG",
+              "Carrots",
+              "12",
+              "kg"
+            ],
+            [
+              "",
+              "Peas",
+              "5",
+              "kg"
+            ],
+            [
+              "Dairy TOKEN_H54_DAIRY",
+              "Milk",
+              "20",
+              "L"
+            ],
+            [
+              "",
+              "Cheese TOKEN_H54_CHEESE",
+              "4",
+              "kg"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "8\u00d74 visual grid with empty category placeholders under spans."
+    },
+    {
+      "id": "55_gap_broken_corners",
+      "category": "gap_broken_corners",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Lattice table whose H/V strokes do not meet at corners (3pt gaps)",
+      "challenges": [
+        "broken_lines",
+        "gap_close",
+        "lattice",
+        "incomplete_joints"
+      ],
+      "failure_modes_covered": [
+        "MISS_ALL",
+        "BAD_STRUCTURE",
+        "UNDER_DETECT",
+        "WRONG_SHAPE"
+      ],
+      "path": "corpus/hard/55_gap_broken_corners.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD55_DOC",
+        "TOKEN_H55_P1",
+        "TOKEN_H55_P3",
+        "Charlie"
+      ],
+      "table_cells_must_include": [
+        "Code",
+        "Name",
+        "Qty",
+        "Price",
+        "P1 TOKEN_H55_P1",
+        "Alpha",
+        "3",
+        "1.50",
+        "P2",
+        "Bravo",
+        "7",
+        "2.25"
+      ],
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 4,
+          "cells": [
+            [
+              "Code",
+              "Name",
+              "Qty",
+              "Price"
+            ],
+            [
+              "P1 TOKEN_H55_P1",
+              "Alpha",
+              "3",
+              "1.50"
+            ],
+            [
+              "P2",
+              "Bravo",
+              "7",
+              "2.25"
+            ],
+            [
+              "P3 TOKEN_H55_P3",
+              "Charlie",
+              "2",
+              "9.99"
+            ],
+            [
+              "P4",
+              "Delta",
+              "11",
+              "0.40"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Vector joiners without gap-close may miss the table or invent wrong cell count."
+    },
+    {
+      "id": "56_stacked_uneven_tables",
+      "category": "stacked_uneven_tables",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Two lattice tables stacked with only 14pt gap; 4\u00d76 then 5\u00d72",
+      "challenges": [
+        "multiple_tables_per_page",
+        "tight_vertical_gap",
+        "heterogeneous_shapes",
+        "anti_mega_grid"
+      ],
+      "failure_modes_covered": [
+        "MULTI_TABLE_PAGE",
+        "WRONG_SHAPE",
+        "UNDER_DETECT"
+      ],
+      "path": "corpus/hard/56_stacked_uneven_tables.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD56_DOC",
+        "TOKEN_H56_TOP",
+        "TOKEN_H56_BOT"
+      ],
+      "table_cells_must_include": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "1 TOKEN_H56_TOP",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "expected_table_count": 2,
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 6,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F"
+            ],
+            [
+              "1 TOKEN_H56_TOP",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6"
+            ],
+            [
+              "7",
+              "8",
+              "9",
+              "10",
+              "11",
+              "12"
+            ],
+            [
+              "13",
+              "14",
+              "15",
+              "16",
+              "17",
+              "18"
+            ]
+          ]
+        },
+        {
+          "rows": 5,
+          "cols": 2,
+          "cells": [
+            [
+              "X",
+              "Y"
+            ],
+            [
+              "yes TOKEN_H56_BOT",
+              "no"
+            ],
+            [
+              "true",
+              "false"
+            ],
+            [
+              "on",
+              "off"
+            ],
+            [
+              "high",
+              "low"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Fail mode: one table ~9\u00d76 or wrong col count from merged y-lines."
+    },
+    {
+      "id": "57_wide_statistical_grid",
+      "category": "wide_statistical_grid",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "16-row \u00d7 13-col ruled statistical table (states \u00d7 years)",
+      "challenges": [
+        "wide_table",
+        "many_columns",
+        "dense_numeric",
+        "lattice"
+      ],
+      "failure_modes_covered": [
+        "COL_MISCOUNT",
+        "ROW_MISCOUNT",
+        "WRONG_SHAPE",
+        "BAD_STRUCTURE"
+      ],
+      "path": "corpus/hard/57_wide_statistical_grid.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD57_DOC",
+        "TOKEN_H57_CA",
+        "TOKEN_H57_NY",
+        "TOKEN_H57_PA",
+        "TOKEN_H57_NJ",
+        "Y2014",
+        "Y2025"
+      ],
+      "table_cells_must_include": [
+        "State",
+        "Y2014",
+        "Y2015",
+        "Y2016",
+        "Y2017",
+        "Y2018",
+        "Y2019",
+        "Y2020",
+        "Y2021",
+        "Y2022",
+        "Y2023",
+        "Y2024"
+      ],
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 16,
+          "cols": 13,
+          "cells": [
+            [
+              "State",
+              "Y2014",
+              "Y2015",
+              "Y2016",
+              "Y2017",
+              "Y2018",
+              "Y2019",
+              "Y2020",
+              "Y2021",
+              "Y2022",
+              "Y2023",
+              "Y2024",
+              "Y2025"
+            ],
+            [
+              "CA TOKEN_H57_CA",
+              "10",
+              "11",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16",
+              "17",
+              "18",
+              "19",
+              "20",
+              "21"
+            ],
+            [
+              "TX",
+              "9",
+              "9",
+              "10",
+              "11",
+              "12",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16",
+              "17",
+              "18"
+            ],
+            [
+              "NY TOKEN_H57_NY",
+              "8",
+              "8",
+              "8",
+              "9",
+              "9",
+              "10",
+              "10",
+              "11",
+              "11",
+              "12",
+              "12",
+              "13"
+            ],
+            [
+              "FL",
+              "7",
+              "8",
+              "8",
+              "9",
+              "9",
+              "10",
+              "11",
+              "11",
+              "12",
+              "13",
+              "14",
+              "14"
+            ],
+            [
+              "IL",
+              "6",
+              "6",
+              "7",
+              "7",
+              "7",
+              "8",
+              "8",
+              "8",
+              "9",
+              "9",
+              "9",
+              "10"
+            ],
+            [
+              "PA TOKEN_H57_PA",
+              "5",
+              "5",
+              "5",
+              "6",
+              "6",
+              "6",
+              "7",
+              "7",
+              "7",
+              "8",
+              "8",
+              "8"
+            ],
+            [
+              "OH",
+              "4",
+              "4",
+              "5",
+              "5",
+              "5",
+              "6",
+              "6",
+              "6",
+              "7",
+              "7",
+              "7",
+              "8"
+            ],
+            [
+              "GA",
+              "3",
+              "4",
+              "4",
+              "4",
+              "5",
+              "5",
+              "5",
+              "6",
+              "6",
+              "7",
+              "7",
+              "7"
+            ],
+            [
+              "NC",
+              "3",
+              "3",
+              "4",
+              "4",
+              "4",
+              "5",
+              "5",
+              "5",
+              "6",
+              "6",
+              "6",
+              "7"
+            ],
+            [
+              "MI",
+              "2",
+              "3",
+              "3",
+              "3",
+              "4",
+              "4",
+              "4",
+              "5",
+              "5",
+              "5",
+              "6",
+              "6"
+            ],
+            [
+              "NJ TOKEN_H57_NJ",
+              "2",
+              "2",
+              "3",
+              "3",
+              "3",
+              "3",
+              "4",
+              "4",
+              "4",
+              "5",
+              "5",
+              "5"
+            ],
+            [
+              "VA",
+              "2",
+              "2",
+              "2",
+              "3",
+              "3",
+              "3",
+              "3",
+              "4",
+              "4",
+              "4",
+              "4",
+              "5"
+            ],
+            [
+              "WA",
+              "1",
+              "2",
+              "2",
+              "2",
+              "3",
+              "3",
+              "3",
+              "3",
+              "4",
+              "4",
+              "4",
+              "5"
+            ],
+            [
+              "AZ",
+              "1",
+              "1",
+              "2",
+              "2",
+              "2",
+              "3",
+              "3",
+              "3",
+              "3",
+              "4",
+              "4",
+              "4"
+            ],
+            [
+              "MA",
+              "1",
+              "1",
+              "1",
+              "2",
+              "2",
+              "2",
+              "2",
+              "3",
+              "3",
+              "3",
+              "3",
+              "4"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Exact shape 16\u00d713 required for shape_exact credit."
+    },
+    {
+      "id": "58_multipage_continued_table",
+      "category": "multipage_continued_table",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "One ledger table continued across 3 pages (repeating header)",
+      "challenges": [
+        "multi_page_table",
+        "repeating_header",
+        "table_stitch",
+        "lattice"
+      ],
+      "failure_modes_covered": [
+        "MULTI_PAGE_DOC",
+        "ROW_MISCOUNT",
+        "WRONG_SHAPE"
+      ],
+      "path": "corpus/hard/58_multipage_continued_table.pdf",
+      "page_count": 3,
+      "must_contain": [
+        "TOKEN_HARD58_DOC",
+        "TOKEN_H58_R1",
+        "TOKEN_H58_R13",
+        "TOKEN_H58_R25",
+        "TOKEN_H58_R36",
+        "TOKEN_H58_CONT"
+      ],
+      "table_cells_must_include": [
+        "Date",
+        "Ref",
+        "Description",
+        "Amount",
+        "2026-01-02",
+        "R001",
+        "Ledger entry 1 TOKEN_H58_R1",
+        "10.50",
+        "2026-01-03",
+        "R002",
+        "Ledger entry 2",
+        "21.00"
+      ],
+      "expected_table_count": 3,
+      "expected_tables": [
+        {
+          "rows": 13,
+          "cols": 4,
+          "cells": [
+            [
+              "Date",
+              "Ref",
+              "Description",
+              "Amount"
+            ],
+            [
+              "2026-01-02",
+              "R001",
+              "Ledger entry 1 TOKEN_H58_R1",
+              "10.50"
+            ],
+            [
+              "2026-01-03",
+              "R002",
+              "Ledger entry 2",
+              "21.00"
+            ],
+            [
+              "2026-01-04",
+              "R003",
+              "Ledger entry 3",
+              "31.50"
+            ],
+            [
+              "2026-01-05",
+              "R004",
+              "Ledger entry 4",
+              "42.00"
+            ],
+            [
+              "2026-01-06",
+              "R005",
+              "Ledger entry 5",
+              "52.50"
+            ],
+            [
+              "2026-01-07",
+              "R006",
+              "Ledger entry 6",
+              "63.00"
+            ],
+            [
+              "2026-01-08",
+              "R007",
+              "Ledger entry 7",
+              "73.50"
+            ],
+            [
+              "2026-01-09",
+              "R008",
+              "Ledger entry 8",
+              "84.00"
+            ],
+            [
+              "2026-01-10",
+              "R009",
+              "Ledger entry 9",
+              "94.50"
+            ],
+            [
+              "2026-01-11",
+              "R010",
+              "Ledger entry 10",
+              "105.00"
+            ],
+            [
+              "2026-01-12",
+              "R011",
+              "Ledger entry 11",
+              "115.50"
+            ],
+            [
+              "2026-01-13",
+              "R012",
+              "Ledger entry 12",
+              "126.00"
+            ]
+          ]
+        },
+        {
+          "rows": 13,
+          "cols": 4,
+          "cells": [
+            [
+              "Date",
+              "Ref",
+              "Description",
+              "Amount"
+            ],
+            [
+              "2026-01-14",
+              "R013",
+              "Ledger entry 13 TOKEN_H58_R13",
+              "136.50"
+            ],
+            [
+              "2026-01-15",
+              "R014",
+              "Ledger entry 14",
+              "147.00"
+            ],
+            [
+              "2026-01-16",
+              "R015",
+              "Ledger entry 15",
+              "157.50"
+            ],
+            [
+              "2026-01-17",
+              "R016",
+              "Ledger entry 16",
+              "168.00"
+            ],
+            [
+              "2026-01-18",
+              "R017",
+              "Ledger entry 17",
+              "178.50"
+            ],
+            [
+              "2026-01-19",
+              "R018",
+              "Ledger entry 18",
+              "189.00"
+            ],
+            [
+              "2026-01-20",
+              "R019",
+              "Ledger entry 19",
+              "199.50"
+            ],
+            [
+              "2026-01-21",
+              "R020",
+              "Ledger entry 20",
+              "210.00"
+            ],
+            [
+              "2026-01-22",
+              "R021",
+              "Ledger entry 21",
+              "220.50"
+            ],
+            [
+              "2026-01-23",
+              "R022",
+              "Ledger entry 22",
+              "231.00"
+            ],
+            [
+              "2026-01-24",
+              "R023",
+              "Ledger entry 23",
+              "241.50"
+            ],
+            [
+              "2026-01-25",
+              "R024",
+              "Ledger entry 24",
+              "252.00"
+            ]
+          ]
+        },
+        {
+          "rows": 13,
+          "cols": 4,
+          "cells": [
+            [
+              "Date",
+              "Ref",
+              "Description",
+              "Amount"
+            ],
+            [
+              "2026-01-26",
+              "R025",
+              "Ledger entry 25 TOKEN_H58_R25",
+              "262.50"
+            ],
+            [
+              "2026-01-27",
+              "R026",
+              "Ledger entry 26",
+              "273.00"
+            ],
+            [
+              "2026-01-28",
+              "R027",
+              "Ledger entry 27",
+              "283.50"
+            ],
+            [
+              "2026-01-01",
+              "R028",
+              "Ledger entry 28",
+              "294.00"
+            ],
+            [
+              "2026-01-02",
+              "R029",
+              "Ledger entry 29",
+              "304.50"
+            ],
+            [
+              "2026-01-03",
+              "R030",
+              "Ledger entry 30",
+              "315.00"
+            ],
+            [
+              "2026-01-04",
+              "R031",
+              "Ledger entry 31",
+              "325.50"
+            ],
+            [
+              "2026-01-05",
+              "R032",
+              "Ledger entry 32",
+              "336.00"
+            ],
+            [
+              "2026-01-06",
+              "R033",
+              "Ledger entry 33",
+              "346.50"
+            ],
+            [
+              "2026-01-07",
+              "R034",
+              "Ledger entry 34",
+              "357.00"
+            ],
+            [
+              "2026-01-08",
+              "R035",
+              "Ledger entry 35",
+              "367.50"
+            ],
+            [
+              "2026-01-09",
+              "R036",
+              "Ledger entry 36 TOKEN_H58_R36",
+              "378.00"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Primary gold: 3 page fragments of 13\u00d74 (header+12). Stitch-aware systems may emit 1 logical 37\u00d74 \u2014 see alternate_logical_table.",
+      "alternate_logical_table": {
+        "rows": 37,
+        "cols": 4,
+        "cells": [
+          [
+            "Date",
+            "Ref",
+            "Description",
+            "Amount"
+          ],
+          [
+            "2026-01-02",
+            "R001",
+            "Ledger entry 1 TOKEN_H58_R1",
+            "10.50"
+          ],
+          [
+            "2026-01-03",
+            "R002",
+            "Ledger entry 2",
+            "21.00"
+          ],
+          [
+            "2026-01-04",
+            "R003",
+            "Ledger entry 3",
+            "31.50"
+          ],
+          [
+            "2026-01-05",
+            "R004",
+            "Ledger entry 4",
+            "42.00"
+          ],
+          [
+            "2026-01-06",
+            "R005",
+            "Ledger entry 5",
+            "52.50"
+          ],
+          [
+            "2026-01-07",
+            "R006",
+            "Ledger entry 6",
+            "63.00"
+          ],
+          [
+            "2026-01-08",
+            "R007",
+            "Ledger entry 7",
+            "73.50"
+          ],
+          [
+            "2026-01-09",
+            "R008",
+            "Ledger entry 8",
+            "84.00"
+          ],
+          [
+            "2026-01-10",
+            "R009",
+            "Ledger entry 9",
+            "94.50"
+          ],
+          [
+            "2026-01-11",
+            "R010",
+            "Ledger entry 10",
+            "105.00"
+          ],
+          [
+            "2026-01-12",
+            "R011",
+            "Ledger entry 11",
+            "115.50"
+          ],
+          [
+            "2026-01-13",
+            "R012",
+            "Ledger entry 12",
+            "126.00"
+          ],
+          [
+            "2026-01-14",
+            "R013",
+            "Ledger entry 13 TOKEN_H58_R13",
+            "136.50"
+          ],
+          [
+            "2026-01-15",
+            "R014",
+            "Ledger entry 14",
+            "147.00"
+          ],
+          [
+            "2026-01-16",
+            "R015",
+            "Ledger entry 15",
+            "157.50"
+          ],
+          [
+            "2026-01-17",
+            "R016",
+            "Ledger entry 16",
+            "168.00"
+          ],
+          [
+            "2026-01-18",
+            "R017",
+            "Ledger entry 17",
+            "178.50"
+          ],
+          [
+            "2026-01-19",
+            "R018",
+            "Ledger entry 18",
+            "189.00"
+          ],
+          [
+            "2026-01-20",
+            "R019",
+            "Ledger entry 19",
+            "199.50"
+          ],
+          [
+            "2026-01-21",
+            "R020",
+            "Ledger entry 20",
+            "210.00"
+          ],
+          [
+            "2026-01-22",
+            "R021",
+            "Ledger entry 21",
+            "220.50"
+          ],
+          [
+            "2026-01-23",
+            "R022",
+            "Ledger entry 22",
+            "231.00"
+          ],
+          [
+            "2026-01-24",
+            "R023",
+            "Ledger entry 23",
+            "241.50"
+          ],
+          [
+            "2026-01-25",
+            "R024",
+            "Ledger entry 24",
+            "252.00"
+          ],
+          [
+            "2026-01-26",
+            "R025",
+            "Ledger entry 25 TOKEN_H58_R25",
+            "262.50"
+          ],
+          [
+            "2026-01-27",
+            "R026",
+            "Ledger entry 26",
+            "273.00"
+          ],
+          [
+            "2026-01-28",
+            "R027",
+            "Ledger entry 27",
+            "283.50"
+          ],
+          [
+            "2026-01-01",
+            "R028",
+            "Ledger entry 28",
+            "294.00"
+          ],
+          [
+            "2026-01-02",
+            "R029",
+            "Ledger entry 29",
+            "304.50"
+          ],
+          [
+            "2026-01-03",
+            "R030",
+            "Ledger entry 30",
+            "315.00"
+          ],
+          [
+            "2026-01-04",
+            "R031",
+            "Ledger entry 31",
+            "325.50"
+          ],
+          [
+            "2026-01-05",
+            "R032",
+            "Ledger entry 32",
+            "336.00"
+          ],
+          [
+            "2026-01-06",
+            "R033",
+            "Ledger entry 33",
+            "346.50"
+          ],
+          [
+            "2026-01-07",
+            "R034",
+            "Ledger entry 34",
+            "357.00"
+          ],
+          [
+            "2026-01-08",
+            "R035",
+            "Ledger entry 35",
+            "367.50"
+          ],
+          [
+            "2026-01-09",
+            "R036",
+            "Ledger entry 36 TOKEN_H58_R36",
+            "378.00"
+          ]
+        ],
+        "note": "If stitch merges pages and drops repeated headers: 1+36 rows also acceptable"
+      },
+      "stitch_expected": true
+    },
+    {
+      "id": "59_stream_multi_region",
+      "category": "stream_multi_region",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Two borderless stream tables separated by prose on one page",
+      "challenges": [
+        "stream",
+        "multiple_tables_per_page",
+        "prose_rejection",
+        "borderless"
+      ],
+      "failure_modes_covered": [
+        "UNDER_DETECT",
+        "MULTI_TABLE_PAGE",
+        "OVER_DETECT",
+        "BAD_STRUCTURE"
+      ],
+      "path": "corpus/hard/59_stream_multi_region.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD59_DOC",
+        "TOKEN_H59_PROSE",
+        "TOKEN_H59_MID",
+        "TOKEN_H59_T1",
+        "TOKEN_H59_T2"
+      ],
+      "table_cells_must_include": [
+        "Name",
+        "Role",
+        "Office",
+        "Level",
+        "Ada TOKEN_H59_T1",
+        "Eng",
+        "NYC",
+        "L5",
+        "Lin",
+        "Design",
+        "SF",
+        "L4"
+      ],
+      "expected_table_count": 2,
+      "expected_tables": [
+        {
+          "rows": 6,
+          "cols": 4,
+          "cells": [
+            [
+              "Name",
+              "Role",
+              "Office",
+              "Level"
+            ],
+            [
+              "Ada TOKEN_H59_T1",
+              "Eng",
+              "NYC",
+              "L5"
+            ],
+            [
+              "Lin",
+              "Design",
+              "SF",
+              "L4"
+            ],
+            [
+              "Sam",
+              "PM",
+              "Austin",
+              "L5"
+            ],
+            [
+              "Pat",
+              "SRE",
+              "SEA",
+              "L4"
+            ],
+            [
+              "Kim",
+              "Data",
+              "BOS",
+              "L3"
+            ]
+          ]
+        },
+        {
+          "rows": 7,
+          "cols": 3,
+          "cells": [
+            [
+              "City",
+              "Temp",
+              "Humidity"
+            ],
+            [
+              "NYC TOKEN_H59_T2",
+              "72",
+              "55%"
+            ],
+            [
+              "SF",
+              "68",
+              "70%"
+            ],
+            [
+              "CHI",
+              "70",
+              "48%"
+            ],
+            [
+              "MIA",
+              "84",
+              "80%"
+            ],
+            [
+              "DEN",
+              "65",
+              "30%"
+            ],
+            [
+              "SEA",
+              "60",
+              "75%"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Detect 2 stream tables; prose must not form a third table."
+    },
+    {
+      "id": "60_mixed_lattice_stream_page",
+      "category": "mixed_lattice_stream",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "One lattice and one stream table on the same page",
+      "challenges": [
+        "lattice",
+        "stream",
+        "multiple_tables_per_page",
+        "mixed_methods"
+      ],
+      "failure_modes_covered": [
+        "UNDER_DETECT",
+        "MULTI_TABLE_PAGE",
+        "WRONG_SHAPE"
+      ],
+      "path": "corpus/hard/60_mixed_lattice_stream_page.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD60_DOC",
+        "TOKEN_H60_LAT",
+        "TOKEN_H60_STR"
+      ],
+      "table_cells_must_include": [
+        "ID",
+        "Product",
+        "Qty",
+        "1 TOKEN_H60_LAT",
+        "Widget",
+        "10",
+        "2",
+        "Gadget",
+        "5",
+        "3",
+        "Gizmo",
+        "8"
+      ],
+      "expected_table_count": 2,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "ID",
+              "Product",
+              "Qty"
+            ],
+            [
+              "1 TOKEN_H60_LAT",
+              "Widget",
+              "10"
+            ],
+            [
+              "2",
+              "Gadget",
+              "5"
+            ],
+            [
+              "3",
+              "Gizmo",
+              "8"
+            ],
+            [
+              "4",
+              "Doohickey",
+              "2"
+            ]
+          ]
+        },
+        {
+          "rows": 6,
+          "cols": 3,
+          "cells": [
+            [
+              "Name",
+              "Dept",
+              "Loc"
+            ],
+            [
+              "Ada TOKEN_H60_STR",
+              "Eng",
+              "NYC"
+            ],
+            [
+              "Lin",
+              "Sales",
+              "SF"
+            ],
+            [
+              "Sam",
+              "Ops",
+              "CHI"
+            ],
+            [
+              "Pat",
+              "HR",
+              "AUS"
+            ],
+            [
+              "Kim",
+              "Legal",
+              "BOS"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Strong lattice must not suppress stream region below."
+    },
+    {
+      "id": "61_decorative_hline_noise",
+      "category": "decorative_hline_noise",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Real 6\u00d73 lattice amid many decorative horizontal rules and margin ticks",
+      "challenges": [
+        "noise_lines",
+        "decorative_rules",
+        "lattice",
+        "false_rows"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT",
+        "ROW_MISCOUNT",
+        "WRONG_SHAPE",
+        "BAD_STRUCTURE"
+      ],
+      "path": "corpus/hard/61_decorative_hline_noise.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD61_DOC",
+        "TOKEN_H61_A",
+        "TOKEN_H61_G"
+      ],
+      "table_cells_must_include": [
+        "Key",
+        "Value",
+        "Unit",
+        "alpha TOKEN_H61_A",
+        "1.23",
+        "m",
+        "beta",
+        "4.56",
+        "m",
+        "gamma TOKEN_H61_G",
+        "7.89",
+        "s"
+      ],
+      "expected_table_count": 1,
+      "expected_tables": [
+        {
+          "rows": 6,
+          "cols": 3,
+          "cells": [
+            [
+              "Key",
+              "Value",
+              "Unit"
+            ],
+            [
+              "alpha TOKEN_H61_A",
+              "1.23",
+              "m"
+            ],
+            [
+              "beta",
+              "4.56",
+              "m"
+            ],
+            [
+              "gamma TOKEN_H61_G",
+              "7.89",
+              "s"
+            ],
+            [
+              "delta",
+              "0.12",
+              "s"
+            ],
+            [
+              "epsilon",
+              "3.14",
+              "rad"
+            ]
+          ]
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "expected 1 table 6\u00d73; deco lines must not inflate row count."
+    },
+    {
+      "id": "62_two_close_grids",
+      "category": "two_close_grids",
+      "tier": "hard",
+      "suite": "regression_hard",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "description": "Two side-by-side lattices with narrow gutter + third table below (3 total)",
+      "challenges": [
+        "multiple_tables_per_page",
+        "side_by_side",
+        "narrow_gutter",
+        "vertical_stack",
+        "lattice"
+      ],
+      "failure_modes_covered": [
+        "MULTI_TABLE_PAGE",
+        "UNDER_DETECT",
+        "WRONG_SHAPE",
+        "OVER_DETECT"
+      ],
+      "path": "corpus/hard/62_two_close_grids.pdf",
+      "page_count": 1,
+      "must_contain": [
+        "TOKEN_HARD62_DOC",
+        "TOKEN_H62_L",
+        "TOKEN_H62_R",
+        "TOKEN_H62_B"
+      ],
+      "table_cells_must_include": [
+        "L",
+        "V",
+        "a TOKEN_H62_L",
+        "1",
+        "b",
+        "2",
+        "c",
+        "3",
+        "d",
+        "4",
+        "R",
+        "V"
+      ],
+      "expected_table_count": 3,
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 2,
+          "cells": [
+            [
+              "L",
+              "V"
+            ],
+            [
+              "a TOKEN_H62_L",
+              "1"
+            ],
+            [
+              "b",
+              "2"
+            ],
+            [
+              "c",
+              "3"
+            ],
+            [
+              "d",
+              "4"
+            ]
+          ],
+          "label": "left"
+        },
+        {
+          "rows": 4,
+          "cols": 3,
+          "cells": [
+            [
+              "R",
+              "V",
+              "W"
+            ],
+            [
+              "x TOKEN_H62_R",
+              "9",
+              "8"
+            ],
+            [
+              "y",
+              "7",
+              "6"
+            ],
+            [
+              "z",
+              "5",
+              "4"
+            ]
+          ],
+          "label": "right"
+        },
+        {
+          "rows": 5,
+          "cols": 4,
+          "cells": [
+            [
+              "M",
+              "N",
+              "O",
+              "P"
+            ],
+            [
+              "1 TOKEN_H62_B",
+              "2",
+              "3",
+              "4"
+            ],
+            [
+              "5",
+              "6",
+              "7",
+              "8"
+            ],
+            [
+              "9",
+              "10",
+              "11",
+              "12"
+            ],
+            [
+              "13",
+              "14",
+              "15",
+              "16"
+            ]
+          ],
+          "label": "bottom"
+        }
+      ],
+      "expected_images": 0,
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "our_library_priority": "hard regression / structure quality",
+      "quality_notes": "Detect 3 tables: 5\u00d72, 4\u00d73, 5\u00d74. Fail: fuse left+right or all three."
+    },
+    {
+      "id": "70_deco_rules_one_table",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/70_deco_rules_one_table.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "deco_rules_one_table",
+      "description": "Many decorative full-width H-rules + one lattice table",
+      "challenges": [
+        "over_detect",
+        "decorative_rules",
+        "phantom_lines"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT",
+        "WRONG_SHAPE"
+      ],
+      "must_contain": [
+        "TOKEN_P70_DOC",
+        "TOKEN_P70_A",
+        "TOKEN_P70_G"
+      ],
+      "table_cells_must_include": [
+        "TOKEN_P70_A",
+        "Key",
+        "gamma TOKEN_P70_G"
+      ],
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "Key",
+              "Value",
+              "Unit"
+            ],
+            [
+              "alpha TOKEN_P70_A",
+              "1.1",
+              "m"
+            ],
+            [
+              "beta",
+              "2.2",
+              "m"
+            ],
+            [
+              "gamma TOKEN_P70_G",
+              "3.3",
+              "s"
+            ],
+            [
+              "delta",
+              "4.4",
+              "s"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "quality_notes": "Success: n_tables=1 shape 5\u00d73. Fail: extra tables from section rules.",
+      "expected_table_count": 1
+    },
+    {
+      "id": "71_frame_and_table",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/71_frame_and_table.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "frame_and_table",
+      "description": "Full page border + header rule + one table",
+      "challenges": [
+        "page_border",
+        "over_detect",
+        "noise_lines"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT",
+        "MEGA_GRID"
+      ],
+      "must_contain": [
+        "TOKEN_P71_DOC",
+        "TOKEN_P71_R"
+      ],
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "Item",
+              "Owner",
+              "Status"
+            ],
+            [
+              "Design TOKEN_P71_R",
+              "Ada",
+              "Done"
+            ],
+            [
+              "Build",
+              "Lin",
+              "WIP"
+            ],
+            [
+              "Test",
+              "Sam",
+              "Todo"
+            ],
+            [
+              "Ship",
+              "Pat",
+              "Todo"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 1
+    },
+    {
+      "id": "72_two_tables_margin_ticks",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/72_two_tables_margin_ticks.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "two_tables_margin_ticks",
+      "description": "Two lattices + left-margin tick marks (must not form tables)",
+      "challenges": [
+        "over_detect",
+        "noise_lines",
+        "multiple_tables_per_page"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT",
+        "MULTI_TABLE_PAGE"
+      ],
+      "must_contain": [
+        "TOKEN_P72_DOC",
+        "TOKEN_P72_T1",
+        "TOKEN_P72_T2"
+      ],
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 2,
+          "cells": [
+            [
+              "A",
+              "B"
+            ],
+            [
+              "1 TOKEN_P72_T1",
+              "2"
+            ],
+            [
+              "3",
+              "4"
+            ],
+            [
+              "5",
+              "6"
+            ]
+          ]
+        },
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "X",
+              "Y",
+              "Z"
+            ],
+            [
+              "a TOKEN_P72_T2",
+              "b",
+              "c"
+            ],
+            [
+              "d",
+              "e",
+              "f"
+            ],
+            [
+              "g",
+              "h",
+              "i"
+            ],
+            [
+              "j",
+              "k",
+              "l"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 2
+    },
+    {
+      "id": "73_false_row_underlines",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/73_false_row_underlines.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "false_row_underlines",
+      "description": "4\u00d72 lattice plus stray underlines below; must stay 4\u00d72 one table",
+      "challenges": [
+        "phantom_lines",
+        "row_miscount",
+        "over_detect"
+      ],
+      "failure_modes_covered": [
+        "ROW_MISCOUNT",
+        "OVER_DETECT",
+        "WRONG_SHAPE"
+      ],
+      "must_contain": [
+        "TOKEN_P73_DOC",
+        "TOKEN_P73_A",
+        "TOKEN_P73_L"
+      ],
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 2,
+          "cells": [
+            [
+              "Name",
+              "Score"
+            ],
+            [
+              "Ada TOKEN_P73_A",
+              "10"
+            ],
+            [
+              "Lin TOKEN_P73_L",
+              "20"
+            ],
+            [
+              "Sam",
+              "30"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 1
+    },
+    {
+      "id": "74_sparse_data_grid",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/74_sparse_data_grid.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "sparse_data_grid",
+      "description": "9\u00d76 ruled grid with many empty cells (must keep, not FP-scrub)",
+      "challenges": [
+        "sparse_fill",
+        "fp_scrub_false_negative"
+      ],
+      "failure_modes_covered": [
+        "MISS_ALL",
+        "UNDER_DETECT"
+      ],
+      "must_contain": [
+        "TOKEN_P74_DOC",
+        "TOKEN_P74_HIT"
+      ],
+      "expected_tables": [
+        {
+          "rows": 9,
+          "cols": 6,
+          "cells": [
+            [
+              "R\\C",
+              "C1",
+              "C2",
+              "C3",
+              "C4",
+              "C5"
+            ],
+            [
+              "R1",
+              "",
+              "1.2",
+              "",
+              "",
+              "1.5"
+            ],
+            [
+              "R2",
+              "2.1",
+              "",
+              "",
+              "2.4",
+              ""
+            ],
+            [
+              "R3",
+              "",
+              "",
+              "3.3",
+              "",
+              ""
+            ],
+            [
+              "R4",
+              "",
+              "4.2",
+              "",
+              "",
+              "4.5"
+            ],
+            [
+              "R5",
+              "5.1",
+              "",
+              "",
+              "5.4",
+              ""
+            ],
+            [
+              "R6",
+              "",
+              "",
+              "6.3",
+              "",
+              ""
+            ],
+            [
+              "R7",
+              "",
+              "7.2",
+              "",
+              "",
+              "7.5"
+            ],
+            [
+              "R8",
+              "8.1",
+              "",
+              "",
+              "8.4",
+              ""
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 1
+    },
+    {
+      "id": "75_prose_not_stream",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/75_prose_not_stream.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "prose_not_stream",
+      "description": "Numbered prose list \u2014 expect ZERO tables",
+      "challenges": [
+        "stream_fp",
+        "over_detect",
+        "prose_rejection"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT"
+      ],
+      "must_contain": [
+        "TOKEN_P75_DOC",
+        "TOKEN_P75_A",
+        "TOKEN_P75_END"
+      ],
+      "expected_tables": [],
+      "expected_table_count": 0,
+      "page_count": 1,
+      "quality_notes": "Success: 0 tables. Any stream table is a false positive."
+    },
+    {
+      "id": "76_caption_not_table",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/76_caption_not_table.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "caption_not_table",
+      "description": "Tiny caption-like grid + one real data table; prefer 1 table (data)",
+      "challenges": [
+        "over_detect",
+        "caption_fp",
+        "form_like"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT"
+      ],
+      "must_contain": [
+        "TOKEN_P76_DOC",
+        "TOKEN_P76_R",
+        "TOKEN_P76_CAP"
+      ],
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 2,
+          "cells": [
+            [
+              "Metric",
+              "Value"
+            ],
+            [
+              "Revenue TOKEN_P76_R",
+              "100"
+            ],
+            [
+              "Cost",
+              "40"
+            ],
+            [
+              "Profit",
+              "60"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "quality_notes": "Ideal n=1 (data). Emitting caption 2\u00d72 as second table fails detect F1.",
+      "expected_table_count": 1
+    },
+    {
+      "id": "77_three_stacked_disjoint",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/77_three_stacked_disjoint.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "three_stacked_disjoint",
+      "description": "Three disjoint stacked lattices (4\u00d72, 3\u00d73, 5\u00d72)",
+      "challenges": [
+        "multiple_tables_per_page",
+        "anti_mega_grid",
+        "over_detect"
+      ],
+      "failure_modes_covered": [
+        "MULTI_TABLE_PAGE",
+        "UNDER_DETECT",
+        "OVER_DETECT"
+      ],
+      "must_contain": [
+        "TOKEN_P77_DOC",
+        "TOKEN_P77_1",
+        "TOKEN_P77_2",
+        "TOKEN_P77_3"
+      ],
+      "expected_tables": [
+        {
+          "rows": 4,
+          "cols": 2,
+          "cells": [
+            [
+              "H1",
+              "H2"
+            ],
+            [
+              "a TOKEN_P77_1",
+              "b"
+            ],
+            [
+              "c",
+              "d"
+            ],
+            [
+              "e",
+              "f"
+            ]
+          ]
+        },
+        {
+          "rows": 3,
+          "cols": 3,
+          "cells": [
+            [
+              "P",
+              "Q",
+              "R"
+            ],
+            [
+              "1 TOKEN_P77_2",
+              "2",
+              "3"
+            ],
+            [
+              "4",
+              "5",
+              "6"
+            ]
+          ]
+        },
+        {
+          "rows": 5,
+          "cols": 2,
+          "cells": [
+            [
+              "X",
+              "Y"
+            ],
+            [
+              "u TOKEN_P77_3",
+              "v"
+            ],
+            [
+              "w",
+              "x"
+            ],
+            [
+              "y",
+              "z"
+            ],
+            [
+              "m",
+              "n"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 3
+    },
+    {
+      "id": "78_multipage_footer_rules",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/78_multipage_footer_rules.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "multipage_footer_rules",
+      "description": "3-page ledger + footer rules; 3 tables 9\u00d73 (header+8)",
+      "challenges": [
+        "multi_page_table",
+        "footer_noise",
+        "over_detect"
+      ],
+      "failure_modes_covered": [
+        "MULTI_PAGE_DOC",
+        "OVER_DETECT",
+        "ROW_MISCOUNT"
+      ],
+      "must_contain": [
+        "TOKEN_P78_DOC",
+        "TOKEN_P78_R1",
+        "TOKEN_P78_END"
+      ],
+      "expected_tables": [
+        {
+          "rows": 9,
+          "cols": 3,
+          "cells": [
+            [
+              "Date",
+              "Ref",
+              "Amt"
+            ],
+            [
+              "01-01",
+              "R1",
+              "1.5 TOKEN_P78_R1"
+            ],
+            [
+              "01-02",
+              "R2",
+              "3.0"
+            ],
+            [
+              "01-03",
+              "R3",
+              "4.5"
+            ],
+            [
+              "01-04",
+              "R4",
+              "6.0"
+            ],
+            [
+              "01-05",
+              "R5",
+              "7.5"
+            ],
+            [
+              "01-06",
+              "R6",
+              "9.0"
+            ],
+            [
+              "01-07",
+              "R7",
+              "10.5"
+            ],
+            [
+              "01-08",
+              "R8",
+              "12.0"
+            ]
+          ]
+        },
+        {
+          "rows": 9,
+          "cols": 3,
+          "cells": [
+            [
+              "Date",
+              "Ref",
+              "Amt"
+            ],
+            [
+              "01-09",
+              "R9",
+              "13.5"
+            ],
+            [
+              "01-10",
+              "R10",
+              "15.0"
+            ],
+            [
+              "01-11",
+              "R11",
+              "16.5"
+            ],
+            [
+              "01-12",
+              "R12",
+              "18.0"
+            ],
+            [
+              "01-13",
+              "R13",
+              "19.5"
+            ],
+            [
+              "01-14",
+              "R14",
+              "21.0"
+            ],
+            [
+              "01-15",
+              "R15",
+              "22.5"
+            ],
+            [
+              "01-16",
+              "R16",
+              "24.0"
+            ]
+          ]
+        },
+        {
+          "rows": 9,
+          "cols": 3,
+          "cells": [
+            [
+              "Date",
+              "Ref",
+              "Amt"
+            ],
+            [
+              "01-17",
+              "R17",
+              "25.5"
+            ],
+            [
+              "01-18",
+              "R18",
+              "27.0"
+            ],
+            [
+              "01-19",
+              "R19",
+              "28.5"
+            ],
+            [
+              "01-20",
+              "R20",
+              "30.0"
+            ],
+            [
+              "01-21",
+              "R21",
+              "31.5"
+            ],
+            [
+              "01-22",
+              "R22",
+              "33.0"
+            ],
+            [
+              "01-23",
+              "R23",
+              "34.5"
+            ],
+            [
+              "01-24",
+              "R24 TOKEN_P78_END",
+              "36.0"
+            ]
+          ]
+        }
+      ],
+      "page_count": 3,
+      "expected_table_count": 3
+    },
+    {
+      "id": "79_span_header_precision",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/79_span_header_precision.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "span_header_precision",
+      "description": "Colspan group header FY24 over Act/Bud",
+      "challenges": [
+        "colspan",
+        "merged_headers",
+        "wrong_shape"
+      ],
+      "failure_modes_covered": [
+        "WRONG_SHAPE",
+        "COL_MISCOUNT",
+        "BAD_STRUCTURE"
+      ],
+      "must_contain": [
+        "TOKEN_P79_DOC",
+        "TOKEN_P79_FY",
+        "TOKEN_P79_REV",
+        "TOKEN_P79_NI"
+      ],
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 4,
+          "cells": [
+            [
+              "Metric",
+              "FY24 TOKEN_P79_FY",
+              "",
+              "Notes"
+            ],
+            [
+              "",
+              "Act",
+              "Bud",
+              ""
+            ],
+            [
+              "Rev",
+              "10",
+              "9",
+              "TOKEN_P79_REV"
+            ],
+            [
+              "Cost",
+              "4",
+              "5",
+              "ops"
+            ],
+            [
+              "NI",
+              "6",
+              "4",
+              "TOKEN_P79_NI"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 1
+    },
+    {
+      "id": "80_form_boxes_above_table",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/80_form_boxes_above_table.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "form_boxes_above_table",
+      "description": "Empty form field boxes + one data table; expect 1 table only",
+      "challenges": [
+        "form_fp",
+        "over_detect",
+        "empty_grid"
+      ],
+      "failure_modes_covered": [
+        "OVER_DETECT"
+      ],
+      "must_contain": [
+        "TOKEN_P80_DOC",
+        "TOKEN_P80_A",
+        "TOKEN_P80_C"
+      ],
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "SKU",
+              "Qty",
+              "Price"
+            ],
+            [
+              "A1 TOKEN_P80_A",
+              "2",
+              "9.99"
+            ],
+            [
+              "B2",
+              "5",
+              "1.50"
+            ],
+            [
+              "C3 TOKEN_P80_C",
+              "1",
+              "20.00"
+            ],
+            [
+              "D4",
+              "3",
+              "4.25"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 1
+    },
+    {
+      "id": "81_phantom_verticals",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/81_phantom_verticals.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "phantom_verticals",
+      "description": "True 5\u00d73 table + short non-spanning V ticks; must stay 3 cols",
+      "challenges": [
+        "phantom_lines",
+        "col_miscount",
+        "joint_support"
+      ],
+      "failure_modes_covered": [
+        "COL_MISCOUNT",
+        "WRONG_SHAPE"
+      ],
+      "must_contain": [
+        "TOKEN_P81_DOC",
+        "TOKEN_P81_N",
+        "TOKEN_P81_C"
+      ],
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "City",
+              "Temp",
+              "Hum"
+            ],
+            [
+              "NYC TOKEN_P81_N",
+              "72",
+              "55"
+            ],
+            [
+              "SF",
+              "68",
+              "70"
+            ],
+            [
+              "CHI TOKEN_P81_C",
+              "70",
+              "48"
+            ],
+            [
+              "MIA",
+              "84",
+              "80"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 1
+    },
+    {
+      "id": "82_stream_gap_boundary",
+      "tier": "hard_precision",
+      "suite": "regression_precision",
+      "source": "synthetic",
+      "icdar_derived": false,
+      "path": "corpus/hard_precision/82_stream_gap_boundary.pdf",
+      "weight_text": 0.15,
+      "weight_tables": 0.85,
+      "weight_objects": 0.0,
+      "expected_images": 0,
+      "category": "stream_gap_boundary",
+      "description": "Two stream tables with large prose gap (6\u00d73 and 6\u00d72)",
+      "challenges": [
+        "stream",
+        "multiple_tables_per_page",
+        "prose_rejection"
+      ],
+      "failure_modes_covered": [
+        "UNDER_DETECT",
+        "OVER_DETECT",
+        "MULTI_TABLE_PAGE"
+      ],
+      "must_contain": [
+        "TOKEN_P82_DOC",
+        "TOKEN_P82_T1",
+        "TOKEN_P82_T2",
+        "TOKEN_P82_MID"
+      ],
+      "expected_tables": [
+        {
+          "rows": 5,
+          "cols": 3,
+          "cells": [
+            [
+              "Name",
+              "Role",
+              "Loc"
+            ],
+            [
+              "Ada TOKEN_P82_T1",
+              "Eng",
+              "NYC"
+            ],
+            [
+              "Lin",
+              "PM",
+              "SF"
+            ],
+            [
+              "Sam",
+              "SRE",
+              "AUS"
+            ],
+            [
+              "Pat",
+              "Des",
+              "BOS"
+            ]
+          ]
+        },
+        {
+          "rows": 6,
+          "cols": 2,
+          "cells": [
+            [
+              "City",
+              "Pop"
+            ],
+            [
+              "NYC TOKEN_P82_T2",
+              "8.3"
+            ],
+            [
+              "SF",
+              "0.8"
+            ],
+            [
+              "CHI",
+              "2.7"
+            ],
+            [
+              "MIA",
+              "0.5"
+            ],
+            [
+              "DEN",
+              "0.7"
+            ]
+          ]
+        }
+      ],
+      "page_count": 1,
+      "expected_table_count": 2
     }
   ]
 }

@@ -1028,15 +1028,34 @@ def rebuild_manifest() -> None:
     for p in sorted(GT.glob("*.json")):
         items.append(json.loads(p.read_text(encoding="utf-8")))
     # also keep basic fixtures if present
+    def _tier(i):
+        t = i.get("tier")
+        if t:
+            return str(t)
+        did = str(i.get("id", ""))
+        if did.startswith("0"):
+            return "basic"
+        if did.startswith("2"):
+            return "stress"
+        if did.startswith(("3", "4")):
+            return "real"
+        if did.startswith(("5", "6")):
+            return "hard"
+        return "unknown"
+
+    tiers = {}
+    for i in items:
+        t = _tier(i)
+        tiers[t] = tiers.get(t, 0) + 1
     manifest = {
-        "name": "pdfparser-competitive-corpus-v2",
-        "description": "Basic + stress synthetic + real-world complex PDFs",
+        "name": "pdfparser-competitive-corpus-v3",
+        "description": (
+            "Basic + stress + hard synthetic regression corpus, plus optional real PDFs. "
+            "ICDAR is not included (competitive-only, external)."
+        ),
         "document_count": len(items),
-        "tiers": {
-            "basic": sum(1 for i in items if i.get("tier") in (None, "basic") or str(i.get("id", "")).startswith("0")),
-            "stress": sum(1 for i in items if i.get("tier") == "stress"),
-            "real": sum(1 for i in items if i.get("tier") == "real"),
-        },
+        "tiers": tiers,
+        "suites_file": "corpus/suites.json",
         "documents": items,
     }
     (CORPUS / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")

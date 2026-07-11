@@ -1,0 +1,70 @@
+{
+  "id": "79_span_header_precision",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/79_span_header_precision.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "span_header_precision",
+  "description": "Colspan group header FY24 over Act/Bud",
+  "challenges": [
+    "colspan",
+    "merged_headers",
+    "wrong_shape"
+  ],
+  "failure_modes_covered": [
+    "WRONG_SHAPE",
+    "COL_MISCOUNT",
+    "BAD_STRUCTURE"
+  ],
+  "must_contain": [
+    "TOKEN_P79_DOC",
+    "TOKEN_P79_FY",
+    "TOKEN_P79_REV",
+    "TOKEN_P79_NI"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "Metric",
+          "FY24 TOKEN_P79_FY",
+          "",
+          "Notes"
+        ],
+        [
+          "",
+          "Act",
+          "Bud",
+          ""
+        ],
+        [
+          "Rev",
+          "10",
+          "9",
+          "TOKEN_P79_REV"
+        ],
+        [
+          "Cost",
+          "4",
+          "5",
+          "ops"
+        ],
+        [
+          "NI",
+          "6",
+          "4",
+          "TOKEN_P79_NI"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

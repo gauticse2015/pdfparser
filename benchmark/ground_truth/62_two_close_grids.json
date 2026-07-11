@@ -1,0 +1,144 @@
+{
+  "id": "62_two_close_grids",
+  "category": "two_close_grids",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Two side-by-side lattices with narrow gutter + third table below (3 total)",
+  "challenges": [
+    "multiple_tables_per_page",
+    "side_by_side",
+    "narrow_gutter",
+    "vertical_stack",
+    "lattice"
+  ],
+  "failure_modes_covered": [
+    "MULTI_TABLE_PAGE",
+    "UNDER_DETECT",
+    "WRONG_SHAPE",
+    "OVER_DETECT"
+  ],
+  "path": "corpus/hard/62_two_close_grids.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD62_DOC",
+    "TOKEN_H62_L",
+    "TOKEN_H62_R",
+    "TOKEN_H62_B"
+  ],
+  "table_cells_must_include": [
+    "L",
+    "V",
+    "a TOKEN_H62_L",
+    "1",
+    "b",
+    "2",
+    "c",
+    "3",
+    "d",
+    "4",
+    "R",
+    "V"
+  ],
+  "expected_table_count": 3,
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 2,
+      "cells": [
+        [
+          "L",
+          "V"
+        ],
+        [
+          "a TOKEN_H62_L",
+          "1"
+        ],
+        [
+          "b",
+          "2"
+        ],
+        [
+          "c",
+          "3"
+        ],
+        [
+          "d",
+          "4"
+        ]
+      ],
+      "label": "left"
+    },
+    {
+      "rows": 4,
+      "cols": 3,
+      "cells": [
+        [
+          "R",
+          "V",
+          "W"
+        ],
+        [
+          "x TOKEN_H62_R",
+          "9",
+          "8"
+        ],
+        [
+          "y",
+          "7",
+          "6"
+        ],
+        [
+          "z",
+          "5",
+          "4"
+        ]
+      ],
+      "label": "right"
+    },
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "M",
+          "N",
+          "O",
+          "P"
+        ],
+        [
+          "1 TOKEN_H62_B",
+          "2",
+          "3",
+          "4"
+        ],
+        [
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        [
+          "13",
+          "14",
+          "15",
+          "16"
+        ]
+      ],
+      "label": "bottom"
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Detect 3 tables: 5×2, 4×3, 5×4. Fail: fuse left+right or all three."
+}

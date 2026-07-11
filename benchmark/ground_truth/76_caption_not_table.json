@@ -1,0 +1,54 @@
+{
+  "id": "76_caption_not_table",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/76_caption_not_table.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "caption_not_table",
+  "description": "Tiny caption-like grid + one real data table; prefer 1 table (data)",
+  "challenges": [
+    "over_detect",
+    "caption_fp",
+    "form_like"
+  ],
+  "failure_modes_covered": [
+    "OVER_DETECT"
+  ],
+  "must_contain": [
+    "TOKEN_P76_DOC",
+    "TOKEN_P76_R",
+    "TOKEN_P76_CAP"
+  ],
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 2,
+      "cells": [
+        [
+          "Metric",
+          "Value"
+        ],
+        [
+          "Revenue TOKEN_P76_R",
+          "100"
+        ],
+        [
+          "Cost",
+          "40"
+        ],
+        [
+          "Profit",
+          "60"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "quality_notes": "Ideal n=1 (data). Emitting caption 2\u00d72 as second table fails detect F1.",
+  "expected_table_count": 1
+}

@@ -1,0 +1,535 @@
+{
+  "id": "58_multipage_continued_table",
+  "category": "multipage_continued_table",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "One ledger table continued across 3 pages (repeating header)",
+  "challenges": [
+    "multi_page_table",
+    "repeating_header",
+    "table_stitch",
+    "lattice"
+  ],
+  "failure_modes_covered": [
+    "MULTI_PAGE_DOC",
+    "ROW_MISCOUNT",
+    "WRONG_SHAPE"
+  ],
+  "path": "corpus/hard/58_multipage_continued_table.pdf",
+  "page_count": 3,
+  "must_contain": [
+    "TOKEN_HARD58_DOC",
+    "TOKEN_H58_R1",
+    "TOKEN_H58_R13",
+    "TOKEN_H58_R25",
+    "TOKEN_H58_R36",
+    "TOKEN_H58_CONT"
+  ],
+  "table_cells_must_include": [
+    "Date",
+    "Ref",
+    "Description",
+    "Amount",
+    "2026-01-02",
+    "R001",
+    "Ledger entry 1 TOKEN_H58_R1",
+    "10.50",
+    "2026-01-03",
+    "R002",
+    "Ledger entry 2",
+    "21.00"
+  ],
+  "expected_table_count": 3,
+  "expected_tables": [
+    {
+      "rows": 13,
+      "cols": 4,
+      "cells": [
+        [
+          "Date",
+          "Ref",
+          "Description",
+          "Amount"
+        ],
+        [
+          "2026-01-02",
+          "R001",
+          "Ledger entry 1 TOKEN_H58_R1",
+          "10.50"
+        ],
+        [
+          "2026-01-03",
+          "R002",
+          "Ledger entry 2",
+          "21.00"
+        ],
+        [
+          "2026-01-04",
+          "R003",
+          "Ledger entry 3",
+          "31.50"
+        ],
+        [
+          "2026-01-05",
+          "R004",
+          "Ledger entry 4",
+          "42.00"
+        ],
+        [
+          "2026-01-06",
+          "R005",
+          "Ledger entry 5",
+          "52.50"
+        ],
+        [
+          "2026-01-07",
+          "R006",
+          "Ledger entry 6",
+          "63.00"
+        ],
+        [
+          "2026-01-08",
+          "R007",
+          "Ledger entry 7",
+          "73.50"
+        ],
+        [
+          "2026-01-09",
+          "R008",
+          "Ledger entry 8",
+          "84.00"
+        ],
+        [
+          "2026-01-10",
+          "R009",
+          "Ledger entry 9",
+          "94.50"
+        ],
+        [
+          "2026-01-11",
+          "R010",
+          "Ledger entry 10",
+          "105.00"
+        ],
+        [
+          "2026-01-12",
+          "R011",
+          "Ledger entry 11",
+          "115.50"
+        ],
+        [
+          "2026-01-13",
+          "R012",
+          "Ledger entry 12",
+          "126.00"
+        ]
+      ]
+    },
+    {
+      "rows": 13,
+      "cols": 4,
+      "cells": [
+        [
+          "Date",
+          "Ref",
+          "Description",
+          "Amount"
+        ],
+        [
+          "2026-01-14",
+          "R013",
+          "Ledger entry 13 TOKEN_H58_R13",
+          "136.50"
+        ],
+        [
+          "2026-01-15",
+          "R014",
+          "Ledger entry 14",
+          "147.00"
+        ],
+        [
+          "2026-01-16",
+          "R015",
+          "Ledger entry 15",
+          "157.50"
+        ],
+        [
+          "2026-01-17",
+          "R016",
+          "Ledger entry 16",
+          "168.00"
+        ],
+        [
+          "2026-01-18",
+          "R017",
+          "Ledger entry 17",
+          "178.50"
+        ],
+        [
+          "2026-01-19",
+          "R018",
+          "Ledger entry 18",
+          "189.00"
+        ],
+        [
+          "2026-01-20",
+          "R019",
+          "Ledger entry 19",
+          "199.50"
+        ],
+        [
+          "2026-01-21",
+          "R020",
+          "Ledger entry 20",
+          "210.00"
+        ],
+        [
+          "2026-01-22",
+          "R021",
+          "Ledger entry 21",
+          "220.50"
+        ],
+        [
+          "2026-01-23",
+          "R022",
+          "Ledger entry 22",
+          "231.00"
+        ],
+        [
+          "2026-01-24",
+          "R023",
+          "Ledger entry 23",
+          "241.50"
+        ],
+        [
+          "2026-01-25",
+          "R024",
+          "Ledger entry 24",
+          "252.00"
+        ]
+      ]
+    },
+    {
+      "rows": 13,
+      "cols": 4,
+      "cells": [
+        [
+          "Date",
+          "Ref",
+          "Description",
+          "Amount"
+        ],
+        [
+          "2026-01-26",
+          "R025",
+          "Ledger entry 25 TOKEN_H58_R25",
+          "262.50"
+        ],
+        [
+          "2026-01-27",
+          "R026",
+          "Ledger entry 26",
+          "273.00"
+        ],
+        [
+          "2026-01-28",
+          "R027",
+          "Ledger entry 27",
+          "283.50"
+        ],
+        [
+          "2026-01-01",
+          "R028",
+          "Ledger entry 28",
+          "294.00"
+        ],
+        [
+          "2026-01-02",
+          "R029",
+          "Ledger entry 29",
+          "304.50"
+        ],
+        [
+          "2026-01-03",
+          "R030",
+          "Ledger entry 30",
+          "315.00"
+        ],
+        [
+          "2026-01-04",
+          "R031",
+          "Ledger entry 31",
+          "325.50"
+        ],
+        [
+          "2026-01-05",
+          "R032",
+          "Ledger entry 32",
+          "336.00"
+        ],
+        [
+          "2026-01-06",
+          "R033",
+          "Ledger entry 33",
+          "346.50"
+        ],
+        [
+          "2026-01-07",
+          "R034",
+          "Ledger entry 34",
+          "357.00"
+        ],
+        [
+          "2026-01-08",
+          "R035",
+          "Ledger entry 35",
+          "367.50"
+        ],
+        [
+          "2026-01-09",
+          "R036",
+          "Ledger entry 36 TOKEN_H58_R36",
+          "378.00"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Primary gold: 3 page fragments of 13×4 (header+12). Stitch-aware systems may emit 1 logical 37×4 — see alternate_logical_table.",
+  "alternate_logical_table": {
+    "rows": 37,
+    "cols": 4,
+    "cells": [
+      [
+        "Date",
+        "Ref",
+        "Description",
+        "Amount"
+      ],
+      [
+        "2026-01-02",
+        "R001",
+        "Ledger entry 1 TOKEN_H58_R1",
+        "10.50"
+      ],
+      [
+        "2026-01-03",
+        "R002",
+        "Ledger entry 2",
+        "21.00"
+      ],
+      [
+        "2026-01-04",
+        "R003",
+        "Ledger entry 3",
+        "31.50"
+      ],
+      [
+        "2026-01-05",
+        "R004",
+        "Ledger entry 4",
+        "42.00"
+      ],
+      [
+        "2026-01-06",
+        "R005",
+        "Ledger entry 5",
+        "52.50"
+      ],
+      [
+        "2026-01-07",
+        "R006",
+        "Ledger entry 6",
+        "63.00"
+      ],
+      [
+        "2026-01-08",
+        "R007",
+        "Ledger entry 7",
+        "73.50"
+      ],
+      [
+        "2026-01-09",
+        "R008",
+        "Ledger entry 8",
+        "84.00"
+      ],
+      [
+        "2026-01-10",
+        "R009",
+        "Ledger entry 9",
+        "94.50"
+      ],
+      [
+        "2026-01-11",
+        "R010",
+        "Ledger entry 10",
+        "105.00"
+      ],
+      [
+        "2026-01-12",
+        "R011",
+        "Ledger entry 11",
+        "115.50"
+      ],
+      [
+        "2026-01-13",
+        "R012",
+        "Ledger entry 12",
+        "126.00"
+      ],
+      [
+        "2026-01-14",
+        "R013",
+        "Ledger entry 13 TOKEN_H58_R13",
+        "136.50"
+      ],
+      [
+        "2026-01-15",
+        "R014",
+        "Ledger entry 14",
+        "147.00"
+      ],
+      [
+        "2026-01-16",
+        "R015",
+        "Ledger entry 15",
+        "157.50"
+      ],
+      [
+        "2026-01-17",
+        "R016",
+        "Ledger entry 16",
+        "168.00"
+      ],
+      [
+        "2026-01-18",
+        "R017",
+        "Ledger entry 17",
+        "178.50"
+      ],
+      [
+        "2026-01-19",
+        "R018",
+        "Ledger entry 18",
+        "189.00"
+      ],
+      [
+        "2026-01-20",
+        "R019",
+        "Ledger entry 19",
+        "199.50"
+      ],
+      [
+        "2026-01-21",
+        "R020",
+        "Ledger entry 20",
+        "210.00"
+      ],
+      [
+        "2026-01-22",
+        "R021",
+        "Ledger entry 21",
+        "220.50"
+      ],
+      [
+        "2026-01-23",
+        "R022",
+        "Ledger entry 22",
+        "231.00"
+      ],
+      [
+        "2026-01-24",
+        "R023",
+        "Ledger entry 23",
+        "241.50"
+      ],
+      [
+        "2026-01-25",
+        "R024",
+        "Ledger entry 24",
+        "252.00"
+      ],
+      [
+        "2026-01-26",
+        "R025",
+        "Ledger entry 25 TOKEN_H58_R25",
+        "262.50"
+      ],
+      [
+        "2026-01-27",
+        "R026",
+        "Ledger entry 26",
+        "273.00"
+      ],
+      [
+        "2026-01-28",
+        "R027",
+        "Ledger entry 27",
+        "283.50"
+      ],
+      [
+        "2026-01-01",
+        "R028",
+        "Ledger entry 28",
+        "294.00"
+      ],
+      [
+        "2026-01-02",
+        "R029",
+        "Ledger entry 29",
+        "304.50"
+      ],
+      [
+        "2026-01-03",
+        "R030",
+        "Ledger entry 30",
+        "315.00"
+      ],
+      [
+        "2026-01-04",
+        "R031",
+        "Ledger entry 31",
+        "325.50"
+      ],
+      [
+        "2026-01-05",
+        "R032",
+        "Ledger entry 32",
+        "336.00"
+      ],
+      [
+        "2026-01-06",
+        "R033",
+        "Ledger entry 33",
+        "346.50"
+      ],
+      [
+        "2026-01-07",
+        "R034",
+        "Ledger entry 34",
+        "357.00"
+      ],
+      [
+        "2026-01-08",
+        "R035",
+        "Ledger entry 35",
+        "367.50"
+      ],
+      [
+        "2026-01-09",
+        "R036",
+        "Ledger entry 36 TOKEN_H58_R36",
+        "378.00"
+      ]
+    ],
+    "note": "If stitch merges pages and drops repeated headers: 1+36 rows also acceptable"
+  },
+  "stitch_expected": true
+}

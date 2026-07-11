@@ -1,0 +1,160 @@
+{
+  "id": "50_multi_table_stacked_page",
+  "category": "multi_table_stacked",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Three vertically stacked lattice tables with different shapes on one page",
+  "challenges": [
+    "multiple_tables_per_page",
+    "vertical_stack",
+    "heterogeneous_shapes",
+    "lattice",
+    "anti_mega_grid"
+  ],
+  "failure_modes_covered": [
+    "MULTI_TABLE_PAGE",
+    "UNDER_DETECT",
+    "WRONG_SHAPE",
+    "ROW_MISCOUNT",
+    "COL_MISCOUNT"
+  ],
+  "path": "corpus/hard/50_multi_table_stacked_page.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD50_DOC",
+    "TOKEN_H50_T1",
+    "TOKEN_H50_T2",
+    "TOKEN_H50_T3"
+  ],
+  "table_cells_must_include": [
+    "Region",
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4",
+    "North TOKEN_H50_T1",
+    "10",
+    "12",
+    "11",
+    "15",
+    "South",
+    "8"
+  ],
+  "expected_table_count": 3,
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 5,
+      "cells": [
+        [
+          "Region",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ],
+        [
+          "North TOKEN_H50_T1",
+          "10",
+          "12",
+          "11",
+          "15"
+        ],
+        [
+          "South",
+          "8",
+          "9",
+          "10",
+          "12"
+        ],
+        [
+          "East",
+          "14",
+          "13",
+          "16",
+          "18"
+        ],
+        [
+          "West",
+          "7",
+          "8",
+          "9",
+          "11"
+        ]
+      ],
+      "label": "A"
+    },
+    {
+      "rows": 4,
+      "cols": 3,
+      "cells": [
+        [
+          "Dept",
+          "Headcount",
+          "Budget"
+        ],
+        [
+          "Eng TOKEN_H50_T2",
+          "42",
+          "1.2M"
+        ],
+        [
+          "Sales",
+          "18",
+          "0.9M"
+        ],
+        [
+          "Ops",
+          "25",
+          "0.6M"
+        ]
+      ],
+      "label": "B"
+    },
+    {
+      "rows": 6,
+      "cols": 3,
+      "cells": [
+        [
+          "SKU",
+          "OnHand",
+          "Reorder"
+        ],
+        [
+          "A-10 TOKEN_H50_T3",
+          "120",
+          "50"
+        ],
+        [
+          "B-20",
+          "40",
+          "30"
+        ],
+        [
+          "C-30",
+          "200",
+          "80"
+        ],
+        [
+          "D-40",
+          "15",
+          "20"
+        ],
+        [
+          "E-50",
+          "90",
+          "40"
+        ]
+      ],
+      "label": "C"
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Success: detect 3 tables with exact shapes 5x5, 4x3, 6x3. Fail: one fused mega-grid."
+}

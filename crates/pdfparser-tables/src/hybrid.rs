@@ -434,6 +434,8 @@ fn hybrid_grid(
 
     let _ = inner;
 
+    let filled = cells.iter().filter(|c| !c.text.trim().is_empty()).count();
+    let fill_rate = filled as f32 / cells.len().max(1) as f32;
     Some(Table {
         bbox: frame,
         page: page_index,
@@ -448,5 +450,8 @@ fn hybrid_grid(
         logical_table_id: None,
         strategy_provenance: vec![PipelineId::S4Hybrid],
         notes: vec![format!("hybrid {max_row}x{max_col}")],
+        edge_score: 0.0,
+        fill_rate,
+        weak_edges: false,
     })
 }

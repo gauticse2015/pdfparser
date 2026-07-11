@@ -1,0 +1,128 @@
+{
+  "id": "53_column_span_header",
+  "category": "column_span_header",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Financial table with colspan group headers (FY2024/FY2025 span 2 cols)",
+  "challenges": [
+    "colspan",
+    "merged_headers",
+    "multi_level_header",
+    "lattice",
+    "span_text_assign"
+  ],
+  "failure_modes_covered": [
+    "WRONG_SHAPE",
+    "COL_MISCOUNT",
+    "BAD_STRUCTURE",
+    "ROW_MISCOUNT"
+  ],
+  "path": "corpus/hard/53_column_span_header.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD53_DOC",
+    "TOKEN_H53_FY24",
+    "TOKEN_H53_FY25",
+    "TOKEN_H53_REV",
+    "TOKEN_H53_GP",
+    "TOKEN_H53_NI"
+  ],
+  "table_cells_must_include": [
+    "Metric",
+    "FY2024 TOKEN_H53_FY24",
+    "FY2025 TOKEN_H53_FY25",
+    "Notes",
+    "Actual",
+    "Budget",
+    "Actual",
+    "Budget",
+    "Revenue",
+    "1200",
+    "1100",
+    "1450"
+  ],
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 7,
+      "cols": 6,
+      "cells": [
+        [
+          "Metric",
+          "FY2024 TOKEN_H53_FY24",
+          "",
+          "FY2025 TOKEN_H53_FY25",
+          "",
+          "Notes"
+        ],
+        [
+          "",
+          "Actual",
+          "Budget",
+          "Actual",
+          "Budget",
+          ""
+        ],
+        [
+          "Revenue",
+          "1200",
+          "1100",
+          "1450",
+          "1400",
+          "TOKEN_H53_REV"
+        ],
+        [
+          "COGS",
+          "480",
+          "500",
+          "560",
+          "550",
+          "supply"
+        ],
+        [
+          "Gross Profit",
+          "720",
+          "600",
+          "890",
+          "850",
+          "TOKEN_H53_GP"
+        ],
+        [
+          "OpEx",
+          "310",
+          "300",
+          "340",
+          "330",
+          "ops"
+        ],
+        [
+          "Net Income",
+          "410",
+          "300",
+          "550",
+          "520",
+          "TOKEN_H53_NI"
+        ]
+      ],
+      "span_notes": "cols 1-2 header span FY2024; cols 3-4 header span FY2025"
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Primary gold is 7×6 visual grid. Span-aware extractors may emit colspan metadata; cell tokens TOKEN_H53_* must land in correct columns.",
+  "alternate_acceptable_shapes": [
+    [
+      6,
+      6
+    ],
+    [
+      7,
+      6
+    ]
+  ]
+}

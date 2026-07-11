@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "policy": {
+    "regression_never_includes_icdar": true,
+    "icdar_use": "Competitive analysis only. ICDAR PDFs and gold XML must not be copied into benchmark/corpus/ or used as regression targets during algorithm development. Run competitive evals from an external Camelot/ICDAR checkout.",
+    "synthetic_hard_purpose": "Hard fixtures synthesize multi-table, span, noise-line, and multipage failure modes inspired by competitive gaps \u2014 original content only.",
+    "regression_precision_purpose": "Day-to-day gate for FP control and structure work. Not ICDAR."
+  },
+  "suites": {
+    "regression": {
+      "description": "Day-to-day accuracy & improvement suite (no ICDAR).",
+      "tiers": [
+        "basic",
+        "stress",
+        "hard"
+      ],
+      "include_sources": [
+        "synthetic"
+      ],
+      "exclude_sources": [
+        "icdar"
+      ],
+      "exclude_tiers": [],
+      "notes": "Optionally include tier=real for soft probes; real has weaker grid gold."
+    },
+    "regression_grid_gold": {
+      "description": "Synthetic docs with full expected_tables cell grids.",
+      "filter": {
+        "source": "synthetic",
+        "requires": [
+          "expected_tables"
+        ],
+        "tiers": [
+          "basic",
+          "stress",
+          "hard"
+        ]
+      }
+    },
+    "regression_hard": {
+      "description": "Hard structure suite (50\u201362). Primary improvement target for lattice multi-region/spans.",
+      "tiers": [
+        "hard"
+      ],
+      "document_ids": [
+        "50_multi_table_stacked_page",
+        "51_multi_table_multipage",
+        "52_page_border_noise",
+        "53_column_span_header",
+        "54_row_span_categories",
+        "55_gap_broken_corners",
+        "56_stacked_uneven_tables",
+        "57_wide_statistical_grid",
+        "58_multipage_continued_table",
+        "59_stream_multi_region",
+        "60_mixed_lattice_stream_page",
+        "61_decorative_hline_noise",
+        "62_two_close_grids"
+      ]
+    },
+    "regression_basic_stress": {
+      "description": "Legacy product fixtures 01\u201312 + stress 20\u201327.",
+      "tiers": [
+        "basic",
+        "stress"
+      ]
+    },
+    "competitive_icdar": {
+      "description": "External ICDAR-2013 head-to-head only. Not part of corpus.",
+      "external": true,
+      "data_source": "camelot-dev/camelot tests/files/tabula/icdar2013-dataset (external clone)",
+      "runner": "docs/camelot-comparison-replication.md",
+      "results": [
+        "benchmark/results/camelot_icdar_headtohead.json",
+        "benchmark/results/icdar_failure_analysis.json"
+      ],
+      "forbidden_in_regression": true
+    },
+    "regression_precision": {
+      "description": "Precision/structure suite (70\u201382). OVER_DETECT, phantom lines, stream FPs, sparse grids \u2014 ICDAR-like modes without ICDAR files.",
+      "tiers": [
+        "hard_precision"
+      ],
+      "document_ids": [
+        "70_deco_rules_one_table",
+        "71_frame_and_table",
+        "72_two_tables_margin_ticks",
+        "73_false_row_underlines",
+        "74_sparse_data_grid",
+        "75_prose_not_stream",
+        "76_caption_not_table",
+        "77_three_stacked_disjoint",
+        "78_multipage_footer_rules",
+        "79_span_header_precision",
+        "80_form_boxes_above_table",
+        "81_phantom_verticals",
+        "82_stream_gap_boundary"
+      ]
+    }
+  },
+  "hard_failure_mode_coverage": {
+    "MULTI_TABLE_PAGE": [
+      "50_multi_table_stacked_page",
+      "51_multi_table_multipage",
+      "56_stacked_uneven_tables",
+      "59_stream_multi_region",
+      "60_mixed_lattice_stream_page",
+      "62_two_close_grids"
+    ],
+    "WRONG_SHAPE_SPANS": [
+      "53_column_span_header",
+      "54_row_span_categories"
+    ],
+    "NOISE_LINES": [
+      "52_page_border_noise",
+      "61_decorative_hline_noise"
+    ],
+    "GAP_LINES": [
+      "55_gap_broken_corners"
+    ],
+    "MULTI_PAGE": [
+      "51_multi_table_multipage",
+      "58_multipage_continued_table"
+    ],
+    "STREAM": [
+      "59_stream_multi_region",
+      "60_mixed_lattice_stream_page"
+    ],
+    "WIDE_GRID": [
+      "57_wide_statistical_grid"
+    ]
+  }
+}

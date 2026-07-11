@@ -1,199 +1,298 @@
 library	doc_id	tier	category	success	wall_ms	overall_score	text_score	text_token_f1	text_token_recall	text_cer	text_wer	text_similarity	table_score	table_detect_f1	table_detect_precision	table_detect_recall	table_expected	table_predicted	table_shape_exact_rate	table_row_accuracy	table_col_accuracy	table_cell_f1	table_cell_precision	table_cell_recall	table_content_token_recall	table_has_grid_gold	objects_score	images_score	images_exact	links_f1	forms_f1	outline_f1	error
-pdfparser	01_simple_text	basic	simple_text	True	512.96	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfplumber	01_simple_text	basic	simple_text	True	78.45	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfminer.six	01_simple_text	basic	simple_text	True	4.1	99.5308	99.4135	1.0	1.0	0.0117	0.0	0.9883	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdf	01_simple_text	basic	simple_text	True	47.03	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pymupdf	01_simple_text	basic	simple_text	True	64.76	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdfium2	01_simple_text	basic	simple_text	True	101.54	99.4135	99.4135	1.0	1.0	0.0117	0.0	0.9883	100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	02_multi_column	basic	multi_column	True	5.61	100.0	100.0	1.0	1.0	0.0	0.0	1.0	0.0	0.0	0.0	1.0	0	1								False	100.0	1.0	True				
-pdfplumber	02_multi_column	basic	multi_column	True	4.21	73.2628	73.2628	1.0	1.0	0.5347	0.5455	0.4653	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfminer.six	02_multi_column	basic	multi_column	True	4.54	72.6586	72.6586	1.0	1.0	0.5468	0.5455	0.4532	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdf	02_multi_column	basic	multi_column	True	1.03	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pymupdf	02_multi_column	basic	multi_column	True	4.98	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdfium2	02_multi_column	basic	multi_column	True	0.86	98.4894	98.4894	1.0	1.0	0.0302	0.0	0.9698	100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	03_large_multipage	basic	large_multipage	True	22.37	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfplumber	03_large_multipage	basic	large_multipage	True	1492.66	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfminer.six	03_large_multipage	basic	large_multipage	True	1227.41	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdf	03_large_multipage	basic	large_multipage	True	111.17	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pymupdf	03_large_multipage	basic	large_multipage	True	1625.94	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdfium2	03_large_multipage	basic	large_multipage	True	28.24	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	04_image_heavy	basic	image_heavy	True	7.77	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfplumber	04_image_heavy	basic	image_heavy	True	3.13	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfminer.six	04_image_heavy	basic	image_heavy	True	3.86	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdf	04_image_heavy	basic	image_heavy	True	1.14	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pymupdf	04_image_heavy	basic	image_heavy	True	5.04	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdfium2	04_image_heavy	basic	image_heavy	True	0.8	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	05_special_objects	basic	special_objects	True	6.23	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True	1.0	1.0	1.0	
-pdfplumber	05_special_objects	basic	special_objects	True	4.43	65.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	50.0	1.0	True	1.0	0.0	0.0	
-pdfminer.six	05_special_objects	basic	special_objects	True	3.91	65.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	50.0	1.0	True	0.0	0.0	1.0	
-pypdf	05_special_objects	basic	special_objects	True	1.48	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True	1.0	1.0	1.0	
-pymupdf	05_special_objects	basic	special_objects	True	5.91	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True	1.0	1.0	1.0	
-pypdfium2	05_special_objects	basic	special_objects	True	0.84	30.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	0.0			0.0	0.0	0.0	
-pdfparser	06_table_lattice	basic	table_lattice	True	7.03	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	06_table_lattice	basic	table_lattice	True	4.4	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfminer.six	06_table_lattice	basic	table_lattice	True	5.78	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	06_table_lattice	basic	table_lattice	True	1.34	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	06_table_lattice	basic	table_lattice	True	7.25	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pypdfium2	06_table_lattice	basic	table_lattice	True	0.85	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	07_table_stream	basic	table_stream	True	6.81	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	07_table_stream	basic	table_stream	True	3.68	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pdfminer.six	07_table_stream	basic	table_stream	True	5.76	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	07_table_stream	basic	table_stream	True	1.25	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	07_table_stream	basic	table_stream	True	3.97	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdfium2	07_table_stream	basic	table_stream	True	0.92	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	08_table_partial_border	basic	table_partial_border	True	7.69	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	08_table_partial_border	basic	table_partial_border	True	3.46	55.6944	100.0	1.0	1.0				40.9259	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.1481	1.0	0.08	1.0	True	100.0	1.0	True				
-pdfminer.six	08_table_partial_border	basic	table_partial_border	True	5.37	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	08_table_partial_border	basic	table_partial_border	True	1.24	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	08_table_partial_border	basic	table_partial_border	True	3.4	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdfium2	08_table_partial_border	basic	table_partial_border	True	1.02	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	09_table_complex	basic	table_complex	True	7.07	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	09_table_complex	basic	table_complex	True	7.51	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfminer.six	09_table_complex	basic	table_complex	True	9.23	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	09_table_complex	basic	table_complex	True	1.83	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	09_table_complex	basic	table_complex	True	10.68	99.5224	100.0	1.0	1.0				99.403	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9851	1.0	0.9706	1.0	True	100.0	1.0	True				
-pypdfium2	09_table_complex	basic	table_complex	True	0.97	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	10_mixed_document	basic	mixed_document	True	6.66	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	10_mixed_document	basic	mixed_document	True	4.18	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfparser	01_simple_text	basic	simple_text	True	6.34	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+camelot_lattice	01_simple_text	basic	simple_text	True	365.83	0.0	0.0	0.0	0.0	1.0	1.0	0.0	100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	01_simple_text	basic	simple_text	True	237.51	0.0	0.0	0.0	0.0	1.0	1.0	0.0	100.0	1.0	1.0	1.0	0	0								False							
+img2table	01_simple_text	basic	simple_text	True	79.85	0.0	0.0	0.0	0.0	1.0	1.0	0.0	100.0	1.0	1.0	1.0	0	0								False							
+pdfplumber	01_simple_text	basic	simple_text	True	43.27	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	01_simple_text	basic	simple_text	True	39.51	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	01_simple_text	basic	simple_text	True	4.95	99.5308	99.4135	1.0	1.0	0.0117	0.0	0.9883	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	01_simple_text	basic	simple_text	True	35.4	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdfium2	01_simple_text	basic	simple_text	True	0.94	99.4135	99.4135	1.0	1.0	0.0117	0.0	0.9883	100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	02_multi_column	basic	multi_column	True	7.05	100.0	100.0	1.0	1.0	0.0	0.0	1.0	0.0	0.0	0.0	1.0	0	1								False	100.0	1.0	True				
+camelot_lattice	02_multi_column	basic	multi_column	True	2.0	0.0	0.0	0.0	0.0	1.0	1.0	0.0	100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	02_multi_column	basic	multi_column	True	209.23	72.9607	72.9607	1.0	1.0	0.5408	0.5455	0.4592	0.0	0.0	0.0	1.0	0	1								False							
+img2table	02_multi_column	basic	multi_column	True	57.79	0.0	0.0	0.0	0.0	1.0	1.0	0.0	100.0	1.0	1.0	1.0	0	0								False							
+pdfplumber	02_multi_column	basic	multi_column	True	4.51	73.2628	73.2628	1.0	1.0	0.5347	0.5455	0.4653	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	02_multi_column	basic	multi_column	True	5.65	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	02_multi_column	basic	multi_column	True	4.64	72.6586	72.6586	1.0	1.0	0.5468	0.5455	0.4532	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	02_multi_column	basic	multi_column	True	1.07	100.0	100.0	1.0	1.0	0.0	0.0	1.0	100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdfium2	02_multi_column	basic	multi_column	True	0.8	98.4894	98.4894	1.0	1.0	0.0302	0.0	0.9698	100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	03_large_multipage	basic	large_multipage	True	24.34	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+camelot_lattice	03_large_multipage	basic	large_multipage	True	0.0	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	03_large_multipage	basic	large_multipage	True	0.0	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+img2table	03_large_multipage	basic	large_multipage	True	0.0	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfplumber	03_large_multipage	basic	large_multipage	True	1485.14	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	03_large_multipage	basic	large_multipage	True	1667.43	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	03_large_multipage	basic	large_multipage	True	1219.96	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	03_large_multipage	basic	large_multipage	True	111.65	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdfium2	03_large_multipage	basic	large_multipage	True	28.3	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	04_image_heavy	basic	image_heavy	True	10.57	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+camelot_lattice	04_image_heavy	basic	image_heavy	True	6.37	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	04_image_heavy	basic	image_heavy	True	377.58	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+img2table	04_image_heavy	basic	image_heavy	True	67.35	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfplumber	04_image_heavy	basic	image_heavy	True	3.22	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	04_image_heavy	basic	image_heavy	True	5.93	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	04_image_heavy	basic	image_heavy	True	3.82	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	04_image_heavy	basic	image_heavy	True	1.09	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdfium2	04_image_heavy	basic	image_heavy	True	0.75	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	05_special_objects	basic	special_objects	True	9.88	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True	1.0	1.0	1.0	
+camelot_lattice	05_special_objects	basic	special_objects	True	5.67	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False	0.0			0.0	0.0	0.0	
+camelot_auto	05_special_objects	basic	special_objects	True	375.13	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False	0.0			0.0	0.0	0.0	
+img2table	05_special_objects	basic	special_objects	True	91.18	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False	0.0			0.0	0.0	0.0	
+pdfplumber	05_special_objects	basic	special_objects	True	5.07	65.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	50.0	1.0	True	1.0	0.0	0.0	
+pymupdf	05_special_objects	basic	special_objects	True	7.34	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True	1.0	1.0	1.0	
+pdfminer.six	05_special_objects	basic	special_objects	True	4.27	65.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	50.0	1.0	True	0.0	0.0	1.0	
+pypdf	05_special_objects	basic	special_objects	True	1.62	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True	1.0	1.0	1.0	
+pypdfium2	05_special_objects	basic	special_objects	True	0.85	30.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	0.0			0.0	0.0	0.0	
+pdfparser	06_table_lattice	basic	table_lattice	True	10.17	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	06_table_lattice	basic	table_lattice	True	7.49	95.8333	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	06_table_lattice	basic	table_lattice	True	368.29	95.8333	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	06_table_lattice	basic	table_lattice	True	62.69	95.8333	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	06_table_lattice	basic	table_lattice	True	4.59	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	06_table_lattice	basic	table_lattice	True	7.0	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfminer.six	06_table_lattice	basic	table_lattice	True	5.83	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	06_table_lattice	basic	table_lattice	True	1.31	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	06_table_lattice	basic	table_lattice	True	0.69	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	07_table_stream	basic	table_stream	True	10.17	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	07_table_stream	basic	table_stream	True	6.8	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+camelot_auto	07_table_stream	basic	table_stream	True	209.03	51.25	100.0	1.0	1.0				35.0	1.0	1.0	1.0	1	1	0.0	0.0	1.0	0.0	0.0	0.0	1.0	True							
+img2table	07_table_stream	basic	table_stream	True	58.77	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfplumber	07_table_stream	basic	table_stream	True	3.86	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pymupdf	07_table_stream	basic	table_stream	True	4.65	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pdfminer.six	07_table_stream	basic	table_stream	True	5.83	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	07_table_stream	basic	table_stream	True	1.23	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	07_table_stream	basic	table_stream	True	0.8	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	08_table_partial_border	basic	table_partial_border	True	9.74	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	08_table_partial_border	basic	table_partial_border	True	7.34	51.5278	83.3333	0.8333	0.8333				40.9259	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.1481	1.0	0.08	1.0	True							
+camelot_auto	08_table_partial_border	basic	table_partial_border	True	354.45	51.5278	83.3333	0.8333	0.8333				40.9259	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.1481	1.0	0.08	1.0	True							
+img2table	08_table_partial_border	basic	table_partial_border	True	59.46	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfplumber	08_table_partial_border	basic	table_partial_border	True	3.9	55.6944	100.0	1.0	1.0				40.9259	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.1481	1.0	0.08	1.0	True	100.0	1.0	True				
+pymupdf	08_table_partial_border	basic	table_partial_border	True	4.03	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pdfminer.six	08_table_partial_border	basic	table_partial_border	True	5.56	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	08_table_partial_border	basic	table_partial_border	True	1.23	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	08_table_partial_border	basic	table_partial_border	True	0.77	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	09_table_complex	basic	table_complex	True	9.74	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	09_table_complex	basic	table_complex	True	8.34	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	09_table_complex	basic	table_complex	True	366.79	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	09_table_complex	basic	table_complex	True	61.28	99.5362	100.0	1.0	1.0				99.4203	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9855	0.9714	1.0	1.0	True							
+pdfplumber	09_table_complex	basic	table_complex	True	7.49	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	09_table_complex	basic	table_complex	True	11.13	99.5224	100.0	1.0	1.0				99.403	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9851	1.0	0.9706	1.0	True	100.0	1.0	True				
+pdfminer.six	09_table_complex	basic	table_complex	True	9.19	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	09_table_complex	basic	table_complex	True	1.85	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	09_table_complex	basic	table_complex	True	0.82	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	10_mixed_document	basic	mixed_document	True	10.56	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	10_mixed_document	basic	mixed_document	True	6.75	85.0	60.0	0.6	0.6				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	10_mixed_document	basic	mixed_document	True	367.92	85.0	60.0	0.6	0.6				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	10_mixed_document	basic	mixed_document	True	66.57	85.0	60.0	0.6	0.6				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	10_mixed_document	basic	mixed_document	True	4.35	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	10_mixed_document	basic	mixed_document	True	6.31	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
 pdfminer.six	10_mixed_document	basic	mixed_document	True	5.04	50.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	10_mixed_document	basic	mixed_document	True	1.38	50.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	10_mixed_document	basic	mixed_document	True	6.07	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pypdfium2	10_mixed_document	basic	mixed_document	True	0.83	37.5	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	11_rotated_page	basic	rotated_page	True	8.08	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfplumber	11_rotated_page	basic	rotated_page	True	2.61	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfminer.six	11_rotated_page	basic	rotated_page	True	4.39	50.0	50.0	0.5	0.5				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	10_mixed_document	basic	mixed_document	True	1.27	50.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	10_mixed_document	basic	mixed_document	True	0.65	37.5	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	11_rotated_page	basic	rotated_page	True	9.38	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+camelot_lattice	11_rotated_page	basic	rotated_page	True	1.94	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	11_rotated_page	basic	rotated_page	True	394.82	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+img2table	11_rotated_page	basic	rotated_page	True	92.9	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfplumber	11_rotated_page	basic	rotated_page	True	2.69	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	11_rotated_page	basic	rotated_page	True	5.18	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	11_rotated_page	basic	rotated_page	True	4.53	50.0	50.0	0.5	0.5				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
 pypdf	11_rotated_page	basic	rotated_page	True	0.92	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pymupdf	11_rotated_page	basic	rotated_page	True	3.87	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdfium2	11_rotated_page	basic	rotated_page	True	0.76	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	12_encrypted_password	basic	encrypted_password	False	0.54	0.0	0.0						0.0														0.0						RuntimeError: password decrypt not in Phase U
-pdfplumber	12_encrypted_password	basic	encrypted_password	True	12.49	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfminer.six	12_encrypted_password	basic	encrypted_password	True	5.22	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdf	12_encrypted_password	basic	encrypted_password	True	3.44	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pymupdf	12_encrypted_password	basic	encrypted_password	True	19.01	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdfium2	12_encrypted_password	basic	encrypted_password	True	3.99	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	20_bank_statement_multipage	stress	bank_statement	True	10.6	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1							1.0	False	100.0	1.0	True				
-pdfplumber	20_bank_statement_multipage	stress	bank_statement	True	102.09	89.1111	100.0	1.0	1.0				84.4444	0.6667	0.5	1.0	1	2							1.0	False	100.0	1.0	True				
-pdfminer.six	20_bank_statement_multipage	stress	bank_statement	True	152.58	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0							0.0	False	100.0	1.0	True				
-pypdf	20_bank_statement_multipage	stress	bank_statement	True	16.44	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0							0.0	False	100.0	1.0	True				
-pymupdf	20_bank_statement_multipage	stress	bank_statement	True	171.11	76.6667	100.0	1.0	1.0				66.6667	0.6667	0.5	1.0	1	2							0.6667	False	100.0	1.0	True				
-pypdfium2	20_bank_statement_multipage	stress	bank_statement	True	2.13	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0							0.0	False							
-pdfparser	21_table_overflow_cells	stress	table_overflow	True	9.52	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	21_table_overflow_cells	stress	table_overflow	True	49.65	98.3838	100.0	1.0	1.0				97.9798	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9495	1.0	0.9038	1.0	True	100.0	1.0	True				
-pdfminer.six	21_table_overflow_cells	stress	table_overflow	True	38.53	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	21_table_overflow_cells	stress	table_overflow	True	4.87	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	21_table_overflow_cells	stress	table_overflow	True	90.02	93.7471	100.0	1.0	1.0				92.1839	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.8046	1.0	0.6731	0.5	True	100.0	1.0	True				
-pypdfium2	21_table_overflow_cells	stress	table_overflow	True	2.56	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	22_table_merged_headers	stress	table_merged_headers	True	7.93	97.4054	100.0	1.0	1.0				96.7568	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9189	0.9444	0.8947	1.0	True	100.0	1.0	True				
-pdfplumber	22_table_merged_headers	stress	table_merged_headers	True	10.35	99.5733	100.0	1.0	1.0				99.4667	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9867	1.0	0.9737	1.0	True	100.0	1.0	True				
-pdfminer.six	22_table_merged_headers	stress	table_merged_headers	True	13.77	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	22_table_merged_headers	stress	table_merged_headers	True	2.79	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	22_table_merged_headers	stress	table_merged_headers	True	13.77	97.7465	100.0	1.0	1.0				97.1831	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9296	1.0	0.8684	0.8	True	100.0	1.0	True				
-pypdfium2	22_table_merged_headers	stress	table_merged_headers	True	1.04	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	23_side_by_side_tables	stress	side_by_side_tables	True	7.72	99.0857	100.0	1.0	1.0				98.8571	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9714	1.0	0.9444	1.0	True	100.0	1.0	True				
-pdfplumber	23_side_by_side_tables	stress	side_by_side_tables	True	6.1	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfminer.six	23_side_by_side_tables	stress	side_by_side_tables	True	7.87	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	23_side_by_side_tables	stress	side_by_side_tables	True	1.91	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	23_side_by_side_tables	stress	side_by_side_tables	True	9.2	98.1176	100.0	1.0	1.0				97.6471	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9412	1.0	0.8889	0.5	True	100.0	1.0	True				
-pypdfium2	23_side_by_side_tables	stress	side_by_side_tables	True	0.95	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	24_invoice_line_items	stress	invoice	True	7.78	81.25	100.0	1.0	1.0				75.0	1.0	1.0	1.0	1	1	0.0	0.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	24_invoice_line_items	stress	invoice	True	14.94	81.25	100.0	1.0	1.0				75.0	1.0	1.0	1.0	1	1	0.0	0.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfminer.six	24_invoice_line_items	stress	invoice	True	17.04	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	24_invoice_line_items	stress	invoice	True	3.05	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	24_invoice_line_items	stress	invoice	True	21.11	79.1071	100.0	1.0	1.0				72.1429	1.0	1.0	1.0	1	1	0.0	0.0	1.0	0.9286	1.0	0.8667	0.4	True	100.0	1.0	True				
-pypdfium2	24_invoice_line_items	stress	invoice	True	1.11	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	25_dense_numeric_grid	stress	dense_numeric	True	12.49	99.9542	100.0	1.0	1.0				99.9462	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9987	1.0	0.9973	1.0	True	100.0	1.0	True				
-pdfplumber	25_dense_numeric_grid	stress	dense_numeric	True	87.68	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfminer.six	25_dense_numeric_grid	stress	dense_numeric	True	383.18	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pypdf	25_dense_numeric_grid	stress	dense_numeric	True	18.81	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	25_dense_numeric_grid	stress	dense_numeric	True	103.6	99.9542	100.0	1.0	1.0				99.9462	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9987	1.0	0.9973	0.6667	True	100.0	1.0	True				
-pypdfium2	25_dense_numeric_grid	stress	dense_numeric	True	1.79	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	26_watermark_overlap	stress	watermark_overlap	True	8.37	100.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	1								False	100.0	1.0	True				
-pdfplumber	26_watermark_overlap	stress	watermark_overlap	True	3.47	75.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfminer.six	26_watermark_overlap	stress	watermark_overlap	True	14.5	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdf	26_watermark_overlap	stress	watermark_overlap	True	1.02	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pymupdf	26_watermark_overlap	stress	watermark_overlap	True	4.98	75.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pypdfium2	26_watermark_overlap	stress	watermark_overlap	True	0.81	75.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	27_table_with_footnotes	stress	table_footnotes	True	7.33	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	27_table_with_footnotes	stress	table_footnotes	True	6.19	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfminer.six	27_table_with_footnotes	stress	table_footnotes	True	7.4	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	11_rotated_page	basic	rotated_page	True	0.77	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	12_encrypted_password	basic	encrypted_password	False	0.89	0.0	0.0						0.0														0.0						RuntimeError: password decrypt not in Phase U
+camelot_lattice	12_encrypted_password	basic	encrypted_password	True	18.44	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	12_encrypted_password	basic	encrypted_password	True	9.38	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+img2table	12_encrypted_password	basic	encrypted_password	False	1.13	0.0	0.0						0.0														0.0						PdfiumError: Failed to load document (PDFium: Incorrect password error).
+pdfplumber	12_encrypted_password	basic	encrypted_password	True	3.21	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	12_encrypted_password	basic	encrypted_password	True	20.58	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	12_encrypted_password	basic	encrypted_password	True	5.55	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	12_encrypted_password	basic	encrypted_password	True	3.74	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdfium2	12_encrypted_password	basic	encrypted_password	True	3.96	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	20_bank_statement_multipage	stress	bank_statement	True	12.75	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1							1.0	False	100.0	1.0	True				
+camelot_lattice	20_bank_statement_multipage	stress	bank_statement	True	50.67	71.9683	42.8571	0.4286	0.4286				84.4444	0.6667	0.5	1.0	1	2							1.0	False							
+camelot_auto	20_bank_statement_multipage	stress	bank_statement	True	826.95	71.9683	42.8571	0.4286	0.4286				84.4444	0.6667	0.5	1.0	1	2							1.0	False							
+img2table	20_bank_statement_multipage	stress	bank_statement	True	158.01	59.5238	42.8571	0.4286	0.4286				66.6667	0.6667	0.5	1.0	1	2							0.6667	False							
+pdfplumber	20_bank_statement_multipage	stress	bank_statement	True	102.86	89.1111	100.0	1.0	1.0				84.4444	0.6667	0.5	1.0	1	2							1.0	False	100.0	1.0	True				
+pymupdf	20_bank_statement_multipage	stress	bank_statement	True	177.91	76.6667	100.0	1.0	1.0				66.6667	0.6667	0.5	1.0	1	2							0.6667	False	100.0	1.0	True				
+pdfminer.six	20_bank_statement_multipage	stress	bank_statement	True	158.25	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0							0.0	False	100.0	1.0	True				
+pypdf	20_bank_statement_multipage	stress	bank_statement	True	14.76	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0							0.0	False	100.0	1.0	True				
+pypdfium2	20_bank_statement_multipage	stress	bank_statement	True	2.09	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0							0.0	False							
+pdfparser	21_table_overflow_cells	stress	table_overflow	True	11.66	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	21_table_overflow_cells	stress	table_overflow	True	19.33	94.3838	80.0	0.8	0.8				97.9798	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9495	1.0	0.9038	1.0	True							
+camelot_auto	21_table_overflow_cells	stress	table_overflow	True	412.65	94.3838	80.0	0.8	0.8				97.9798	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9495	1.0	0.9038	1.0	True							
+img2table	21_table_overflow_cells	stress	table_overflow	True	78.09	94.3838	80.0	0.8	0.8				97.9798	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9495	1.0	0.9038	1.0	True							
+pdfplumber	21_table_overflow_cells	stress	table_overflow	True	50.88	98.3838	100.0	1.0	1.0				97.9798	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9495	1.0	0.9038	1.0	True	100.0	1.0	True				
+pymupdf	21_table_overflow_cells	stress	table_overflow	True	91.67	93.7471	100.0	1.0	1.0				92.1839	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.8046	1.0	0.6731	0.5	True	100.0	1.0	True				
+pdfminer.six	21_table_overflow_cells	stress	table_overflow	True	39.17	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	21_table_overflow_cells	stress	table_overflow	True	4.8	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	21_table_overflow_cells	stress	table_overflow	True	1.43	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	22_table_merged_headers	stress	table_merged_headers	True	10.8	99.1351	100.0	1.0	1.0				98.9189	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.973	1.0	0.9474	1.0	True	100.0	1.0	True				
+camelot_lattice	22_table_merged_headers	stress	table_merged_headers	True	9.25	97.0733	87.5	0.875	0.875				99.4667	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9867	1.0	0.9737	1.0	True							
+camelot_auto	22_table_merged_headers	stress	table_merged_headers	True	356.39	97.0733	87.5	0.875	0.875				99.4667	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9867	1.0	0.9737	1.0	True							
+img2table	22_table_merged_headers	stress	table_merged_headers	True	62.99	95.4747	87.5	0.875	0.875				97.4684	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9367	0.9024	0.9737	1.0	True							
+pdfplumber	22_table_merged_headers	stress	table_merged_headers	True	10.4	99.5733	100.0	1.0	1.0				99.4667	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9867	1.0	0.9737	1.0	True	100.0	1.0	True				
+pymupdf	22_table_merged_headers	stress	table_merged_headers	True	14.16	97.7465	100.0	1.0	1.0				97.1831	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9296	1.0	0.8684	0.8	True	100.0	1.0	True				
+pdfminer.six	22_table_merged_headers	stress	table_merged_headers	True	13.82	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	22_table_merged_headers	stress	table_merged_headers	True	2.82	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	22_table_merged_headers	stress	table_merged_headers	True	0.82	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	23_side_by_side_tables	stress	side_by_side_tables	True	11.03	99.0857	100.0	1.0	1.0				98.8571	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9714	1.0	0.9444	1.0	True	100.0	1.0	True				
+camelot_lattice	23_side_by_side_tables	stress	side_by_side_tables	True	7.78	95.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	23_side_by_side_tables	stress	side_by_side_tables	True	354.35	95.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	23_side_by_side_tables	stress	side_by_side_tables	True	62.58	95.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	23_side_by_side_tables	stress	side_by_side_tables	True	6.43	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	23_side_by_side_tables	stress	side_by_side_tables	True	9.82	98.1176	100.0	1.0	1.0				97.6471	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9412	1.0	0.8889	0.5	True	100.0	1.0	True				
+pdfminer.six	23_side_by_side_tables	stress	side_by_side_tables	True	8.12	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	23_side_by_side_tables	stress	side_by_side_tables	True	1.93	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	23_side_by_side_tables	stress	side_by_side_tables	True	0.81	20.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	24_invoice_line_items	stress	invoice	True	10.58	81.25	100.0	1.0	1.0				75.0	1.0	1.0	1.0	1	1	0.0	0.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	24_invoice_line_items	stress	invoice	True	10.88	68.75	50.0	0.5	0.5				75.0	1.0	1.0	1.0	1	1	0.0	0.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	24_invoice_line_items	stress	invoice	True	377.55	68.75	50.0	0.5	0.5				75.0	1.0	1.0	1.0	1	1	0.0	0.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	24_invoice_line_items	stress	invoice	True	65.09	40.6855	50.0	0.5	0.5				37.5806	1.0	1.0	1.0	1	1	0.0	0.0	1.0	0.0645	1.0	0.0333	0.8	True							
+pdfplumber	24_invoice_line_items	stress	invoice	True	15.1	81.25	100.0	1.0	1.0				75.0	1.0	1.0	1.0	1	1	0.0	0.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	24_invoice_line_items	stress	invoice	True	21.13	79.1071	100.0	1.0	1.0				72.1429	1.0	1.0	1.0	1	1	0.0	0.0	1.0	0.9286	1.0	0.8667	0.4	True	100.0	1.0	True				
+pdfminer.six	24_invoice_line_items	stress	invoice	True	17.13	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	24_invoice_line_items	stress	invoice	True	3.08	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	24_invoice_line_items	stress	invoice	True	0.93	25.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	25_dense_numeric_grid	stress	dense_numeric	True	15.6	99.9542	100.0	1.0	1.0				99.9462	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9987	1.0	0.9973	1.0	True	100.0	1.0	True				
+camelot_lattice	25_dense_numeric_grid	stress	dense_numeric	True	149.26	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	25_dense_numeric_grid	stress	dense_numeric	True	522.54	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	25_dense_numeric_grid	stress	dense_numeric	True	102.71	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	25_dense_numeric_grid	stress	dense_numeric	True	78.53	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	25_dense_numeric_grid	stress	dense_numeric	True	98.42	99.9542	100.0	1.0	1.0				99.9462	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9987	1.0	0.9973	0.6667	True	100.0	1.0	True				
+pdfminer.six	25_dense_numeric_grid	stress	dense_numeric	True	411.85	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	25_dense_numeric_grid	stress	dense_numeric	True	18.27	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	25_dense_numeric_grid	stress	dense_numeric	True	1.77	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	26_watermark_overlap	stress	watermark_overlap	True	10.86	100.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	1								False	100.0	1.0	True				
+camelot_lattice	26_watermark_overlap	stress	watermark_overlap	True	7.41	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	26_watermark_overlap	stress	watermark_overlap	True	242.67	25.0	25.0	0.25	0.25				0.0	0.0	0.0	1.0	0	1								False							
+img2table	26_watermark_overlap	stress	watermark_overlap	True	57.62	0.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfplumber	26_watermark_overlap	stress	watermark_overlap	True	3.71	75.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	26_watermark_overlap	stress	watermark_overlap	True	4.92	75.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	26_watermark_overlap	stress	watermark_overlap	True	10.57	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	26_watermark_overlap	stress	watermark_overlap	True	1.09	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdfium2	26_watermark_overlap	stress	watermark_overlap	True	0.8	75.0	75.0	0.75	0.75				100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	27_table_with_footnotes	stress	table_footnotes	True	10.57	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	27_table_with_footnotes	stress	table_footnotes	True	3.4	82.0	40.0	0.4	0.4				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	27_table_with_footnotes	stress	table_footnotes	True	360.5	82.0	40.0	0.4	0.4				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	27_table_with_footnotes	stress	table_footnotes	True	58.16	82.0	40.0	0.4	0.4				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	27_table_with_footnotes	stress	table_footnotes	True	6.35	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	27_table_with_footnotes	stress	table_footnotes	True	8.52	98.0	100.0	1.0	1.0				97.1429	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9286	1.0	0.8667	0.5	True	100.0	1.0	True				
+pdfminer.six	27_table_with_footnotes	stress	table_footnotes	True	7.55	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
 pypdf	27_table_with_footnotes	stress	table_footnotes	True	1.74	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-pymupdf	27_table_with_footnotes	stress	table_footnotes	True	7.85	98.0	100.0	1.0	1.0				97.1429	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9286	1.0	0.8667	0.5	True	100.0	1.0	True				
-pypdfium2	27_table_with_footnotes	stress	table_footnotes	True	0.87	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	30_real_ca_warn_report	real	real_government_table_dump	True	83.9	70.0	100.0	1.0	1.0				50.0	0.5	0.3333	1.0	1	3								False							
-pdfplumber	30_real_ca_warn_report	real	real_government_table_dump	True	1978.51	46.6667	100.0	1.0	1.0				11.1111	0.1111	0.0588	1.0	1	17								False							
-pdfminer.six	30_real_ca_warn_report	real	real_government_table_dump	True	1752.75	40.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdf	30_real_ca_warn_report	real	real_government_table_dump	True	525.99	40.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pymupdf	30_real_ca_warn_report	real	real_government_table_dump	True	2356.57	46.6667	100.0	1.0	1.0				11.1111	0.1111	0.0588	1.0	1	17								False							
-pypdfium2	30_real_ca_warn_report	real	real_government_table_dump	True	31.67	40.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfparser	31_real_background_checks	real	real_wide_header_table	True	44.31	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pdfplumber	31_real_background_checks	real	real_wide_header_table	True	142.95	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pdfminer.six	31_real_background_checks	real	real_wide_header_table	True	188.77	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdf	31_real_background_checks	real	real_wide_header_table	True	42.98	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pymupdf	31_real_background_checks	real	real_wide_header_table	True	173.15	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pypdfium2	31_real_background_checks	real	real_wide_header_table	True	5.66	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfparser	32_real_census_table324	real	real_statistical_abstract	True	17.93	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pdfplumber	32_real_census_table324	real	real_statistical_abstract	True	124.6	76.6667	100.0	1.0	1.0				66.6667	0.6667	0.5	1.0	1	2								False							
-pdfminer.six	32_real_census_table324	real	real_statistical_abstract	True	146.85	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdf	32_real_census_table324	real	real_statistical_abstract	True	42.87	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pymupdf	32_real_census_table324	real	real_statistical_abstract	True	268.46	76.6667	100.0	1.0	1.0				66.6667	0.6667	0.5	1.0	1	2								False							
-pypdfium2	32_real_census_table324	real	real_statistical_abstract	True	5.5	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfparser	33_real_argentina_votes	real	real_complex_grid	True	10.68	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pdfplumber	33_real_argentina_votes	real	real_complex_grid	True	74.44	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pdfminer.six	33_real_argentina_votes	real	real_complex_grid	True	131.37	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdf	33_real_argentina_votes	real	real_complex_grid	True	31.07	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pymupdf	33_real_argentina_votes	real	real_complex_grid	True	110.45	76.6667	100.0	1.0	1.0				66.6667	0.6667	0.5	1.0	1	2								False							
-pypdfium2	33_real_argentina_votes	real	real_complex_grid	True	1.95	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfparser	34_real_schools_contributions	real	real_campaign_finance	True	33.4	64.0	100.0	1.0	1.0				40.0	0.4	0.25	1.0	1	4								False							
-pdfplumber	34_real_schools_contributions	real	real_campaign_finance	True	486.97	60.0	100.0	1.0	1.0				33.3333	0.3333	0.2	1.0	1	5								False							
-pdfminer.six	34_real_schools_contributions	real	real_campaign_finance	True	425.64	40.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdf	34_real_schools_contributions	real	real_campaign_finance	True	69.55	40.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pymupdf	34_real_schools_contributions	real	real_campaign_finance	True	837.03	60.0	100.0	1.0	1.0				33.3333	0.3333	0.2	1.0	1	5								False							
-pypdfium2	34_real_schools_contributions	real	real_campaign_finance	True	8.39	40.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfparser	35_real_camelot_fuel	real	real_lattice_document	True	10.2	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pdfplumber	35_real_camelot_fuel	real	real_lattice_document	True	49.45	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pdfminer.six	35_real_camelot_fuel	real	real_lattice_document	True	61.55	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdf	35_real_camelot_fuel	real	real_lattice_document	True	16.48	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pymupdf	35_real_camelot_fuel	real	real_lattice_document	True	66.6	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1								False							
-pypdfium2	35_real_camelot_fuel	real	real_lattice_document	True	2.05	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfparser	36_real_two_tables	real	real_two_tables	True	10.25	76.6667	100.0	1.0	1.0				66.6667	0.6667	1.0	0.5	2	1								False							
-pdfplumber	36_real_two_tables	real	real_two_tables	True	97.76	42.7273	100.0	1.0	1.0				18.1818	0.1818	0.1	1.0	2	20								False							
-pdfminer.six	36_real_two_tables	real	real_two_tables	True	90.01	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0								False							
-pypdf	36_real_two_tables	real	real_two_tables	True	25.62	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0								False							
-pymupdf	36_real_two_tables	real	real_two_tables	True	111.31	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2								False							
-pypdfium2	36_real_two_tables	real	real_two_tables	True	4.13	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0								False							
-pdfparser	37_real_liabilities_superscript	real	real_superscript_table	True	8.68	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfplumber	37_real_liabilities_superscript	real	real_superscript_table	True	20.31	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfminer.six	37_real_liabilities_superscript	real	real_superscript_table	True	295.45	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdf	37_real_liabilities_superscript	real	real_superscript_table	True	6.16	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pymupdf	37_real_liabilities_superscript	real	real_superscript_table	True	38.44	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pypdfium2	37_real_liabilities_superscript	real	real_superscript_table	True	1.65	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0								False							
-pdfparser	38_real_irs_f1040	real	real_tax_form	True	41.59	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfplumber	38_real_irs_f1040	real	real_tax_form	True	321.95	60.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	15								False							
-pdfminer.six	38_real_irs_f1040	real	real_tax_form	True	1439.33	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pypdf	38_real_irs_f1040	real	real_tax_form	True	92.21	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pymupdf	38_real_irs_f1040	real	real_tax_form	True	764.88	60.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	7								False							
-pypdfium2	38_real_irs_f1040	real	real_tax_form	True	7.16	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	39_real_fed_beigebook	real	real_long_report	True	50.24	90.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	8								False							
-pdfplumber	39_real_fed_beigebook	real	real_long_report	True	2036.19	90.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	2								False							
-pdfminer.six	39_real_fed_beigebook	real	real_long_report	True	2526.52	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pypdf	39_real_fed_beigebook	real	real_long_report	True	564.1	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pymupdf	39_real_fed_beigebook	real	real_long_report	True	1560.64	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pypdfium2	39_real_fed_beigebook	real	real_long_report	True	41.37	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	40_real_arxiv_tensorflow	real	real_scientific_multicol	True	29.11	100.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	4								False							
-pdfplumber	40_real_arxiv_tensorflow	real	real_scientific_multicol	True	822.45	100.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	3								False							
-pdfminer.six	40_real_arxiv_tensorflow	real	real_scientific_multicol	True	793.51	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pypdf	40_real_arxiv_tensorflow	real	real_scientific_multicol	True	223.76	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pymupdf	40_real_arxiv_tensorflow	real	real_scientific_multicol	True	1200.55	100.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	6								False							
-pypdfium2	40_real_arxiv_tensorflow	real	real_scientific_multicol	True	25.36	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	41_real_nist_withdrawn_notice	real	real_technical_long	True	102.32	70.0	100.0						0.0	0.0	0.0	1.0	0	5								False							
-pdfplumber	41_real_nist_withdrawn_notice	real	real_technical_long	True	1950.91	70.0	100.0						0.0	0.0	0.0	1.0	0	99								False							
-pdfminer.six	41_real_nist_withdrawn_notice	real	real_technical_long	True	2282.18	100.0	100.0						100.0	1.0	1.0	1.0	0	0								False							
-pypdf	41_real_nist_withdrawn_notice	real	real_technical_long	True	417.96	100.0	100.0						100.0	1.0	1.0	1.0	0	0								False							
-pymupdf	41_real_nist_withdrawn_notice	real	real_technical_long	True	3180.17	70.0	100.0						0.0	0.0	0.0	1.0	0	83								False							
-pypdfium2	41_real_nist_withdrawn_notice	real	real_technical_long	True	49.96	100.0	100.0						100.0	1.0	1.0	1.0	0	0								False							
-pdfparser	42_real_insurance_italian	real	real_insurance_prose_tables	True	10.84	100.0	100.0						100.0	1.0	1.0	1.0	0	0								False							
-pdfplumber	42_real_insurance_italian	real	real_insurance_prose_tables	True	31.43	100.0	100.0						0.0	0.0	0.0	1.0	0	2								False							
-pdfminer.six	42_real_insurance_italian	real	real_insurance_prose_tables	True	26.58	100.0	100.0						100.0	1.0	1.0	1.0	0	0								False							
-pypdf	42_real_insurance_italian	real	real_insurance_prose_tables	True	5.21	100.0	100.0						100.0	1.0	1.0	1.0	0	0								False							
-pymupdf	42_real_insurance_italian	real	real_insurance_prose_tables	True	64.19	100.0	100.0						0.0	0.0	0.0	1.0	0	2								False							
-pypdfium2	42_real_insurance_italian	real	real_insurance_prose_tables	True	4.88	100.0	100.0						100.0	1.0	1.0	1.0	0	0								False							
+pypdfium2	27_table_with_footnotes	stress	table_footnotes	True	0.8	30.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	50_multi_table_stacked_page	hard	multi_table_stacked	True	9.7	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	50_multi_table_stacked_page	hard	multi_table_stacked	True	11.77	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	50_multi_table_stacked_page	hard	multi_table_stacked	True	386.96	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	50_multi_table_stacked_page	hard	multi_table_stacked	True	65.67	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	50_multi_table_stacked_page	hard	multi_table_stacked	True	9.97	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	50_multi_table_stacked_page	hard	multi_table_stacked	True	20.2	99.0467	100.0	1.0	1.0				98.8785	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.972	1.0	0.9455	0.9167	True	100.0	1.0	True				
+pdfminer.six	50_multi_table_stacked_page	hard	multi_table_stacked	True	15.27	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	50_multi_table_stacked_page	hard	multi_table_stacked	True	2.39	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	50_multi_table_stacked_page	hard	multi_table_stacked	True	0.98	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	51_multi_table_multipage	hard	multi_table_multipage	True	10.2	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	51_multi_table_multipage	hard	multi_table_multipage	True	10.09	93.5714	57.1429	0.5714	0.5714				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	51_multi_table_multipage	hard	multi_table_multipage	True	725.98	93.5714	57.1429	0.5714	0.5714				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	51_multi_table_multipage	hard	multi_table_multipage	True	114.21	93.5714	57.1429	0.5714	0.5714				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	51_multi_table_multipage	hard	multi_table_multipage	True	10.75	99.6937	100.0	1.0	1.0				99.6396	1.0	1.0	1.0	4	4	1.0	1.0	1.0	0.991	1.0	0.9821	1.0	True	100.0	1.0	True				
+pymupdf	51_multi_table_multipage	hard	multi_table_multipage	True	22.49	98.4112	100.0	1.0	1.0				98.1308	1.0	1.0	1.0	4	4	1.0	1.0	1.0	0.9533	1.0	0.9107	0.9167	True	100.0	1.0	True				
+pdfminer.six	51_multi_table_multipage	hard	multi_table_multipage	True	14.05	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	4	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	51_multi_table_multipage	hard	multi_table_multipage	True	2.72	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	4	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	51_multi_table_multipage	hard	multi_table_multipage	True	0.98	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	4	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	52_page_border_noise	hard	page_border_noise	True	10.43	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	52_page_border_noise	hard	page_border_noise	True	8.17	90.0	33.3333	0.3333	0.3333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	52_page_border_noise	hard	page_border_noise	True	368.98	44.75	100.0	1.0	1.0				35.0	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.0	0.0	0.0	1.0	True							
+img2table	52_page_border_noise	hard	page_border_noise	True	67.42	90.0	33.3333	0.3333	0.3333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	52_page_border_noise	hard	page_border_noise	True	5.63	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	52_page_border_noise	hard	page_border_noise	True	8.69	99.1282	100.0	1.0	1.0				98.9744	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9744	1.0	0.95	0.9167	True	100.0	1.0	True				
+pdfminer.six	52_page_border_noise	hard	page_border_noise	True	6.7	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	52_page_border_noise	hard	page_border_noise	True	1.46	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	52_page_border_noise	hard	page_border_noise	True	0.8	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	53_column_span_header	hard	column_span_header	True	10.53	99.0811	100.0	1.0	1.0				98.9189	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.973	1.0	0.9474	0.8333	True	100.0	1.0	True				
+camelot_lattice	53_column_span_header	hard	column_span_header	True	12.27	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+camelot_auto	53_column_span_header	hard	column_span_header	True	365.09	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+img2table	53_column_span_header	hard	column_span_header	True	61.55	95.8	83.3333	0.8333	0.8333				98.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.95	0.9048	1.0	0.8333	True							
+pdfplumber	53_column_span_header	hard	column_span_header	True	9.79	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True	100.0	1.0	True				
+pymupdf	53_column_span_header	hard	column_span_header	True	12.93	97.6056	100.0	1.0	1.0				97.1831	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9296	1.0	0.8684	0.8333	True	100.0	1.0	True				
+pdfminer.six	53_column_span_header	hard	column_span_header	True	14.56	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	53_column_span_header	hard	column_span_header	True	3.09	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	53_column_span_header	hard	column_span_header	True	0.88	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	54_row_span_categories	hard	row_span_categories	True	11.1	98.0755	100.0	1.0	1.0				97.7358	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9434	1.0	0.8929	0.8333	True	100.0	1.0	True				
+camelot_lattice	54_row_span_categories	hard	row_span_categories	True	8.45	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+camelot_auto	54_row_span_categories	hard	row_span_categories	True	371.44	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+img2table	54_row_span_categories	hard	row_span_categories	True	61.44	95.2333	83.3333	0.8333	0.8333				97.3333	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9333	0.875	1.0	0.8333	True							
+pdfplumber	54_row_span_categories	hard	row_span_categories	True	9.52	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True	100.0	1.0	True				
+pymupdf	54_row_span_categories	hard	row_span_categories	True	10.29	96.6667	100.0	1.0	1.0				96.0784	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.902	1.0	0.8214	0.8333	True	100.0	1.0	True				
+pdfminer.six	54_row_span_categories	hard	row_span_categories	True	10.84	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	54_row_span_categories	hard	row_span_categories	True	2.31	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	54_row_span_categories	hard	row_span_categories	True	0.81	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	55_gap_broken_corners	hard	gap_broken_corners	True	10.71	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	55_gap_broken_corners	hard	gap_broken_corners	True	6.94	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+camelot_auto	55_gap_broken_corners	hard	gap_broken_corners	True	225.51	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	55_gap_broken_corners	hard	gap_broken_corners	True	56.88	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfplumber	55_gap_broken_corners	hard	gap_broken_corners	True	6.19	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	55_gap_broken_corners	hard	gap_broken_corners	True	8.7	98.2105	100.0	1.0	1.0				97.8947	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9474	1.0	0.9	0.9167	True	100.0	1.0	True				
+pdfminer.six	55_gap_broken_corners	hard	gap_broken_corners	True	7.39	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	55_gap_broken_corners	hard	gap_broken_corners	True	1.53	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	55_gap_broken_corners	hard	gap_broken_corners	True	0.79	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	10.29	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	4.22	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	358.31	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	62.41	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	0.9167	True							
+pdfplumber	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	5.69	99.4925	100.0	1.0	1.0				99.403	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9851	1.0	0.9706	0.9167	True	100.0	1.0	True				
+pymupdf	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	9.89	98.4308	100.0	1.0	1.0				98.1538	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9538	1.0	0.9118	0.9167	True	100.0	1.0	True				
+pdfminer.six	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	8.14	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	1.65	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	0.8	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	57_wide_statistical_grid	hard	wide_statistical_grid	True	12.36	99.6699	100.0	1.0	1.0				99.6117	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9903	1.0	0.9808	1.0	True	100.0	1.0	True				
+camelot_lattice	57_wide_statistical_grid	hard	wide_statistical_grid	True	44.42	97.8571	85.7143	0.8571	0.8571				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	57_wide_statistical_grid	hard	wide_statistical_grid	True	427.74	97.8571	85.7143	0.8571	0.8571				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	57_wide_statistical_grid	hard	wide_statistical_grid	True	74.03	97.8571	85.7143	0.8571	0.8571				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	57_wide_statistical_grid	hard	wide_statistical_grid	True	27.32	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	57_wide_statistical_grid	hard	wide_statistical_grid	True	22.57	99.6699	100.0	1.0	1.0				99.6117	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9903	1.0	0.9808	1.0	True	100.0	1.0	True				
+pdfminer.six	57_wide_statistical_grid	hard	wide_statistical_grid	True	99.64	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	57_wide_statistical_grid	hard	wide_statistical_grid	True	10.21	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	57_wide_statistical_grid	hard	wide_statistical_grid	True	1.14	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	58_multipage_continued_table	hard	multipage_continued_table	True	11.86	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	58_multipage_continued_table	hard	multipage_continued_table	True	20.82	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	58_multipage_continued_table	hard	multipage_continued_table	True	1088.51	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	58_multipage_continued_table	hard	multipage_continued_table	True	177.72	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	58_multipage_continued_table	hard	multipage_continued_table	True	32.39	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	58_multipage_continued_table	hard	multipage_continued_table	True	48.45	99.5584	100.0	1.0	1.0				99.4805	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.987	1.0	0.9744	0.9167	True	100.0	1.0	True				
+pdfminer.six	58_multipage_continued_table	hard	multipage_continued_table	True	48.04	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	58_multipage_continued_table	hard	multipage_continued_table	True	5.83	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	58_multipage_continued_table	hard	multipage_continued_table	True	1.84	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	59_stream_multi_region	hard	stream_multi_region	True	10.84	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	59_stream_multi_region	hard	stream_multi_region	True	7.86	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+camelot_auto	59_stream_multi_region	hard	stream_multi_region	True	216.6	71.0114	60.0	0.6	0.6				72.9545	1.0	1.0	1.0	2	2	0.5	0.5	1.0	0.6364	1.0	0.4667	1.0	True							
+img2table	59_stream_multi_region	hard	stream_multi_region	True	58.59	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfplumber	59_stream_multi_region	hard	stream_multi_region	True	6.44	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pymupdf	59_stream_multi_region	hard	stream_multi_region	True	6.58	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pdfminer.six	59_stream_multi_region	hard	stream_multi_region	True	11.01	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	59_stream_multi_region	hard	stream_multi_region	True	1.74	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	59_stream_multi_region	hard	stream_multi_region	True	0.8	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	10.43	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	7.54	56.7083	33.3333	0.3333	0.3333				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	1.0	True							
+camelot_auto	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	369.56	56.7083	33.3333	0.3333	0.3333				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	1.0	True							
+img2table	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	60.66	56.7083	33.3333	0.3333	0.3333				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	0.9167	True							
+pdfplumber	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	7.72	66.7083	100.0	1.0	1.0				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	0.9167	True	100.0	1.0	True				
+pymupdf	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	8.43	65.7137	100.0	1.0	1.0				59.6631	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.5957	1.0	0.4242	0.9167	True	100.0	1.0	True				
+pdfminer.six	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	8.29	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	1.62	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	0.98	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	61_decorative_hline_noise	hard	decorative_hline_noise	True	9.67	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	61_decorative_hline_noise	hard	decorative_hline_noise	True	7.16	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	61_decorative_hline_noise	hard	decorative_hline_noise	True	377.58	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	61_decorative_hline_noise	hard	decorative_hline_noise	True	61.95	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	61_decorative_hline_noise	hard	decorative_hline_noise	True	5.84	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	61_decorative_hline_noise	hard	decorative_hline_noise	True	8.24	98.0	100.0	1.0	1.0				97.6471	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9412	1.0	0.8889	0.8333	True	100.0	1.0	True				
+pdfminer.six	61_decorative_hline_noise	hard	decorative_hline_noise	True	7.31	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	61_decorative_hline_noise	hard	decorative_hline_noise	True	1.47	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	61_decorative_hline_noise	hard	decorative_hline_noise	True	0.71	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	62_two_close_grids	hard	two_close_grids	True	11.04	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	62_two_close_grids	hard	two_close_grids	True	9.21	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	62_two_close_grids	hard	two_close_grids	True	378.11	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	62_two_close_grids	hard	two_close_grids	True	62.93	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	0.9167	True							
+pdfplumber	62_two_close_grids	hard	two_close_grids	True	6.55	98.7407	100.0	1.0	1.0				98.5185	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.963	1.0	0.9286	0.9167	True	100.0	1.0	True				
+pymupdf	62_two_close_grids	hard	two_close_grids	True	12.52	97.3846	100.0	1.0	1.0				96.9231	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9231	1.0	0.8571	0.9167	True	100.0	1.0	True				
+pdfminer.six	62_two_close_grids	hard	two_close_grids	True	10.33	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	62_two_close_grids	hard	two_close_grids	True	1.92	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	62_two_close_grids	hard	two_close_grids	True	1.04	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							

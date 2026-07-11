@@ -1,0 +1,95 @@
+{
+  "id": "82_stream_gap_boundary",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/82_stream_gap_boundary.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "stream_gap_boundary",
+  "description": "Two stream tables with large prose gap (6\u00d73 and 6\u00d72)",
+  "challenges": [
+    "stream",
+    "multiple_tables_per_page",
+    "prose_rejection"
+  ],
+  "failure_modes_covered": [
+    "UNDER_DETECT",
+    "OVER_DETECT",
+    "MULTI_TABLE_PAGE"
+  ],
+  "must_contain": [
+    "TOKEN_P82_DOC",
+    "TOKEN_P82_T1",
+    "TOKEN_P82_T2",
+    "TOKEN_P82_MID"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "Name",
+          "Role",
+          "Loc"
+        ],
+        [
+          "Ada TOKEN_P82_T1",
+          "Eng",
+          "NYC"
+        ],
+        [
+          "Lin",
+          "PM",
+          "SF"
+        ],
+        [
+          "Sam",
+          "SRE",
+          "AUS"
+        ],
+        [
+          "Pat",
+          "Des",
+          "BOS"
+        ]
+      ]
+    },
+    {
+      "rows": 6,
+      "cols": 2,
+      "cells": [
+        [
+          "City",
+          "Pop"
+        ],
+        [
+          "NYC TOKEN_P82_T2",
+          "8.3"
+        ],
+        [
+          "SF",
+          "0.8"
+        ],
+        [
+          "CHI",
+          "2.7"
+        ],
+        [
+          "MIA",
+          "0.5"
+        ],
+        [
+          "DEN",
+          "0.7"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 2
+}

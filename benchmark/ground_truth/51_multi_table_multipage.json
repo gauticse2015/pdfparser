@@ -1,0 +1,173 @@
+{
+  "id": "51_multi_table_multipage",
+  "category": "multi_table_multipage",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Two pages, two lattice tables each (4 tables total), heterogeneous shapes",
+  "challenges": [
+    "multiple_tables_per_page",
+    "multi_page_document",
+    "heterogeneous_shapes",
+    "lattice"
+  ],
+  "failure_modes_covered": [
+    "MULTI_TABLE_PAGE",
+    "MULTI_PAGE_DOC",
+    "UNDER_DETECT",
+    "WRONG_SHAPE"
+  ],
+  "path": "corpus/hard/51_multi_table_multipage.pdf",
+  "page_count": 2,
+  "must_contain": [
+    "TOKEN_HARD51_DOC",
+    "TOKEN_HARD51_P1",
+    "TOKEN_HARD51_P2",
+    "TOKEN_H51_A",
+    "TOKEN_H51_B",
+    "TOKEN_H51_C",
+    "TOKEN_H51_D"
+  ],
+  "table_cells_must_include": [
+    "Country",
+    "Sites",
+    "Staff",
+    "DE TOKEN_H51_A",
+    "12",
+    "340",
+    "FR",
+    "8",
+    "210",
+    "IT",
+    "6",
+    "180"
+  ],
+  "expected_table_count": 4,
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 3,
+      "cells": [
+        [
+          "Country",
+          "Sites",
+          "Staff"
+        ],
+        [
+          "DE TOKEN_H51_A",
+          "12",
+          "340"
+        ],
+        [
+          "FR",
+          "8",
+          "210"
+        ],
+        [
+          "IT",
+          "6",
+          "180"
+        ]
+      ],
+      "page": 1
+    },
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "Metric",
+          "2024",
+          "2025"
+        ],
+        [
+          "Revenue TOKEN_H51_B",
+          "4.2",
+          "4.8"
+        ],
+        [
+          "EBITDA",
+          "0.9",
+          "1.1"
+        ],
+        [
+          "Margin%",
+          "21",
+          "23"
+        ],
+        [
+          "NPS",
+          "42",
+          "48"
+        ]
+      ],
+      "page": 1
+    },
+    {
+      "rows": 3,
+      "cols": 3,
+      "cells": [
+        [
+          "Vendor",
+          "SLA",
+          "Score"
+        ],
+        [
+          "Alpha TOKEN_H51_C",
+          "99.9",
+          "A"
+        ],
+        [
+          "Beta",
+          "99.5",
+          "B"
+        ]
+      ],
+      "page": 2
+    },
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "City",
+          "Lat",
+          "Lon",
+          "Pop"
+        ],
+        [
+          "Berlin TOKEN_H51_D",
+          "52.5",
+          "13.4",
+          "3.6M"
+        ],
+        [
+          "Paris",
+          "48.9",
+          "2.3",
+          "2.1M"
+        ],
+        [
+          "Rome",
+          "41.9",
+          "12.5",
+          "2.8M"
+        ],
+        [
+          "Madrid",
+          "40.4",
+          "-3.7",
+          "3.2M"
+        ]
+      ],
+      "page": 2
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Detect 4 tables; do not merge across vertical gaps or pages."
+}

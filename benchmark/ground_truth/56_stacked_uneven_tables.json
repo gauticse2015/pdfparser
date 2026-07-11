@@ -1,0 +1,114 @@
+{
+  "id": "56_stacked_uneven_tables",
+  "category": "stacked_uneven_tables",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Two lattice tables stacked with only 14pt gap; 4×6 then 5×2",
+  "challenges": [
+    "multiple_tables_per_page",
+    "tight_vertical_gap",
+    "heterogeneous_shapes",
+    "anti_mega_grid"
+  ],
+  "failure_modes_covered": [
+    "MULTI_TABLE_PAGE",
+    "WRONG_SHAPE",
+    "UNDER_DETECT"
+  ],
+  "path": "corpus/hard/56_stacked_uneven_tables.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD56_DOC",
+    "TOKEN_H56_TOP",
+    "TOKEN_H56_BOT"
+  ],
+  "table_cells_must_include": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "1 TOKEN_H56_TOP",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  "expected_table_count": 2,
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 6,
+      "cells": [
+        [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        [
+          "1 TOKEN_H56_TOP",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        [
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        [
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18"
+        ]
+      ]
+    },
+    {
+      "rows": 5,
+      "cols": 2,
+      "cells": [
+        [
+          "X",
+          "Y"
+        ],
+        [
+          "yes TOKEN_H56_BOT",
+          "no"
+        ],
+        [
+          "true",
+          "false"
+        ],
+        [
+          "on",
+          "off"
+        ],
+        [
+          "high",
+          "low"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Fail mode: one table ~9×6 or wrong col count from merged y-lines."
+}

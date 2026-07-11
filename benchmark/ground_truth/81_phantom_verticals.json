@@ -1,0 +1,63 @@
+{
+  "id": "81_phantom_verticals",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/81_phantom_verticals.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "phantom_verticals",
+  "description": "True 5\u00d73 table + short non-spanning V ticks; must stay 3 cols",
+  "challenges": [
+    "phantom_lines",
+    "col_miscount",
+    "joint_support"
+  ],
+  "failure_modes_covered": [
+    "COL_MISCOUNT",
+    "WRONG_SHAPE"
+  ],
+  "must_contain": [
+    "TOKEN_P81_DOC",
+    "TOKEN_P81_N",
+    "TOKEN_P81_C"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "City",
+          "Temp",
+          "Hum"
+        ],
+        [
+          "NYC TOKEN_P81_N",
+          "72",
+          "55"
+        ],
+        [
+          "SF",
+          "68",
+          "70"
+        ],
+        [
+          "CHI TOKEN_P81_C",
+          "70",
+          "48"
+        ],
+        [
+          "MIA",
+          "84",
+          "80"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

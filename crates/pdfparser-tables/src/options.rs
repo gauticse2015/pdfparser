@@ -114,10 +114,40 @@ pub struct TableOptions {
     pub stream_min_col_sep: f32,
     /// Min multi-column body bands for stream detection.
     pub stream_min_body_bands: u32,
+    /// Vertical gap (as multiple of median font size) that splits stream regions.
+    pub stream_region_gap_font_mult: f32,
+    /// Absolute floor (user units) for stream multi-region vertical gap.
+    pub stream_region_gap_min: f32,
+
+    // --- Lattice geometry ---
+    /// Min axis-aligned segment length (user units) to participate in lattice.
+    pub lattice_min_seg_len: f32,
+    /// Expand segment ends when testing H∩V joints (broken-corner recovery).
+    pub lattice_joint_gap: f32,
+    /// Minimum joints (line crossings) for a connected component to be a table.
+    pub lattice_min_joints: u32,
+    /// Max lattice rows (safety cap).
+    pub lattice_max_rows: u32,
+    /// Max lattice cols (safety cap).
+    pub lattice_max_cols: u32,
+    /// Reject grids with empty-cell fraction ≥ this and fewer than `lattice_min_filled_cells`.
+    pub lattice_empty_frac_reject: f32,
+    /// Min filled cells when applying empty-fraction reject.
+    pub lattice_min_filled_cells: u32,
+    /// Min fill rate (else reject unless filled cells ≥ min filled).
+    pub lattice_min_fill_rate: f32,
+    /// Edge completeness below this ⇒ `weak_edges` (orchestration).
+    pub lattice_weak_edge_threshold: f32,
+    /// Min fraction of a cell side that must be covered by a rule to count as edged.
+    pub lattice_edge_cover_frac: f32,
 
     // --- Hybrid ---
     /// When hybrid recovers ≥3×3, confidence is at least this (NMS fairness vs weak lattice).
     pub hybrid_min_conf_when_grid: f32,
+
+    // --- NMS / strong lattice ---
+    /// Min confidence for a lattice table to count as "strong" (blocks overlapping hybrid).
+    pub strong_lattice_min_conf: f32,
 }
 
 impl Default for TableOptions {
@@ -144,7 +174,20 @@ impl Default for TableOptions {
             stream_max_prose_mean_chars: 70.0,
             stream_min_col_sep: 0.30,
             stream_min_body_bands: 3,
+            stream_region_gap_font_mult: 2.5,
+            stream_region_gap_min: 16.0,
+            lattice_min_seg_len: 5.0,
+            lattice_joint_gap: 3.5,
+            lattice_min_joints: 4,
+            lattice_max_rows: 80,
+            lattice_max_cols: 40,
+            lattice_empty_frac_reject: 0.90,
+            lattice_min_filled_cells: 4,
+            lattice_min_fill_rate: 0.08,
+            lattice_weak_edge_threshold: 0.55,
+            lattice_edge_cover_frac: 0.45,
             hybrid_min_conf_when_grid: 0.72,
+            strong_lattice_min_conf: 0.65,
         }
     }
 }

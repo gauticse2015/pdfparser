@@ -1,15 +1,16 @@
 {
   "dataset": "ICDAR-2013 (camelot-dev/camelot shipped)",
   "metrics": "camelot bench/_metrics.score (detection F1, difflib TEDS proxy, row/col exact)",
-  "gold": "ICDAR *-str.xml via Camelot parse_icdar_str_xml",
+  "gold": "ICDAR *-str.xml via parse_icdar_str_xml",
   "n_docs": 67,
+  "policy": "competitive_only_not_regression",
   "results": {
     "pdfparser": {
-      "f1": 0.6267605633802817,
-      "teds": 0.2376130077858541,
-      "row": 0.0898876404494382,
-      "col": 0.19101123595505617,
-      "time_s": 0.5799603338818997,
+      "f1": 0.601010101010101,
+      "teds": 0.20992699876960724,
+      "row": 0.13445378151260504,
+      "col": 0.19327731092436976,
+      "time_s": 0.5491146250278689,
       "errors": 0,
       "docs": 67
     },
@@ -18,16 +19,7 @@
       "teds": 0.7838816726186509,
       "row": 0.7475728155339806,
       "col": 0.8058252427184466,
-      "time_s": 3.193567708716728,
-      "errors": 0,
-      "docs": 67
-    },
-    "camelot_stream": {
-      "f1": 0.5852713178294574,
-      "teds": 0.469535805177709,
-      "row": 0.052980132450331126,
-      "col": 0.4900662251655629,
-      "time_s": 3.3055427922517993,
+      "time_s": 3.6257836659788154,
       "errors": 0,
       "docs": 67
     },
@@ -36,16 +28,7 @@
       "teds": 0.7855027900692086,
       "row": 0.5637583892617449,
       "col": 0.7919463087248322,
-      "time_s": 72.60508671414573,
-      "errors": 0,
-      "docs": 67
-    },
-    "camelot_hybrid_vector": {
-      "f1": 0.7259615384615385,
-      "teds": 0.7551920582667385,
-      "row": 0.46357615894039733,
-      "col": 0.7152317880794702,
-      "time_s": 4.854912335111294,
+      "time_s": 72.21277712500887,
       "errors": 0,
       "docs": 67
     },
@@ -54,7 +37,7 @@
       "teds": 0.6496610592922069,
       "row": 0.5714285714285714,
       "col": 0.5333333333333333,
-      "time_s": 8.364679704944137,
+      "time_s": 8.528120625007432,
       "errors": 0,
       "docs": 67
     },
@@ -63,95 +46,67 @@
       "teds": 0.6736259412286585,
       "row": 0.5779816513761468,
       "col": 0.6422018348623854,
-      "time_s": 10.20807804231299,
+      "time_s": 10.582060166983865,
       "errors": 0,
       "docs": 67
     }
   },
   "ranking": [
     {
-      "rank": 1,
       "tool": "camelot_auto",
       "f1": 0.863768115942029,
       "teds": 0.7855027900692086,
       "row": 0.5637583892617449,
       "col": 0.7919463087248322,
-      "time_s": 72.60508671414573,
+      "time_s": 72.21277712500887,
       "errors": 0,
-      "docs": 67
+      "docs": 67,
+      "rank": 1
     },
     {
-      "rank": 2,
       "tool": "pymupdf",
       "f1": 0.7758007117437722,
       "teds": 0.6736259412286585,
       "row": 0.5779816513761468,
       "col": 0.6422018348623854,
-      "time_s": 10.20807804231299,
+      "time_s": 10.582060166983865,
       "errors": 0,
-      "docs": 67
+      "docs": 67,
+      "rank": 2
     },
     {
-      "rank": 3,
       "tool": "camelot_lattice_vector",
       "f1": 0.7657992565055762,
       "teds": 0.7838816726186509,
       "row": 0.7475728155339806,
       "col": 0.8058252427184466,
-      "time_s": 3.193567708716728,
+      "time_s": 3.6257836659788154,
       "errors": 0,
-      "docs": 67
+      "docs": 67,
+      "rank": 3
     },
     {
-      "rank": 4,
-      "tool": "camelot_hybrid_vector",
-      "f1": 0.7259615384615385,
-      "teds": 0.7551920582667385,
-      "row": 0.46357615894039733,
-      "col": 0.7152317880794702,
-      "time_s": 4.854912335111294,
-      "errors": 0,
-      "docs": 67
-    },
-    {
-      "rank": 5,
       "tool": "pdfplumber",
       "f1": 0.6624605678233437,
       "teds": 0.6496610592922069,
       "row": 0.5714285714285714,
       "col": 0.5333333333333333,
-      "time_s": 8.364679704944137,
+      "time_s": 8.528120625007432,
       "errors": 0,
-      "docs": 67
+      "docs": 67,
+      "rank": 4
     },
     {
-      "rank": 6,
       "tool": "pdfparser",
-      "f1": 0.6267605633802817,
-      "teds": 0.2376130077858541,
-      "row": 0.0898876404494382,
-      "col": 0.19101123595505617,
-      "time_s": 0.5799603338818997,
+      "f1": 0.601010101010101,
+      "teds": 0.20992699876960724,
+      "row": 0.13445378151260504,
+      "col": 0.19327731092436976,
+      "time_s": 0.5491146250278689,
       "errors": 0,
-      "docs": 67
-    },
-    {
-      "rank": 7,
-      "tool": "camelot_stream",
-      "f1": 0.5852713178294574,
-      "teds": 0.469535805177709,
-      "row": 0.052980132450331126,
-      "col": 0.4900662251655629,
-      "time_s": 3.3055427922517993,
-      "errors": 0,
-      "docs": 67
+      "docs": 67,
+      "rank": 5
     }
   ],
-  "camelot_published_lattice_vector": {
-    "f1": 0.766,
-    "teds": 0.784,
-    "row": 0.748,
-    "col": 0.806
-  },
-  "note": "No pdfparser business-logic changes. Pure extract comparison."
+  "gap_analysis_md": "### Executive read\n\nOn **ICDAR-2013** (67 born-digital PDFs, Camelot metrics), **pdfparser is not competitive on structure quality** yet:\n\n| Metric | pdfparser | camelot lattice | camelot auto | pymupdf | pdfplumber |\n|--------|----------:|----------------:|-------------:|--------:|-----------:|\n| F1 | 0.601 | 0.766 | 0.864 | 0.776 | 0.662 |\n| TEDS | 0.210 | 0.784 | 0.786 | 0.674 | 0.650 |\n| row exact | 0.134 | 0.748 | 0.564 | 0.578 | 0.571 |\n| col exact | 0.193 | 0.806 | 0.792 | 0.642 | 0.533 |\n\n**Speed:** pdfparser **0.5s** full set vs camelot auto **72.2s**, lattice **3.6s**.\n\n### What changed vs our earlier ICDAR run (pre multi-region)\n\n| Metric | Then | Now | Note |\n|--------|-----:|----:|------|\n| F1 | ~0.627 | **0.601** | Slightly **worse** \u2014 over-detection tax |\n| TEDS | ~0.238 | **0.210** | Still very low |\n| row | ~0.090 | **0.134** | Small structure gain |\n| col | ~0.191 | **0.193** | Flat |\n\nOur synthetic **hard suite** (multi-table CC + stream regions) improved a lot; ICDAR shows the **precision/structure** side of that coin: more tables emitted, many wrong shapes.\n\n### Gap 1 \u2014 Over-detection (dominant now)\n\n- **OVER_DETECT on 37 / 67 docs** (was more under-detect before).\n- MISS_ALL dropped to **4** (was ~15) \u2014 good for recall side.\n- Extra tables come from: stream FPs on prose/headers, lattice CCs on decorative rules/frames, hybrid fragments, page chrome.\n- Detection F1 is count-based: every extra table is an FP. Peers (Camelot lattice) are more conservative.\n\n**Need:** stronger FP gates (whitespace/edge/fill), region NMS across strategies, demote small weak lattices, form/deco line filters without corpus hardcoding.\n\n### Gap 2 \u2014 Structure / TEDS (still the main quality hole)\n\nEven when table **count** is right:\n- Mean TEDS on count-exact docs is still poor (many WRONG_SHAPE).\n- ROW_MISCOUNT **50**, COL_MISCOUNT **47**, WRONG_SHAPE **52**, BAD_STRUCTURE **50**.\n- Typical pattern: extra H/V lines (header rules, footnotes, partial borders) become extra grid lines; gold expects coarser rows/cols or spans.\n- Camelot lattice **row/col exact ~0.75/0.81** vs us **~0.13/0.19** \u2014 joint/edge model is still weaker on competition PDFs.\n\n**Need:** joint-supported line filtering (drop lines with weak joint support), span recovery on real partial edges, better text-in-cell (split_text, multi-line), optional raster line recovery for incomplete strokes.\n\n### Gap 3 \u2014 Multi-table pages & order matching\n\n- Multi-table docs: mean F1 **0.560**, TEDS **0.125**.\n- Metric matches tables **by page order**, not spatial IoU. Extra fragment before a real table shifts all pairs \u2192 TEDS collapse even if a good grid exists later.\n- Examples: `eu-001` (10 vs 7), `eu-012` (9 vs 5), `us-027` (11 vs 2).\n\n**Need:** ranking tables reading-order consistently; suppress tiny FPs; consider IoU-based matching for analysis (not for published Camelot metric).\n\n### Gap 4 \u2014 Stream / borderless / weak rules\n\n- Camelot **auto** still leads (F1 0.86) by picking stream/lattice per page.\n- Several US docs where lattice finds 0 and stream/auto works (`us-017`\u2013`us-025` region) \u2014 we either over-segment or mis-grid.\n- Vector-only: no OpenCV line recovery for anti-aliased / image rules.\n\n### Gap 5 \u2014 What is already good\n\n- **Latency** best-in-class.\n- **MISS_ALL reduced** substantially vs first ICDAR run.\n- Multi-region lattice **helps count** on some multi-table EU docs when not flooded by FPs.\n- Synthetic regression hard suite remains strong (do not use ICDAR for day-to-day training).\n\n### Recommended next work (priority for ICDAR competitiveness)\n\n1. **Precision pass (P0):** document-level / page-level FP scrub for tiny low-fill lattices and stream under prose; raise min joints / edge_score for emission.\n2. **Line support (P0):** keep only lines with multi-joint support inside a region (Camelot-like) to fix COL/ROW miscount.\n3. **Match hygiene (P1):** stable reading order; drop sub-tables contained in larger grids (containment NMS).\n4. **Spans (P1):** real missing-edge spans on competition headers.\n5. **Optional raster fallback (P2)** for lattice miss cases only.\n6. Keep **regression on synthetic hard**; ICDAR as periodic competitive checkpoint only.\n"
 }

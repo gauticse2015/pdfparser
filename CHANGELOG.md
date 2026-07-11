@@ -12,13 +12,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Phase U lattice table extraction (`pdfparser-tables`, S2 + R9 cell assign)
 - CLI `--tables` flag; JSON table export
 - Phase U corpus tests (`phase_u_tables`)
+- Phase V multi-strategy tables: stream, hybrid, side-by-side split, multipage stitch, form FP scrub
+- **Lattice multi-region (Phase A):** connected components of crossing H/V rules → multiple tables per page
+- **Line prep (Phase C):** collinear coalesce + joint gap tolerance for broken corners
+- **Edge/span light (Phase B):** per-cell edge presence + simple rowspan/colspan merge
+- **Stream multi-region (Phase E):** split borderless tables on large vertical gaps between multi-col bands
+- Hard synthetic regression suite (`corpus/hard` 50–62) + Camelot/img2table adapters in accuracy scoreboard
 
+### Changed
+
+- Lattice no longer snaps all page lines into one mega-grid (fixes multi-table under-detect)
+- Orchestration: hybrid only outside strong lattice bboxes; NMS by quality score (conf/fill/edges)
+- Hard-suite table quality: cell F1 ~0.72 → **~0.99**, shape exact **1.0** (post A–E)
+- Review harden: typed `weak_edges`/`edge_score`/`fill_rate`; anchors without orthogonal endpoints;
+  single joint-gap model; multi-CC-safe global fallback; lattice/stream knobs on `TableOptions`
 ### Planned
 
-- Stream / hybrid table strategies (Phase V)
-- Multi-page table stitch, form FP control
 - Optional encryption (user-password) subset
-- Forms, annotations, outline extraction
+- Stronger span-aware structure export / ICDAR competitive re-check
 
 ## [0.1.0] - 2026-07-10
 

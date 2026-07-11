@@ -8,20 +8,102 @@ use crate::types::{PipelineId, Table, TableMethod};
 use pdfparser_ir::TextRun;
 
 /// Detect stream (borderless) tables from text geometry alone.
+///
+/// Pages with multiple multi-column text blocks separated by large vertical
+/// gaps (e.g. prose between tables) yield one stream table per region.
 pub fn detect_stream_tables(page_index: u32, runs: &[TextRun], opts: &TableOptions) -> Vec<Table> {
     if runs.len() < 6 {
         return Vec::new();
     }
     let fs_all = median_font_size(runs);
-    let body: Vec<&TextRun> = runs
+    let body: Vec<TextRun> = runs
         .iter()
         .filter(|r| !r.text.trim().is_empty() && r.font_size <= fs_all * 1.3 + 0.5)
+        .cloned()
         .collect();
     if body.len() < 6 {
         return Vec::new();
     }
-    let owned: Vec<TextRun> = body.iter().map(|r| (*r).clone()).collect();
-    detect_stream_region(page_index, &owned, opts, None)
+
+    let fs = median_font_size(&body);
+    let y_tol = (0.55 * fs).max(3.0);
+    let bands = band_runs(&body, y_tol);
+
+    // Multi-column bands only (prose lines with a single run are ignored for splits).
+    let mut multi_centers: Vec<f32> = bands
+        .iter()
+        .filter(|b| b.len() >= 2)
+        .map(|b| b.iter().map(|r| r.bbox.y_center()).sum::<f32>() / b.len() as f32)
+        .collect();
+    if multi_centers.is_empty() {
+        return Vec::new();
+    }
+    // Top → bottom (PDF y decreases downward).
+    multi_centers.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+
+    let min_bands = opts.stream_min_body_bands.max(3) as usize;
+    // Large inter-band gap → separate stream regions (prose / whitespace island).
+    let gap_thresh = (opts.stream_region_gap_font_mult * fs).max(opts.stream_region_gap_min);
+    let groups = split_band_groups(&multi_centers, gap_thresh);
+
+    let mut out = Vec::new();
+    for (gi, range) in groups.iter().enumerate() {
+        let (start, end) = *range;
+        if end - start < min_bands {
+            continue;
+        }
+        let y_hi = if gi == 0 {
+            multi_centers[start] + fs * 2.0
+        } else {
+            let prev_end = groups[gi - 1].1;
+            // Midpoint of the gap to the previous multi-col group.
+            (multi_centers[prev_end - 1] + multi_centers[start]) * 0.5
+        };
+        let y_lo = if gi + 1 >= groups.len() {
+            multi_centers[end - 1] - fs * 2.0
+        } else {
+            let next_start = groups[gi + 1].0;
+            (multi_centers[end - 1] + multi_centers[next_start]) * 0.5
+        };
+
+        let clipped: Vec<TextRun> = body
+            .iter()
+            .filter(|r| {
+                let cy = r.bbox.y_center();
+                cy <= y_hi + 0.5 && cy >= y_lo - 0.5
+            })
+            .cloned()
+            .collect();
+        if clipped.len() < 6 {
+            continue;
+        }
+        out.extend(detect_stream_region(page_index, &clipped, opts, None));
+    }
+
+    // Fallback: no multi-col groups large enough individually — try full body once
+    // (preserves single-table pages where multi-col banding is sparse).
+    if out.is_empty() {
+        out.extend(detect_stream_region(page_index, &body, opts, None));
+    }
+    out
+}
+
+/// Split ordered (top→bottom) band centers into contiguous groups at large Y gaps.
+fn split_band_groups(centers_top_to_bottom: &[f32], gap_thresh: f32) -> Vec<(usize, usize)> {
+    if centers_top_to_bottom.is_empty() {
+        return Vec::new();
+    }
+    let mut groups = Vec::new();
+    let mut start = 0usize;
+    for i in 1..centers_top_to_bottom.len() {
+        let gap = (centers_top_to_bottom[i - 1] - centers_top_to_bottom[i]).abs();
+        if gap > gap_thresh {
+            groups.push((start, i));
+            start = i;
+        }
+    }
+    groups.push((start, centers_top_to_bottom.len()));
+    groups
 }
 
 /// Stream detection restricted to an optional x-span.
@@ -290,6 +372,9 @@ pub fn detect_stream_region(
         logical_table_id: None,
         strategy_provenance: vec![PipelineId::S3Stream],
         notes: vec![format!("stream_cols={max_col} rows={max_row}")],
+        edge_score: 0.0,
+        fill_rate,
+        weak_edges: false,
     }]
 }
 

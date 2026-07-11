@@ -1,0 +1,87 @@
+{
+  "id": "61_decorative_hline_noise",
+  "category": "decorative_hline_noise",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "Real 6×3 lattice amid many decorative horizontal rules and margin ticks",
+  "challenges": [
+    "noise_lines",
+    "decorative_rules",
+    "lattice",
+    "false_rows"
+  ],
+  "failure_modes_covered": [
+    "OVER_DETECT",
+    "ROW_MISCOUNT",
+    "WRONG_SHAPE",
+    "BAD_STRUCTURE"
+  ],
+  "path": "corpus/hard/61_decorative_hline_noise.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD61_DOC",
+    "TOKEN_H61_A",
+    "TOKEN_H61_G"
+  ],
+  "table_cells_must_include": [
+    "Key",
+    "Value",
+    "Unit",
+    "alpha TOKEN_H61_A",
+    "1.23",
+    "m",
+    "beta",
+    "4.56",
+    "m",
+    "gamma TOKEN_H61_G",
+    "7.89",
+    "s"
+  ],
+  "expected_table_count": 1,
+  "expected_tables": [
+    {
+      "rows": 6,
+      "cols": 3,
+      "cells": [
+        [
+          "Key",
+          "Value",
+          "Unit"
+        ],
+        [
+          "alpha TOKEN_H61_A",
+          "1.23",
+          "m"
+        ],
+        [
+          "beta",
+          "4.56",
+          "m"
+        ],
+        [
+          "gamma TOKEN_H61_G",
+          "7.89",
+          "s"
+        ],
+        [
+          "delta",
+          "0.12",
+          "s"
+        ],
+        [
+          "epsilon",
+          "3.14",
+          "rad"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "expected 1 table 6×3; deco lines must not inflate row count."
+}

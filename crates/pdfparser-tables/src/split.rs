@@ -186,5 +186,8 @@ fn extract_col_range(t: &Table, col0: usize, col1: usize) -> Option<Table> {
         logical_table_id: None,
         strategy_provenance: prov,
         notes,
+        edge_score: t.edge_score,
+        fill_rate: t.fill_rate,
+        weak_edges: t.weak_edges,
     })
 }

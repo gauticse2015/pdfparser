@@ -1,0 +1,53 @@
+library	doc_id	tier	category	success	wall_ms	overall_score	text_score	text_token_f1	text_token_recall	text_cer	text_wer	text_similarity	table_score	table_detect_f1	table_detect_precision	table_detect_recall	table_expected	table_predicted	table_shape_exact_rate	table_row_accuracy	table_col_accuracy	table_cell_f1	table_cell_precision	table_cell_recall	table_content_token_recall	table_has_grid_gold	objects_score	images_score	images_exact	links_f1	forms_f1	outline_f1	error
+pdfparser	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	7.07	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	74.78	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	560.44	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	511.91	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	71_frame_and_table	hard_precision	frame_and_table	True	6.82	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	71_frame_and_table	hard_precision	frame_and_table	True	3.72	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	71_frame_and_table	hard_precision	frame_and_table	True	2.3	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	71_frame_and_table	hard_precision	frame_and_table	True	346.6	44.75	100.0	1.0	1.0				35.0	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	7.09	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	5.21	98.4545	100.0	1.0	1.0				98.1818	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9545	1.0	0.913		True	100.0	1.0	True				
+camelot_lattice	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	3.16	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	352.72	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	73_false_row_underlines	hard_precision	false_row_underlines	True	6.59	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	73_false_row_underlines	hard_precision	false_row_underlines	True	3.13	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	73_false_row_underlines	hard_precision	false_row_underlines	True	1.8	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	73_false_row_underlines	hard_precision	false_row_underlines	True	326.88	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	74_sparse_data_grid	hard_precision	sparse_data_grid	True	7.2	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	74_sparse_data_grid	hard_precision	sparse_data_grid	True	4.24	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	74_sparse_data_grid	hard_precision	sparse_data_grid	True	6.03	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	74_sparse_data_grid	hard_precision	sparse_data_grid	True	343.67	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	75_prose_not_stream	hard_precision	prose_not_stream	True	6.38	15.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	1								False	100.0	1.0	True				
+pdfplumber	75_prose_not_stream	hard_precision	prose_not_stream	True	5.12	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+camelot_lattice	75_prose_not_stream	hard_precision	prose_not_stream	True	6.46	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+camelot_auto	75_prose_not_stream	hard_precision	prose_not_stream	True	207.02	15.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	1								False							
+pdfparser	76_caption_not_table	hard_precision	caption_not_table	True	5.94	90.0833	100.0	1.0	1.0				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	76_caption_not_table	hard_precision	caption_not_table	True	3.0	90.0833	100.0	1.0	1.0				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	76_caption_not_table	hard_precision	caption_not_table	True	2.03	85.0833	66.6667	0.6667	0.6667				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	76_caption_not_table	hard_precision	caption_not_table	True	333.37	85.0833	66.6667	0.6667	0.6667				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	6.45	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	4.38	99.3585	100.0	1.0	1.0				99.2453	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9811	1.0	0.963		True	100.0	1.0	True				
+camelot_lattice	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	7.08	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	346.43	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	8.21	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	11.64	99.7888	100.0	1.0	1.0				99.7516	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9938	1.0	0.9877		True	100.0	1.0	True				
+camelot_lattice	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	6.92	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	1007.89	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	79_span_header_precision	hard_precision	span_header_precision	True	6.38	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	79_span_header_precision	hard_precision	span_header_precision	True	4.12	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	79_span_header_precision	hard_precision	span_header_precision	True	6.17	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	79_span_header_precision	hard_precision	span_header_precision	True	334.26	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	6.15	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	3.74	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	2.41	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	338.27	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfparser	81_phantom_verticals	hard_precision	phantom_verticals	True	6.0	71.95	100.0	1.0	1.0				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True	100.0	1.0	True				
+pdfplumber	81_phantom_verticals	hard_precision	phantom_verticals	True	3.29	71.95	100.0	1.0	1.0				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True	100.0	1.0	True				
+camelot_lattice	81_phantom_verticals	hard_precision	phantom_verticals	True	2.04	66.95	66.6667	0.6667	0.6667				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True							
+camelot_auto	81_phantom_verticals	hard_precision	phantom_verticals	True	344.3	66.95	66.6667	0.6667	0.6667				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True							
+pdfparser	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	6.39	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfplumber	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	3.65	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+camelot_lattice	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	2.01	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+camelot_auto	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	204.92	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							

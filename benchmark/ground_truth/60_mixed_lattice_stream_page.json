@@ -1,0 +1,117 @@
+{
+  "id": "60_mixed_lattice_stream_page",
+  "category": "mixed_lattice_stream",
+  "tier": "hard",
+  "suite": "regression_hard",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "description": "One lattice and one stream table on the same page",
+  "challenges": [
+    "lattice",
+    "stream",
+    "multiple_tables_per_page",
+    "mixed_methods"
+  ],
+  "failure_modes_covered": [
+    "UNDER_DETECT",
+    "MULTI_TABLE_PAGE",
+    "WRONG_SHAPE"
+  ],
+  "path": "corpus/hard/60_mixed_lattice_stream_page.pdf",
+  "page_count": 1,
+  "must_contain": [
+    "TOKEN_HARD60_DOC",
+    "TOKEN_H60_LAT",
+    "TOKEN_H60_STR"
+  ],
+  "table_cells_must_include": [
+    "ID",
+    "Product",
+    "Qty",
+    "1 TOKEN_H60_LAT",
+    "Widget",
+    "10",
+    "2",
+    "Gadget",
+    "5",
+    "3",
+    "Gizmo",
+    "8"
+  ],
+  "expected_table_count": 2,
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "ID",
+          "Product",
+          "Qty"
+        ],
+        [
+          "1 TOKEN_H60_LAT",
+          "Widget",
+          "10"
+        ],
+        [
+          "2",
+          "Gadget",
+          "5"
+        ],
+        [
+          "3",
+          "Gizmo",
+          "8"
+        ],
+        [
+          "4",
+          "Doohickey",
+          "2"
+        ]
+      ]
+    },
+    {
+      "rows": 6,
+      "cols": 3,
+      "cells": [
+        [
+          "Name",
+          "Dept",
+          "Loc"
+        ],
+        [
+          "Ada TOKEN_H60_STR",
+          "Eng",
+          "NYC"
+        ],
+        [
+          "Lin",
+          "Sales",
+          "SF"
+        ],
+        [
+          "Sam",
+          "Ops",
+          "CHI"
+        ],
+        [
+          "Pat",
+          "HR",
+          "AUS"
+        ],
+        [
+          "Kim",
+          "Legal",
+          "BOS"
+        ]
+      ]
+    }
+  ],
+  "expected_images": 0,
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "our_library_priority": "hard regression / structure quality",
+  "quality_notes": "Strong lattice must not suppress stream region below."
+}

@@ -1,0 +1,186 @@
+{
+  "id": "78_multipage_footer_rules",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/78_multipage_footer_rules.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "multipage_footer_rules",
+  "description": "3-page ledger + footer rules; 3 tables 9\u00d73 (header+8)",
+  "challenges": [
+    "multi_page_table",
+    "footer_noise",
+    "over_detect"
+  ],
+  "failure_modes_covered": [
+    "MULTI_PAGE_DOC",
+    "OVER_DETECT",
+    "ROW_MISCOUNT"
+  ],
+  "must_contain": [
+    "TOKEN_P78_DOC",
+    "TOKEN_P78_R1",
+    "TOKEN_P78_END"
+  ],
+  "expected_tables": [
+    {
+      "rows": 9,
+      "cols": 3,
+      "cells": [
+        [
+          "Date",
+          "Ref",
+          "Amt"
+        ],
+        [
+          "01-01",
+          "R1",
+          "1.5 TOKEN_P78_R1"
+        ],
+        [
+          "01-02",
+          "R2",
+          "3.0"
+        ],
+        [
+          "01-03",
+          "R3",
+          "4.5"
+        ],
+        [
+          "01-04",
+          "R4",
+          "6.0"
+        ],
+        [
+          "01-05",
+          "R5",
+          "7.5"
+        ],
+        [
+          "01-06",
+          "R6",
+          "9.0"
+        ],
+        [
+          "01-07",
+          "R7",
+          "10.5"
+        ],
+        [
+          "01-08",
+          "R8",
+          "12.0"
+        ]
+      ]
+    },
+    {
+      "rows": 9,
+      "cols": 3,
+      "cells": [
+        [
+          "Date",
+          "Ref",
+          "Amt"
+        ],
+        [
+          "01-09",
+          "R9",
+          "13.5"
+        ],
+        [
+          "01-10",
+          "R10",
+          "15.0"
+        ],
+        [
+          "01-11",
+          "R11",
+          "16.5"
+        ],
+        [
+          "01-12",
+          "R12",
+          "18.0"
+        ],
+        [
+          "01-13",
+          "R13",
+          "19.5"
+        ],
+        [
+          "01-14",
+          "R14",
+          "21.0"
+        ],
+        [
+          "01-15",
+          "R15",
+          "22.5"
+        ],
+        [
+          "01-16",
+          "R16",
+          "24.0"
+        ]
+      ]
+    },
+    {
+      "rows": 9,
+      "cols": 3,
+      "cells": [
+        [
+          "Date",
+          "Ref",
+          "Amt"
+        ],
+        [
+          "01-17",
+          "R17",
+          "25.5"
+        ],
+        [
+          "01-18",
+          "R18",
+          "27.0"
+        ],
+        [
+          "01-19",
+          "R19",
+          "28.5"
+        ],
+        [
+          "01-20",
+          "R20",
+          "30.0"
+        ],
+        [
+          "01-21",
+          "R21",
+          "31.5"
+        ],
+        [
+          "01-22",
+          "R22",
+          "33.0"
+        ],
+        [
+          "01-23",
+          "R23",
+          "34.5"
+        ],
+        [
+          "01-24",
+          "R24 TOKEN_P78_END",
+          "36.0"
+        ]
+      ]
+    }
+  ],
+  "page_count": 3,
+  "expected_table_count": 3
+}

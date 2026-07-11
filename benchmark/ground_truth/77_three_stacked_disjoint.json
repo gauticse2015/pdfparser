@@ -1,0 +1,103 @@
+{
+  "id": "77_three_stacked_disjoint",
+  "tier": "hard_precision",
+  "suite": "regression_precision",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_precision/77_three_stacked_disjoint.pdf",
+  "weight_text": 0.15,
+  "weight_tables": 0.85,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "category": "three_stacked_disjoint",
+  "description": "Three disjoint stacked lattices (4\u00d72, 3\u00d73, 5\u00d72)",
+  "challenges": [
+    "multiple_tables_per_page",
+    "anti_mega_grid",
+    "over_detect"
+  ],
+  "failure_modes_covered": [
+    "MULTI_TABLE_PAGE",
+    "UNDER_DETECT",
+    "OVER_DETECT"
+  ],
+  "must_contain": [
+    "TOKEN_P77_DOC",
+    "TOKEN_P77_1",
+    "TOKEN_P77_2",
+    "TOKEN_P77_3"
+  ],
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 2,
+      "cells": [
+        [
+          "H1",
+          "H2"
+        ],
+        [
+          "a TOKEN_P77_1",
+          "b"
+        ],
+        [
+          "c",
+          "d"
+        ],
+        [
+          "e",
+          "f"
+        ]
+      ]
+    },
+    {
+      "rows": 3,
+      "cols": 3,
+      "cells": [
+        [
+          "P",
+          "Q",
+          "R"
+        ],
+        [
+          "1 TOKEN_P77_2",
+          "2",
+          "3"
+        ],
+        [
+          "4",
+          "5",
+          "6"
+        ]
+      ]
+    },
+    {
+      "rows": 5,
+      "cols": 2,
+      "cells": [
+        [
+          "X",
+          "Y"
+        ],
+        [
+          "u TOKEN_P77_3",
+          "v"
+        ],
+        [
+          "w",
+          "x"
+        ],
+        [
+          "y",
+          "z"
+        ],
+        [
+          "m",
+          "n"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 3
+}

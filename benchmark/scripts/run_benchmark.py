@@ -641,13 +641,316 @@ def extract_pdfparser(path: Path, gt: dict, password: Optional[str] = None) -> E
 
 
 
+def _df_to_grid(df) -> list[list[str]]:
+    """Convert a pandas-like dataframe (or list-of-lists) to a string grid."""
+    if df is None:
+        return []
+    # camelot Table has .df; img2table has .df; raw list ok
+    if hasattr(df, "values"):
+        try:
+            return [[("" if c is None else str(c)) for c in row] for row in df.values.tolist()]
+        except Exception:
+            pass
+    if hasattr(df, "tolist"):
+        try:
+            return [[("" if c is None else str(c)) for c in row] for row in df.tolist()]
+        except Exception:
+            pass
+    out = []
+    for row in df:
+        out.append([("" if c is None else str(c)) for c in row])
+    return out
+
+
+def _text_from_tables(tables: list) -> str:
+    parts = []
+    for t in tables or []:
+        for row in t:
+            for cell in row:
+                if cell:
+                    parts.append(str(cell))
+    return normalize_text(" ".join(parts))
+
+
+def extract_camelot_lattice(path: Path, gt: dict, password: Optional[str] = None) -> ExtractResult:
+    """Camelot lattice (vector engine preferred — fast, strong on ruled tables)."""
+    import camelot
+
+    supports = {
+        "text": False,
+        "chars_geometry": False,
+        "tables": True,
+        "images_meta": False,
+        "lines_rects": True,
+        "annots_hyperlinks": False,
+        "forms": False,
+        "outline": False,
+        "encrypted_password": bool(password),
+    }
+    notes = ["table_only_library", "flavor=lattice"]
+    kwargs = {"flavor": "lattice", "pages": "all"}
+    if password:
+        kwargs["password"] = password
+    # Prefer vector engine when available (camelot 2.x)
+    try:
+        tables = camelot.read_pdf(str(path), engine="vector", **kwargs)
+        notes.append("engine=vector")
+    except TypeError:
+        tables = camelot.read_pdf(str(path), **kwargs)
+        notes.append("engine=default")
+    except Exception:
+        # Fallback without engine kw
+        tables = camelot.read_pdf(str(path), **kwargs)
+        notes.append("engine=fallback")
+
+    grids = []
+    for t in tables:
+        try:
+            grids.append(_df_to_grid(t.df))
+        except Exception as e:
+            notes.append(f"table_df_err:{type(e).__name__}")
+    text = _text_from_tables(grids)
+    return ExtractResult(
+        library="camelot_lattice",
+        doc_id=gt["id"],
+        success=True,
+        page_count=None,
+        text=text,
+        text_chars=len(text),
+        tables=grids,
+        notes=notes,
+        supports=supports,
+    )
+
+
+def extract_camelot_stream(path: Path, gt: dict, password: Optional[str] = None) -> ExtractResult:
+    """Camelot stream (whitespace / borderless tables)."""
+    import camelot
+
+    supports = {
+        "text": False,
+        "chars_geometry": False,
+        "tables": True,
+        "images_meta": False,
+        "lines_rects": False,
+        "annots_hyperlinks": False,
+        "forms": False,
+        "outline": False,
+        "encrypted_password": bool(password),
+    }
+    notes = ["table_only_library", "flavor=stream"]
+    kwargs = {"flavor": "stream", "pages": "all"}
+    if password:
+        kwargs["password"] = password
+    tables = camelot.read_pdf(str(path), **kwargs)
+    grids = []
+    for t in tables:
+        try:
+            grids.append(_df_to_grid(t.df))
+        except Exception as e:
+            notes.append(f"table_df_err:{type(e).__name__}")
+    text = _text_from_tables(grids)
+    return ExtractResult(
+        library="camelot_stream",
+        doc_id=gt["id"],
+        success=True,
+        text=text,
+        text_chars=len(text),
+        tables=grids,
+        notes=notes,
+        supports=supports,
+    )
+
+
+def extract_camelot_auto(path: Path, gt: dict, password: Optional[str] = None) -> ExtractResult:
+    """Camelot auto (per-page lattice/stream selection — stronger, slower)."""
+    import camelot
+    import warnings
+
+    supports = {
+        "text": False,
+        "chars_geometry": False,
+        "tables": True,
+        "images_meta": False,
+        "lines_rects": True,
+        "annots_hyperlinks": False,
+        "forms": False,
+        "outline": False,
+        "encrypted_password": bool(password),
+    }
+    notes = ["table_only_library", "flavor=auto"]
+    kwargs = {"flavor": "auto", "pages": "all"}
+    if password:
+        kwargs["password"] = password
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        try:
+            tables = camelot.read_pdf(str(path), **kwargs)
+        except Exception as e:
+            # Older camelot without auto: best-of lattice∪stream by table count
+            notes.append(f"auto_unavailable:{type(e).__name__}")
+            lat = camelot.read_pdf(
+                str(path),
+                flavor="lattice",
+                pages="all",
+                **({"password": password} if password else {}),
+            )
+            stre = camelot.read_pdf(
+                str(path),
+                flavor="stream",
+                pages="all",
+                **({"password": password} if password else {}),
+            )
+            tables = lat if lat.n >= stre.n else stre
+            notes.append("best_of_lattice_stream_count")
+    grids = []
+    for t in tables:
+        try:
+            grids.append(_df_to_grid(t.df))
+        except Exception as e:
+            notes.append(f"table_df_err:{type(e).__name__}")
+    text = _text_from_tables(grids)
+    return ExtractResult(
+        library="camelot_auto",
+        doc_id=gt["id"],
+        success=True,
+        text=text,
+        text_chars=len(text),
+        tables=grids,
+        notes=notes,
+        supports=supports,
+    )
+
+
+def extract_img2table(path: Path, gt: dict, password: Optional[str] = None) -> ExtractResult:
+    """img2table OpenCV-based table extraction (embedded PDF text when digital)."""
+    from img2table.document import PDF
+
+    supports = {
+        "text": False,
+        "chars_geometry": False,
+        "tables": True,
+        "images_meta": False,
+        "lines_rects": True,
+        "annots_hyperlinks": False,
+        "forms": False,
+        "outline": False,
+        "encrypted_password": False,
+    }
+    notes = ["table_only_library", "img2table_opencv"]
+    if password:
+        notes.append("password_ignored")
+    doc = PDF(src=str(path))
+    # Digital PDFs: extract without OCR
+    try:
+        extracted = doc.extract_tables()
+    except TypeError:
+        extracted = doc.extract_tables(ocr=None)
+
+    grids = []
+    if isinstance(extracted, dict):
+        # page_index -> list[ExtractedTable]
+        for _page, tabs in sorted(extracted.items(), key=lambda x: x[0]):
+            for t in tabs or []:
+                try:
+                    grids.append(_df_to_grid(t.df))
+                except Exception as e:
+                    notes.append(f"df_err:{type(e).__name__}")
+    elif isinstance(extracted, list):
+        for t in extracted:
+            try:
+                grids.append(_df_to_grid(getattr(t, "df", t)))
+            except Exception as e:
+                notes.append(f"df_err:{type(e).__name__}")
+    text = _text_from_tables(grids)
+    return ExtractResult(
+        library="img2table",
+        doc_id=gt["id"],
+        success=True,
+        text=text,
+        text_chars=len(text),
+        tables=grids,
+        notes=notes,
+        supports=supports,
+    )
+
+
+def extract_tabula(path: Path, gt: dict, password: Optional[str] = None) -> ExtractResult:
+    """Tabula-py lattice+stream merge (requires working JRE)."""
+    import tabula
+
+    supports = {
+        "text": False,
+        "chars_geometry": False,
+        "tables": True,
+        "images_meta": False,
+        "lines_rects": True,
+        "annots_hyperlinks": False,
+        "forms": False,
+        "outline": False,
+        "encrypted_password": bool(password),
+    }
+    notes = ["table_only_library", "tabula_java"]
+    # Probe java once via attempt
+    kwargs = {"pages": "all", "multiple_tables": True, "silent": True}
+    if password:
+        kwargs["password"] = password
+    grids = []
+    try:
+        dfs_lat = tabula.read_pdf(str(path), lattice=True, **kwargs) or []
+        for df in dfs_lat:
+            grids.append(_df_to_grid(df))
+        notes.append(f"lattice_tables={len(dfs_lat)}")
+    except Exception as e:
+        notes.append(f"lattice_fail:{type(e).__name__}:{e}")
+        raise RuntimeError(
+            f"tabula unavailable (need JRE): {e}"
+        ) from e
+    # If lattice found nothing, try stream
+    if not grids:
+        try:
+            dfs_st = tabula.read_pdf(str(path), stream=True, **kwargs) or []
+            for df in dfs_st:
+                grids.append(_df_to_grid(df))
+            notes.append(f"stream_tables={len(dfs_st)}")
+        except Exception as e:
+            notes.append(f"stream_fail:{type(e).__name__}")
+    text = _text_from_tables(grids)
+    return ExtractResult(
+        library="tabula",
+        doc_id=gt["id"],
+        success=True,
+        text=text,
+        text_chars=len(text),
+        tables=grids,
+        notes=notes,
+        supports=supports,
+    )
+
+
+# Primary accuracy bake-off set. Tabula is registered but skipped if JRE missing
+# (see run_accuracy_benchmark availability probe).
 ADAPTERS: dict[str, Callable] = {
     "pdfparser": extract_pdfparser,
+    "camelot_lattice": extract_camelot_lattice,
+    "camelot_stream": extract_camelot_stream,
+    "camelot_auto": extract_camelot_auto,
+    "img2table": extract_img2table,
     "pdfplumber": extract_pdfplumber,
+    "pymupdf": extract_pymupdf,
     "pdfminer.six": extract_pdfminer,
     "pypdf": extract_pypdf,
-    "pymupdf": extract_pymupdf,
     "pypdfium2": extract_pypdfium2,
+    "tabula": extract_tabula,
+}
+
+# Libraries that primarily extract tables (text from cells only).
+TABLE_PRIMARY_LIBS = {
+    "camelot_lattice",
+    "camelot_stream",
+    "camelot_auto",
+    "img2table",
+    "tabula",
 }
 
 
@@ -753,6 +1056,8 @@ def resolve_pdf(gt: dict) -> Path | None:
         [
             CORPUS / f"{doc_id}.pdf",
             CORPUS / "stress" / f"{doc_id}.pdf",
+            CORPUS / "hard" / f"{doc_id}.pdf",
+            CORPUS / "hard_precision" / f"{doc_id}.pdf",
             CORPUS / "real" / f"{doc_id}.pdf",
             ROOT / "downloads" / f"{doc_id}.pdf",
         ]
