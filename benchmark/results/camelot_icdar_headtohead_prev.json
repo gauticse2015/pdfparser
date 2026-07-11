@@ -1,0 +1,112 @@
+{
+  "dataset": "ICDAR-2013 (camelot-dev/camelot shipped)",
+  "metrics": "camelot bench/_metrics.score (detection F1, difflib TEDS proxy, row/col exact)",
+  "gold": "ICDAR *-str.xml via parse_icdar_str_xml",
+  "n_docs": 67,
+  "policy": "competitive_only_not_regression",
+  "results": {
+    "pdfparser": {
+      "f1": 0.6717948717948719,
+      "teds": 0.3313008680367299,
+      "row": 0.3816793893129771,
+      "col": 0.48854961832061067,
+      "time_s": 0.5789789159898646,
+      "errors": 0,
+      "docs": 67
+    },
+    "camelot_lattice_vector": {
+      "f1": 0.7657992565055762,
+      "teds": 0.7838816726186509,
+      "row": 0.7475728155339806,
+      "col": 0.8058252427184466,
+      "time_s": 3.553464541968424,
+      "errors": 0,
+      "docs": 67
+    },
+    "camelot_auto": {
+      "f1": 0.863768115942029,
+      "teds": 0.7855027900692086,
+      "row": 0.5637583892617449,
+      "col": 0.7919463087248322,
+      "time_s": 72.2958169170306,
+      "errors": 0,
+      "docs": 67
+    },
+    "pdfplumber": {
+      "f1": 0.6624605678233437,
+      "teds": 0.6496610592922069,
+      "row": 0.5714285714285714,
+      "col": 0.5333333333333333,
+      "time_s": 8.42402720800601,
+      "errors": 0,
+      "docs": 67
+    },
+    "pymupdf": {
+      "f1": 0.7758007117437722,
+      "teds": 0.6736259412286585,
+      "row": 0.5779816513761468,
+      "col": 0.6422018348623854,
+      "time_s": 10.760597499960568,
+      "errors": 0,
+      "docs": 67
+    }
+  },
+  "ranking": [
+    {
+      "tool": "camelot_auto",
+      "f1": 0.863768115942029,
+      "teds": 0.7855027900692086,
+      "row": 0.5637583892617449,
+      "col": 0.7919463087248322,
+      "time_s": 72.2958169170306,
+      "errors": 0,
+      "docs": 67,
+      "rank": 1
+    },
+    {
+      "tool": "pymupdf",
+      "f1": 0.7758007117437722,
+      "teds": 0.6736259412286585,
+      "row": 0.5779816513761468,
+      "col": 0.6422018348623854,
+      "time_s": 10.760597499960568,
+      "errors": 0,
+      "docs": 67,
+      "rank": 2
+    },
+    {
+      "tool": "camelot_lattice_vector",
+      "f1": 0.7657992565055762,
+      "teds": 0.7838816726186509,
+      "row": 0.7475728155339806,
+      "col": 0.8058252427184466,
+      "time_s": 3.553464541968424,
+      "errors": 0,
+      "docs": 67,
+      "rank": 3
+    },
+    {
+      "tool": "pdfparser",
+      "f1": 0.6717948717948719,
+      "teds": 0.3313008680367299,
+      "row": 0.3816793893129771,
+      "col": 0.48854961832061067,
+      "time_s": 0.5789789159898646,
+      "errors": 0,
+      "docs": 67,
+      "rank": 4
+    },
+    {
+      "tool": "pdfplumber",
+      "f1": 0.6624605678233437,
+      "teds": 0.6496610592922069,
+      "row": 0.5714285714285714,
+      "col": 0.5333333333333333,
+      "time_s": 8.42402720800601,
+      "errors": 0,
+      "docs": 67,
+      "rank": 5
+    }
+  ],
+  "gap_analysis_md": "pdfparser F1=0.672 TEDS=0.331 row=0.382 col=0.489 vs camelot lattice F1=0.766 TEDS=0.784.\n\n### Primary remaining gaps\n\n1. **Structure quality (TEDS / row / col)** \u2014 Detection has improved more than content alignment. ROW_MISCOUNT=40, COL_MISCOUNT=36, WRONG_SHAPE=47, BAD_STRUCTURE=44.\n2. **MISS_ALL / UNDER_DETECT** \u2014 MISS_ALL=4, UNDER_DETECT=11. Often stream-only or faint/incomplete rules where lattice CC has too few joints; Camelot raster/auto recovers some of these.\n3. **MULTI_TABLE_PAGE** \u2014 17 docs. Multi-region CC helps; residual fusion or order-mismatch vs gold still hurts F1/TEDS (order-based matching).\n4. **Spans & partial rules** \u2014 High F1 / low TEDS cases usually have wrong row/col counts from extra decorative lines or missing span merge on real competition layouts.\n5. **Metric sensitivity** \u2014 ICDAR matching is **page order**, not IoU. Correct tables in wrong order look like structure failures. TEDS is a difflib proxy, not tree-edit TEDS.\n6. **No raster line engine** \u2014 Camelot `auto`/`combined` can find painted/faint rules; we are vector-only.\n"
+}

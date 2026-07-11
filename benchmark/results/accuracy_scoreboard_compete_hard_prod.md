@@ -1,6 +1,48 @@
-# PDF Parser Accuracy Scoreboard
+# Compete-hard accuracy scoreboard (post-geometry re-baseline)
 
-**Suite:** `regression_compete_hard` · **Docs:** 81 · **ICDAR excluded** (competitive-only)
+**Suite:** `regression_compete_hard` · **Docs:** 81 · **ICDAR excluded**  
+**Freeze:** `benchmark/results/compete_hard_baseline_post_geometry.json`  
+**Prior freezes:** pre-algorithm `compete_hard_baseline_frozen.json` · post-raster `compete_hard_baseline_post_raster.json`
+
+## Re-baseline summary (pdfparser)
+
+| Metric | Pre-algorithm | Post-raster | **Post-geometry** |
+|--------|-------------:|------------:|------------------:|
+| overall | 50.4 | 61.5 | **88.2** |
+| cell F1 | 0.383 | 0.445 | **0.830** |
+| detect F1 | 0.795 | 0.884 | **0.961** |
+| shape exact | 0.204 | 0.444 | **0.846** |
+| row accuracy | 0.426 | 0.667 | **0.846** |
+| col accuracy | 0.596 | 0.608 | **0.966** |
+| imperfect rate | 87.7% | 74.1% | **35.8%** |
+
+### Geometry lanes landed (parallel)
+
+| Lane | Failure mode | Result |
+|------|--------------|--------|
+| A | partial-V densify_x (C116–C133) | **solved** cell/shape 1.0 |
+| B | sparse densify_y (C142–C149) | **solved** cell/shape 1.0 |
+| C | header-slice network regioning (C108–C115) | det 1.0, col 1.0, cell **0.63**, shape 0.50 |
+| D | mixed lattice+stream (via C network bridge) | cell **0.98**, shape 0.92 |
+
+### By struggle mode
+
+| Mode | n | det F1 | shape | row | col | cell F1 | imperfect | overall |
+|------|--:|-------:|------:|----:|----:|--------:|----------:|--------:|
+| `image_painted_miss_all` | 8 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 100% | 62.0 |
+| `complex_spans` | 4 | 0.833 | 0.250 | 0.250 | 0.500 | 0.474 | 75% | 56.7 |
+| `header_slice_fragmentation` | 8 | 1.000 | 0.500 | 0.500 | 1.000 | 0.632 | 100% | 74.2 |
+| `multi_table_close_chrome` | 5 | 0.880 | 0.800 | 0.800 | 0.850 | 0.887 | 20% | 87.0 |
+| `mixed_stream_miss` | 6 | 1.000 | 0.917 | 0.917 | 1.000 | 0.977 | 17% | 93.8 |
+| `invoice_fees_inside_grid` | 4 | 1.000 | 0.000 | 0.000 | 1.000 | 1.000 | 100% | 76.2 |
+| `cell_content_assign` | 4 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0% | 97.5 |
+| `false_underline_row_overcount` | 8 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0% | 100.0 |
+| `multipage_underline_overcount` | 4 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0% | 100.0 |
+| `partial_v_col_undercount` | 18 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0% | 100.0 |
+| `severe_minigrid_overdetect` | 4 | 0.528 | 1.000 | 1.000 | 1.000 | 1.000 | 100% | 83.7 |
+| `sparse_densify_row_undercount` | 8 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0% | 100.0 |
+
+---
 
 ## Executive summary — table quality
 
@@ -8,13 +50,13 @@ Primary ranking for table-engine work (mean over docs that produce table metrics
 
 | Rank | Library | cell F1 | detect F1 | shape exact | overall | ms |
 |-----:|---------|--------:|----------:|------------:|--------:|---:|
-| 1 | **pdfparser** ← **ours** | 0.445 | 0.785 | 0.346 | 55.841 | 11.0 |
+| 1 | **pdfparser** ← **ours** | 0.830 | 0.961 | 0.846 | 88.189 | 10.9 |
 
 ### Overall product score (text+tables+objects)
 
 | Rank | Library | overall | text F1 | table cell F1 | ms |
 |-----:|---------|--------:|--------:|--------------:|---:|
-| 1 | **pdfparser** ← **ours** | 55.841 | 0.920 | 0.445 | 11.0 |
+| 1 | **pdfparser** ← **ours** | 88.189 | 0.920 | 0.830 | 10.9 |
 
 > Table-primary tools (`camelot_*`, `img2table`) get lower **overall** when outside-table tokens are missing — judge them on **cell F1 / detect F1**.
 
@@ -38,14 +80,14 @@ Scores are only computed when gold exists for that component. Synthetic docs hav
 ## Overall leaderboard (mean over successful runs)
 | Library | overall | text | text F1 | CER↓ | table | detect F1 | cell F1 | objects | ms |
 |---------|--------:|-----:|--------:|-----:|------:|----------:|--------:|--------:|---:|
-| pdfparser | 55.841 | 91.975 | 0.920 | — | 53.940 | 0.785 | 0.445 | 90.124 | 11.0 |
+| pdfparser | 88.189 | 91.975 | 0.920 | — | 87.990 | 0.961 | 0.830 | 90.124 | 10.9 |
 
 ## Grid-gold subset (synthetic tables with full cell grids)
 Best apples-to-apples table quality comparison.
 
 | Library | n | detect F1 | shape exact | cell F1 | table score |
 |---------|--:|----------:|------------:|--------:|------------:|
-| pdfparser | 81 | 0.785 | 0.346 | 0.445 | 53.940 |
+| pdfparser | 81 | 0.961 | 0.846 | 0.830 | 87.990 |
 
 ## By tier
 
@@ -73,40 +115,40 @@ Best apples-to-apples table quality comparison.
 
 | Doc | pdfparser |
 |-----|-----:|
-| `C100_img_rules_8x4` | 5.0 |
-| `C101_img_rules_10x5` | 5.0 |
-| `C102_img_rules_12x6` | 5.0 |
-| `C103_img_rules_15x6` | 5.0 |
-| `C104_img_rules_21x6` | 5.0 |
-| `C105_img_rules_12x8` | 5.0 |
-| `C106_img_rules_18x5` | 5.0 |
-| `C107_img_rules_9x7` | 5.0 |
-| `C108_hdr_slice_31x10` | 18.6 |
-| `C109_hdr_slice_44x12` | 22.5 |
-| `C110_hdr_slice_58x8` | 16.5 |
-| `C111_hdr_slice_35x11` | 24.4 |
-| `C112_hdr_slice_40x9` | 25.9 |
-| `C113_hdr_slice_50x10` | 13.5 |
-| `C114_hdr_slice_28x14` | 23.9 |
-| `C115_hdr_slice_36x8` | 16.4 |
-| `C116_partial_v_s2_12x10` | 38.2 |
-| `C117_partial_v_s2_15x12` | 38.2 |
-| `C118_partial_v_s2_20x12` | 38.2 |
-| `C119_partial_v_s2_15x14` | 38.2 |
-| `C120_partial_v_s2_10x16` | 38.2 |
-| `C121_partial_v_s2_18x10` | 38.2 |
-| `C122_partial_v_s3_12x10` | 38.2 |
-| `C123_partial_v_s3_15x12` | 38.2 |
-| `C124_partial_v_s3_20x12` | 38.2 |
-| `C125_partial_v_s3_15x14` | 38.2 |
-| `C126_partial_v_s3_10x16` | 38.2 |
-| `C127_partial_v_s3_18x10` | 38.2 |
-| `C128_partial_v_s4_12x10` | 38.2 |
-| `C129_partial_v_s4_15x12` | 38.2 |
-| `C130_partial_v_s4_20x12` | 38.2 |
-| `C131_partial_v_s4_15x14` | 38.2 |
-| `C132_partial_v_s4_10x16` | 38.2 |
-| `C133_partial_v_s4_18x10` | 38.2 |
+| `C100_img_rules_8x4` | 62.0 |
+| `C101_img_rules_10x5` | 62.0 |
+| `C102_img_rules_12x6` | 62.0 |
+| `C103_img_rules_15x6` | 62.0 |
+| `C104_img_rules_21x6` | 62.0 |
+| `C105_img_rules_12x8` | 62.0 |
+| `C106_img_rules_18x5` | 62.0 |
+| `C107_img_rules_9x7` | 62.0 |
+| `C108_hdr_slice_31x10` | 38.5 |
+| `C109_hdr_slice_44x12` | 73.1 |
+| `C110_hdr_slice_58x8` | 99.6 |
+| `C111_hdr_slice_35x11` | 96.9 |
+| `C112_hdr_slice_40x9` | 99.2 |
+| `C113_hdr_slice_50x10` | 38.4 |
+| `C114_hdr_slice_28x14` | 97.6 |
+| `C115_hdr_slice_36x8` | 49.8 |
+| `C116_partial_v_s2_12x10` | 100.0 |
+| `C117_partial_v_s2_15x12` | 100.0 |
+| `C118_partial_v_s2_20x12` | 100.0 |
+| `C119_partial_v_s2_15x14` | 100.0 |
+| `C120_partial_v_s2_10x16` | 100.0 |
+| `C121_partial_v_s2_18x10` | 100.0 |
+| `C122_partial_v_s3_12x10` | 100.0 |
+| `C123_partial_v_s3_15x12` | 100.0 |
+| `C124_partial_v_s3_20x12` | 100.0 |
+| `C125_partial_v_s3_15x14` | 100.0 |
+| `C126_partial_v_s3_10x16` | 100.0 |
+| `C127_partial_v_s3_18x10` | 100.0 |
+| `C128_partial_v_s4_12x10` | 100.0 |
+| `C129_partial_v_s4_15x12` | 100.0 |
+| `C130_partial_v_s4_20x12` | 100.0 |
+| `C131_partial_v_s4_15x14` | 100.0 |
+| `C132_partial_v_s4_10x16` | 100.0 |
+| `C133_partial_v_s4_18x10` | 100.0 |
 | `C134_cell_underlines_6x4` | 100.0 |
 | `C135_cell_underlines_8x5` | 100.0 |
 | `C136_cell_underlines_10x5` | 100.0 |
@@ -115,20 +157,20 @@ Best apples-to-apples table quality comparison.
 | `C139_cell_underlines_9x5` | 100.0 |
 | `C140_cell_underlines_14x4` | 100.0 |
 | `C141_cell_underlines_11x6` | 100.0 |
-| `C142_sparse_f25_20x6` | 53.3 |
-| `C143_sparse_f25_25x8` | 47.5 |
-| `C144_sparse_f35_20x6` | 50.2 |
-| `C145_sparse_f35_25x8` | 47.4 |
-| `C146_sparse_f50_20x6` | 72.6 |
-| `C147_sparse_f50_28x7` | 60.0 |
-| `C148_sparse_f30_30x5` | 53.2 |
-| `C149_sparse_f40_18x9` | 71.3 |
-| `C150_mix_irreg_str20x6` | 55.8 |
-| `C151_mix_irreg_str30x6` | 45.1 |
-| `C152_mix_irreg_str40x7` | 43.4 |
-| `C153_mix_irreg_str25x8` | 48.8 |
-| `C154_mix_irreg_str35x5` | 45.0 |
-| `C155_mix_irreg_str22x9` | 48.1 |
+| `C142_sparse_f25_20x6` | 100.0 |
+| `C143_sparse_f25_25x8` | 100.0 |
+| `C144_sparse_f35_20x6` | 100.0 |
+| `C145_sparse_f35_25x8` | 100.0 |
+| `C146_sparse_f50_20x6` | 100.0 |
+| `C147_sparse_f50_28x7` | 100.0 |
+| `C148_sparse_f30_30x5` | 100.0 |
+| `C149_sparse_f40_18x9` | 100.0 |
+| `C150_mix_irreg_str20x6` | 96.7 |
+| `C151_mix_irreg_str30x6` | 79.6 |
+| `C152_mix_irreg_str40x7` | 96.7 |
+| `C153_mix_irreg_str25x8` | 96.7 |
+| `C154_mix_irreg_str35x5` | 96.7 |
+| `C155_mix_irreg_str22x9` | 96.7 |
 | `C156_multi_close_n3_g6` | 100.0 |
 | `C157_multi_close_n4_g8` | 100.0 |
 | `C158_multi_close_n5_g10` | 100.0 |
@@ -167,32 +209,32 @@ Best apples-to-apples table quality comparison.
 | `C105_img_rules_12x8` | 0.000 |
 | `C106_img_rules_18x5` | 0.000 |
 | `C107_img_rules_9x7` | 0.000 |
-| `C108_hdr_slice_31x10` | 0.008 |
-| `C109_hdr_slice_44x12` | 0.111 |
-| `C110_hdr_slice_58x8` | 0.053 |
-| `C111_hdr_slice_35x11` | 0.161 |
-| `C112_hdr_slice_40x9` | 0.199 |
-| `C113_hdr_slice_50x10` | 0.005 |
-| `C114_hdr_slice_28x14` | 0.061 |
-| `C115_hdr_slice_36x8` | 0.008 |
-| `C116_partial_v_s2_12x10` | 0.000 |
-| `C117_partial_v_s2_15x12` | 0.000 |
-| `C118_partial_v_s2_20x12` | 0.000 |
-| `C119_partial_v_s2_15x14` | 0.000 |
-| `C120_partial_v_s2_10x16` | 0.000 |
-| `C121_partial_v_s2_18x10` | 0.000 |
-| `C122_partial_v_s3_12x10` | 0.000 |
-| `C123_partial_v_s3_15x12` | 0.000 |
-| `C124_partial_v_s3_20x12` | 0.000 |
-| `C125_partial_v_s3_15x14` | 0.000 |
-| `C126_partial_v_s3_10x16` | 0.000 |
-| `C127_partial_v_s3_18x10` | 0.000 |
-| `C128_partial_v_s4_12x10` | 0.000 |
-| `C129_partial_v_s4_15x12` | 0.000 |
-| `C130_partial_v_s4_20x12` | 0.000 |
-| `C131_partial_v_s4_15x14` | 0.000 |
-| `C132_partial_v_s4_10x16` | 0.000 |
-| `C133_partial_v_s4_18x10` | 0.000 |
+| `C108_hdr_slice_31x10` | 0.007 |
+| `C109_hdr_slice_44x12` | 0.917 |
+| `C110_hdr_slice_58x8` | 0.990 |
+| `C111_hdr_slice_35x11` | 0.919 |
+| `C112_hdr_slice_40x9` | 0.980 |
+| `C113_hdr_slice_50x10` | 0.004 |
+| `C114_hdr_slice_28x14` | 0.938 |
+| `C115_hdr_slice_36x8` | 0.303 |
+| `C116_partial_v_s2_12x10` | 1.000 |
+| `C117_partial_v_s2_15x12` | 1.000 |
+| `C118_partial_v_s2_20x12` | 1.000 |
+| `C119_partial_v_s2_15x14` | 1.000 |
+| `C120_partial_v_s2_10x16` | 1.000 |
+| `C121_partial_v_s2_18x10` | 1.000 |
+| `C122_partial_v_s3_12x10` | 1.000 |
+| `C123_partial_v_s3_15x12` | 1.000 |
+| `C124_partial_v_s3_20x12` | 1.000 |
+| `C125_partial_v_s3_15x14` | 1.000 |
+| `C126_partial_v_s3_10x16` | 1.000 |
+| `C127_partial_v_s3_18x10` | 1.000 |
+| `C128_partial_v_s4_12x10` | 1.000 |
+| `C129_partial_v_s4_15x12` | 1.000 |
+| `C130_partial_v_s4_20x12` | 1.000 |
+| `C131_partial_v_s4_15x14` | 1.000 |
+| `C132_partial_v_s4_10x16` | 1.000 |
+| `C133_partial_v_s4_18x10` | 1.000 |
 | `C134_cell_underlines_6x4` | 1.000 |
 | `C135_cell_underlines_8x5` | 1.000 |
 | `C136_cell_underlines_10x5` | 1.000 |
@@ -201,20 +243,20 @@ Best apples-to-apples table quality comparison.
 | `C139_cell_underlines_9x5` | 1.000 |
 | `C140_cell_underlines_14x4` | 1.000 |
 | `C141_cell_underlines_11x6` | 1.000 |
-| `C142_sparse_f25_20x6` | 0.395 |
-| `C143_sparse_f25_25x8` | 0.244 |
-| `C144_sparse_f35_20x6` | 0.315 |
-| `C145_sparse_f35_25x8` | 0.241 |
-| `C146_sparse_f50_20x6` | 0.904 |
-| `C147_sparse_f50_28x7` | 0.571 |
-| `C148_sparse_f30_30x5` | 0.393 |
-| `C149_sparse_f40_18x9` | 0.870 |
-| `C150_mix_irreg_str20x6` | 0.413 |
-| `C151_mix_irreg_str30x6` | 0.130 |
-| `C152_mix_irreg_str40x7` | 0.087 |
-| `C153_mix_irreg_str25x8` | 0.228 |
-| `C154_mix_irreg_str35x5` | 0.129 |
-| `C155_mix_irreg_str22x9` | 0.209 |
+| `C142_sparse_f25_20x6` | 1.000 |
+| `C143_sparse_f25_25x8` | 1.000 |
+| `C144_sparse_f35_20x6` | 1.000 |
+| `C145_sparse_f35_25x8` | 1.000 |
+| `C146_sparse_f50_20x6` | 1.000 |
+| `C147_sparse_f50_28x7` | 1.000 |
+| `C148_sparse_f30_30x5` | 1.000 |
+| `C149_sparse_f40_18x9` | 1.000 |
+| `C150_mix_irreg_str20x6` | 1.000 |
+| `C151_mix_irreg_str30x6` | 0.865 |
+| `C152_mix_irreg_str40x7` | 1.000 |
+| `C153_mix_irreg_str25x8` | 1.000 |
+| `C154_mix_irreg_str35x5` | 1.000 |
+| `C155_mix_irreg_str22x9` | 1.000 |
 | `C156_multi_close_n3_g6` | 1.000 |
 | `C157_multi_close_n4_g8` | 1.000 |
 | `C158_multi_close_n5_g10` | 1.000 |
@@ -266,7 +308,7 @@ Best apples-to-apples table quality comparison.
 
 | Rank | Library | detect F1 | shape exact | cell F1 | table score | ms |
 |-----:|---------|----------:|------------:|--------:|------------:|---:|
-| 1 | **pdfparser** | 0.785 | 0.346 | 0.445 | 53.940 | 11.0 |
+| 1 | **pdfparser** | 0.961 | 0.846 | 0.830 | 87.990 | 10.9 |
 
 ## Hard tier (structure stress 50–62)
 

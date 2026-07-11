@@ -18,12 +18,53 @@ pub fn detect_lattice_tables(
     runs: &[TextRun],
     rules: &[RuleSegment],
     opts: &TableOptions,
+    raster_pages: &[crate::RasterPage],
 ) -> Vec<Table> {
     let tol = opts.line_snap_tol;
     let min_cell = opts.min_cell_size;
     let min_seg = opts.lattice_min_seg_len;
     let joint_gap = opts.lattice_joint_gap;
     let min_joints = opts.lattice_min_joints.max(1) as usize;
+
+    // Count axis-aligned vector rules after min_seg (ignore short junk).
+    let vector_hv_count = rules
+        .iter()
+        .filter(|r| r.len() >= min_seg && (r.is_horizontal(tol) || r.is_vertical(tol)))
+        .count();
+
+    // Merge raster-derived rules when enabled (image-painted / scanned grids).
+    // Production morph already applies joint-graph + regularity gates so charts
+    // and deco images do not inject phantom lattices.
+    let mut rule_buf: Vec<RuleSegment> = rules.to_vec();
+    let mut used_raster = false;
+    if opts.raster_line_detect && !raster_pages.is_empty() {
+        use crate::raster::{config_for_raster_page, merge_rules, rules_from_raster};
+        let mut raster_rules = Vec::new();
+        for rp in raster_pages {
+            // Skip tiny icons / logos — not table images.
+            if rp.width < 40 || rp.height < 40 {
+                continue;
+            }
+            let cfg = config_for_raster_page(
+                rp,
+                opts.raster_adaptive_radius,
+                opts.raster_adaptive_bias,
+                opts.raster_min_kernel,
+                opts.raster_min_seg_px,
+                opts.raster_merge_gap_px,
+                opts.raster_pos_snap_px,
+            );
+            raster_rules.extend(rules_from_raster(rp, &cfg));
+        }
+        if !raster_rules.is_empty() {
+            used_raster = true;
+            rule_buf = merge_rules(&rule_buf, &raster_rules, tol.max(1.0));
+        }
+    }
+    let rules = rule_buf.as_slice();
+    // Pure image-table pages (few axis-aligned vector rules) may keep empty cells.
+    // Mixed pages with a real vector lattice keep normal fill gates.
+    let raster_primary = used_raster && vector_hv_count < 4;
 
     let mut h_segs: Vec<HSeg> = Vec::new();
     let mut v_segs: Vec<VSeg> = Vec::new();
@@ -61,7 +102,7 @@ pub fn detect_lattice_tables(
 
     let mut tables = Vec::new();
     for (hi, vi, joints) in &clusters {
-        if let Some(t) = table_from_component(
+        if let Some(mut t) = table_from_component(
             page_index,
             runs,
             &h_segs,
@@ -72,7 +113,13 @@ pub fn detect_lattice_tables(
             opts,
             min_cell,
             tol,
+            used_raster,
+            raster_primary,
         ) {
+            if used_raster && (t.fill_rate < 0.10 || raster_primary) {
+                t.strategy_provenance.push(PipelineId::S6RasterLines);
+                t.notes.push("raster_lines".into());
+            }
             tables.push(t);
         }
     }
@@ -80,15 +127,29 @@ pub fn detect_lattice_tables(
     // Global snap only when we did not already see multiple joint-rich components.
     // Multi-CC failure must not re-fuse into a page-wide mega-grid.
     if tables.is_empty() && !multi_component {
-        if let Some(t) =
-            table_from_global_snap(page_index, runs, &h_segs, &v_segs, opts, min_cell, tol)
-        {
+        if let Some(mut t) = table_from_global_snap(
+            page_index,
+            runs,
+            &h_segs,
+            &v_segs,
+            opts,
+            min_cell,
+            tol,
+            used_raster,
+            raster_primary,
+        ) {
+            if used_raster && (t.fill_rate < 0.10 || raster_primary) {
+                t.strategy_provenance.push(PipelineId::S6RasterLines);
+                t.notes.push("raster_lines".into());
+            }
             tables.push(t);
         }
     }
 
     for t in &mut tables {
-        strip_trailing_footer_totals(t);
+        if !used_raster || t.fill_rate > 0.05 {
+            strip_trailing_footer_totals(t);
+        }
     }
 
     tables.sort_by(|a, b| {
@@ -116,11 +177,6 @@ struct HSeg {
     x1: f32,
 }
 
-impl HSeg {
-    fn len(self) -> f32 {
-        (self.x1 - self.x0).abs()
-    }
-}
 
 #[derive(Clone, Copy, Debug)]
 struct VSeg {
@@ -129,11 +185,6 @@ struct VSeg {
     y1: f32,
 }
 
-impl VSeg {
-    fn len(self) -> f32 {
-        (self.y1 - self.y0).abs()
-    }
-}
 
 fn coalesce_h(segs: &[HSeg], tol: f32) -> Vec<HSeg> {
     if segs.is_empty() {
@@ -345,6 +396,8 @@ fn table_from_component(
     opts: &TableOptions,
     min_cell: f32,
     tol: f32,
+    used_raster: bool,
+    raster_primary: bool,
 ) -> Option<Table> {
     // Anchors: joints + line coordinates of segments in this component only.
     // Do NOT inject H endpoints into xs or V endpoints into ys.
@@ -357,8 +410,8 @@ fn table_from_component(
         ys.push(h_segs[i].y);
     }
 
-    let xs = cluster_coords(&xs, tol);
-    let ys = cluster_coords(&ys, tol);
+    xs = cluster_coords(&xs, tol);
+    ys = cluster_coords(&ys, tol);
     if xs.len() < 3 || ys.len() < 3 {
         return None;
     }
@@ -367,16 +420,49 @@ fn table_from_component(
     // Horizontal lines (rows): joint count only (or looser span) — multi-level headers often
     // have short H rules only under sub-columns (Act/Bud), which must be kept for structure.
     let min_jpl = opts.lattice_min_joints_per_line.max(1) as usize;
-    let xs = filter_joint_supported_coords(&xs, joints, tol, true, min_jpl, 0.40);
-    let ys = filter_joint_supported_coords(&ys, joints, tol, false, min_jpl, 0.22);
+    // Raster lines often have incomplete joint spans at image edges — use looser span.
+    let (v_span, h_span) = if used_raster {
+        (0.15, 0.10)
+    } else {
+        (0.40, 0.22)
+    };
+    xs = filter_joint_supported_coords(&xs, joints, tol, true, min_jpl, v_span);
+    ys = filter_joint_supported_coords(&ys, joints, tol, false, min_jpl, h_span);
     if xs.len() < 3 || ys.len() < 3 {
         return None;
     }
 
     // Drop thin gaps → dense retained line sets (renumbered).
-    let mut xs = collapse_thin_gaps(&xs, min_cell);
+    xs = collapse_thin_gaps(&xs, min_cell);
     let mut y_ttb = collapse_thin_gaps(&ys, min_cell);
     y_ttb.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+
+    // Ruled anchors *before* text densify — joint density / conf use these so
+    // synthetic lines do not understate structure quality.
+    let xs_ruled = xs.clone();
+    let ys_ruled = y_ttb.clone();
+
+    // Sparse intermediate V rules (full H, V every Nth column) under-count
+    // columns vs multi-row text left-edges. Densify X after joint filter +
+    // thin-gap collapse, before building the cell grid.
+    let mut synthetic_v_xs: Vec<f32> = Vec::new();
+    let mut text_col_recovery = false;
+    {
+        let y_hi = y_ttb
+            .iter()
+            .copied()
+            .fold(f32::NEG_INFINITY, f32::max);
+        let y_lo = y_ttb.iter().copied().fold(f32::INFINITY, f32::min);
+        let (x_densified, synth) =
+            densify_x_from_text_cols(&xs, runs, y_hi, y_lo, min_cell);
+        if x_densified.len() as u32 <= opts.lattice_max_cols + 1
+            && x_densified.len() > xs.len()
+        {
+            xs = x_densified;
+            synthetic_v_xs = synth;
+            text_col_recovery = true;
+        }
+    }
 
     // False underlines / double rules: H anchors ~2× text bands → rebuild from text.
     let mut synthetic_h_ys: Vec<f32> = Vec::new();
@@ -396,22 +482,22 @@ fn table_from_component(
         }
     }
 
-    // Sparse intermediate H rules (e.g. outer + every Nth body line) under-count
-    // rows vs multi-column text bands. Densify Y anchors from text midpoints
-    // *within* existing H gaps — never invent rows outside the ruled frame.
+    // Sparse intermediate H rules under-count rows vs multi-column text bands.
+    // Densify Y within existing H gaps only.
     if !text_row_recovery {
-        let y_before_text = y_ttb.len();
+        let y_before = y_ttb.clone();
         let (y_densified, synth) =
             densify_y_from_text_bands(&y_ttb, runs, xs[0], *xs.last().unwrap_or(&xs[0]), min_cell);
-        y_ttb = y_densified;
-        synthetic_h_ys = synth;
-        if y_ttb.len() as u32 > opts.lattice_max_rows + 1 {
-            // Too many inferred rows — fall back to pure H-line anchors.
-            y_ttb = collapse_thin_gaps(&ys, min_cell);
-            y_ttb.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+        if y_densified.len() as u32 > opts.lattice_max_rows + 1 {
+            // Too many inferred rows — restore pre-densify H anchors (incl. any
+            // overdense collapse already applied).
+            y_ttb = y_before;
             synthetic_h_ys.clear();
+        } else {
+            y_ttb = y_densified;
+            synthetic_h_ys = synth;
+            text_row_recovery = y_ttb.len() > y_before.len();
         }
-        text_row_recovery = y_ttb.len() > y_before_text;
     }
 
     let nrows = y_ttb.len().saturating_sub(1);
@@ -433,7 +519,22 @@ fn table_from_component(
             h_local.push(HSeg { y, x0, x1 });
         }
     }
-    let v_local: Vec<VSeg> = v_idx.iter().map(|&i| v_segs[i]).collect();
+    let mut v_local: Vec<VSeg> = v_idx.iter().map(|&i| v_segs[i]).collect();
+    // Virtual V rules at text-inferred column separators (partial-V densify).
+    if text_col_recovery {
+        let y_top = y_ttb
+            .iter()
+            .copied()
+            .fold(f32::NEG_INFINITY, f32::max);
+        let y_bot = y_ttb.iter().copied().fold(f32::INFINITY, f32::min);
+        for &x in &synthetic_v_xs {
+            v_local.push(VSeg {
+                x,
+                y0: y_bot,
+                y1: y_top,
+            });
+        }
+    }
     let cover_frac = opts.lattice_edge_cover_frac;
 
     // Dense nrows×ncols cells (geometry first; text via exclusive assignment).
@@ -496,14 +597,23 @@ fn table_from_component(
 
     let total = (nrows * ncols).max(1);
     let fill_rate = filled as f32 / total as f32;
-    if fill_rate < opts.lattice_min_fill_rate && filled < 2 {
-        return None;
-    }
-    let empty_frac = 1.0 - fill_rate;
-    if empty_frac >= opts.lattice_empty_frac_reject
-        && filled < opts.lattice_min_filled_cells as usize
-    {
-        return None;
+    // Empty cells only for pure image-table pages (raster_primary): text is ink.
+    // On mixed pages, decorative image grids must pass normal fill gates.
+    let allow_empty = raster_primary
+        && opts.raster_allow_empty_cells
+        && nrows >= 2
+        && ncols >= 2
+        && joints.len() >= 4;
+    if !allow_empty {
+        if fill_rate < opts.lattice_min_fill_rate && filled < 2 {
+            return None;
+        }
+        let empty_frac = 1.0 - fill_rate;
+        if empty_frac >= opts.lattice_empty_frac_reject
+            && filled < opts.lattice_min_filled_cells as usize
+        {
+            return None;
+        }
     }
 
     merge_spans_dense(&mut grid);
@@ -564,26 +674,43 @@ fn table_from_component(
     if area < opts.lattice_min_table_area {
         return None;
     }
-    let grid_regularity = grid_regularity_score(&xs, &y_ttb);
+    // Regularity / joint density vs *ruled* anchors (pre-densify) so synthetic
+    // text-inferred lines do not understate structure quality.
+    let grid_regularity = grid_regularity_score(&xs_ruled, &ys_ruled);
     let edge_score = if edge_total == 0 {
         0.0
     } else {
         edge_hits as f32 / edge_total as f32
     };
-    // Measured joint density vs full grid line crossings upper bound
-    let expected_joints = (xs.len() * y_ttb.len()) as f32;
+    let expected_joints = (xs_ruled.len() * ys_ruled.len()) as f32;
     let joint_density = if expected_joints < 1.0 {
         0.0
     } else {
         (joints.len() as f32 / expected_joints).min(1.0)
     };
 
-    let conf = (0.30 * grid_regularity
-        + 0.25 * edge_score
-        + 0.20 * fill_rate
-        + 0.15 * joint_density
-        + 0.10 * (cells.len() as f32 / 6.0).min(1.0))
-    .clamp(0.0, 1.0);
+    // Structure-only (empty) tables: weight edges/joints/regularity higher than fill.
+    let conf = if fill_rate < 0.05 && (used_raster || raster_primary) {
+        (0.40 * grid_regularity
+            + 0.35 * edge_score
+            + 0.15 * joint_density
+            + 0.10 * (cells.len() as f32 / 6.0).min(1.0))
+        .clamp(0.0, 1.0)
+    } else {
+        (0.30 * grid_regularity
+            + 0.25 * edge_score
+            + 0.20 * fill_rate
+            + 0.15 * joint_density
+            + 0.10 * (cells.len() as f32 / 6.0).min(1.0))
+        .clamp(0.0, 1.0)
+    };
+
+    // Empty raster lattices: require non-weak edges and some joint density.
+    if used_raster && fill_rate < 0.05 {
+        if edge_score < opts.lattice_weak_edge_threshold || joint_density < 0.25 {
+            return None;
+        }
+    }
 
     let weak_edges = edge_score < opts.lattice_weak_edge_threshold;
     let mut notes = vec![format!(
@@ -598,6 +725,12 @@ fn table_from_component(
         notes.push(format!(
             "text_row_recovery synthetic_h={}",
             synthetic_h_ys.len()
+        ));
+    }
+    if text_col_recovery {
+        notes.push(format!(
+            "text_col_recovery synthetic_v={}",
+            synthetic_v_xs.len()
         ));
     }
     if cells.iter().any(|c| c.colspan > 1 || c.rowspan > 1) {
@@ -682,14 +815,6 @@ fn filter_joint_supported_coords(
         .collect()
 }
 
-/// When H rules are sparse relative to multi-column text bands, insert Y
-/// separators at midpoints between consecutive text bands *inside* each H gap.
-///
-/// Returns densified top-to-bottom Y anchors and the Y coordinates of any
-/// newly inserted (synthetic) separators.
-///
-/// Generic: no fixture IDs; only uses geometry of multi-col text bands within
-/// the ruled frame. Full grids (one multi-col band per H gap) are unchanged.
 // ─── Invoice footer / totals row post-process ────────────────────────────────
 
 /// Strip trailing Subtotal/Tax/Total footer rows from an invoice line-item lattice.
@@ -1046,9 +1171,16 @@ fn multi_col_band_centers(
     centers
 }
 
-/// Densify missing vertical anchors from multi-row text x-projections.
-/// Kept for future partial-V work; not called in production path.
-#[allow(dead_code)]
+/// Densify missing vertical anchors from multi-row text left-edges.
+///
+/// Geometric rule only:
+/// 1. Cluster left-edges that recur across many text bands (true columns).
+/// 2. Fire only when those columns **outnumber** ruled V gaps (partial-V).
+/// 3. Inside each V gap, if ≥2 text columns **span a majority of the gap**,
+///    insert separators at midpoints between consecutive text left-edges.
+///
+/// Full-V multi-token cells fail (2): second-word lefts sit near the primary
+/// left and do not outnumber V gaps after multi-row filtering.
 fn densify_x_from_text_cols(
     xs: &[f32],
     runs: &[TextRun],
@@ -1063,7 +1195,7 @@ fn densify_x_from_text_cols(
     let x1 = *xs.last().unwrap_or(&x0);
     let y_hi = frame_y_top.max(frame_y_bot);
     let y_lo = frame_y_top.min(frame_y_bot);
-    let pad = 1.0f32;
+    let pad = min_cell.max(1.0);
     let inside: Vec<&TextRun> = runs
         .iter()
         .filter(|r| {
@@ -1075,7 +1207,7 @@ fn densify_x_from_text_cols(
             cx >= x0 - pad && cx <= x1 + pad && cy <= y_hi + pad && cy >= y_lo - pad
         })
         .collect();
-    if inside.len() < 6 {
+    if inside.len() < 4 {
         return (xs.to_vec(), Vec::new());
     }
     let fs = {
@@ -1091,94 +1223,100 @@ fn densify_x_from_text_cols(
             v[v.len() / 2]
         }
     };
-    let x_tol = (0.55 * fs).max(3.0);
-    // Cluster run left edges and centers; keep clusters that appear on many rows.
+    let x_tol = (0.5 * fs).max(min_cell);
+    let y_tol = (0.5 * fs).max(2.0);
     let mut lefts: Vec<f32> = inside.iter().map(|r| r.bbox.x0).collect();
     lefts = cluster_coords(&lefts, x_tol);
-    // Count multi-row support: for each candidate x, how many distinct y-bands touch it.
-    let y_tol = (0.45 * fs).max(2.0);
     let mut band_ys: Vec<f32> = inside.iter().map(|r| r.bbox.y_center()).collect();
     band_ys = cluster_coords(&band_ys, y_tol);
-    if band_ys.len() < 3 {
+    if band_ys.len() < 2 {
         return (xs.to_vec(), Vec::new());
     }
+    // Keep left-edges that appear on a majority of text bands (column anchors).
+    let min_hits = (band_ys.len() + 1) / 2;
     let mut col_xs: Vec<f32> = Vec::new();
     for &cand in &lefts {
-        if cand <= x0 + min_cell * 0.3 || cand >= x1 - min_cell * 0.3 {
+        if cand <= x0 + min_cell * 0.25 || cand >= x1 - min_cell * 0.25 {
             continue;
         }
-        let mut rows_hit = 0u32;
-        for &by in &band_ys {
-            let hit = inside.iter().any(|r| {
-                (r.bbox.y_center() - by).abs() <= y_tol && (r.bbox.x0 - cand).abs() <= x_tol
-            });
-            if hit {
-                rows_hit += 1;
-            }
-        }
-        if rows_hit as usize >= (band_ys.len() * 2 / 5).max(2) {
+        let rows_hit = band_ys
+            .iter()
+            .filter(|&&by| {
+                inside.iter().any(|r| {
+                    (r.bbox.y_center() - by).abs() <= y_tol && (r.bbox.x0 - cand).abs() <= x_tol
+                })
+            })
+            .count();
+        if rows_hit >= min_hits {
             col_xs.push(cand);
         }
     }
-    if col_xs.len() < 2 {
-        return (xs.to_vec(), Vec::new());
-    }
-    col_xs = cluster_coords(&col_xs, x_tol * 0.8);
+    col_xs = cluster_coords(&col_xs, x_tol * 0.75);
     col_xs.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
 
     let v_cols = xs.len().saturating_sub(1);
-    // Only densify for true partial-V undercount: text columns roughly 2× V gaps
-    // (every-other V). Full-V tables often have multi-token cells whose left edges
-    // look like "extra columns" — must not densify those (regression: painted 6×5).
-    if v_cols < 3 || col_xs.len() < v_cols * 2 {
+    // Partial-V signal: more multi-row text columns than ruled V gaps.
+    if v_cols < 2 || col_xs.len() <= v_cols {
         return (xs.to_vec(), Vec::new());
     }
 
     let mut xs_sorted = xs.to_vec();
     xs_sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
 
-    // Count V gaps that contain ≥2 multi-row text columns (true missing-V signal).
-    let mut multi_text_gaps = 0u32;
-    let mut text_in_gaps = 0u32;
+    // Under-ruled gaps: ≥2 text columns whose outermost span covers half the gap.
+    // (Second words of multi-token cells cluster near one edge → span small.)
+    let mut under_ruled = 0u32;
     for w in xs_sorted.windows(2) {
-        let n = col_xs
+        let g0 = w[0];
+        let g1 = w[1];
+        let gap_w = (g1 - g0).abs();
+        if gap_w < min_cell * 2.0 {
+            continue;
+        }
+        let mut in_gap: Vec<f32> = col_xs
             .iter()
-            .filter(|&&c| c > w[0] + 0.5 && c < w[1] - 0.5)
-            .count() as u32;
-        text_in_gaps += n;
-        if n >= 2 {
-            multi_text_gaps += 1;
+            .copied()
+            .filter(|&c| c > g0 + min_cell * 0.25 && c < g1 - min_cell * 0.25)
+            .collect();
+        if in_gap.len() < 2 {
+            continue;
+        }
+        in_gap.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let span = in_gap.last().copied().unwrap_or(0.0) - in_gap[0];
+        if span >= gap_w * 0.5 {
+            under_ruled += 1;
         }
     }
-    // Majority of gaps under-ruled, and mean ≥1.8 text cols per gap.
-    if multi_text_gaps * 2 < v_cols as u32 {
-        return (xs.to_vec(), Vec::new());
-    }
-    if (text_in_gaps as f32) / (v_cols as f32) < 1.8 {
+    // Need under-rule evidence in at least half of the V gaps.
+    if under_ruled * 2 < v_cols as u32 {
         return (xs.to_vec(), Vec::new());
     }
 
-    // Build densified xs: keep outer V, insert midlines between adjacent text cols
-    // only when a V gap contains ≥2 supported text column left-edges.
-    let mut out = vec![xs[0]];
+    // Separators for left-aligned text: just left of the next column's left-edge
+    // (true V sits near the start of the next cell, not the midpoint of lefts).
+    let mut out = vec![xs_sorted[0]];
     let mut synthetic = Vec::new();
     for w in xs_sorted.windows(2) {
         let g0 = w[0];
         let g1 = w[1];
+        let gap_w = (g1 - g0).abs();
         let mut in_gap: Vec<f32> = col_xs
             .iter()
             .copied()
-            .filter(|&c| c > g0 + 0.5 && c < g1 - 0.5)
+            .filter(|&c| c > g0 + min_cell * 0.25 && c < g1 - min_cell * 0.25)
             .collect();
         in_gap.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-        // Never invent a column from a single text cluster inside a V gap.
-        if in_gap.len() >= 2 {
-            for pair in in_gap.windows(2) {
-                let mid = (pair[0] + pair[1]) * 0.5;
+        let span_ok = in_gap.len() >= 2
+            && (in_gap.last().copied().unwrap_or(0.0) - in_gap[0]) >= gap_w * 0.5;
+        if span_ok {
+            for i in 1..in_gap.len() {
+                let pitch = in_gap[i] - in_gap[i - 1];
+                let inset = (pitch * 0.12).clamp(min_cell * 0.15, min_cell.max(1.0));
+                let sep = in_gap[i] - inset;
                 let prev = *out.last().unwrap();
-                if (mid - prev).abs() >= min_cell && (g1 - mid).abs() >= min_cell {
-                    out.push(mid);
-                    synthetic.push(mid);
+                if sep > prev + min_cell && g1 - sep >= min_cell {
+                    out.push(sep);
+                    synthetic.push(sep);
                 }
             }
         }
@@ -1197,6 +1335,12 @@ fn densify_x_from_text_cols(
     (collapsed, synthetic)
 }
 
+/// When H rules are sparse relative to multi-column text bands, insert Y
+/// separators at midpoints between consecutive text bands *inside* each H gap.
+///
+/// Returns densified top-to-bottom Y anchors and the Y coordinates of any
+/// newly inserted (synthetic) separators. Full grids (one multi-col band per
+/// H gap) are unchanged.
 fn densify_y_from_text_bands(
     y_ttb: &[f32],
     runs: &[TextRun],
@@ -1277,28 +1421,53 @@ fn densify_y_from_text_bands(
         bands.push(vec![r]);
     }
 
-    // Multi-column bands only: single-run prose / rowspan labels do not invent rows.
-    let mut band_centers: Vec<f32> = bands
-        .iter()
-        .filter(|b| b.len() >= 2)
-        .map(|b| b.iter().map(|r| r.bbox.y_center()).sum::<f32>() / b.len() as f32)
-        .filter(|&c| c < y_top - min_cell * 0.25 && c > y_bot + min_cell * 0.25)
-        .collect();
-    if band_centers.len() < 3 {
+    // Band centers: multi-col bands gate densify (proves table structure).
+    // Single-run bands are *also* used for subdivision once gated — sparse
+    // fill often leaves key-column-only rows (1 cell) that still mark a real
+    // body line. Pure single-column prose never passes the multi-col gate.
+    let y_lo_int = y_bot + min_cell * 0.25;
+    let y_hi_int = y_top - min_cell * 0.25;
+    let mut multi_centers: Vec<f32> = Vec::new();
+    let mut all_centers: Vec<f32> = Vec::new();
+    for b in &bands {
+        if b.is_empty() {
+            continue;
+        }
+        let c = b.iter().map(|r| r.bbox.y_center()).sum::<f32>() / b.len() as f32;
+        if c >= y_hi_int || c <= y_lo_int {
+            continue;
+        }
+        all_centers.push(c);
+        if b.len() >= 2 {
+            multi_centers.push(c);
+        }
+    }
+    multi_centers = cluster_coords(&multi_centers, y_tol * 0.6);
+    multi_centers.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+    all_centers = cluster_coords(&all_centers, y_tol * 0.6);
+    all_centers.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+
+    if multi_centers.len() < 3 {
         return (y_ttb.to_vec(), Vec::new());
     }
-    band_centers = cluster_coords(&band_centers, y_tol * 0.6);
-    band_centers.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
 
     let h_rows = y_ttb.len().saturating_sub(1);
-    // Only densify when text clearly implies more rows than H-line gaps.
-    if band_centers.len() <= h_rows {
+    // Densify only when multi-col text clearly outnumbers H-derived rows.
+    // Require ≥1 extra multi-col band beyond equality so a single noisy band
+    // cannot invent a full row grid (geometric noise floor, not a size cliff).
+    if multi_centers.len() <= h_rows + 1 {
         return (y_ttb.to_vec(), Vec::new());
     }
-    // Require at least two extra text bands vs H-derived rows (avoids tiny noise).
-    if band_centers.len() < h_rows + 2 {
-        return (y_ttb.to_vec(), Vec::new());
-    }
+
+    // Once gated, use all non-empty bands if multi-col bands are a majority
+    // (sparse key-only rows); otherwise multi-col only (avoids single-col prose).
+    let band_centers = if !all_centers.is_empty()
+        && multi_centers.len() * 2 >= all_centers.len()
+    {
+        all_centers
+    } else {
+        multi_centers
+    };
 
     let mut out: Vec<f32> = Vec::with_capacity(band_centers.len() + y_ttb.len());
     let mut synthetic: Vec<f32> = Vec::new();
@@ -1311,7 +1480,7 @@ fn densify_y_from_text_bands(
             out.push(gap_bot);
             continue;
         }
-        // Multi-col band centers strictly inside this H gap.
+        // Text band centers strictly inside this H gap.
         let mut in_gap: Vec<f32> = band_centers
             .iter()
             .copied()
@@ -1623,6 +1792,8 @@ fn table_from_global_snap(
     opts: &TableOptions,
     min_cell: f32,
     tol: f32,
+    used_raster: bool,
+    raster_primary: bool,
 ) -> Option<Table> {
     let joint_gap = opts.lattice_joint_gap;
     let min_joints = opts.lattice_min_joints.max(1) as usize;
@@ -1660,6 +1831,8 @@ fn table_from_global_snap(
         opts,
         min_cell,
         tol,
+        used_raster,
+        raster_primary,
     )?;
     t.notes.push("lattice_global_fallback".into());
     Some(t)
@@ -1800,6 +1973,131 @@ mod tests {
         assert_eq!(densified.len(), y_h.len(), "ys={densified:?}");
         assert!(synth.is_empty());
     }
+
+    #[test]
+    fn densify_x_subdivides_every_other_v() {
+        // Full H implied by multi-row text; V only every other column (step-2).
+        // True 10 cols at pitch 40: V at 0,80,160,240,320,400 (6 lines → 5 gaps).
+        // Text left-edges at 2 + 40*k for k=0..10 across many rows.
+        let xs_v = vec![0.0_f32, 80.0, 160.0, 240.0, 320.0, 400.0];
+        let mut runs = Vec::new();
+        for row in 0..12 {
+            let y = 200.0 - 14.0 * row as f32;
+            for k in 0..10 {
+                let x = 2.0 + 40.0 * k as f32;
+                runs.push(mk_run(x, y - 4.0, "c"));
+            }
+        }
+        let (densified, synth) = densify_x_from_text_cols(&xs_v, &runs, 210.0, 20.0, 3.0);
+        let ncols = densified.len().saturating_sub(1);
+        assert_eq!(
+            ncols, 10,
+            "expected 10 cols from partial-V densify, got {ncols} xs={densified:?} synth={synth:?}"
+        );
+        assert!(
+            !synth.is_empty(),
+            "expected synthetic V separators, got none"
+        );
+    }
+
+    #[test]
+    fn densify_y_includes_sparse_single_cell_rows() {
+        // Partial H every 5 body lines; most rows multi-col but a few key-only.
+        // H at 700, 640, 580 (outer + mid) → 2 large gaps holding 5 rows each.
+        let y_h = vec![700.0_f32, 640.0, 580.0];
+        let mut runs = Vec::new();
+        // 10 body rows, centers 694, 682, … 586 (step 12).
+        for i in 0..10 {
+            let y = 694.0 - 12.0 * i as f32;
+            // Key column always present.
+            runs.push(mk_run(40.0, y - 4.0, &format!("R{i:02}")));
+            // Sparse multi-col: skip i=2 and i=7 (single-cell only).
+            if i != 2 && i != 7 {
+                runs.push(mk_run(100.0, y - 4.0, "v"));
+                if i % 3 == 0 {
+                    runs.push(mk_run(160.0, y - 4.0, "w"));
+                }
+            }
+        }
+        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 30.0, 200.0, 3.0);
+        let nrows = densified.len().saturating_sub(1);
+        assert_eq!(
+            nrows, 10,
+            "sparse single-cell rows must densify, got {nrows} ys={densified:?} synth={synth:?}"
+        );
+        assert!(
+            !synth.is_empty(),
+            "expected synthetic H separators, got none"
+        );
+    }
+
+    #[test]
+    fn densify_x_noop_when_full_v_matches_text() {
+        // Full V with multi-token cells: primary + second word left-edges that
+        // *do* align across rows (SKU + short label) but cluster near the cell
+        // left — span ≪ gap, so must not densify (painted/SKU regression).
+        let xs_v = vec![0.0_f32, 50.0, 100.0, 150.0, 200.0];
+        let mut runs = Vec::new();
+        for row in 0..8 {
+            let y = 160.0 - 16.0 * row as f32;
+            for x in [5.0_f32, 55.0, 105.0, 155.0] {
+                runs.push(mk_run(x, y - 4.0, "sku"));
+                // Second token ~14pt into the cell (aligned, multi-row support).
+                runs.push(mk_run(x + 14.0, y - 4.0, "desc"));
+            }
+        }
+        let (densified, synth) = densify_x_from_text_cols(&xs_v, &runs, 170.0, 20.0, 3.0);
+        assert_eq!(
+            densified.len(),
+            xs_v.len(),
+            "full-V multi-token must not densify: xs={densified:?}"
+        );
+        assert!(synth.is_empty());
+    }
+
+    #[test]
+    fn densify_y_dense_every_row_h_no_over_split() {
+        // Full H (every row ruled) with multi-col text — must not invent extra rows.
+        let y_h: Vec<f32> = (0..6).map(|i| 100.0 - 12.0 * i as f32).collect();
+        let mut runs = Vec::new();
+        for i in 0..5 {
+            let y = 94.0 - 12.0 * i as f32;
+            for xi in [10.0_f32, 50.0, 90.0] {
+                runs.push(mk_run(xi, y - 4.0, "x"));
+            }
+        }
+        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 0.0, 120.0, 3.0);
+        assert_eq!(
+            densified.len(),
+            y_h.len(),
+            "every-row H must not over-split ys={densified:?}"
+        );
+        assert!(synth.is_empty(), "synth={synth:?}");
+    }
+
+    #[test]
+    fn densify_y_rejects_single_col_prose_stack() {
+        // Ruled frame with multi-col header only + long single-col body → no densify
+        // from prose lines (multi not majority of bands).
+        let y_h = vec![200.0_f32, 100.0];
+        let mut runs = Vec::new();
+        // One multi-col header band.
+        for xi in [20.0_f32, 80.0, 140.0] {
+            runs.push(mk_run(xi, 190.0, "H"));
+        }
+        // 8 single-col prose lines inside the gap.
+        for i in 0..8 {
+            let y = 175.0 - 8.0 * i as f32;
+            runs.push(mk_run(20.0, y, "prose"));
+        }
+        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 10.0, 180.0, 3.0);
+        assert_eq!(
+            densified.len(),
+            y_h.len(),
+            "single-col prose must not densify ys={densified:?} synth={synth:?}"
+        );
+        assert!(synth.is_empty());
+    }
     #[test]
     fn strip_footer_totals_on_invoice_grid() {
         use crate::types::{Table, TableCell, TableMethod};
@@ -1865,7 +2163,7 @@ mod tests {
             }
         }
         let opts = TableOptions::from_preset(TablePreset::Full);
-        let tabs = detect_lattice_tables(0, &runs, &rules, &opts);
+        let tabs = detect_lattice_tables(0, &runs, &rules, &opts, &[]);
         assert!(!tabs.is_empty(), "expected lattice table");
         assert!(tabs[0].rows >= 2 && tabs[0].cols >= 2);
     }

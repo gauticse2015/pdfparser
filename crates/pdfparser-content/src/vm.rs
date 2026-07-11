@@ -15,6 +15,8 @@ pub struct InterpretOptions {
     /// Many PDFs draw table rules as thin filled rectangles (`re` + `f`/`f*`)
     /// rather than stroked segments (`S`). 0 disables thin-fill capture.
     pub thin_fill_rule_max: f32,
+    /// Capture image XObject placements (`Do`) for raster line sensing.
+    pub capture_image_placements: bool,
 }
 
 /// Default max thickness for thin filled rects treated as lattice rules.
@@ -28,8 +30,18 @@ impl Default for InterpretOptions {
             max_ops: 2_000_000,
             capture_rules: true,
             thin_fill_rule_max: DEFAULT_THIN_FILL_RULE_MAX,
+            capture_image_placements: true,
         }
     }
+}
+
+/// Image XObject drawn via `Do` (unit square mapped by current CTM).
+#[derive(Debug, Clone)]
+pub struct ImagePlacement {
+    /// Resource name (without leading `/`).
+    pub name: String,
+    /// CTM at paint time. Unit square (0,0)–(1,1) maps to page space.
+    pub ctm: Matrix3x2,
 }
 
 /// Axis-aligned (or near) stroked segment in page user space.
@@ -60,6 +72,8 @@ impl RuleSegment {
 pub struct InterpretResult {
     pub runs: Vec<TextRun>,
     pub rules: Vec<RuleSegment>,
+    /// Image XObject placements for raster line sensing.
+    pub image_placements: Vec<ImagePlacement>,
     pub warnings: Vec<String>,
 }
 
@@ -72,6 +86,7 @@ pub fn interpret_page(
     let tokens = tokenize(content);
     let mut runs = Vec::new();
     let mut rules = Vec::new();
+    let mut image_placements = Vec::new();
     let mut warnings = Vec::new();
     let mut stack: Vec<Token> = Vec::new();
     let mut gs = GState {
@@ -299,8 +314,20 @@ pub fn interpret_page(
                         path.clear();
                         stack.clear();
                     }
+                    "Do" => {
+                        // Paint XObject. Capture image placements for raster lattice.
+                        if opts.capture_image_placements {
+                            if let Some(name) = pop_name(&mut stack) {
+                                image_placements.push(ImagePlacement {
+                                    name,
+                                    ctm: gs.ctm,
+                                });
+                            }
+                        }
+                        stack.clear();
+                    }
                     "CS" | "cs" | "SC" | "SCN" | "sc" | "scn" | "G" | "g" | "RG" | "rg" | "K"
-                    | "k" | "sh" | "Do" | "gs" | "MP" | "DP" | "BMC" | "BDC" | "EMC" | "BX"
+                    | "k" | "sh" | "gs" | "MP" | "DP" | "BMC" | "BDC" | "EMC" | "BX"
                     | "EX" | "ri" | "i" | "d" | "J" | "j" | "M" | "w" | "d0" | "d1" => {
                         stack.clear();
                     }
@@ -320,6 +347,7 @@ pub fn interpret_page(
     InterpretResult {
         runs,
         rules,
+        image_placements,
         warnings,
     }
 }

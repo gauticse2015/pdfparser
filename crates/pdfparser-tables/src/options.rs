@@ -151,6 +151,28 @@ pub struct TableOptions {
     pub lattice_collapse_overdense_h: bool,
     /// Trigger overdense-H collapse when H-rows > text_bands × factor.
     pub lattice_overdense_h_factor: f32,
+
+    // --- Raster line sensing (Camelot-class morphology on page images) ---
+    /// Recover H/V rules from raster bitmaps (embedded Image XObjects).
+    ///
+    /// Pipeline: adaptive threshold → morph close (dashed) → directional open →
+    /// run extract → joint-graph filter → regularity gate → lattice merge.
+    pub raster_line_detect: bool,
+    /// Adaptive threshold window half-size (pixels). Typical 6–10.
+    pub raster_adaptive_radius: usize,
+    /// Adaptive threshold bias (darker than local mean − bias → ink). Typical 8–15.
+    pub raster_adaptive_bias: u8,
+    /// Floor for morph kernel length (pixels); actual kernel scales with image size.
+    pub raster_min_kernel: usize,
+    /// Floor for min emitted segment length (pixels).
+    pub raster_min_seg_px: usize,
+    /// Merge collinear raster runs within this gap (pixels).
+    pub raster_merge_gap_px: usize,
+    /// Snap tolerance when clustering raster line positions (pixels).
+    pub raster_pos_snap_px: f32,
+    /// Keep lattice grids with little/no extractable text when rules came from raster
+    /// (text is painted into the image). Only strong multi-cell grids pass.
+    pub raster_allow_empty_cells: bool,
 }
 
 impl Default for TableOptions {
@@ -199,6 +221,14 @@ impl Default for TableOptions {
             exclusive_under_strong_lattice: true,
             lattice_collapse_overdense_h: true,
             lattice_overdense_h_factor: 1.35,
+            raster_line_detect: true,
+            raster_adaptive_radius: 6,
+            raster_adaptive_bias: 12,
+            raster_min_kernel: 15,
+            raster_min_seg_px: 8,
+            raster_merge_gap_px: 4,
+            raster_pos_snap_px: 2.0,
+            raster_allow_empty_cells: true,
         }
     }
 }

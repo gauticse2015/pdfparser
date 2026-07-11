@@ -13,6 +13,7 @@ mod document;
 mod extract;
 mod font_load;
 mod options;
+mod raster_images;
 
 pub use document::{Document, Page};
 pub use extract::extract_document;

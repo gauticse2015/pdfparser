@@ -18,6 +18,8 @@ pub enum PipelineId {
     S4Hybrid,
     /// Network-class borderless.
     S5Network,
+    /// Raster morphology line recovery.
+    S6RasterLines,
     /// Form discriminator.
     P1FormDisc,
     /// Dense numeric.

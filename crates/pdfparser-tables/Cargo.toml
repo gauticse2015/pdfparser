@@ -11,6 +11,7 @@ publish = false
 pdfparser-ir = { workspace = true }
 pdfparser-content = { workspace = true }
 serde = { workspace = true, optional = true }
+image = { workspace = true }
 
 [features]
 default = ["serde"]

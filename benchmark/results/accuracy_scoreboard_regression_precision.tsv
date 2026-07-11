@@ -1,53 +1,131 @@
 library	doc_id	tier	category	success	wall_ms	overall_score	text_score	text_token_f1	text_token_recall	text_cer	text_wer	text_similarity	table_score	table_detect_f1	table_detect_precision	table_detect_recall	table_expected	table_predicted	table_shape_exact_rate	table_row_accuracy	table_col_accuracy	table_cell_f1	table_cell_precision	table_cell_recall	table_content_token_recall	table_has_grid_gold	objects_score	images_score	images_exact	links_f1	forms_f1	outline_f1	error
-pdfparser	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	4.58	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	38.65	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-camelot_lattice	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	354.94	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-camelot_auto	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	381.7	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	71_frame_and_table	hard_precision	frame_and_table	True	7.66	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfparser	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	5.13	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	375.85	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_stream	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	1.71	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	388.82	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+img2table	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	82.45	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfplumber	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	44.59	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pymupdf	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	46.12	97.5714	100.0	1.0	1.0				97.1429	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9286	1.0	0.8667	0.3333	True	100.0	1.0	True				
+pdfminer.six	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	5.0	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdf	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	19.84	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+pypdfium2	70_deco_rules_one_table	hard_precision	deco_rules_one_table	True	0.79	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+pdfparser	71_frame_and_table	hard_precision	frame_and_table	True	8.53	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	71_frame_and_table	hard_precision	frame_and_table	True	6.55	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	71_frame_and_table	hard_precision	frame_and_table	True	1.49	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	71_frame_and_table	hard_precision	frame_and_table	True	359.2	44.75	100.0	1.0	1.0				35.0	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.0	0.0	0.0		True							
+img2table	71_frame_and_table	hard_precision	frame_and_table	True	66.7	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
 pdfplumber	71_frame_and_table	hard_precision	frame_and_table	True	3.45	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-camelot_lattice	71_frame_and_table	hard_precision	frame_and_table	True	6.12	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	71_frame_and_table	hard_precision	frame_and_table	True	351.42	44.75	100.0	1.0	1.0				35.0	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.0	0.0	0.0		True							
-pdfparser	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	6.88	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	4.76	98.4545	100.0	1.0	1.0				98.1818	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9545	1.0	0.913		True	100.0	1.0	True				
-camelot_lattice	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	8.02	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	367.09	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	73_false_row_underlines	hard_precision	false_row_underlines	True	6.49	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	73_false_row_underlines	hard_precision	false_row_underlines	True	2.53	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-camelot_lattice	73_false_row_underlines	hard_precision	false_row_underlines	True	1.74	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	73_false_row_underlines	hard_precision	false_row_underlines	True	353.95	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	74_sparse_data_grid	hard_precision	sparse_data_grid	True	7.07	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	74_sparse_data_grid	hard_precision	sparse_data_grid	True	4.05	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-camelot_lattice	74_sparse_data_grid	hard_precision	sparse_data_grid	True	6.91	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	74_sparse_data_grid	hard_precision	sparse_data_grid	True	344.58	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	75_prose_not_stream	hard_precision	prose_not_stream	True	6.49	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-pdfplumber	75_prose_not_stream	hard_precision	prose_not_stream	True	5.55	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
-camelot_lattice	75_prose_not_stream	hard_precision	prose_not_stream	True	6.2	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
-camelot_auto	75_prose_not_stream	hard_precision	prose_not_stream	True	198.96	15.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	1								False							
-pdfparser	76_caption_not_table	hard_precision	caption_not_table	True	6.4	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	76_caption_not_table	hard_precision	caption_not_table	True	3.07	90.0833	100.0	1.0	1.0				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-camelot_lattice	76_caption_not_table	hard_precision	caption_not_table	True	2.06	85.0833	66.6667	0.6667	0.6667				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	76_caption_not_table	hard_precision	caption_not_table	True	343.7	85.0833	66.6667	0.6667	0.6667				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	7.09	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	4.42	99.3585	100.0	1.0	1.0				99.2453	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9811	1.0	0.963		True	100.0	1.0	True				
-camelot_lattice	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	6.75	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	364.92	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	7.64	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	12.21	99.7888	100.0	1.0	1.0				99.7516	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9938	1.0	0.9877		True	100.0	1.0	True				
-camelot_lattice	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	6.71	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	1052.86	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	79_span_header_precision	hard_precision	span_header_precision	True	6.82	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	79_span_header_precision	hard_precision	span_header_precision	True	4.13	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-camelot_lattice	79_span_header_precision	hard_precision	span_header_precision	True	6.97	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	79_span_header_precision	hard_precision	span_header_precision	True	346.13	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	7.68	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	3.48	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-camelot_lattice	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	2.27	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-camelot_auto	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	341.72	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
-pdfparser	81_phantom_verticals	hard_precision	phantom_verticals	True	6.8	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	81_phantom_verticals	hard_precision	phantom_verticals	True	3.07	71.95	100.0	1.0	1.0				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True	100.0	1.0	True				
-camelot_lattice	81_phantom_verticals	hard_precision	phantom_verticals	True	2.06	66.95	66.6667	0.6667	0.6667				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True							
-camelot_auto	81_phantom_verticals	hard_precision	phantom_verticals	True	338.68	66.95	66.6667	0.6667	0.6667				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True							
-pdfparser	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	7.1	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
-pdfplumber	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	3.85	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
-camelot_lattice	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	2.01	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
-camelot_auto	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	200.63	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pymupdf	71_frame_and_table	hard_precision	frame_and_table	True	5.63	98.8276	100.0	1.0	1.0				98.6207	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9655	1.0	0.9333		True	100.0	1.0	True				
+pdfminer.six	71_frame_and_table	hard_precision	frame_and_table	True	4.21	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	71_frame_and_table	hard_precision	frame_and_table	True	1.16	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	71_frame_and_table	hard_precision	frame_and_table	True	0.64	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	8.08	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	7.56	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	5.6	34.8333	100.0	1.0	1.0				23.3333	0.6667	1.0	0.5	2	1	0.0	0.0	0.0	0.0	0.0	0.0		True							
+camelot_auto	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	377.54	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	59.89	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfplumber	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	4.96	98.4545	100.0	1.0	1.0				98.1818	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9545	1.0	0.913		True	100.0	1.0	True				
+pymupdf	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	7.09	96.7619	100.0	1.0	1.0				96.1905	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9048	1.0	0.8261		True	100.0	1.0	True				
+pdfminer.six	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	7.28	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	1.64	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	72_two_tables_margin_ticks	hard_precision	two_tables_margin_ticks	True	0.74	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	73_false_row_underlines	hard_precision	false_row_underlines	True	6.83	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	73_false_row_underlines	hard_precision	false_row_underlines	True	5.41	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	73_false_row_underlines	hard_precision	false_row_underlines	True	1.11	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	73_false_row_underlines	hard_precision	false_row_underlines	True	362.03	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	73_false_row_underlines	hard_precision	false_row_underlines	True	57.09	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfplumber	73_false_row_underlines	hard_precision	false_row_underlines	True	2.63	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pymupdf	73_false_row_underlines	hard_precision	false_row_underlines	True	4.58	95.1429	100.0	1.0	1.0				94.2857	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.8571	1.0	0.75		True	100.0	1.0	True				
+pdfminer.six	73_false_row_underlines	hard_precision	false_row_underlines	True	3.2	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	73_false_row_underlines	hard_precision	false_row_underlines	True	0.93	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	73_false_row_underlines	hard_precision	false_row_underlines	True	0.82	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	74_sparse_data_grid	hard_precision	sparse_data_grid	True	7.5	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	74_sparse_data_grid	hard_precision	sparse_data_grid	True	3.0	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	74_sparse_data_grid	hard_precision	sparse_data_grid	True	2.11	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	74_sparse_data_grid	hard_precision	sparse_data_grid	True	355.6	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	74_sparse_data_grid	hard_precision	sparse_data_grid	True	59.68	74.2195	0.0	0.0	0.0				87.3171	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.6829	0.5185	1.0		True							
+pdfplumber	74_sparse_data_grid	hard_precision	sparse_data_grid	True	4.18	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pymupdf	74_sparse_data_grid	hard_precision	sparse_data_grid	True	6.14	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pdfminer.six	74_sparse_data_grid	hard_precision	sparse_data_grid	True	6.0	7.5	50.0	0.5	0.5				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	74_sparse_data_grid	hard_precision	sparse_data_grid	True	1.38	7.5	50.0	0.5	0.5				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	74_sparse_data_grid	hard_precision	sparse_data_grid	True	0.65	7.5	50.0	0.5	0.5				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	75_prose_not_stream	hard_precision	prose_not_stream	True	6.97	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+camelot_lattice	75_prose_not_stream	hard_precision	prose_not_stream	True	2.24	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+camelot_stream	75_prose_not_stream	hard_precision	prose_not_stream	True	2.4	15.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	1								False							
+camelot_auto	75_prose_not_stream	hard_precision	prose_not_stream	True	203.44	15.0	100.0	1.0	1.0				0.0	0.0	0.0	1.0	0	1								False							
+img2table	75_prose_not_stream	hard_precision	prose_not_stream	True	57.6	85.0	0.0	0.0	0.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfplumber	75_prose_not_stream	hard_precision	prose_not_stream	True	6.94	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pymupdf	75_prose_not_stream	hard_precision	prose_not_stream	True	6.64	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pdfminer.six	75_prose_not_stream	hard_precision	prose_not_stream	True	5.61	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdf	75_prose_not_stream	hard_precision	prose_not_stream	True	1.17	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False	100.0	1.0	True				
+pypdfium2	75_prose_not_stream	hard_precision	prose_not_stream	True	0.88	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	0	0								False							
+pdfparser	76_caption_not_table	hard_precision	caption_not_table	True	7.72	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	76_caption_not_table	hard_precision	caption_not_table	True	6.23	85.0833	66.6667	0.6667	0.6667				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	76_caption_not_table	hard_precision	caption_not_table	True	1.35	90.0	33.3333	0.3333	0.3333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	76_caption_not_table	hard_precision	caption_not_table	True	348.93	85.0833	66.6667	0.6667	0.6667				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	76_caption_not_table	hard_precision	caption_not_table	True	58.42	85.0833	66.6667	0.6667	0.6667				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfplumber	76_caption_not_table	hard_precision	caption_not_table	True	3.4	90.0833	100.0	1.0	1.0				88.3333	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pymupdf	76_caption_not_table	hard_precision	caption_not_table	True	5.89	87.8167	100.0	1.0	1.0				85.6667	0.6667	0.5	1.0	1	2	1.0	1.0	1.0	0.9333	1.0	0.875		True	100.0	1.0	True				
+pdfminer.six	76_caption_not_table	hard_precision	caption_not_table	True	3.94	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	76_caption_not_table	hard_precision	caption_not_table	True	1.05	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	76_caption_not_table	hard_precision	caption_not_table	True	0.65	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	7.74	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	4.41	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	2.19	29.875	100.0	1.0	1.0				17.5	0.5	1.0	0.3333	3	1	0.0	0.0	0.0	0.0	0.0	0.0		True							
+camelot_auto	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	366.1	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	60.1	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfplumber	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	4.33	99.3585	100.0	1.0	1.0				99.2453	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9811	1.0	0.963		True	100.0	1.0	True				
+pymupdf	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	8.16	97.28	100.0	1.0	1.0				96.8	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.92	1.0	0.8519		True	100.0	1.0	True				
+pdfminer.six	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	6.52	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	1.44	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	77_three_stacked_disjoint	hard_precision	three_stacked_disjoint	True	0.73	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	8.02	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	7.95	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	6.68	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	1070.32	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	165.87	94.7888	66.6667	0.6667	0.6667				99.7516	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9938	1.0	0.9877		True							
+pdfplumber	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	12.93	99.7888	100.0	1.0	1.0				99.7516	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9938	1.0	0.9877		True	100.0	1.0	True				
+pymupdf	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	18.02	99.3585	100.0	1.0	1.0				99.2453	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.9811	1.0	0.963		True	100.0	1.0	True				
+pdfminer.six	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	25.44	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	3.42	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	78_multipage_footer_rules	hard_precision	multipage_footer_rules	True	1.0	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	3	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	79_span_header_precision	hard_precision	span_header_precision	True	7.2	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	79_span_header_precision	hard_precision	span_header_precision	True	7.91	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	79_span_header_precision	hard_precision	span_header_precision	True	2.09	48.3289	100.0	1.0	1.0				39.2105	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.1053	0.5	0.0588		True							
+camelot_auto	79_span_header_precision	hard_precision	span_header_precision	True	346.38	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	79_span_header_precision	hard_precision	span_header_precision	True	60.24	93.4932	75.0	0.75	0.75				96.7568	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9189	0.85	1.0		True							
+pdfplumber	79_span_header_precision	hard_precision	span_header_precision	True	4.39	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pymupdf	79_span_header_precision	hard_precision	span_header_precision	True	5.76	96.7097	100.0	1.0	1.0				96.129	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9032	1.0	0.8235		True	100.0	1.0	True				
+pdfminer.six	79_span_header_precision	hard_precision	span_header_precision	True	6.24	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	79_span_header_precision	hard_precision	span_header_precision	True	1.63	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	79_span_header_precision	hard_precision	span_header_precision	True	0.74	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	7.45	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	2.58	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_stream	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	1.63	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	362.81	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	60.47	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+pdfplumber	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	3.69	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+pymupdf	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	5.42	97.5714	100.0	1.0	1.0				97.1429	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9286	1.0	0.8667		True	100.0	1.0	True				
+pdfminer.six	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	4.75	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	1.16	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	80_form_boxes_above_table	hard_precision	form_boxes_above_table	True	0.65	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	81_phantom_verticals	hard_precision	phantom_verticals	True	7.38	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	81_phantom_verticals	hard_precision	phantom_verticals	True	6.02	66.95	66.6667	0.6667	0.6667				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True							
+camelot_stream	81_phantom_verticals	hard_precision	phantom_verticals	True	1.49	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0		True							
+camelot_auto	81_phantom_verticals	hard_precision	phantom_verticals	True	349.51	66.95	66.6667	0.6667	0.6667				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True							
+img2table	81_phantom_verticals	hard_precision	phantom_verticals	True	57.97	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfplumber	81_phantom_verticals	hard_precision	phantom_verticals	True	3.21	71.95	100.0	1.0	1.0				67.0	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.8	1.0	0.6667		True	100.0	1.0	True				
+pymupdf	81_phantom_verticals	hard_precision	phantom_verticals	True	5.25	68.4022	100.0	1.0	1.0				62.8261	1.0	1.0	1.0	1	1	0.0	1.0	0.0	0.6957	1.0	0.5333		True	100.0	1.0	True				
+pdfminer.six	81_phantom_verticals	hard_precision	phantom_verticals	True	4.12	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	81_phantom_verticals	hard_precision	phantom_verticals	True	1.08	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	81_phantom_verticals	hard_precision	phantom_verticals	True	0.76	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfparser	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	7.6	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True	100.0	1.0	True				
+camelot_lattice	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	6.81	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+camelot_stream	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	2.55	27.3333	50.0	0.5	0.5				23.3333	0.6667	1.0	0.5	2	1	0.0	0.0	0.5	0.0	0.0	0.0		True							
+camelot_auto	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	209.14	92.5	50.0	0.5	0.5				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0		True							
+img2table	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	57.97	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True							
+pdfplumber	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	3.74	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pymupdf	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	4.23	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pdfminer.six	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	5.98	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdf	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	1.23	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True	100.0	1.0	True				
+pypdfium2	82_stream_gap_boundary	hard_precision	stream_gap_boundary	True	0.77	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0		True							

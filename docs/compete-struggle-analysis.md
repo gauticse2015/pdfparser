@@ -1,8 +1,9 @@
 # Competitive struggle analysis & dataset requirements
 
 **Date:** 2026-07-11  
-**Status:** Dataset-first freeze (no algorithm work until baseline locked)  
-**Policy:** No ICDAR PDFs in regression; synthetic + legal public only.
+**Status:** Pre-algorithm freeze locked; **post-raster re-baseline** recorded  
+**Policy:** No ICDAR PDFs in regression; synthetic + legal public only.  
+**Baselines:** `compete_hard_baseline_frozen.json` (pre-algorithm) · `compete_hard_baseline_post_raster.json` (current)
 
 ---
 
@@ -158,7 +159,25 @@ Do **not** fix-first and then invent soft fixtures (process debt from doc 54).
 
 ---
 
-## 8. Commands
+## 8. Post-raster re-baseline (2026-07-11)
+
+After production Camelot-class raster line sensing on embedded Image XObjects:
+
+| Metric | Pre-algorithm | Post-raster |
+|--------|-------------:|------------:|
+| overall | 50.4 | **61.5** |
+| cell F1 | 0.383 | **0.445** |
+| detect F1 | 0.795 | **0.884** |
+| shape exact | 0.204 | **0.444** |
+| imperfect rate | 87.7% | **74.1%** |
+
+- **Solved structure for `image_painted_miss_all`:** detect/shape 0→1.0 (cell F1 stays 0 without OCR).
+- **Solved `false_underline_row_overcount` / multipage underline:** cell/shape 1.0.
+- **Still open:** header-slice, partial-V col undercount, sparse densify, mixed stream, some spans.
+
+Scoreboard: `docs/accuracy-scoreboard-compete-hard.md`.
+
+## 9. Commands
 
 ```bash
 # regenerate hard wave
@@ -170,7 +189,7 @@ Do **not** fix-first and then invent soft fixtures (process debt from doc 54).
 # reals
 .venv/bin/python benchmark/scripts/fetch_compete_real.py
 
-# baseline hard only
+# re-baseline hard only (pdfparser)
 .venv/bin/python benchmark/scripts/run_accuracy_benchmark.py \
   --suite regression_compete_hard --libs pdfparser --tag compete_hard
 

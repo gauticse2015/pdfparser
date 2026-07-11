@@ -1,0 +1,152 @@
+{
+  "frozen_at": "2026-07-11",
+  "suite": "regression_compete_hard",
+  "policy": "POST-GENERIC: removed suite-tuned magic thresholds; kept geometric densify_x/y + schema-equal network regioning. Pre-algorithm freeze unchanged.",
+  "source": "accuracy_results_compete_hard.json",
+  "pdfparser": {
+    "n": 81,
+    "n_imperfect": 29,
+    "fail_rate": 0.35802469135802467,
+    "cell_f1": 0.8266654320987654,
+    "shape": 0.845679012345679,
+    "detect_f1": 0.944583950617284,
+    "row_acc": 0.845679012345679,
+    "col_acc": 0.941358024691358,
+    "overall": 87.50421975308642
+  },
+  "by_struggle_mode": {
+    "cell_content_assign": {
+      "n": 4,
+      "n_imperfect": 0,
+      "fail_rate": 0.0,
+      "cell_f1": 1.0,
+      "shape": 1.0,
+      "detect_f1": 1.0,
+      "row_acc": 1.0,
+      "col_acc": 1.0,
+      "overall": 97.5
+    },
+    "complex_spans": {
+      "n": 4,
+      "n_imperfect": 3,
+      "fail_rate": 0.75,
+      "cell_f1": 0.473875,
+      "shape": 0.25,
+      "detect_f1": 0.83335,
+      "row_acc": 0.25,
+      "col_acc": 0.5,
+      "overall": 56.653324999999995
+    },
+    "false_underline_row_overcount": {
+      "n": 8,
+      "n_imperfect": 0,
+      "fail_rate": 0.0,
+      "cell_f1": 1.0,
+      "shape": 1.0,
+      "detect_f1": 1.0,
+      "row_acc": 1.0,
+      "col_acc": 1.0,
+      "overall": 100.0
+    },
+    "header_slice_fragmentation": {
+      "n": 8,
+      "n_imperfect": 8,
+      "fail_rate": 1.0,
+      "cell_f1": 0.5956125,
+      "shape": 0.5,
+      "detect_f1": 0.8333375,
+      "row_acc": 0.5,
+      "col_acc": 0.75,
+      "overall": 67.216125
+    },
+    "image_painted_miss_all": {
+      "n": 8,
+      "n_imperfect": 8,
+      "fail_rate": 1.0,
+      "cell_f1": 0.0,
+      "shape": 1.0,
+      "detect_f1": 1.0,
+      "row_acc": 1.0,
+      "col_acc": 1.0,
+      "overall": 62.0
+    },
+    "invoice_fees_inside_grid": {
+      "n": 4,
+      "n_imperfect": 4,
+      "fail_rate": 1.0,
+      "cell_f1": 1.0,
+      "shape": 0.0,
+      "detect_f1": 1.0,
+      "row_acc": 0.0,
+      "col_acc": 1.0,
+      "overall": 76.25
+    },
+    "mixed_stream_miss": {
+      "n": 6,
+      "n_imperfect": 1,
+      "fail_rate": 0.16666666666666666,
+      "cell_f1": 0.97745,
+      "shape": 0.9166666666666666,
+      "detect_f1": 1.0,
+      "row_acc": 0.9166666666666666,
+      "col_acc": 1.0,
+      "overall": 93.83055
+    },
+    "multi_table_close_chrome": {
+      "n": 5,
+      "n_imperfect": 1,
+      "fail_rate": 0.2,
+      "cell_f1": 0.88696,
+      "shape": 0.8,
+      "detect_f1": 0.88,
+      "row_acc": 0.8,
+      "col_acc": 0.85,
+      "overall": 86.96433999999999
+    },
+    "multipage_underline_overcount": {
+      "n": 4,
+      "n_imperfect": 0,
+      "fail_rate": 0.0,
+      "cell_f1": 1.0,
+      "shape": 1.0,
+      "detect_f1": 1.0,
+      "row_acc": 1.0,
+      "col_acc": 1.0,
+      "overall": 100.0
+    },
+    "partial_v_col_undercount": {
+      "n": 18,
+      "n_imperfect": 0,
+      "fail_rate": 0.0,
+      "cell_f1": 1.0,
+      "shape": 1.0,
+      "detect_f1": 1.0,
+      "row_acc": 1.0,
+      "col_acc": 1.0,
+      "overall": 100.0
+    },
+    "severe_minigrid_overdetect": {
+      "n": 4,
+      "n_imperfect": 4,
+      "fail_rate": 1.0,
+      "cell_f1": 1.0,
+      "shape": 1.0,
+      "detect_f1": 0.5277999999999999,
+      "row_acc": 1.0,
+      "col_acc": 1.0,
+      "overall": 83.673625
+    },
+    "sparse_densify_row_undercount": {
+      "n": 8,
+      "n_imperfect": 0,
+      "fail_rate": 0.0,
+      "cell_f1": 1.0,
+      "shape": 1.0,
+      "detect_f1": 1.0,
+      "row_acc": 1.0,
+      "col_acc": 1.0,
+      "overall": 100.0
+    }
+  },
+  "note": "Scores may be slightly below the over-tuned post-geometry freeze; that is intentional."
+}

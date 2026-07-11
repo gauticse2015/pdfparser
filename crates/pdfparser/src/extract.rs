@@ -9,14 +9,18 @@ use pdfparser_ir::{
 };
 use pdfparser_layout::{apply_page_rotate_to_runs, insert_spaces, reading_order_text};
 use pdfparser_tables::{
-    detect_tables_page, materialize_stitched, stitch_document, Table, TableOptions,
+    detect_tables_page_with_raster, materialize_stitched, stitch_document, Table, TableOptions,
+    RasterPage,
 };
+use crate::raster_images::raster_pages_for_page;
 // form scrub is applied via materialize path in tables crate after stitch
 
 /// Intermediate page content after interpret.
 pub struct PageContent {
     pub runs: Vec<TextRun>,
     pub rules: Vec<pdfparser_content::RuleSegment>,
+    /// Image placements for raster line sensing.
+    pub image_placements: Vec<pdfparser_content::ImagePlacement>,
     pub warnings: Vec<ExtractWarning>,
 }
 
@@ -36,6 +40,7 @@ pub fn page_content(
     let iopts = InterpretOptions {
         max_ops: doc.governor.limits.max_page_ops,
         capture_rules,
+        capture_image_placements: capture_rules, // same gate as rules for table path
         ..InterpretOptions::default()
     };
     let mut result = interpret_page(&content, &fonts, &iopts);
@@ -87,6 +92,7 @@ pub fn page_content(
     Ok(PageContent {
         runs: result.runs,
         rules: result.rules,
+        image_placements: result.image_placements,
         warnings,
     })
 }
@@ -119,12 +125,19 @@ pub fn page_tables(
         return Ok(Vec::new());
     }
     let pc = page_content(doc, page_index, text_opts, true)?;
-    Ok(detect_tables_page(
+    let raster = if table_opts.raster_line_detect {
+        raster_pages_for_page(doc, page_index, &pc.image_placements).unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+    let tabs = detect_tables_page_with_raster(
         page_index as u32,
         &pc.runs,
         &pc.rules,
         table_opts,
-    ))
+        &raster,
+    );
+    Ok(tabs)
 }
 
 /// Document-level table extract: page fragments + optional D1 stitched logical tables.
@@ -139,11 +152,18 @@ pub fn document_tables(
     let n = doc.page_count() as usize;
     let mut page_runs: Vec<Vec<TextRun>> = Vec::with_capacity(n);
     let mut page_rules: Vec<Vec<pdfparser_content::RuleSegment>> = Vec::with_capacity(n);
+    let mut page_raster: Vec<Vec<RasterPage>> = Vec::with_capacity(n);
     let mut page_heights: Vec<f32> = Vec::with_capacity(n);
     for i in 0..n {
         let pc = page_content(doc, i, text_opts, true)?;
+        let raster = if table_opts.raster_line_detect {
+            raster_pages_for_page(doc, i, &pc.image_placements).unwrap_or_default()
+        } else {
+            Vec::new()
+        };
         page_runs.push(pc.runs);
         page_rules.push(pc.rules);
+        page_raster.push(raster);
         let height = doc
             .pages
             .get(i)
@@ -152,7 +172,15 @@ pub fn document_tables(
         page_heights.push(height);
     }
     let mut page_tables: Vec<Vec<Table>> = (0..n)
-        .map(|i| detect_tables_page(i as u32, &page_runs[i], &page_rules[i], table_opts))
+        .map(|i| {
+            detect_tables_page_with_raster(
+                i as u32,
+                &page_runs[i],
+                &page_rules[i],
+                table_opts,
+                &page_raster[i],
+            )
+        })
         .collect();
     if table_opts.stitch_multipage {
         stitch_document(&mut page_tables, &page_heights, table_opts);

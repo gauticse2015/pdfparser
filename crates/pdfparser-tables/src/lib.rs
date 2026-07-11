@@ -12,6 +12,7 @@ mod hybrid;
 mod lattice;
 mod network;
 mod options;
+mod raster;
 mod split;
 mod stitch;
 mod stream;
@@ -21,6 +22,10 @@ pub use form::scrub_document_table_fps;
 pub use lattice::detect_lattice_tables;
 pub use network::detect_network_tables;
 pub use options::{TableModeSet, TableOptions, TablePreset};
+pub use raster::{
+    config_for_raster_page, gray_from_rgb, gray_from_rgba, merge_rules, rules_from_raster,
+    RasterConfig, RasterPage, RasterRule,
+};
 pub use stitch::{materialize_stitched, stitch_document};
 pub use stream::detect_stream_tables;
 pub use types::{PipelineId, Table, TableCell, TableMethod};
@@ -43,6 +48,20 @@ pub fn detect_tables_page(
     rules: &[RuleSegment],
     opts: &TableOptions,
 ) -> Vec<Table> {
+    detect_tables_page_with_raster(page_index, runs, rules, opts, &[])
+}
+
+/// Detect tables with optional raster page bitmaps (embedded images / renders).
+///
+/// When `opts.raster_line_detect` is true and `raster_pages` is non-empty, line
+/// segments are recovered via morphology and merged into the lattice rule set.
+pub fn detect_tables_page_with_raster(
+    page_index: u32,
+    runs: &[TextRun],
+    rules: &[RuleSegment],
+    opts: &TableOptions,
+    raster_pages: &[RasterPage],
+) -> Vec<Table> {
     if !opts.detect_tables {
         return Vec::new();
     }
@@ -50,7 +69,13 @@ pub fn detect_tables_page(
     let mut cands = Vec::new();
 
     if opts.modes.lattice {
-        cands.extend(detect_lattice_tables(page_index, runs, rules, opts));
+        cands.extend(detect_lattice_tables(
+            page_index,
+            runs,
+            rules,
+            opts,
+            raster_pages,
+        ));
     }
 
     let strong_lattice_bboxes: Vec<pdfparser_ir::Rect> = cands
@@ -105,7 +130,7 @@ pub fn detect_tables_page(
     let mut kept = nms(cands, min_conf, opts.nms_containment_frac);
     kept.retain(|t| match t.method {
         TableMethod::Stream => t.confidence >= opts.min_confidence_stream,
-        _ => t.confidence >= opts.min_table_confidence * 0.85 || t.confidence >= 0.52,
+        _ => t.confidence >= opts.min_table_confidence,
     });
     kept.truncate(opts.max_tables_per_page as usize);
     kept
@@ -126,6 +151,10 @@ fn overlaps_any(bbox: pdfparser_ir::Rect, regions: &[pdfparser_ir::Rect]) -> boo
 }
 
 /// Detect tables for all pages; optional stitch and over-seg scrub.
+///
+/// This entry point has no raster bitmaps (runs + rules only). Image-line
+/// sensing is a no-op here — use [`detect_tables_document_with_raster`] or the
+/// `pdfparser` façade `document_tables` for embedded-image grids.
 pub fn detect_tables_document(
     pages: &[(u32, &[TextRun], &[RuleSegment])],
     page_heights: &[f32],
@@ -133,7 +162,35 @@ pub fn detect_tables_document(
 ) -> (Vec<Vec<Table>>, Vec<Table>) {
     let mut page_tables: Vec<Vec<Table>> = pages
         .iter()
-        .map(|(idx, runs, rules)| detect_tables_page(*idx, runs, rules, opts))
+        .map(|(idx, runs, rules)| detect_tables_page_with_raster(*idx, runs, rules, opts, &[]))
+        .collect();
+
+    if opts.stitch_multipage {
+        stitch_document(&mut page_tables, page_heights, opts);
+    }
+
+    let mut logical = if opts.stitch_multipage {
+        materialize_stitched(&page_tables)
+    } else {
+        page_tables.iter().flatten().cloned().collect()
+    };
+    if opts.form_discriminator {
+        logical = scrub_document_table_fps(logical, opts);
+    }
+    (page_tables, logical)
+}
+
+/// Document-level detect with per-page raster bitmaps for line sensing.
+pub fn detect_tables_document_with_raster(
+    pages: &[(u32, &[TextRun], &[RuleSegment], &[RasterPage])],
+    page_heights: &[f32],
+    opts: &TableOptions,
+) -> (Vec<Vec<Table>>, Vec<Table>) {
+    let mut page_tables: Vec<Vec<Table>> = pages
+        .iter()
+        .map(|(idx, runs, rules, rasters)| {
+            detect_tables_page_with_raster(*idx, runs, rules, opts, rasters)
+        })
         .collect();
 
     if opts.stitch_multipage {
@@ -152,7 +209,8 @@ pub fn detect_tables_document(
 }
 
 fn nms(mut cands: Vec<Table>, min_conf: f32, containment_frac: f32) -> Vec<Table> {
-    cands.retain(|t| t.confidence >= min_conf * 0.80);
+    // Align with final retain: do not admit candidates below product min conf.
+    cands.retain(|t| t.confidence >= min_conf);
     cands.sort_by(|a, b| {
         method_rank(b.method)
             .cmp(&method_rank(a.method))

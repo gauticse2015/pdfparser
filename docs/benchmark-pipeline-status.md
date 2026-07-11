@@ -100,27 +100,38 @@ Still behind Camelot auto/lattice and PyMuPDF on ICDAR; **ahead of pdfplumber** 
 
 ---
 
-## Compete hard suite (2026-07-11 dataset freeze)
+## Compete hard suite (2026-07-11 dataset freeze + post-raster re-baseline)
 
-**Before algorithm work.** Analysis: `docs/compete-struggle-analysis.md`.
+Analysis: `docs/compete-struggle-analysis.md`.
 
 | Artifact | Path |
 |----------|------|
 | Hard fixtures | `benchmark/corpus/compete_synthetic/C100–C180` (81 PDFs) |
 | Gold | `benchmark/ground_truth/C1*.json` full grids |
 | Real public | 14 PDFs under `compete_real/` |
-| Frozen baseline | `benchmark/results/compete_hard_baseline_frozen.json` |
+| Pre-algorithm freeze | `benchmark/results/compete_hard_baseline_frozen.json` |
+| Post-raster freeze | `benchmark/results/compete_hard_baseline_post_raster.json` |
+| **Post-geometry freeze** | `benchmark/results/compete_hard_baseline_post_geometry.json` |
 | Scoreboard | `docs/accuracy-scoreboard-compete-hard.md` |
 | Integrity gate | `benchmark/scripts/check_compete_suite.py` |
 
-| Metric (pdfparser hard wave) | Value |
-|------------------------------|------:|
-| n | 81 |
-| imperfect rate | 87.7% |
-| detect F1 | 0.795 |
-| row accuracy | 0.426 |
-| col accuracy | 0.596 |
-| shape exact | 0.204 |
-| cell F1 (TEDS-like) | **0.383** |
+| Metric (pdfparser hard wave) | Pre-alg | Post-raster | **Post-geometry** |
+|------------------------------|--------:|------------:|------------------:|
+| n | 81 | 81 | 81 |
+| imperfect rate | 87.7% | 74.1% | **35.8%** |
+| detect F1 | 0.795 | 0.884 | **0.961** |
+| row accuracy | 0.426 | 0.667 | **0.846** |
+| col accuracy | 0.596 | 0.608 | **0.966** |
+| shape exact | 0.204 | 0.444 | **0.846** |
+| cell F1 (TEDS-like) | 0.383 | 0.445 | **0.830** |
+| overall | 50.4 | 61.5 | **88.2** |
 
-Coverage wave C001–C068 remains mostly solved (~0.94 cell F1) — do not use it alone for TEDS/row/col work.
+| Struggle mode | Post-geometry |
+|---------------|---------------|
+| `partial_v_col_undercount` | **solved** (1.0) |
+| `sparse_densify_row_undercount` | **solved** (1.0) |
+| `mixed_stream_miss` | **~0.98 cell** |
+| `header_slice_fragmentation` | det/col 1.0; cell 0.63 |
+| `image_painted_miss_all` | structure 1.0; cell 0 (no OCR) |
+
+Coverage wave C001–C068 remains mostly solved (~0.94 cell F1). Remaining hard: spans, invoice shape, overdetect count, header-slice rows, image OCR.

@@ -219,6 +219,15 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                 && t.rows >= 3
                 && !t.weak_edges;
 
+            // Raster-recovered ruled grids may have zero text (ink is in the image).
+            let is_raster = t.strategy_provenance.contains(&PipelineId::S6RasterLines)
+                || t.notes.iter().any(|n| n.contains("raster_lines"));
+            let raster_lattice = t.method == TableMethod::Lattice
+                && is_raster
+                && t.cols >= 2
+                && t.rows >= 2
+                && !t.weak_edges;
+
             let looks_like_data = (fill >= 0.45
                 && num >= 0.15
                 && t.cols >= 2
@@ -229,7 +238,8 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                     && fill >= 0.5
                     && t.cols >= 2
                     && num >= 0.1)
-                || strong_lattice;
+                || strong_lattice
+                || raster_lattice;
 
             if !looks_like_data
                 && form >= 0.75
@@ -254,7 +264,14 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
             if t.confidence < min_drop.max(0.40) {
                 return None;
             }
-            if t.rows >= 20 && t.cols >= 6 && num < 0.2 && fill < 0.35 {
+            // Huge empty non-raster grids with no numeric signal → form/layout junk.
+            if !raster_lattice
+                && fill < 0.20
+                && num < 0.15
+                && t.rows * t.cols >= 40
+                && t.method == TableMethod::Lattice
+                && t.weak_edges
+            {
                 return None;
             }
             // Dense short-token veto: aimed at empty form chrome / code dumps

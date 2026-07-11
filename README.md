@@ -8,7 +8,7 @@
 
 `pdfparser` extracts text, tables, and common document objects through a security-conscious pipeline (resource limits, no silent encrypted opens in v0.1). Tables are **opt-in** and multi-strategy: lattice (ruled), hybrid (partial rules), and network (borderless).
 
-> Not an OCR engine and not a full page renderer. Scanned / image-only PDFs are out of scope for v0.1 (except thin-fill painted rules in the content stream).
+> Not an OCR engine and not a full page renderer. Full-page scan OCR is out of scope for v0.1; **embedded image-painted grids** are recovered via Camelot-class raster morphology.
 
 ---
 
@@ -18,20 +18,22 @@
 |------|--------|----------------|
 | **Text** | Production | Reading-order sort, `/Rotate`, WinAnsi / MacRoman / Differences / ToUnicode, space insertion |
 | **Ruled tables (lattice)** | Production | Vector H/V rules + **thin-fill painted rect rules**, multi-region CC, spans, text densify-Y, false-underline collapse |
+| **Raster line sensing** | Production | Camelot-class morph on **embedded Image XObjects**: adaptive threshold, dashed-gap close, H/V open, multi-scale, joint-graph + regularity gate → lattice rules |
 | **Partial borders (hybrid)** | Production | Incomplete frames recovered with text columns/rows |
 | **Borderless tables (network)** | Production | Textline + column-alignment builder; gap split + same-schema re-merge; list/prose FP reject |
 | **Orchestration** | Production | Strong lattice **excludes** overlapping borderless tables (no dual soup by default) |
 | **Multi-page** | Production | Optional stitch when continued tables share header/columns |
-| **FP control** | Production | Form-like chrome scrub, caption/tiny grid reject, 2-col prose / numbered-list reject |
+| **FP control** | Production | Form-like chrome scrub, caption/tiny grid reject, 2-col prose / numbered-list reject; chart-axis raster reject |
 | **Objects** | Production | Image count/meta, URI links, AcroForm fields, outline titles |
 | **Security** | Production | Stream expansion budgets; encrypted PDFs hard-error until crypto ships |
-| **Raster ROI lattice** | Not yet | Needed for pure image-grid tables (Camelot-class line morph) |
+| **Full-page render OCR** | Not yet | Deferred; optional external render path, not the product table core |
 
 ### Table pipeline (product default: `TablePreset::Auto`)
 
 ```text
-page rules + text
-    → lattice (vector + thin-fill rules)
+page rules + text + embedded images
+    → raster morph (Image XObject → H/V rules, grid-validated)
+    → lattice (vector + thin-fill + raster rules)
     → hybrid only outside strong lattice
     → network borderless only outside strong lattice
     → form scrub + NMS
@@ -41,116 +43,133 @@ page rules + text
 
 ## Accuracy benchmarks
 
-Numbers below are from the **owned accuracy harness** (`benchmark/scripts/run_accuracy_benchmark.py`) and the **external ICDAR-2013 competitive** runner. Re-run commands are at the end of this section.
+**Last refreshed:** 2026-07-11 (release CLI + current table engine).
+
+Two different measurement tracks — **do not mix them**:
+
+| Track | What it is | pdfparser status |
+|-------|------------|------------------|
+| **Owned multi-lib harness** | Synthetic + designed fixtures in this repo | **#1** on main / hard / precision / compete_hard |
+| **ICDAR-2013 competitive** | External 67-PDF Camelot ICDAR set | **#5** — **not SOTA** (F1 0.58, TEDS 0.33) |
 
 ### Metric definitions
 
 | Metric | Meaning |
 |--------|---------|
-| **overall** | Weighted 0–100 score (text / tables / objects per-doc GT weights) |
+| **overall** | Weighted 0–100 score (text / tables / objects per-doc GT weights) — owned harness only |
 | **text F1** | Token F1 on `must_contain` / required substrings |
 | **det F1** | Table **count** detection F1 vs gold |
-| **cell F1** | Aligned cell-text micro-F1 (TEDS-like content quality) |
+| **cell F1** | Aligned cell-text micro-F1 (owned harness) |
 | **shape** | Fraction of gold tables with exact R×C |
 | **row / col** | Exact row / column count accuracy |
-| **TEDS** | ICDAR only — Camelot-style difflib structure proxy (not tree-edit TEDS) |
-| **ms** | Mean wall time per doc (library adapter) |
+| **F1 / TEDS** | ICDAR only — Camelot `bench/_metrics.score` (detection F1 + difflib TEDS proxy) |
+| **ms / time** | Mean wall time per doc (owned) or full-set seconds (ICDAR) |
 
-### 1) Main multi-library scoreboard (owned corpus, 33 docs)
+### 1) Main multi-library scoreboard (owned corpus)
 
-Suite mixes basic + stress + hard synthetic fixtures with full grid gold where available.  
+Suite: basic + stress + hard synthetic (full grid gold where available).  
 Source: `benchmark/results/accuracy_results.json`.
 
-| Rank | Library | overall | text F1 | det F1 | cell F1 | shape | row | col | ms/doc |
-|-----:|---------|--------:|--------:|-------:|--------:|------:|----:|----:|-------:|
-| 1 | **pdfparser** | **99.3** | **1.000** | **0.938** | **0.994** | **0.958** | **0.958** | **1.000** | **11** |
-| 2 | pdfplumber | 89.1 | 0.992 | 0.919 | 0.860 | 0.812 | 0.812 | 0.854 | 60 |
-| 3 | pymupdf | 88.8 | 0.992 | 0.889 | 0.816 | 0.812 | 0.812 | 0.854 | 73 |
-| 4 | camelot auto | 67.3 | 0.585 | 0.919 | 0.848 | 0.792 | 0.792 | 0.896 | 375 |
-| 5 | camelot lattice | 59.0 | 0.456 | 0.889 | 0.821 | 0.771 | 0.771 | 0.812 | 26 |
-| 6 | img2table | 57.8 | 0.444 | 0.854 | 0.769 | 0.771 | 0.771 | 0.812 | 73 |
-| 7 | pypdf | 39.4 | 1.000 | 0.242 | 0.000 | 0.000 | 0.000 | 0.000 | 8 |
-| 8 | pypdfium2 | 36.1 | 0.992 | 0.242 | 0.000 | 0.000 | 0.000 | 0.000 | 2 |
-| 9 | pdfminer.six | 36.0 | 0.985 | 0.242 | 0.000 | 0.000 | 0.000 | 0.000 | 67 |
+| Rank | Library | overall | det F1 | cell F1 | shape | ms/doc |
+|-----:|---------|--------:|-------:|--------:|------:|-------:|
+| 1 | **pdfparser** | **98.9** | **0.969** | **0.977** | **0.958** | **26** |
+| 2 | pdfplumber | 89.1 | 0.919 | 0.860 | 0.812 | 61 |
+| 3 | pymupdf | 88.8 | 0.889 | 0.816 | 0.812 | 73 |
+| 4 | camelot auto | 67.3 | 0.919 | 0.848 | 0.792 | 376 |
+| 5 | camelot stream | 60.4 | 0.707 | 0.333 | 0.302 | 11 |
+| 6 | camelot lattice | 59.0 | 0.889 | 0.821 | 0.771 | 26 |
+| 7 | img2table | 57.8 | 0.854 | 0.769 | 0.771 | 73 |
+| 8 | pypdf | 39.4 | 0.242 | 0.000 | 0.000 | 8 |
+| 9 | pypdfium2 | 36.1 | 0.242 | 0.000 | 0.000 | 2 |
+| 10 | pdfminer.six | 36.0 | 0.242 | 0.000 | 0.000 | 66 |
 
-> **Reading this table:** pdfparser leads on *owned* synthetic/regression grids it was engineered against. That is real product progress, not a claim of SOTA on all real-world PDFs (see ICDAR below).
+> **Reading this table:** #1 on *owned* regression is product progress, **not** a claim of SOTA on wild PDFs. See ICDAR (§3).
 
-### 2) By owned suite (pdfparser vs peers)
+### 2) By owned suite (multi-lib)
 
-#### Basic + stress (20 docs)
+#### Basic + stress
 
 Source: `accuracy_results_basic_stress.json`.
 
-| Library | overall | cell F1 | det F1 | shape | row | col | ms/doc |
-|---------|--------:|--------:|-------:|------:|----:|----:|-------:|
-| **pdfparser** | **99.8** | **0.992** | 0.895 | **1.000** | **1.000** | **1.000** | **11** |
-| pdfplumber | 88.1 | 0.826 | **0.933** | 0.727 | 0.727 | 0.818 | 94 |
-| camelot auto | 54.3 | 0.826 | 0.883 | 0.727 | 0.727 | 0.909 | 334 |
-| camelot lattice | 46.9 | 0.826 | 0.933 | 0.727 | 0.727 | 0.818 | 32 |
+| Library | overall | cell F1 | det F1 | shape | ms/doc |
+|---------|--------:|--------:|-------:|------:|-------:|
+| **pdfparser** | **98.1** | **0.950** | **0.947** | **0.909** | **11** |
+| pdfplumber | 88.1 | 0.826 | 0.933 | 0.727 | 93 |
+| camelot auto | 54.3 | 0.826 | 0.883 | 0.727 | 338 |
+| camelot lattice | 46.9 | 0.826 | 0.933 | 0.727 | 36 |
 
-#### Hard structure 50–62 (13 docs)
+#### Hard structure 50–62
 
 Source: `accuracy_results_hard.json`.
 
-| Library | overall | cell F1 | det F1 | shape | row | col | ms/doc |
-|---------|--------:|--------:|-------:|------:|----:|----:|-------:|
-| **pdfparser** | **100.0** | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** | 52 |
-| pdfplumber | 90.7 | 0.890 | 0.897 | 0.885 | 0.885 | 0.885 | **16** |
-| camelot auto | 87.1 | 0.866 | 0.974 | 0.846 | 0.846 | 0.885 | 439 |
-| camelot lattice | 77.7 | 0.817 | 0.821 | 0.808 | 0.808 | 0.808 | 56 |
+| Library | overall | cell F1 | det F1 | shape | ms/doc |
+|---------|--------:|--------:|-------:|------:|-------:|
+| **pdfparser** | **100.0** | **1.000** | **1.000** | **1.000** | **8** |
+| pdfplumber | 90.7 | 0.890 | 0.897 | 0.885 | 14 |
+| camelot auto | 87.1 | 0.866 | 0.974 | 0.846 | 430 |
+| camelot lattice | 77.7 | 0.817 | 0.821 | 0.808 | 40 |
 
-#### Precision FP suite 70–82 (13 docs)
+#### Precision FP suite 70–82
 
 Source: `accuracy_results_regression_precision.json`.
 
-| Library | overall | cell F1 | det F1 | shape | row | col | ms/doc |
-|---------|--------:|--------:|-------:|------:|----:|----:|-------:|
-| **pdfparser** | **99.4** | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** | **7** |
-| camelot lattice | 83.2 | 0.900 | 0.897 | 0.833 | 0.917 | 0.833 | 32 |
-| camelot auto | 81.3 | 0.900 | 0.897 | 0.833 | 0.917 | 0.833 | 384 |
-| pdfplumber | 89.8 | 0.894 | 0.897 | 0.833 | 0.917 | 0.833 | 7 |
+| Library | overall | cell F1 | det F1 | shape | ms/doc |
+|---------|--------:|--------:|-------:|------:|-------:|
+| **pdfparser** | **99.4** | **1.000** | **1.000** | **1.000** | **7** |
+| pdfplumber | 89.8 | 0.894 | 0.897 | 0.833 | 8 |
+| camelot lattice | 83.2 | 0.900 | 0.897 | 0.833 | 34 |
+| camelot auto | 81.3 | 0.900 | 0.897 | 0.833 | 392 |
 
-#### Sensing suite 90–95 (6 docs, pdfparser)
+#### Compete hard struggle suite C100–C180 (81 docs)
 
-Source: `accuracy_results_sensing_prod.json`.
+Source: `accuracy_results_compete_hard.json` (multi-lib).  
+Freeze: `compete_hard_baseline_post_generic.json`.
 
-| Library | n | cell F1 | det F1 | shape | row | col | overall |
-|---------|--:|--------:|-------:|------:|----:|----:|--------:|
-| **pdfparser** | 6 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** | **100.0** |
+| Rank | Library | cell F1 | det F1 | shape | overall | ms/doc |
+|-----:|---------|--------:|-------:|------:|--------:|-------:|
+| 1 | **pdfparser** | **0.827** | **0.945** | **0.846** | **87.5** | **10** |
+| 2 | camelot stream | 0.630 | 0.913 | 0.543 | 69.8 | 25 |
+| 3 | camelot auto | 0.328 | 0.795 | 0.284 | 48.1 | 412 |
+| 4 | pdfplumber | 0.319 | 0.735 | 0.247 | 47.0 | 14 |
+| 5 | camelot lattice | 0.319 | 0.735 | 0.247 | 44.1 | 32 |
+| 6 | pymupdf | 0.312 | 0.735 | 0.247 | 46.7 | 17 |
 
-Painted thin-fill rules, multi large lattices, borderless prose gap, partial H densify, invoice footer strip, multi-col prose FP reject.
+Progress vs pre-algorithm freeze (pdfparser only): cell **0.383 → 0.827**, shape **0.204 → 0.846**, overall **50.4 → 87.5**.
 
-#### Compete hard struggle suite C100–C180 (81 docs, pdfparser)
+Capabilities exercised: lattice densify X/Y, network regioning, embedded-image raster lines, exclusive-under-lattice, FP scrub.  
+Still open on this suite: image **cell text** (OCR), complex spans, invoice footer shape, severe overdetect count, header-slice row exactness.
 
-Source: `accuracy_results_compete_hard_prod.json` (open struggle modes; full cell gold).
+### 3) External competitive: ICDAR-2013 (67 PDFs) — **market claim source of truth**
 
-| Library | n | cell F1 | det F1 | shape | row | col | overall |
-|---------|--:|--------:|-------:|------:|----:|----:|--------:|
-| **pdfparser** | 81 | **0.445** | 0.785 | 0.346 | 0.568 | 0.509 | 55.8 |
-
-This suite is intentionally hard (image-only rules, partial V, header-slice borderless, underlines, multi-table chaos). It is the primary **development target** for remaining quality gaps—not a victory board.
-
-### 3) External competitive: ICDAR-2013 (67 PDFs)
-
-Black-box head-to-head using Camelot’s competitive metrics (detection F1, TEDS proxy, row/col).  
-**ICDAR files are not in this repo** (external clone only).  
-Source: `benchmark/results/camelot_icdar_headtohead.json`.
+Black-box head-to-head on **Camelot-shipped ICDAR-2013** PDFs + `*-str.xml`, scored with Camelot `bench/_metrics.score`.  
+**ICDAR is not in this repo** and **not** part of regression.  
+Source: `benchmark/results/camelot_icdar_headtohead.json` · full write-up: `docs/icdar-competitive-report.md`.
 
 | Rank | Tool | F1 | TEDS | row | col | time (s, full set) |
 |-----:|------|---:|-----:|----:|----:|-------------------:|
-| 1 | camelot auto | **0.864** | **0.786** | 0.564 | **0.792** | 72.3 |
-| 2 | pymupdf | 0.776 | 0.674 | 0.578 | 0.642 | 10.8 |
-| 3 | camelot lattice (vector) | 0.766 | 0.784 | **0.748** | 0.806 | 3.6 |
-| 4 | **pdfparser** | **0.672** | **0.331** | 0.382 | 0.489 | **0.58** |
-| 5 | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.4 |
+| 1 | camelot auto | **0.864** | **0.786** | 0.564 | 0.792 | 72.6 |
+| 2 | pymupdf | 0.776 | 0.674 | 0.578 | 0.642 | 10.7 |
+| 3 | camelot lattice (vector) | 0.766 | 0.784 | **0.748** | **0.806** | 3.5 |
+| 4 | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.5 |
+| **5** | **pdfparser** | **0.584** | **0.333** | 0.338 | 0.500 | **0.80** |
 
-**Honest takeaway**
+| vs prior ICDAR snapshot | Previous | Now | Δ |
+|-------------------------|---------:|----:|--:|
+| F1 | 0.672 | **0.584** | **−0.088** |
+| TEDS | 0.331 | **0.333** | +0.001 |
+| row | 0.382 | 0.338 | −0.043 |
+| col | 0.489 | 0.500 | +0.011 |
 
-| Track | pdfparser | Interpretation |
-|-------|-----------|----------------|
-| Owned synthetic / hard / precision / sensing | **#1**, often ~1.0 cell F1 | Product regression for digital ruled + many borderless cases is strong and fast |
-| ICDAR competitive | **#4**, TEDS **0.33** | Not Camelot-class on wild real competition pages yet (raster lines + network-class borderless still open) |
-| Latency | **~0.6 s / 67 docs** | ~100× faster than camelot auto on that set |
+Dominant pdfparser failure modes on ICDAR: **over-detect**, wrong shape, row/col miscount (see competitive report).
+
+### Honest summary
+
+| Track | pdfparser | Claim |
+|-------|-----------|--------|
+| Owned multi-lib regression / hard / precision | **#1** | Strong born-digital product path |
+| Owned compete_hard struggle (81 docs) | **#1** vs open-source peers | Geometry progress is real on designed hard modes |
+| **ICDAR-2013 competitive** | **#5**, F1 **0.58**, TEDS **0.33** | **Not SOTA.** Behind Camelot and PyMuPDF on quality; fastest latency |
+| Speed | ~8–26 ms/doc owned; **0.8 s / 67 ICDAR docs** | ~90× faster than camelot auto on ICDAR set |
 
 ### Reproducing benchmarks
 
@@ -159,26 +178,19 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r benchmark/requirements.txt
 cargo build --release -p pdfparser-cli
 
-# Multi-library owned scoreboard
+# Owned multi-library boards
 python benchmark/scripts/run_accuracy_benchmark.py
-
-# Hard / precision / sensing / compete hard
 python benchmark/scripts/run_accuracy_benchmark.py --suite regression_hard --tag hard
 python benchmark/scripts/run_accuracy_benchmark.py --suite regression_precision --tag regression_precision
-python benchmark/scripts/run_accuracy_benchmark.py --suite regression_sensing --tag sensing
-python benchmark/scripts/run_accuracy_benchmark.py --suite regression_compete_hard --libs pdfparser --tag compete_hard
+python benchmark/scripts/run_accuracy_benchmark.py --suite regression_compete_hard --tag compete_hard
 
-# Optional: regenerate synthetic corpora
-python benchmark/scripts/generate_hard_corpus.py
-python benchmark/scripts/generate_sensing_corpus.py
-python benchmark/scripts/generate_compete_corpus.py
-python benchmark/scripts/generate_compete_hard_corpus.py
-
-# ICDAR competitive (requires external Camelot/ICDAR checkout — see docs)
-python benchmark/scripts/run_icdar_competitive.py
+# ICDAR competitive (external data — market claim)
+python benchmark/scripts/run_icdar_competitive.py \
+  --data-dir /path/to/icdar2013-dataset \
+  --camelot-root /path/to/camelot-upstream
 ```
 
-Scoreboards: `docs/accuracy-scoreboard.md`, `docs/accuracy-scoreboard-hard.md`, `docs/accuracy-scoreboard-sensing.md`, `docs/icdar-competitive-report.md`, `docs/compete-struggle-analysis.md`.
+Scoreboards: `docs/accuracy-scoreboard.md`, `docs/accuracy-scoreboard-hard.md`, `docs/accuracy-scoreboard-compete-hard.md`, `docs/icdar-competitive-report.md`.
 
 ---
 
@@ -291,9 +303,9 @@ cargo build --release -p pdfparser-cli
 
 ## Roadmap
 
-1. **Done** — text path, lattice/hybrid/network tables, objects, owned multi-lib scoreboard  
-2. **In progress** — hard struggle suite (compete_hard); network + exclusive lattice quality  
-3. **Next** — ROI raster line sensing for image-painted grids; deeper network alignments; ICDAR TEDS/row/col  
+1. **Done** — text path, lattice/hybrid/network tables, embedded-image raster line sensing, objects, owned multi-lib scoreboard  
+2. **In progress** — compete_hard residual (header-slice row exact, spans, invoice shape, overdetect count)  
+3. **Next** — ICDAR TEDS/row/col; optional full-page render / OCR for image text  
 4. **Later** — encryption subset, structure tree, crates.io publish  
 
 ---
