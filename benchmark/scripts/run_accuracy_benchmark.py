@@ -136,7 +136,17 @@ def aggregate(rows: list[dict]) -> dict:
             # tier splits
             "by_tier": {},
         }
-        for tier in ("basic", "stress", "hard", "real"):
+        for tier in (
+            "basic",
+            "stress",
+            "hard",
+            "hard_precision",
+            "hard_sensing",
+            "compete",
+            "compete_hard",
+            "compete_real",
+            "real",
+        ):
             tr = [r for r in ok if r.get("tier") == tier]
             if not tr:
                 continue
@@ -148,6 +158,8 @@ def aggregate(rows: list[dict]) -> dict:
                 "table_detect_f1_mean": _r(avg([r["table_detect_f1"] for r in tr])),
                 "table_cell_f1_mean": _r(avg([r["table_cell_f1"] for r in tr])),
                 "table_shape_exact_rate_mean": _r(avg([r["table_shape_exact_rate"] for r in tr])),
+                "table_row_accuracy_mean": _r(avg([r["table_row_accuracy"] for r in tr])),
+                "table_col_accuracy_mean": _r(avg([r["table_col_accuracy"] for r in tr])),
                 "objects_score_mean": _r(avg([r["objects_score"] for r in tr])),
             }
         # docs with grid gold only
@@ -157,8 +169,13 @@ def aggregate(rows: list[dict]) -> dict:
             "table_cell_f1_mean": _r(avg([r["table_cell_f1"] for r in grid])),
             "table_shape_exact_rate_mean": _r(avg([r["table_shape_exact_rate"] for r in grid])),
             "table_detect_f1_mean": _r(avg([r["table_detect_f1"] for r in grid])),
+            "table_row_accuracy_mean": _r(avg([r["table_row_accuracy"] for r in grid])),
+            "table_col_accuracy_mean": _r(avg([r["table_col_accuracy"] for r in grid])),
             "table_score_mean": _r(avg([r["table_score"] for r in grid])),
         }
+        # top-level row/col for compete-style reporting
+        summary[lib]["table_row_accuracy_mean"] = _r(avg([r["table_row_accuracy"] for r in ok]))
+        summary[lib]["table_col_accuracy_mean"] = _r(avg([r["table_col_accuracy"] for r in ok]))
     return summary
 
 
@@ -308,6 +325,18 @@ def load_suite_filter(suite: str | None, tier: str | None):
                 g_tier == "hard_precision"
                 or gold.get("suite") == "regression_precision"
             )
+        if suite == "regression_sensing":
+            return (
+                g_tier == "hard_sensing"
+                or gold.get("suite") == "regression_sensing"
+            )
+        if suite == "regression_compete":
+            return (
+                g_tier in ("compete", "compete_hard", "compete_real")
+                or gold.get("suite") == "regression_compete"
+            )
+        if suite == "regression_compete_hard":
+            return g_tier == "compete_hard"
         if suite == "regression_grid_gold":
             return bool(gold.get("expected_tables")) and g_tier in (
                 "basic",
@@ -596,6 +625,17 @@ def main() -> None:
                 "\n  The precision suite is empty until you generate fixtures:\n"
                 "    python benchmark/scripts/generate_precision_corpus.py\n"
             )
+        elif args.suite == "regression_sensing":
+            hint = (
+                "\n  The sensing suite is empty until you generate fixtures:\n"
+                "    python benchmark/scripts/generate_sensing_corpus.py\n"
+            )
+        elif args.suite == "regression_compete":
+            hint = (
+                "\n  The compete suite is empty until you generate fixtures:\n"
+                "    python benchmark/scripts/generate_compete_corpus.py\n"
+                "    python benchmark/scripts/fetch_compete_real.py\n"
+            )
         raise SystemExit(
             f"No documents matched suite={args.suite!r} tier={args.tier!r}.{hint}"
         )
@@ -706,6 +746,12 @@ def main() -> None:
     tag = f"_{args.tag}" if args.tag else ""
     if args.suite == "regression_hard" and not args.tag:
         tag = "_hard"
+    elif args.suite == "regression_precision" and not args.tag:
+        tag = "_regression_precision"
+    elif args.suite == "regression_sensing" and not args.tag:
+        tag = "_sensing"
+    elif args.suite == "regression_compete" and not args.tag:
+        tag = "_compete"
     elif args.suite != "regression" and not args.tag:
         tag = f"_{args.suite}"
 
@@ -733,9 +779,27 @@ def main() -> None:
         docs.write_text(md, encoding="utf-8")
         print(f"Wrote {docs}")
     else:
-        # still copy hard-focused doc when hard suite
-        if "hard" in (args.suite or "") or args.tag == "hard":
+        # copy suite-specific docs scoreboard without clobbering unrelated boards
+        suite = args.suite or ""
+        tag = args.tag or ""
+        if suite == "regression_hard" or tag == "hard":
             docs = ROOT.parent / "docs" / "accuracy-scoreboard-hard.md"
+            docs.write_text(md, encoding="utf-8")
+            print(f"Wrote {docs}")
+        elif suite == "regression_compete_hard" or tag == "compete_hard":
+            docs = ROOT.parent / "docs" / "accuracy-scoreboard-compete-hard.md"
+            docs.write_text(md, encoding="utf-8")
+            print(f"Wrote {docs}")
+        elif suite == "regression_compete" or tag == "compete":
+            docs = ROOT.parent / "docs" / "accuracy-scoreboard-compete.md"
+            docs.write_text(md, encoding="utf-8")
+            print(f"Wrote {docs}")
+        elif suite == "regression_sensing" or tag == "sensing":
+            docs = ROOT.parent / "docs" / "accuracy-scoreboard-sensing.md"
+            docs.write_text(md, encoding="utf-8")
+            print(f"Wrote {docs}")
+        elif suite == "regression_precision" or "precision" in tag:
+            docs = ROOT.parent / "docs" / "accuracy-scoreboard-precision.md"
             docs.write_text(md, encoding="utf-8")
             print(f"Wrote {docs}")
 

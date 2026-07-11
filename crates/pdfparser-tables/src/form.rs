@@ -210,6 +210,15 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
             let fill = fill_rate(&t);
             let mean_chars = mean_cell_chars(&t);
 
+            // Data tables are not only numeric: SKU / code / id grids are fully
+            // filled ruled lattices with short alphanumeric cells and num≈0.
+            // Do not require numeric_density for strong lattice candidates.
+            let strong_lattice = t.method == TableMethod::Lattice
+                && fill >= 0.50
+                && t.cols >= 2
+                && t.rows >= 3
+                && !t.weak_edges;
+
             let looks_like_data = (fill >= 0.45
                 && num >= 0.15
                 && t.cols >= 2
@@ -219,7 +228,8 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                 || (t.method == TableMethod::Lattice
                     && fill >= 0.5
                     && t.cols >= 2
-                    && num >= 0.1);
+                    && num >= 0.1)
+                || strong_lattice;
 
             if !looks_like_data
                 && form >= 0.75
@@ -247,7 +257,11 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
             if t.rows >= 20 && t.cols >= 6 && num < 0.2 && fill < 0.35 {
                 return None;
             }
+            // Dense short-token veto: aimed at empty form chrome / code dumps
+            // mistaken as stream grids. Never apply to strong filled lattices
+            // (SKU tables, id matrices) — those are real data.
             if !looks_like_data
+                && !strong_lattice
                 && t.rows * t.cols >= 40
                 && num < 0.12
                 && mean_chars < 12.0
@@ -351,4 +365,300 @@ fn form_likeness(t: &Table) -> f32 {
     let low_num = (1.0 - num).clamp(0.0, 1.0);
     (0.30 * sparse + 0.30 * low_num + 0.15 * (1.0 - long_cell) + 0.25 * size_pen + 0.10)
         .clamp(0.0, 1.0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::types::{PipelineId, TableCell};
+    use pdfparser_ir::Rect;
+
+    fn cell(row: u32, col: u32, text: &str) -> TableCell {
+        TableCell {
+            row,
+            col,
+            rowspan: 1,
+            colspan: 1,
+            bbox: Rect {
+                x0: col as f32 * 40.0,
+                y0: 100.0 - row as f32 * 12.0,
+                x1: (col as f32 + 1.0) * 40.0,
+                y1: 112.0 - row as f32 * 12.0,
+            },
+            text: text.into(),
+            is_header: row == 0,
+            confidence: 0.9,
+        }
+    }
+
+    fn grid(method: TableMethod, rows: u32, cols: u32, texts: &[&str]) -> Table {
+        assert_eq!(texts.len(), (rows * cols) as usize);
+        let mut cells = Vec::new();
+        for r in 0..rows {
+            for c in 0..cols {
+                let i = (r * cols + c) as usize;
+                cells.push(cell(r, c, texts[i]));
+            }
+        }
+        Table {
+            bbox: Rect {
+                x0: 0.0,
+                y0: 0.0,
+                x1: cols as f32 * 40.0,
+                y1: rows as f32 * 12.0,
+            },
+            page: 0,
+            method,
+            confidence: 0.85,
+            rows,
+            cols,
+            cells,
+            header_rows: 1,
+            continued_from_previous_page: false,
+            continued_to_next_page: false,
+            logical_table_id: None,
+            strategy_provenance: vec![PipelineId::S2Lattice],
+            notes: vec![],
+            edge_score: 0.9,
+            fill_rate: 0.9,
+            weak_edges: false,
+        }
+    }
+
+    #[test]
+    fn form_disc_keeps_numeric_data_grid() {
+        let t = grid(
+            TableMethod::Lattice,
+            3,
+            3,
+            &["A", "B", "C", "1", "2", "3", "4", "5", "6"],
+        );
+        let opts = TableOptions {
+            detect_tables: true,
+            form_discriminator: true,
+            ..TableOptions::default()
+        };
+        let out = apply_form_discriminator(vec![t], &opts);
+        assert_eq!(out.len(), 1);
+    }
+
+    #[test]
+    fn form_disc_drops_sparse_form_chrome() {
+        // Sparse, non-numeric, form-like labels → veto
+        let mut t = grid(
+            TableMethod::Stream,
+            4,
+            2,
+            &[
+                "Name:",
+                "",
+                "Address:",
+                "",
+                "Phone:",
+                "",
+                "Email:",
+                "",
+            ],
+        );
+        t.confidence = 0.7;
+        t.fill_rate = 0.3;
+        // Make cells long-ish labels with empty partners
+        t.cells[0].text = "Full legal name of applicant".into();
+        t.cells[2].text = "Street address line one".into();
+        t.cells[4].text = "Daytime phone number".into();
+        t.cells[6].text = "Email address for contact".into();
+        let opts = TableOptions {
+            detect_tables: true,
+            form_discriminator: true,
+            min_table_confidence: 0.55,
+            ..TableOptions::default()
+        };
+        let out = apply_form_discriminator(vec![t], &opts);
+        // Form-like sparse stream should be dropped or heavily demoted out
+        assert!(
+            out.is_empty() || out[0].confidence < 0.55,
+            "form chrome should not survive: {:?}",
+            out.iter().map(|x| x.confidence).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn form_disc_drops_long_prose_stream() {
+        let long = "This is a long paragraph of prose that should not look like a data table cell at all.";
+        let mut t = grid(
+            TableMethod::Stream,
+            3,
+            2,
+            &[long, long, long, long, long, long],
+        );
+        t.fill_rate = 1.0;
+        let opts = TableOptions {
+            detect_tables: true,
+            form_discriminator: true,
+            stream_max_prose_mean_chars: 70.0,
+            ..TableOptions::default()
+        };
+        let out = apply_form_discriminator(vec![t], &opts);
+        assert!(out.is_empty(), "prose stream must be vetoed");
+    }
+
+    #[test]
+    fn form_disc_keeps_strong_lattice_sku() {
+        // SKU-like alphanumeric grid with low pure-numeric density
+        let t = grid(
+            TableMethod::Lattice,
+            4,
+            3,
+            &[
+                "SKU", "Desc", "Qty", "A1", "Widget", "2", "B2", "Gadget", "1", "C3", "Bolt", "5",
+            ],
+        );
+        let opts = TableOptions {
+            detect_tables: true,
+            form_discriminator: true,
+            ..TableOptions::default()
+        };
+        let out = apply_form_discriminator(vec![t], &opts);
+        assert_eq!(out.len(), 1, "SKU lattice is data");
+    }
+
+    #[test]
+    fn scrub_overseg_drops_junk_when_many() {
+        let good = grid(
+            TableMethod::Lattice,
+            4,
+            4,
+            &[
+                "Metric", "Q1", "Q2", "Q3", "Rev", "10", "20", "30", "Cost", "5", "6", "7", "NI",
+                "5", "14", "23",
+            ],
+        );
+        let mut junks = Vec::new();
+        for i in 0..10 {
+            let mut j = grid(
+                TableMethod::Stream,
+                2,
+                2,
+                &["ab", "cd", "ef", "gh"],
+            );
+            j.confidence = 0.5;
+            j.fill_rate = 0.2;
+            j.notes.push(format!("junk{i}"));
+            junks.push(j);
+        }
+        let mut all = junks;
+        all.push(good);
+        let opts = TableOptions {
+            detect_tables: true,
+            form_discriminator: true,
+            overseg_trigger: 4,
+            max_logical_tables: 4,
+            min_data_table_score: 0.42,
+            ..TableOptions::default()
+        };
+        let out = scrub_document_table_fps(all, &opts);
+        assert!(!out.is_empty(), "should keep at least the data table");
+        assert!(out.len() <= 4, "soft cap under overseg, got {}", out.len());
+        let blob: String = out
+            .iter()
+            .flat_map(|t| t.cells.iter().map(|c| c.text.clone()))
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert!(blob.contains("Metric") || blob.contains("Rev"), "data lost: {blob}");
+    }
+
+    #[test]
+    fn scrub_noop_when_few_tables() {
+        let t = grid(
+            TableMethod::Lattice,
+            3,
+            3,
+            &["A", "B", "C", "1", "2", "3", "4", "5", "6"],
+        );
+        let opts = TableOptions {
+            overseg_trigger: 8,
+            ..TableOptions::default()
+        };
+        let out = scrub_document_table_fps(vec![t.clone()], &opts);
+        assert_eq!(out.len(), 1);
+    }
+
+    #[test]
+    fn scrub_empty_input() {
+        let opts = TableOptions::default();
+        assert!(scrub_document_table_fps(vec![], &opts).is_empty());
+    }
+
+    #[test]
+    fn scrub_drops_captionish_under_pressure() {
+        let mut cap = grid(TableMethod::Stream, 2, 2, &["Figure 1 Overview", "x", "y", "z"]);
+        cap.cells[0].text = "Figure 1 Overview of results".into();
+        let mut good = grid(
+            TableMethod::Lattice,
+            4,
+            3,
+            &[
+                "Name", "Val", "Unit", "A", "1", "kg", "B", "2", "kg", "C", "3", "kg",
+            ],
+        );
+        good.fill_rate = 1.0;
+        let mut many = vec![cap];
+        for _ in 0..8 {
+            let mut j = grid(TableMethod::Stream, 2, 6, &["a"; 12]);
+            // long mean chars, low num → TOC-ish
+            for c in &mut j.cells {
+                c.text = "section heading text here".into();
+            }
+            many.push(j);
+        }
+        many.push(good);
+        let opts = TableOptions {
+            overseg_trigger: 3,
+            max_logical_tables: 2,
+            min_data_table_score: 0.42,
+            ..TableOptions::default()
+        };
+        let out = scrub_document_table_fps(many, &opts);
+        // Caption-like should not dominate; at most soft_cap kept
+        assert!(out.len() <= 2);
+        for t in &out {
+            let first: String = t
+                .cells
+                .iter()
+                .filter(|c| c.row == 0)
+                .map(|c| c.text.clone())
+                .collect::<Vec<_>>()
+                .join(" ");
+            assert!(
+                !first.to_ascii_lowercase().starts_with("figure "),
+                "caption survived: {first}"
+            );
+        }
+    }
+
+    #[test]
+    fn form_likeness_and_hex_paths() {
+        // Hex-matrix style cells
+        let mut t = grid(
+            TableMethod::Stream,
+            3,
+            3,
+            &["0xAB", "0xCD", "0xEF", "0x12", "0x34", "0x56", "0x78", "0x9A", "0xBC"],
+        );
+        t.fill_rate = 1.0;
+        let opts = TableOptions {
+            detect_tables: true,
+            form_discriminator: true,
+            ..TableOptions::default()
+        };
+        let _ = apply_form_discriminator(vec![t], &opts);
+        // Code-like
+        let mut code = grid(
+            TableMethod::Stream,
+            3,
+            3,
+            &["a=1", "b->c", "fn()", "x[i]", "{y}", "z;", "a|b", "c`d", "e\\f"],
+        );
+        let _ = apply_form_discriminator(vec![code], &opts);
+    }
 }

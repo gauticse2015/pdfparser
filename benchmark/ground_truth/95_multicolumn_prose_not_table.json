@@ -1,0 +1,60 @@
+{
+  "id": "95_multicolumn_prose_not_table",
+  "tier": "hard_sensing",
+  "suite": "regression_sensing",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_sensing/95_multicolumn_prose_not_table.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "solved_regression",
+  "category": "multicolumn_prose_not_table",
+  "description": "OPEN STRUGGLE: dense 2-col word list is stream FP bait; only 3x2 lattice is gold",
+  "challenges": [
+    "stream_fp",
+    "over_detect",
+    "multicolumn_prose",
+    "alignment_false_table"
+  ],
+  "failure_modes_covered": [
+    "OVER_DETECT"
+  ],
+  "must_contain": [
+    "TOKEN_S95_DOC",
+    "TOKEN_S95_L1",
+    "TOKEN_S95_R1",
+    "TOKEN_S95_T"
+  ],
+  "table_cells_must_include": [
+    "Key",
+    "alpha TOKEN_S95_T",
+    "beta",
+    "1",
+    "2"
+  ],
+  "expected_tables": [
+    {
+      "rows": 3,
+      "cols": 2,
+      "cells": [
+        [
+          "Key",
+          "Val"
+        ],
+        [
+          "alpha TOKEN_S95_T",
+          "1"
+        ],
+        [
+          "beta",
+          "2"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "quality_notes": "Baseline: n=2 with stream 12x2 from word columns + lattice 3x2."
+}

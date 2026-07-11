@@ -1,0 +1,86 @@
+{
+  "id": "C015_painted_rect_8x4",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C015_painted_rect_8x4.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "painted_rules",
+  "failure_classes": [
+    "C3_UNDER_DETECT",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Thin-fill-rect ruled table 8x4",
+  "challenges": [
+    "painted_rules",
+    "thin_rect",
+    "lattice_sensing"
+  ],
+  "must_contain": [
+    "TOKEN_C015_DOC",
+    "TOKEN_C015_A"
+  ],
+  "expected_tables": [
+    {
+      "rows": 8,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "P01",
+          "11",
+          "12",
+          "13"
+        ],
+        [
+          "P02",
+          "21",
+          "22",
+          "TOKEN_C015_A"
+        ],
+        [
+          "P03",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "P04",
+          "41",
+          "42",
+          "43"
+        ],
+        [
+          "P05",
+          "51",
+          "52",
+          "53"
+        ],
+        [
+          "P06",
+          "61",
+          "62",
+          "63"
+        ],
+        [
+          "P07",
+          "71",
+          "72",
+          "73"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

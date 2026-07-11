@@ -1,40 +1,53 @@
 library	doc_id	tier	category	success	wall_ms	overall_score	text_score	text_token_f1	text_token_recall	text_cer	text_wer	text_similarity	table_score	table_detect_f1	table_detect_precision	table_detect_recall	table_expected	table_predicted	table_shape_exact_rate	table_row_accuracy	table_col_accuracy	table_cell_f1	table_cell_precision	table_cell_recall	table_content_token_recall	table_has_grid_gold	objects_score	images_score	images_exact	links_f1	forms_f1	outline_f1	error
-pdfparser	50_multi_table_stacked_page	hard	multi_table_stacked	True	5.93	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	50_multi_table_stacked_page	hard	multi_table_stacked	True	42.16	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-camelot_lattice	50_multi_table_stacked_page	hard	multi_table_stacked	True	326.4	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	51_multi_table_multipage	hard	multi_table_multipage	True	7.17	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	51_multi_table_multipage	hard	multi_table_multipage	True	10.76	99.6937	100.0	1.0	1.0				99.6396	1.0	1.0	1.0	4	4	1.0	1.0	1.0	0.991	1.0	0.9821	1.0	True	100.0	1.0	True				
-camelot_lattice	51_multi_table_multipage	hard	multi_table_multipage	True	10.46	93.5714	57.1429	0.5714	0.5714				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	52_page_border_noise	hard	page_border_noise	True	5.6	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	52_page_border_noise	hard	page_border_noise	True	5.11	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-camelot_lattice	52_page_border_noise	hard	page_border_noise	True	3.05	90.0	33.3333	0.3333	0.3333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	53_column_span_header	hard	column_span_header	True	5.56	99.0811	100.0	1.0	1.0				98.9189	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.973	1.0	0.9474	0.8333	True	100.0	1.0	True				
-pdfplumber	53_column_span_header	hard	column_span_header	True	9.32	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True	100.0	1.0	True				
-camelot_lattice	53_column_span_header	hard	column_span_header	True	4.7	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
-pdfparser	54_row_span_categories	hard	row_span_categories	True	5.55	98.0755	100.0	1.0	1.0				97.7358	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9434	1.0	0.8929	0.8333	True	100.0	1.0	True				
-pdfplumber	54_row_span_categories	hard	row_span_categories	True	7.91	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True	100.0	1.0	True				
-camelot_lattice	54_row_span_categories	hard	row_span_categories	True	3.82	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
-pdfparser	55_gap_broken_corners	hard	gap_broken_corners	True	5.51	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	55_gap_broken_corners	hard	gap_broken_corners	True	5.97	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-camelot_lattice	55_gap_broken_corners	hard	gap_broken_corners	True	2.52	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	5.4	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	5.54	99.4925	100.0	1.0	1.0				99.403	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9851	1.0	0.9706	0.9167	True	100.0	1.0	True				
-camelot_lattice	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	3.46	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	57_wide_statistical_grid	hard	wide_statistical_grid	True	7.26	99.6699	100.0	1.0	1.0				99.6117	1.0	1.0	1.0	1	1	1.0	1.0	1.0	0.9903	1.0	0.9808	1.0	True	100.0	1.0	True				
-pdfplumber	57_wide_statistical_grid	hard	wide_statistical_grid	True	25.82	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-camelot_lattice	57_wide_statistical_grid	hard	wide_statistical_grid	True	38.1	97.8571	85.7143	0.8571	0.8571				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	58_multipage_continued_table	hard	multipage_continued_table	True	8.32	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	58_multipage_continued_table	hard	multipage_continued_table	True	31.0	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-camelot_lattice	58_multipage_continued_table	hard	multipage_continued_table	True	14.66	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	59_stream_multi_region	hard	stream_multi_region	True	6.03	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	59_stream_multi_region	hard	stream_multi_region	True	5.8	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
-camelot_lattice	59_stream_multi_region	hard	stream_multi_region	True	4.06	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
-pdfparser	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	5.45	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	5.3	66.7083	100.0	1.0	1.0				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	0.9167	True	100.0	1.0	True				
-camelot_lattice	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	7.97	56.7083	33.3333	0.3333	0.3333				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	1.0	True							
-pdfparser	61_decorative_hline_noise	hard	decorative_hline_noise	True	5.17	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	61_decorative_hline_noise	hard	decorative_hline_noise	True	5.0	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-camelot_lattice	61_decorative_hline_noise	hard	decorative_hline_noise	True	2.88	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
-pdfparser	62_two_close_grids	hard	two_close_grids	True	5.42	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
-pdfplumber	62_two_close_grids	hard	two_close_grids	True	5.92	98.7407	100.0	1.0	1.0				98.5185	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.963	1.0	0.9286	0.9167	True	100.0	1.0	True				
-camelot_lattice	62_two_close_grids	hard	two_close_grids	True	4.54	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	50_multi_table_stacked_page	hard	multi_table_stacked	True	578.93	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	50_multi_table_stacked_page	hard	multi_table_stacked	True	86.9	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	50_multi_table_stacked_page	hard	multi_table_stacked	True	605.14	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	50_multi_table_stacked_page	hard	multi_table_stacked	True	575.5	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	51_multi_table_multipage	hard	multi_table_multipage	True	9.02	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	51_multi_table_multipage	hard	multi_table_multipage	True	10.62	99.6937	100.0	1.0	1.0				99.6396	1.0	1.0	1.0	4	4	1.0	1.0	1.0	0.991	1.0	0.9821	1.0	True	100.0	1.0	True				
+camelot_lattice	51_multi_table_multipage	hard	multi_table_multipage	True	11.01	93.5714	57.1429	0.5714	0.5714				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	51_multi_table_multipage	hard	multi_table_multipage	True	687.11	93.5714	57.1429	0.5714	0.5714				100.0	1.0	1.0	1.0	4	4	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	52_page_border_noise	hard	page_border_noise	True	7.32	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	52_page_border_noise	hard	page_border_noise	True	5.03	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	52_page_border_noise	hard	page_border_noise	True	6.83	90.0	33.3333	0.3333	0.3333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	52_page_border_noise	hard	page_border_noise	True	361.02	44.75	100.0	1.0	1.0				35.0	1.0	1.0	1.0	1	1	0.0	0.0	0.0	0.0	0.0	0.0	1.0	True							
+pdfparser	53_column_span_header	hard	column_span_header	True	9.72	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	53_column_span_header	hard	column_span_header	True	9.54	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True	100.0	1.0	True				
+camelot_lattice	53_column_span_header	hard	column_span_header	True	5.31	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+camelot_auto	53_column_span_header	hard	column_span_header	True	365.25	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+pdfparser	54_row_span_categories	hard	row_span_categories	True	7.55	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	54_row_span_categories	hard	row_span_categories	True	7.69	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True	100.0	1.0	True				
+camelot_lattice	54_row_span_categories	hard	row_span_categories	True	4.11	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+camelot_auto	54_row_span_categories	hard	row_span_categories	True	351.54	97.5	83.3333	0.8333	0.8333				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	0.8333	True							
+pdfparser	55_gap_broken_corners	hard	gap_broken_corners	True	7.4	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	55_gap_broken_corners	hard	gap_broken_corners	True	5.83	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	55_gap_broken_corners	hard	gap_broken_corners	True	2.54	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	1	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+camelot_auto	55_gap_broken_corners	hard	gap_broken_corners	True	206.63	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	6.75	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	5.58	99.4925	100.0	1.0	1.0				99.403	1.0	1.0	1.0	2	2	1.0	1.0	1.0	0.9851	1.0	0.9706	0.9167	True	100.0	1.0	True				
+camelot_lattice	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	3.61	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	56_stacked_uneven_tables	hard	stacked_uneven_tables	True	365.34	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	57_wide_statistical_grid	hard	wide_statistical_grid	True	9.35	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	57_wide_statistical_grid	hard	wide_statistical_grid	True	26.77	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	57_wide_statistical_grid	hard	wide_statistical_grid	True	43.98	97.8571	85.7143	0.8571	0.8571				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	57_wide_statistical_grid	hard	wide_statistical_grid	True	405.17	97.8571	85.7143	0.8571	0.8571				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	58_multipage_continued_table	hard	multipage_continued_table	True	9.06	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	58_multipage_continued_table	hard	multipage_continued_table	True	32.19	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	58_multipage_continued_table	hard	multipage_continued_table	True	20.05	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	58_multipage_continued_table	hard	multipage_continued_table	True	1093.62	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	59_stream_multi_region	hard	stream_multi_region	True	7.85	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	59_stream_multi_region	hard	stream_multi_region	True	6.05	15.0	100.0	1.0	1.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True	100.0	1.0	True				
+camelot_lattice	59_stream_multi_region	hard	stream_multi_region	True	9.09	0.0	0.0	0.0	0.0				0.0	0.0	0.0	0.0	2	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	True							
+camelot_auto	59_stream_multi_region	hard	stream_multi_region	True	217.71	71.0114	60.0	0.6	0.6				72.9545	1.0	1.0	1.0	2	2	0.5	0.5	1.0	0.6364	1.0	0.4667	1.0	True							
+pdfparser	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	7.02	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	2	2	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	5.26	66.7083	100.0	1.0	1.0				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	0.9167	True	100.0	1.0	True				
+camelot_lattice	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	3.24	56.7083	33.3333	0.3333	0.3333				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	1.0	True							
+camelot_auto	60_mixed_lattice_stream_page	hard	mixed_lattice_stream	True	360.01	56.7083	33.3333	0.3333	0.3333				60.8333	0.6667	1.0	0.5	2	1	0.5	0.5	0.5	0.625	1.0	0.4545	1.0	True							
+pdfparser	61_decorative_hline_noise	hard	decorative_hline_noise	True	7.01	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	61_decorative_hline_noise	hard	decorative_hline_noise	True	5.39	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+camelot_lattice	61_decorative_hline_noise	hard	decorative_hline_noise	True	2.82	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	61_decorative_hline_noise	hard	decorative_hline_noise	True	364.48	95.0	66.6667	0.6667	0.6667				100.0	1.0	1.0	1.0	1	1	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+pdfparser	62_two_close_grids	hard	two_close_grids	True	7.69	100.0	100.0	1.0	1.0				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True	100.0	1.0	True				
+pdfplumber	62_two_close_grids	hard	two_close_grids	True	6.23	98.7407	100.0	1.0	1.0				98.5185	1.0	1.0	1.0	3	3	1.0	1.0	1.0	0.963	1.0	0.9286	0.9167	True	100.0	1.0	True				
+camelot_lattice	62_two_close_grids	hard	two_close_grids	True	9.28	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							
+camelot_auto	62_two_close_grids	hard	two_close_grids	True	355.51	96.25	75.0	0.75	0.75				100.0	1.0	1.0	1.0	3	3	1.0	1.0	1.0	1.0	1.0	1.0	1.0	True							

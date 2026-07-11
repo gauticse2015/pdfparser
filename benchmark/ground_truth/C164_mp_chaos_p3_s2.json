@@ -1,0 +1,247 @@
+{
+  "id": "C164_mp_chaos_p3_s2",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C164_mp_chaos_p3_s2.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "multipage_chaos",
+  "failure_classes": [
+    "C9_MULTIPAGE",
+    "C7_ROW_OVERCOUNT",
+    "C10_COUNT_OK_STRUCT_BAD",
+    "C1_OVER_DETECT"
+  ],
+  "description": "Multipage lattice + per-cell underlines (row overcount) + page chrome",
+  "challenges": [
+    "multi_page",
+    "partial_h",
+    "footer_chrome",
+    "page_border"
+  ],
+  "must_contain": [
+    "TOKEN_C164_P0",
+    "TOKEN_C164_P1",
+    "TOKEN_C164_P2"
+  ],
+  "expected_tables": [
+    {
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4"
+        ],
+        [
+          "P001",
+          "11",
+          "12",
+          "13",
+          "TOKEN_C164_P0A"
+        ],
+        [
+          "P002",
+          "21",
+          "22",
+          "23",
+          "24"
+        ],
+        [
+          "P003",
+          "31",
+          "32",
+          "33",
+          "34"
+        ],
+        [
+          "P004",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        [
+          "P005",
+          "51",
+          "52",
+          "53",
+          "54"
+        ],
+        [
+          "P006",
+          "61",
+          "62",
+          "63",
+          "64"
+        ],
+        [
+          "P007",
+          "71",
+          "72",
+          "73",
+          "74"
+        ],
+        [
+          "P008",
+          "81",
+          "82",
+          "83",
+          "84"
+        ]
+      ],
+      "page": 0,
+      "rows": 9,
+      "cols": 5
+    },
+    {
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4"
+        ],
+        [
+          "P101",
+          "11",
+          "12",
+          "13",
+          "TOKEN_C164_P1A"
+        ],
+        [
+          "P102",
+          "21",
+          "22",
+          "23",
+          "24"
+        ],
+        [
+          "P103",
+          "31",
+          "32",
+          "33",
+          "34"
+        ],
+        [
+          "P104",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        [
+          "P105",
+          "51",
+          "52",
+          "53",
+          "54"
+        ],
+        [
+          "P106",
+          "61",
+          "62",
+          "63",
+          "64"
+        ],
+        [
+          "P107",
+          "71",
+          "72",
+          "73",
+          "74"
+        ],
+        [
+          "P108",
+          "81",
+          "82",
+          "83",
+          "84"
+        ]
+      ],
+      "page": 1,
+      "rows": 9,
+      "cols": 5
+    },
+    {
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4"
+        ],
+        [
+          "P201",
+          "11",
+          "12",
+          "13",
+          "TOKEN_C164_P2A"
+        ],
+        [
+          "P202",
+          "21",
+          "22",
+          "23",
+          "24"
+        ],
+        [
+          "P203",
+          "31",
+          "32",
+          "33",
+          "34"
+        ],
+        [
+          "P204",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        [
+          "P205",
+          "51",
+          "52",
+          "53",
+          "54"
+        ],
+        [
+          "P206",
+          "61",
+          "62",
+          "63",
+          "64"
+        ],
+        [
+          "P207",
+          "71",
+          "72",
+          "73",
+          "74"
+        ],
+        [
+          "P208",
+          "81",
+          "82",
+          "83",
+          "84"
+        ]
+      ],
+      "page": 2,
+      "rows": 9,
+      "cols": 5
+    }
+  ],
+  "expected_table_count": 3,
+  "page_count": 3,
+  "struggle_mode": "multipage_underline_overcount"
+}

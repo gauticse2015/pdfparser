@@ -1,0 +1,56 @@
+{
+  "id": "C010_overdetect_stream_bait_n12",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C010_overdetect_stream_bait_n12.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "over_detect_stream_bait",
+  "failure_classes": [
+    "C1_OVER_DETECT"
+  ],
+  "description": "2-col word list (12 rows) + one 4x3 lattice",
+  "challenges": [
+    "stream_fp",
+    "over_detect"
+  ],
+  "must_contain": [
+    "TOKEN_C010_DOC",
+    "TOKEN_C010_T"
+  ],
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 3,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2"
+        ],
+        [
+          "D01",
+          "11",
+          "TOKEN_C010_T"
+        ],
+        [
+          "D02",
+          "21",
+          "22"
+        ],
+        [
+          "D03",
+          "31",
+          "32"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1
+}

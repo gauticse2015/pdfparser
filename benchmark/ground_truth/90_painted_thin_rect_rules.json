@@ -1,0 +1,102 @@
+{
+  "id": "90_painted_thin_rect_rules",
+  "tier": "hard_sensing",
+  "suite": "regression_sensing",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_sensing/90_painted_thin_rect_rules.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "solved_regression",
+  "category": "painted_thin_rect_rules",
+  "description": "STRUGGLE: painted thin-rect rules; stream mis-grids; lattice peers OK",
+  "challenges": [
+    "painted_rules",
+    "thin_rect_lines",
+    "lattice_sensing",
+    "sparse_cells",
+    "stream_fallback_trap"
+  ],
+  "failure_modes_covered": [
+    "WRONG_SHAPE",
+    "STREAM_FALLBACK",
+    "COL_MISCOUNT"
+  ],
+  "must_contain": [
+    "TOKEN_S90_DOC",
+    "TOKEN_S90_REV",
+    "TOKEN_S90_GP",
+    "TOKEN_S90_NI"
+  ],
+  "table_cells_must_include": [
+    "Metric",
+    "Revenue TOKEN_S90_REV",
+    "Gross TOKEN_S90_GP",
+    "Net TOKEN_S90_NI",
+    "120",
+    "57"
+  ],
+  "expected_tables": [
+    {
+      "rows": 6,
+      "cols": 5,
+      "cells": [
+        [
+          "Metric",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Note"
+        ],
+        [
+          "Revenue TOKEN_S90_REV",
+          "120",
+          "",
+          "140",
+          "up"
+        ],
+        [
+          "",
+          "48",
+          "52",
+          "",
+          "raw"
+        ],
+        [
+          "Gross TOKEN_S90_GP",
+          "",
+          "83",
+          "90",
+          ""
+        ],
+        [
+          "OpEx",
+          "30",
+          "",
+          "33",
+          "ops"
+        ],
+        [
+          "Net TOKEN_S90_NI",
+          "42",
+          "52",
+          "57",
+          "ni"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "preferred_method": "lattice",
+  "struggle_baseline": {
+    "note": "pdfparser stream mis-grid; camelot_lattice/pdfplumber often perfect",
+    "target_shape": [
+      6,
+      5
+    ]
+  },
+  "quality_notes": "WIN = n=1 shape 6\u00d75 cellF1\u22481 via lattice on painted rules.",
+  "expected_table_count": 1
+}

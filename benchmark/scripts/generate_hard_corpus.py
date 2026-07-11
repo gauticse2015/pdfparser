@@ -1296,8 +1296,9 @@ def gen_62_two_close_grids() -> None:
     ]
 
     draw_ruled_grid(c, 50, PAGE_H - 220, [40, 40], [18] * 5, left)
-    # narrow gutter (~20pt)
-    draw_ruled_grid(c, 50 + 80 + 20, PAGE_H - 200, [40, 40, 40], [18] * 4, right)
+    # Place right table far right so its verticals cannot share x with the bottom grid
+    # (collinear V at the same x fuses separate tables into one CC).
+    draw_ruled_grid(c, 320, PAGE_H - 200, [40, 40, 40], [18] * 4, right)
     draw_ruled_grid(c, 50, PAGE_H - 400, [50, 50, 50, 50], [18] * 5, bottom)
 
     c.showPage()

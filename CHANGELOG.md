@@ -9,27 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Phase U lattice table extraction (`pdfparser-tables`, S2 + R9 cell assign)
-- CLI `--tables` flag; JSON table export
-- Phase U corpus tests (`phase_u_tables`)
-- Phase V multi-strategy tables: stream, hybrid, side-by-side split, multipage stitch, form FP scrub
-- **Lattice multi-region (Phase A):** connected components of crossing H/V rules → multiple tables per page
-- **Line prep (Phase C):** collinear coalesce + joint gap tolerance for broken corners
-- **Edge/span light (Phase B):** per-cell edge presence + simple rowspan/colspan merge
-- **Stream multi-region (Phase E):** split borderless tables on large vertical gaps between multi-col bands
-- Hard synthetic regression suite (`corpus/hard` 50–62) + Camelot/img2table adapters in accuracy scoreboard
+- **Network borderless tables** (textline + column alignments, gap split, same-schema re-merge, prose/list FP reject)
+- **Thin-fill rule sensing** improvements (painted rect rules → lattice)
+- **False-underline / overdense-H collapse** via text bands
+- **Compete / compete_hard / sensing** owned regression suites + generators
+- **Public real PDF fixtures** under `benchmark/corpus/compete_real/` (soft gold)
+- Integrity check `benchmark/scripts/check_compete_suite.py`
+- Production table pipeline docs and expanded README multi-lib comparison tables
 
 ### Changed
 
-- Lattice no longer snaps all page lines into one mega-grid (fixes multi-table under-detect)
-- Orchestration: hybrid only outside strong lattice bboxes; NMS by quality score (conf/fill/edges)
-- Hard-suite table quality: cell F1 ~0.72 → **~0.99**, shape exact **1.0** (post A–E)
-- Review harden: typed `weak_edges`/`edge_score`/`fill_rate`; anchors without orthogonal endpoints;
-  single joint-gap model; multi-CC-safe global fallback; lattice/stream knobs on `TableOptions`
-### Planned
+- Product default table path: `TablePreset::Auto` / `Full` — lattice → hybrid residual → network residual; strong lattice excludes overlapping borderless
+- Removed probe/expert-registry ceremony; single production orchestration flag `exclusive_under_strong_lattice`
+- Hard struggle suite (C100–C180) baseline cell F1 ~0.38 → ~0.45 after production path (still open struggle)
 
-- Optional encryption (user-password) subset
-- Stronger span-aware structure export / ICDAR competitive re-check
+### Honest competitive note
+
+- Owned multi-lib scoreboard: pdfparser leads cell F1 / overall on synthetic+hard suites
+- ICDAR-2013 external: pdfparser rank #4 (F1 0.67, TEDS 0.33) vs camelot auto F1 0.86 TEDS 0.79 — raster ROI still outstanding
+
 
 ## [0.1.0] - 2026-07-10
 

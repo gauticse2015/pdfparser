@@ -1,0 +1,80 @@
+{
+  "id": "C014_painted_rect_6x5",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C014_painted_rect_6x5.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "painted_rules",
+  "failure_classes": [
+    "C3_UNDER_DETECT",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Thin-fill-rect ruled table 6x5",
+  "challenges": [
+    "painted_rules",
+    "thin_rect",
+    "lattice_sensing"
+  ],
+  "must_contain": [
+    "TOKEN_C014_DOC",
+    "TOKEN_C014_A"
+  ],
+  "expected_tables": [
+    {
+      "rows": 6,
+      "cols": 5,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4"
+        ],
+        [
+          "P01",
+          "11",
+          "12",
+          "13",
+          "14"
+        ],
+        [
+          "P02",
+          "21",
+          "22",
+          "23",
+          "TOKEN_C014_A"
+        ],
+        [
+          "P03",
+          "31",
+          "32",
+          "33",
+          "34"
+        ],
+        [
+          "P04",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        [
+          "P05",
+          "51",
+          "52",
+          "53",
+          "54"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

@@ -1,0 +1,177 @@
+{
+  "id": "C157_multi_close_n4_g8",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C157_multi_close_n4_g8.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "multi_table_close",
+  "failure_classes": [
+    "C8_MULTI_TABLE_COUNT_ERROR",
+    "C12_ORDER_SENSITIVE",
+    "C1_OVER_DETECT"
+  ],
+  "description": "4 heterogeneous lattices with 8pt gaps + page chrome",
+  "challenges": [
+    "multi_table",
+    "close_tables",
+    "chrome"
+  ],
+  "must_contain": [
+    "TOKEN_C157_DOC",
+    "TOKEN_C157_T0",
+    "TOKEN_C157_T1",
+    "TOKEN_C157_T2",
+    "TOKEN_C157_T3"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "T001",
+          "11",
+          "12",
+          "TOKEN_C157_T0"
+        ],
+        [
+          "T002",
+          "21",
+          "22",
+          "23"
+        ],
+        [
+          "T003",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "T004",
+          "41",
+          "42",
+          "43"
+        ]
+      ]
+    },
+    {
+      "rows": 6,
+      "cols": 3,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2"
+        ],
+        [
+          "T101",
+          "11",
+          "TOKEN_C157_T1"
+        ],
+        [
+          "T102",
+          "21",
+          "22"
+        ],
+        [
+          "T103",
+          "31",
+          "32"
+        ],
+        [
+          "T104",
+          "41",
+          "42"
+        ],
+        [
+          "T105",
+          "51",
+          "52"
+        ]
+      ]
+    },
+    {
+      "rows": 4,
+      "cols": 5,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4"
+        ],
+        [
+          "T201",
+          "11",
+          "12",
+          "13",
+          "TOKEN_C157_T2"
+        ],
+        [
+          "T202",
+          "21",
+          "22",
+          "23",
+          "24"
+        ],
+        [
+          "T203",
+          "31",
+          "32",
+          "33",
+          "34"
+        ]
+      ]
+    },
+    {
+      "rows": 7,
+      "cols": 2,
+      "cells": [
+        [
+          "Key",
+          "H1"
+        ],
+        [
+          "T301",
+          "TOKEN_C157_T3"
+        ],
+        [
+          "T302",
+          "21"
+        ],
+        [
+          "T303",
+          "31"
+        ],
+        [
+          "T304",
+          "41"
+        ],
+        [
+          "T305",
+          "51"
+        ],
+        [
+          "T306",
+          "61"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 4,
+  "page_count": 1,
+  "struggle_mode": "multi_table_close_chrome"
+}

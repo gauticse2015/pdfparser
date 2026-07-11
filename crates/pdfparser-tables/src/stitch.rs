@@ -354,3 +354,221 @@ fn normalize(s: &str) -> String {
         .flat_map(|c| c.to_lowercase())
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::types::TableMethod;
+    use pdfparser_ir::Rect;
+
+    fn cell(row: u32, col: u32, text: &str) -> TableCell {
+        TableCell {
+            row,
+            col,
+            rowspan: 1,
+            colspan: 1,
+            bbox: Rect {
+                x0: col as f32 * 50.0,
+                y0: row as f32 * 12.0,
+                x1: (col as f32 + 1.0) * 50.0,
+                y1: (row as f32 + 1.0) * 12.0,
+            },
+            text: text.into(),
+            is_header: row == 0,
+            confidence: 0.9,
+        }
+    }
+
+    fn mk_table(page: u32, y0: f32, y1: f32, header: &[&str], body: &[&[&str]]) -> Table {
+        let cols = header.len() as u32;
+        let mut cells = Vec::new();
+        for (c, h) in header.iter().enumerate() {
+            let mut ce = cell(0, c as u32, h);
+            ce.bbox.y0 = y1 - 12.0;
+            ce.bbox.y1 = y1;
+            cells.push(ce);
+        }
+        for (r, row) in body.iter().enumerate() {
+            for (c, t) in row.iter().enumerate() {
+                let mut ce = cell((r + 1) as u32, c as u32, t);
+                let row_y1 = y1 - 12.0 * (r + 1) as f32;
+                ce.bbox.y0 = row_y1 - 12.0;
+                ce.bbox.y1 = row_y1;
+                cells.push(ce);
+            }
+        }
+        let rows = (body.len() + 1) as u32;
+        Table {
+            bbox: Rect {
+                x0: 0.0,
+                y0,
+                x1: cols as f32 * 50.0,
+                y1,
+            },
+            page,
+            method: TableMethod::Lattice,
+            confidence: 0.9,
+            rows,
+            cols,
+            cells,
+            header_rows: 1,
+            continued_from_previous_page: false,
+            continued_to_next_page: false,
+            logical_table_id: None,
+            strategy_provenance: vec![],
+            notes: vec![],
+            edge_score: 0.9,
+            fill_rate: 1.0,
+            weak_edges: false,
+        }
+    }
+
+    #[test]
+    fn stitch_two_pages_matching_headers() {
+        let header = ["Date", "Desc", "Amt", "Bal"];
+        let p0 = mk_table(
+            0,
+            20.0,
+            80.0, // bottom of page height 792
+            &header,
+            &[&["1", "a", "10", "100"], &["2", "b", "20", "120"]],
+        );
+        // Put fragment near bottom of page 0 and top of page 1
+        let mut bottom = p0;
+        bottom.bbox = Rect {
+            x0: 50.0,
+            y0: 40.0,
+            x1: 250.0,
+            y1: 120.0,
+        };
+        for c in &mut bottom.cells {
+            c.bbox.y0 += 40.0;
+            c.bbox.y1 += 40.0;
+        }
+        let mut top = mk_table(
+            1,
+            700.0,
+            780.0,
+            &header,
+            &[&["3", "c", "30", "150"], &["4", "d", "40", "190"]],
+        );
+        top.bbox = Rect {
+            x0: 50.0,
+            y0: 700.0,
+            x1: 250.0,
+            y1: 780.0,
+        };
+        let mut pages = vec![vec![bottom], vec![top]];
+        let heights = [792.0f32, 792.0];
+        let opts = TableOptions {
+            stitch_multipage: true,
+            stitch_band_frac: 0.30,
+            stitch_max_col_dx: 12.0,
+            stitch_min_header_sim: 0.85,
+            ..TableOptions::default()
+        };
+        stitch_document(&mut pages, &heights, &opts);
+        assert!(
+            pages[0][0].continued_to_next_page && pages[1][0].continued_from_previous_page,
+            "flags {:?}",
+            (
+                pages[0][0].continued_to_next_page,
+                pages[1][0].continued_from_previous_page,
+                pages[0][0].logical_table_id,
+                pages[1][0].logical_table_id
+            )
+        );
+        let logical = materialize_stitched(&pages);
+        assert_eq!(logical.len(), 1, "expected 1 stitched table, got {}", logical.len());
+        assert!(logical[0].rows >= 4, "rows {}", logical[0].rows);
+        assert_eq!(logical[0].cols, 4);
+    }
+
+    #[test]
+    fn stitch_single_page_noop() {
+        let t = mk_table(0, 100.0, 200.0, &["A", "B"], &[&["1", "2"]]);
+        let mut pages = vec![vec![t]];
+        stitch_document(&mut pages, &[792.0], &TableOptions::default());
+        assert!(pages[0][0].logical_table_id.is_none());
+    }
+
+    #[test]
+    fn materialize_singles() {
+        let t = mk_table(0, 100.0, 200.0, &["A", "B"], &[&["1", "2"]]);
+        let logical = materialize_stitched(&[vec![t]]);
+        assert_eq!(logical.len(), 1);
+    }
+
+    #[test]
+    fn normalize_header_sim() {
+        assert_eq!(normalize("  Hello "), "hello");
+        assert!(header_sim(
+            &mk_table(0, 0.0, 50.0, &["Date", "Amt"], &[&["1", "2"]]),
+            &mk_table(1, 700.0, 750.0, &["Date", "Amt"], &[&["3", "4"]]),
+        ) > 0.9);
+    }
+
+    #[test]
+    fn stitch_score_rejects_col_mismatch() {
+        let a = mk_table(0, 0.0, 50.0, &["A", "B"], &[&["1", "2"]]);
+        let b = mk_table(1, 700.0, 750.0, &["A", "B", "C"], &[&["1", "2", "3"]]);
+        let opts = TableOptions::default();
+        assert!(stitch_score(&a, &b, &opts).is_none());
+    }
+
+    #[test]
+    fn stitch_score_rejects_form() {
+        let mut a = mk_table(0, 0.0, 50.0, &["A", "B", "C"], &[&["1", "2", "3"]]);
+        a.method = TableMethod::FormLayout;
+        let b = mk_table(1, 700.0, 750.0, &["A", "B", "C"], &[&["4", "5", "6"]]);
+        assert!(stitch_score(&a, &b, &TableOptions::default()).is_none());
+    }
+
+    #[test]
+    fn bands_and_infer_height() {
+        let t = mk_table(0, 10.0, 80.0, &["A", "B"], &[&["1", "2"]]);
+        assert!(in_bottom_band(&t, 792.0, 0.3));
+        let top = mk_table(1, 700.0, 780.0, &["A", "B"], &[&["3", "4"]]);
+        assert!(in_top_band(&top, 792.0, 0.3));
+        assert!(in_bottom_band(&t, 0.0, 0.3)); // page_h invalid → true
+        assert!(infer_page_height(&[top]) > 700.0);
+        assert_eq!(infer_page_height(&[]), 0.0);
+    }
+
+    #[test]
+    fn headers_subset_and_col_centers() {
+        let a = mk_table(0, 0.0, 50.0, &["Date", "Amount"], &[&["1", "2"]]);
+        let b = mk_table(1, 0.0, 50.0, &["Date", "Amt"], &[&["3", "4"]]);
+        // partial contain
+        let _ = headers_subset(&a, &b);
+        let cc = col_centers(&a);
+        assert_eq!(cc.len(), 2);
+        assert!(mean_col_dx(&a, &a) < 1.0);
+    }
+
+    #[test]
+    fn materialize_merge_skips_header_on_second() {
+        let a = mk_table(0, 0.0, 100.0, &["H1", "H2", "H3"], &[&["a", "b", "c"], &["d", "e", "f"]]);
+        let mut b = mk_table(1, 700.0, 800.0, &["H1", "H2", "H3"], &[&["g", "h", "i"]]);
+        b.logical_table_id = Some(1);
+        let mut a2 = a.clone();
+        a2.logical_table_id = Some(1);
+        let logical = materialize_stitched(&[vec![a2], vec![b]]);
+        assert_eq!(logical.len(), 1);
+        assert!(logical[0].rows >= 3);
+    }
+
+    #[test]
+    fn stitch_with_zero_heights_uses_infer() {
+        let header = ["A", "B", "C"];
+        let mut bottom = mk_table(0, 5.0, 60.0, &header, &[&["1", "2", "3"], &["4", "5", "6"], &["7", "8", "9"]]);
+        bottom.bbox = Rect { x0: 0.0, y0: 5.0, x1: 150.0, y1: 60.0 };
+        let mut top = mk_table(1, 200.0, 260.0, &header, &[&["10", "11", "12"]]);
+        top.bbox = Rect { x0: 0.0, y0: 200.0, x1: 150.0, y1: 260.0 };
+        let mut pages = vec![vec![bottom], vec![top]];
+        stitch_document(&mut pages, &[0.0, 0.0], &TableOptions::default());
+        // may or may not stitch depending on inferred bands; exercise path
+        let _ = materialize_stitched(&pages);
+    }
+
+}

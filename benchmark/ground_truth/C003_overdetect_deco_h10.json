@@ -1,0 +1,68 @@
+{
+  "id": "C003_overdetect_deco_h10",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C003_overdetect_deco_h10.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "over_detect_chrome",
+  "failure_classes": [
+    "C1_OVER_DETECT",
+    "C2_SEVERE_OVER_DETECT"
+  ],
+  "description": "One 5x4 lattice + 10 deco H-rules, frame, margin ticks",
+  "challenges": [
+    "over_detect",
+    "decorative_rules",
+    "page_border"
+  ],
+  "must_contain": [
+    "TOKEN_C003_A",
+    "TOKEN_C003_FOOT"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "R01",
+          "11",
+          "12",
+          "13"
+        ],
+        [
+          "R02",
+          "21",
+          "22",
+          "TOKEN_C003_A"
+        ],
+        [
+          "R03",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "R04",
+          "41",
+          "42",
+          "43"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

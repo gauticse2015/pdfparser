@@ -1,0 +1,342 @@
+{
+  "id": "92_large_borderless_prose_gap",
+  "tier": "hard_sensing",
+  "suite": "regression_sensing",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_sensing/92_large_borderless_prose_gap.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "solved_regression",
+  "category": "large_borderless_prose_gap",
+  "description": "STRUGGLE: 28\u00d78 borderless split by mid prose; gold is one table",
+  "challenges": [
+    "borderless",
+    "large_row_count",
+    "prose_gap_mid_table",
+    "anti_split",
+    "network_class"
+  ],
+  "failure_modes_covered": [
+    "OVER_DETECT",
+    "ROW_MISCOUNT",
+    "WRONG_SHAPE",
+    "BAD_STRUCTURE"
+  ],
+  "must_contain": [
+    "TOKEN_S92_DOC",
+    "TOKEN_S92_R1",
+    "TOKEN_S92_MID",
+    "TOKEN_S92_LAST",
+    "TOKEN_S92_GAP"
+  ],
+  "table_cells_must_include": [
+    "Code",
+    "Item1 TOKEN_S92_R1",
+    "Item14 TOKEN_S92_MID",
+    "Item27 TOKEN_S92_LAST",
+    "R01",
+    "R27"
+  ],
+  "expected_tables": [
+    {
+      "rows": 28,
+      "cols": 8,
+      "cells": [
+        [
+          "Code",
+          "Name",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "Flag"
+        ],
+        [
+          "R01",
+          "Item1 TOKEN_S92_R1",
+          "11",
+          "21",
+          "31",
+          "41",
+          "51",
+          "Y"
+        ],
+        [
+          "R02",
+          "Item2",
+          "12",
+          "22",
+          "32",
+          "42",
+          "52",
+          "Y"
+        ],
+        [
+          "R03",
+          "Item3",
+          "13",
+          "23",
+          "33",
+          "43",
+          "53",
+          "N"
+        ],
+        [
+          "R04",
+          "Item4",
+          "14",
+          "24",
+          "34",
+          "44",
+          "54",
+          "Y"
+        ],
+        [
+          "R05",
+          "Item5",
+          "15",
+          "25",
+          "35",
+          "45",
+          "55",
+          "Y"
+        ],
+        [
+          "R06",
+          "Item6",
+          "16",
+          "26",
+          "36",
+          "46",
+          "56",
+          "N"
+        ],
+        [
+          "R07",
+          "Item7",
+          "17",
+          "27",
+          "37",
+          "47",
+          "57",
+          "Y"
+        ],
+        [
+          "R08",
+          "Item8",
+          "18",
+          "28",
+          "38",
+          "48",
+          "58",
+          "Y"
+        ],
+        [
+          "R09",
+          "Item9",
+          "19",
+          "29",
+          "39",
+          "49",
+          "59",
+          "N"
+        ],
+        [
+          "R10",
+          "Item10",
+          "20",
+          "30",
+          "40",
+          "50",
+          "60",
+          "Y"
+        ],
+        [
+          "R11",
+          "Item11",
+          "21",
+          "31",
+          "41",
+          "51",
+          "61",
+          "Y"
+        ],
+        [
+          "R12",
+          "Item12",
+          "22",
+          "32",
+          "42",
+          "52",
+          "62",
+          "N"
+        ],
+        [
+          "R13",
+          "Item13",
+          "23",
+          "33",
+          "43",
+          "53",
+          "63",
+          "Y"
+        ],
+        [
+          "R14",
+          "Item14 TOKEN_S92_MID",
+          "24",
+          "34",
+          "44",
+          "54",
+          "64",
+          "Y"
+        ],
+        [
+          "R15",
+          "Item15",
+          "25",
+          "35",
+          "45",
+          "55",
+          "65",
+          "N"
+        ],
+        [
+          "R16",
+          "Item16",
+          "26",
+          "36",
+          "46",
+          "56",
+          "66",
+          "Y"
+        ],
+        [
+          "R17",
+          "Item17",
+          "27",
+          "37",
+          "47",
+          "57",
+          "67",
+          "Y"
+        ],
+        [
+          "R18",
+          "Item18",
+          "28",
+          "38",
+          "48",
+          "58",
+          "68",
+          "N"
+        ],
+        [
+          "R19",
+          "Item19",
+          "29",
+          "39",
+          "49",
+          "59",
+          "69",
+          "Y"
+        ],
+        [
+          "R20",
+          "Item20",
+          "30",
+          "40",
+          "50",
+          "60",
+          "70",
+          "Y"
+        ],
+        [
+          "R21",
+          "Item21",
+          "31",
+          "41",
+          "51",
+          "61",
+          "71",
+          "N"
+        ],
+        [
+          "R22",
+          "Item22",
+          "32",
+          "42",
+          "52",
+          "62",
+          "72",
+          "Y"
+        ],
+        [
+          "R23",
+          "Item23",
+          "33",
+          "43",
+          "53",
+          "63",
+          "73",
+          "Y"
+        ],
+        [
+          "R24",
+          "Item24",
+          "34",
+          "44",
+          "54",
+          "64",
+          "74",
+          "N"
+        ],
+        [
+          "R25",
+          "Item25",
+          "35",
+          "45",
+          "55",
+          "65",
+          "75",
+          "Y"
+        ],
+        [
+          "R26",
+          "Item26",
+          "36",
+          "46",
+          "56",
+          "66",
+          "76",
+          "Y"
+        ],
+        [
+          "R27",
+          "Item27 TOKEN_S92_LAST",
+          "37",
+          "47",
+          "57",
+          "67",
+          "77",
+          "N"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "preferred_method": "stream",
+  "struggle_baseline": {
+    "note": "pdfparser often emits 2\u00d7(14\u00d78); peers also weak \u2014 gap is to gold",
+    "target_shape": [
+      28,
+      8
+    ]
+  },
+  "quality_notes": "WIN = n=1 \u224828\u00d78 with R1 and LAST in same table. Peers may also fail; still a valid us-vs-gold struggle."
+}

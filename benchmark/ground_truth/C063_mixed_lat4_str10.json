@@ -1,0 +1,118 @@
+{
+  "id": "C063_mixed_lat4_str10",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C063_mixed_lat4_str10.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "mixed_lattice_stream",
+  "failure_classes": [
+    "C13_MIXED_LATTICE_STREAM",
+    "C8_MULTI_TABLE_COUNT_ERROR"
+  ],
+  "description": "Lattice 4x4 + borderless stream 10x3",
+  "challenges": [
+    "mixed",
+    "multi_strategy"
+  ],
+  "must_contain": [
+    "TOKEN_C063_DOC",
+    "TOKEN_C063_L",
+    "TOKEN_C063_S"
+  ],
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "L01",
+          "11",
+          "12",
+          "TOKEN_C063_L"
+        ],
+        [
+          "L02",
+          "21",
+          "22",
+          "23"
+        ],
+        [
+          "L03",
+          "31",
+          "32",
+          "33"
+        ]
+      ]
+    },
+    {
+      "rows": 10,
+      "cols": 3,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2"
+        ],
+        [
+          "S01",
+          "11",
+          "TOKEN_C063_S"
+        ],
+        [
+          "S02",
+          "21",
+          "22"
+        ],
+        [
+          "S03",
+          "31",
+          "32"
+        ],
+        [
+          "S04",
+          "41",
+          "42"
+        ],
+        [
+          "S05",
+          "51",
+          "52"
+        ],
+        [
+          "S06",
+          "61",
+          "62"
+        ],
+        [
+          "S07",
+          "71",
+          "72"
+        ],
+        [
+          "S08",
+          "81",
+          "82"
+        ],
+        [
+          "S09",
+          "91",
+          "92"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 2,
+  "page_count": 1
+}

@@ -1,0 +1,76 @@
+{
+  "id": "C176_severe_overdetect_n12",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C176_severe_overdetect_n12.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "severe_overdetect",
+  "failure_classes": [
+    "C1_OVER_DETECT",
+    "C2_SEVERE_OVER_DETECT",
+    "C8_MULTI_TABLE_COUNT_ERROR"
+  ],
+  "description": "One 6x4 real table + 12 filled mini 2x2 grids",
+  "challenges": [
+    "over_detect",
+    "form_like_minigrids",
+    "joint_rich_noise"
+  ],
+  "must_contain": [
+    "TOKEN_C176_DOC",
+    "TOKEN_C176_A"
+  ],
+  "expected_tables": [
+    {
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "R01",
+          "11",
+          "12",
+          "TOKEN_C176_A"
+        ],
+        [
+          "R02",
+          "21",
+          "22",
+          "23"
+        ],
+        [
+          "R03",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "R04",
+          "41",
+          "42",
+          "43"
+        ],
+        [
+          "R05",
+          "51",
+          "52",
+          "53"
+        ]
+      ],
+      "rows": 6,
+      "cols": 4
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "struggle_mode": "severe_minigrid_overdetect"
+}

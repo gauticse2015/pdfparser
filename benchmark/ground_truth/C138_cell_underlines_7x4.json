@@ -1,0 +1,81 @@
+{
+  "id": "C138_cell_underlines_7x4",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C138_cell_underlines_7x4.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "false_underlines",
+  "failure_classes": [
+    "C7_ROW_OVERCOUNT",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "True 7x4 grid + per-cell text underlines (row overcount)",
+  "challenges": [
+    "phantom_lines",
+    "row_overcount",
+    "underline_noise"
+  ],
+  "must_contain": [
+    "TOKEN_C138_DOC",
+    "TOKEN_C138_A"
+  ],
+  "expected_tables": [
+    {
+      "rows": 7,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "U01",
+          "11",
+          "12",
+          "13"
+        ],
+        [
+          "U02",
+          "21",
+          "22",
+          "TOKEN_C138_A"
+        ],
+        [
+          "U03",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "U04",
+          "41",
+          "42",
+          "43"
+        ],
+        [
+          "U05",
+          "51",
+          "52",
+          "53"
+        ],
+        [
+          "U06",
+          "61",
+          "62",
+          "63"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "struggle_mode": "false_underline_row_overcount"
+}

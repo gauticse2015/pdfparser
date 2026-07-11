@@ -191,3 +191,123 @@ fn extract_col_range(t: &Table, col0: usize, col1: usize) -> Option<Table> {
         weak_edges: t.weak_edges,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pdfparser_ir::Rect;
+
+    fn cell(row: u32, col: u32, text: &str, x0: f32, x1: f32) -> TableCell {
+        TableCell {
+            row,
+            col,
+            rowspan: 1,
+            colspan: 1,
+            bbox: Rect {
+                x0,
+                y0: 100.0 - row as f32 * 15.0,
+                x1,
+                y1: 112.0 - row as f32 * 15.0,
+            },
+            text: text.into(),
+            is_header: row == 0,
+            confidence: 0.9,
+        }
+    }
+
+    /// 2×2 grids fused with empty gutter col 2: cols 0,1 | empty | 3,4
+    fn fused_table() -> Table {
+        let mut cells = Vec::new();
+        // left 3 rows × 2 cols
+        for r in 0..3u32 {
+            cells.push(cell(r, 0, &format!("L{r}a"), 0.0, 40.0));
+            cells.push(cell(r, 1, &format!("L{r}b"), 40.0, 80.0));
+            cells.push(cell(r, 2, "", 80.0, 140.0)); // wide empty gutter
+            cells.push(cell(r, 3, &format!("R{r}a"), 140.0, 180.0));
+            cells.push(cell(r, 4, &format!("R{r}b"), 180.0, 220.0));
+        }
+        // clear gutter texts
+        for c in &mut cells {
+            if c.col == 2 {
+                c.text.clear();
+            }
+        }
+        Table {
+            bbox: Rect {
+                x0: 0.0,
+                y0: 55.0,
+                x1: 220.0,
+                y1: 112.0,
+            },
+            page: 0,
+            method: TableMethod::Lattice,
+            confidence: 0.9,
+            rows: 3,
+            cols: 5,
+            cells,
+            header_rows: 1,
+            continued_from_previous_page: false,
+            continued_to_next_page: false,
+            logical_table_id: None,
+            strategy_provenance: vec![PipelineId::S2Lattice],
+            notes: vec![],
+            edge_score: 0.9,
+            fill_rate: 0.8,
+            weak_edges: false,
+        }
+    }
+
+    #[test]
+    fn split_side_by_side_gutter() {
+        let t = fused_table();
+        let opts = TableOptions {
+            detect_tables: true,
+            side_by_side_split: true,
+            min_gutter_gap: 15.0,
+            min_gutter_vs_col: 0.6,
+            ..TableOptions::default()
+        };
+        let out = split_side_by_side(vec![t], &[], &opts);
+        assert_eq!(out.len(), 2, "shapes {:?}", out.iter().map(|x| (x.rows, x.cols)).collect::<Vec<_>>());
+        assert!(out.iter().all(|x| x.cols == 2));
+        assert!(out.iter().all(|x| x.strategy_provenance.contains(&PipelineId::P4SideBySide)));
+    }
+
+    #[test]
+    fn no_split_stream() {
+        let mut t = fused_table();
+        t.method = TableMethod::Stream;
+        let opts = TableOptions::default();
+        let out = split_side_by_side(vec![t], &[], &opts);
+        assert_eq!(out.len(), 1);
+    }
+
+    #[test]
+    fn no_split_narrow() {
+        let t = Table {
+            bbox: Rect::zero(),
+            page: 0,
+            method: TableMethod::Lattice,
+            confidence: 0.9,
+            rows: 2,
+            cols: 2,
+            cells: vec![
+                cell(0, 0, "a", 0.0, 10.0),
+                cell(0, 1, "b", 10.0, 20.0),
+                cell(1, 0, "c", 0.0, 10.0),
+                cell(1, 1, "d", 10.0, 20.0),
+            ],
+            header_rows: 1,
+            continued_from_previous_page: false,
+            continued_to_next_page: false,
+            logical_table_id: None,
+            strategy_provenance: vec![],
+            notes: vec![],
+            edge_score: 0.9,
+            fill_rate: 1.0,
+            weak_edges: false,
+        };
+        let out = split_side_by_side(vec![t], &[], &TableOptions::default());
+        assert_eq!(out.len(), 1);
+    }
+}

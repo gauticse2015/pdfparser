@@ -1,0 +1,185 @@
+{
+  "id": "C116_partial_v_s2_12x10",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C116_partial_v_s2_12x10.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "partial_vlines",
+  "failure_classes": [
+    "C6_COL_SKEW_WIDE",
+    "C10_COUNT_OK_STRUCT_BAD",
+    "C11_SAME_SHAPE_ZERO_TEDS"
+  ],
+  "description": "Full H-rules, V every 2rd line, gold 12x10",
+  "challenges": [
+    "partial_vlines",
+    "col_undercount",
+    "wide_table"
+  ],
+  "must_contain": [
+    "TOKEN_C116_DOC",
+    "TOKEN_C116_A",
+    "TOKEN_C116_LAST"
+  ],
+  "expected_tables": [
+    {
+      "rows": 12,
+      "cols": 10,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4",
+          "H5",
+          "H6",
+          "H7",
+          "H8",
+          "H9"
+        ],
+        [
+          "V01",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "TOKEN_C116_A"
+        ],
+        [
+          "V02",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29"
+        ],
+        [
+          "V03",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39"
+        ],
+        [
+          "V04",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49"
+        ],
+        [
+          "V05",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55",
+          "56",
+          "57",
+          "58",
+          "59"
+        ],
+        [
+          "V06",
+          "61",
+          "62",
+          "63",
+          "64",
+          "65",
+          "66",
+          "67",
+          "68",
+          "69"
+        ],
+        [
+          "V07",
+          "71",
+          "72",
+          "73",
+          "74",
+          "75",
+          "76",
+          "77",
+          "78",
+          "79"
+        ],
+        [
+          "V08",
+          "81",
+          "82",
+          "83",
+          "84",
+          "85",
+          "86",
+          "87",
+          "88",
+          "89"
+        ],
+        [
+          "V09",
+          "91",
+          "92",
+          "93",
+          "94",
+          "95",
+          "96",
+          "97",
+          "98",
+          "99"
+        ],
+        [
+          "V10",
+          "101",
+          "102",
+          "103",
+          "104",
+          "105",
+          "106",
+          "107",
+          "108",
+          "109"
+        ],
+        [
+          "V11",
+          "111",
+          "112",
+          "113",
+          "114",
+          "115",
+          "116",
+          "117",
+          "118",
+          "TOKEN_C116_LAST"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "struggle_mode": "partial_v_col_undercount"
+}

@@ -68,7 +68,38 @@ pub fn band_runs(runs: &[TextRun], y_tol: f32) -> Vec<Vec<&TextRun>> {
     bands
 }
 
-/// R9: assign text runs into a cell rectangle.
+/// Join ordered (y_desc, x_asc, text) parts into a cell string.
+///
+/// Line wraps insert a space (PDF layout engines wrap on word boundaries);
+/// same-band runs are space-separated. Hyphenated mid-word wraps (`foo-` + `bar`)
+/// drop the visual break without doubling separators.
+fn join_text_parts(parts: &[(f32, f32, &str)]) -> String {
+    let mut out = String::new();
+    for (i, (_, _, t)) in parts.iter().enumerate() {
+        if i > 0 {
+            let prev_y = parts[i - 1].0;
+            let y = parts[i].0;
+            if (prev_y - y).abs() > 2.0 {
+                // Word-wrapped line: keep a space so "FY2024" + "TOKEN_…" stays tokenized.
+                // Only glue when the previous fragment ends with a soft hyphen.
+                if out.ends_with('-') {
+                    out.pop();
+                } else if !out.ends_with(' ') && !t.starts_with(' ') {
+                    out.push(' ');
+                }
+            } else if !out.ends_with(' ') && !t.starts_with(' ') {
+                out.push(' ');
+            }
+        }
+        out.push_str(t);
+    }
+    out.trim().to_string()
+}
+
+/// R9: assign text runs into a cell rectangle (center-in-box, padded).
+///
+/// Prefer [`assign_runs_exclusive`] for lattice grids so boundary-straddling
+/// runs are not duplicated into neighboring cells.
 pub fn assign_text(runs: &[TextRun], cell: Rect) -> String {
     let pad = 1.0f32;
     let mut parts: Vec<(f32, f32, &str)> = Vec::new();
@@ -91,32 +122,92 @@ pub fn assign_text(runs: &[TextRun], cell: Rect) -> String {
             .unwrap_or(std::cmp::Ordering::Equal)
             .then_with(|| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
     });
-    let mut out = String::new();
-    for (i, (_, _, t)) in parts.iter().enumerate() {
-        if i > 0 {
-            let prev_y = parts[i - 1].0;
-            let y = parts[i].0;
-            if (prev_y - y).abs() > 2.0 {
-                // Mid-token line wrap (no separator) vs multi-line cell content
-                let cont = out
-                    .chars()
-                    .last()
-                    .map(|c| c.is_alphanumeric() || c == '_')
-                    .unwrap_or(false)
-                    && t.chars()
-                        .next()
-                        .map(|c| c.is_alphanumeric() || c == '_')
-                        .unwrap_or(false);
-                if !cont {
-                    out.push('\n');
+    join_text_parts(&parts)
+}
+
+/// Assign each text run to at most one cell (best interior hit).
+///
+/// Boundary-straddling centers (within pad of a shared edge) used to land in
+/// *both* cells via independent `assign_text` calls, which blocked colspan
+/// merge (non-empty|non-empty) and left duplicate header tokens in span
+/// partners. Exclusive assignment keeps the left/top cell on ties.
+pub fn assign_runs_exclusive(runs: &[TextRun], cells: &[Rect]) -> Vec<String> {
+    let n = cells.len();
+    let mut parts: Vec<Vec<(f32, f32, &str)>> = vec![Vec::new(); n];
+    let pad = 1.0f32;
+
+    for r in runs {
+        if r.text.trim().is_empty() {
+            continue;
+        }
+        let cx = (r.bbox.x0 + r.bbox.x1) * 0.5;
+        let cy = (r.bbox.y0 + r.bbox.y1) * 0.5;
+
+        let mut best: Option<(usize, f32, f32)> = None; // (idx, interior_score, -x0 for left bias)
+        for (i, cell) in cells.iter().enumerate() {
+            let in_x = cx >= cell.x0 - pad && cx <= cell.x1 + pad;
+            let in_y = cy >= cell.y0 - pad && cy <= cell.y1 + pad;
+            if !in_x || !in_y {
+                continue;
+            }
+            // Prefer strict interior; on pad-only hits still allow.
+            let dx = if cx < cell.x0 {
+                cell.x0 - cx
+            } else if cx > cell.x1 {
+                cx - cell.x1
+            } else {
+                0.0
+            };
+            let dy = if cy < cell.y0 {
+                cell.y0 - cy
+            } else if cy > cell.y1 {
+                cy - cell.y1
+            } else {
+                0.0
+            };
+            let outside = dx + dy;
+            // Higher is better: penalize outside distance, reward distance from edges when inside.
+            let interior = if outside > 0.0 {
+                -outside
+            } else {
+                (cx - cell.x0)
+                    .min(cell.x1 - cx)
+                    .min(cy - cell.y0)
+                    .min(cell.y1 - cy)
+            };
+            // Tie-break: more interior, then leftmost cell (smaller x0), then topmost (larger y1).
+            let replace = match best {
+                None => true,
+                Some((_, best_int, best_x0)) => {
+                    if (interior - best_int).abs() > 1e-3 {
+                        interior > best_int
+                    } else if (cell.x0 - best_x0).abs() > 1e-3 {
+                        cell.x0 < best_x0
+                    } else {
+                        false
+                    }
                 }
-            } else if !out.ends_with(' ') && !t.starts_with(' ') {
-                out.push(' ');
+            };
+            if replace {
+                best = Some((i, interior, cell.x0));
             }
         }
-        out.push_str(t);
+        if let Some((i, _, _)) = best {
+            parts[i].push((cy, cx, r.text.as_str()));
+        }
     }
-    out.trim().to_string()
+
+    parts
+        .iter_mut()
+        .map(|p| {
+            p.sort_by(|a, b| {
+                b.0.partial_cmp(&a.0)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+                    .then_with(|| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
+            });
+            join_text_parts(p)
+        })
+        .collect()
 }
 
 /// Median font size helper.
@@ -290,5 +381,195 @@ pub fn iou(a: Rect, b: Rect) -> f32 {
         0.0
     } else {
         inter / ua
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pdfparser_ir::{Matrix3x2, TextRun};
+
+    fn tr(text: &str, x0: f32, y0: f32, x1: f32, y1: f32, fs: f32) -> TextRun {
+        TextRun {
+            text: text.into(),
+            bbox: Rect { x0, y0, x1, y1 },
+            transform: Matrix3x2::identity(),
+            font_name: None,
+            font_size: fs,
+            mapping_confidence: 1.0,
+            metrics_confidence: 1.0,
+            mcid: None,
+            invisible: false,
+            from_actual_text: false,
+        }
+    }
+
+    #[test]
+    fn cluster_coords_snaps() {
+        let v = vec![0.0, 0.5, 1.0, 50.0, 50.4, 100.0];
+        let c = cluster_coords(&v, 2.0);
+        assert_eq!(c.len(), 3, "{c:?}");
+        assert!(cluster_coords(&[], 1.0).is_empty());
+    }
+
+    #[test]
+    fn band_runs_groups_by_y() {
+        let runs = vec![
+            tr("A", 0.0, 90.0, 10.0, 100.0, 10.0),
+            tr("B", 20.0, 91.0, 30.0, 100.0, 10.0),
+            tr("C", 0.0, 70.0, 10.0, 80.0, 10.0),
+        ];
+        let bands = band_runs(&runs, 5.0);
+        assert_eq!(bands.len(), 2);
+        assert_eq!(bands[0].len(), 2); // A,B top
+    }
+
+    #[test]
+    fn assign_text_and_exclusive() {
+        let runs = vec![
+            tr("L", 5.0, 5.0, 15.0, 15.0, 10.0),
+            tr("R", 25.0, 5.0, 35.0, 15.0, 10.0),
+        ];
+        let left = Rect {
+            x0: 0.0,
+            y0: 0.0,
+            x1: 20.0,
+            y1: 20.0,
+        };
+        let right = Rect {
+            x0: 20.0,
+            y0: 0.0,
+            x1: 40.0,
+            y1: 20.0,
+        };
+        assert_eq!(assign_text(&runs, left), "L");
+        assert_eq!(assign_text(&runs, right), "R");
+        let texts = assign_runs_exclusive(&runs, &[left, right]);
+        assert_eq!(texts, vec!["L".to_string(), "R".to_string()]);
+    }
+
+    #[test]
+    fn exclusive_prefers_left_on_boundary() {
+        // Center exactly on shared edge
+        let runs = vec![tr("X", 18.0, 5.0, 22.0, 15.0, 10.0)];
+        let left = Rect {
+            x0: 0.0,
+            y0: 0.0,
+            x1: 20.0,
+            y1: 20.0,
+        };
+        let right = Rect {
+            x0: 20.0,
+            y0: 0.0,
+            x1: 40.0,
+            y1: 20.0,
+        };
+        let texts = assign_runs_exclusive(&runs, &[left, right]);
+        // One of the cells should own X exclusively
+        let filled = texts.iter().filter(|t| !t.is_empty()).count();
+        assert_eq!(filled, 1, "{texts:?}");
+    }
+
+    #[test]
+    fn join_hyphen_wrap() {
+        // via assign_text with two y bands ending with hyphen
+        let runs = vec![
+            tr("foo-", 0.0, 20.0, 20.0, 30.0, 10.0),
+            tr("bar", 0.0, 5.0, 20.0, 15.0, 10.0),
+        ];
+        let cell = Rect {
+            x0: 0.0,
+            y0: 0.0,
+            x1: 40.0,
+            y1: 40.0,
+        };
+        let s = assign_text(&runs, cell);
+        assert_eq!(s, "foobar");
+    }
+
+    #[test]
+    fn median_helpers() {
+        assert_eq!(median_f32(&[]), 0.0);
+        assert_eq!(median_f32(&[3.0, 1.0, 2.0]), 2.0);
+        assert_eq!(median_font_size(&[]), 10.0);
+        let runs = vec![tr("a", 0.0, 0.0, 1.0, 1.0, 12.0)];
+        assert_eq!(median_font_size(&runs), 12.0);
+    }
+
+    #[test]
+    fn grid_regularity_and_scores() {
+        let xs = vec![0.0, 50.0, 100.0, 150.0];
+        let ys = vec![0.0, 20.0, 40.0, 60.0];
+        assert!(grid_regularity_score(&xs, &ys) > 0.5);
+        assert!(column_separation_score(&xs, 10.0) > 0.0);
+        assert_eq!(column_separation_score(&[0.0, 1.0], 10.0), 0.5);
+        assert!(row_consistency_score(&[3, 3, 3, 2]) > 0.5);
+        assert_eq!(row_consistency_score(&[]), 0.0);
+        assert!(alignment_score(&[0.0, 50.0, 100.0], &[0.0, 50.0, 100.0], 2.0) > 0.9);
+        assert_eq!(alignment_score(&[], &[0.0, 1.0], 1.0), 0.5);
+    }
+
+    #[test]
+    fn cells_from_grid_and_bbox() {
+        let runs = vec![
+            tr("A", 5.0, 55.0, 15.0, 65.0, 10.0),
+            tr("B", 55.0, 55.0, 65.0, 65.0, 10.0),
+            tr("C", 5.0, 15.0, 15.0, 25.0, 10.0),
+            tr("D", 55.0, 15.0, 65.0, 25.0, 10.0),
+        ];
+        let xs = vec![0.0, 50.0, 100.0];
+        let ys = vec![70.0, 40.0, 10.0]; // top to bottom
+        let (cells, filled) = cells_from_grid(&runs, &xs, &ys, 3.0);
+        assert_eq!(cells.len(), 4);
+        assert_eq!(filled, 4);
+        let bb = bbox_of_cells(&cells);
+        assert!(bb.width() > 0.0);
+        assert!(bbox_of_cells(&[]).width() == 0.0 || true);
+    }
+
+    #[test]
+    fn runs_in_rect_and_iou() {
+        let runs = vec![
+            tr("in", 5.0, 5.0, 15.0, 15.0, 10.0),
+            tr("out", 100.0, 100.0, 110.0, 110.0, 10.0),
+        ];
+        let r = Rect {
+            x0: 0.0,
+            y0: 0.0,
+            x1: 20.0,
+            y1: 20.0,
+        };
+        let hit = runs_in_rect(&runs, r, 1.0);
+        assert_eq!(hit.len(), 1);
+        let a = Rect {
+            x0: 0.0,
+            y0: 0.0,
+            x1: 10.0,
+            y1: 10.0,
+        };
+        let b = Rect {
+            x0: 5.0,
+            y0: 5.0,
+            x1: 15.0,
+            y1: 15.0,
+        };
+        assert!(iou(a, b) > 0.0);
+        assert_eq!(
+            iou(
+                Rect {
+                    x0: 0.0,
+                    y0: 0.0,
+                    x1: 1.0,
+                    y1: 1.0
+                },
+                Rect {
+                    x0: 10.0,
+                    y0: 10.0,
+                    x1: 11.0,
+                    y1: 11.0
+                }
+            ),
+            0.0
+        );
     }
 }

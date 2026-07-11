@@ -1,0 +1,23 @@
+{
+  "id": "R018_camelot_health",
+  "tier": "compete_real",
+  "suite": "regression_compete",
+  "source": "public_download",
+  "icdar_derived": false,
+  "path": "corpus/compete_real/R018_camelot_health.pdf",
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0,
+  "soft_gold": true,
+  "development_role": "open_struggle",
+  "category": "real_public",
+  "failure_classes": [
+    "C3_UNDER_DETECT",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Camelot health.pdf sample",
+  "license": "Camelot project sample",
+  "source_url": "https://github.com/camelot-dev/camelot/raw/master/docs/_static/pdf/health.pdf",
+  "must_contain": [],
+  "page_count": null
+}

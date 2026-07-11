@@ -1,0 +1,136 @@
+{
+  "id": "C024_partial_h_step4_12x6",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C024_partial_h_step4_12x6.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "partial_hlines",
+  "failure_classes": [
+    "C5_HEADER_ONLY_SLICE",
+    "C10_COUNT_OK_STRUCT_BAD",
+    "C3_UNDER_DETECT"
+  ],
+  "description": "Full V, H every 4rd line, gold 12x6",
+  "challenges": [
+    "partial_hlines",
+    "row_undercount",
+    "text_row_recovery"
+  ],
+  "must_contain": [
+    "TOKEN_C024_DOC",
+    "TOKEN_C024_R1",
+    "TOKEN_C024_LAST"
+  ],
+  "expected_tables": [
+    {
+      "rows": 12,
+      "cols": 6,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4",
+          "H5"
+        ],
+        [
+          "M01",
+          "11",
+          "12",
+          "13",
+          "14",
+          "TOKEN_C024_R1"
+        ],
+        [
+          "M02",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25"
+        ],
+        [
+          "M03",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35"
+        ],
+        [
+          "M04",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45"
+        ],
+        [
+          "M05",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55"
+        ],
+        [
+          "M06",
+          "61",
+          "62",
+          "63",
+          "64",
+          "65"
+        ],
+        [
+          "M07",
+          "71",
+          "72",
+          "73",
+          "74",
+          "75"
+        ],
+        [
+          "M08",
+          "81",
+          "82",
+          "83",
+          "84",
+          "85"
+        ],
+        [
+          "M09",
+          "91",
+          "92",
+          "93",
+          "94",
+          "95"
+        ],
+        [
+          "M10",
+          "101",
+          "102",
+          "103",
+          "104",
+          "105"
+        ],
+        [
+          "M11",
+          "111",
+          "112",
+          "113",
+          "114",
+          "TOKEN_C024_LAST"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

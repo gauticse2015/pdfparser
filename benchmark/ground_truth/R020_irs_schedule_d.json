@@ -1,0 +1,24 @@
+{
+  "id": "R020_irs_schedule_d",
+  "tier": "compete_real",
+  "suite": "regression_compete",
+  "source": "public_download",
+  "icdar_derived": false,
+  "path": "corpus/compete_real/R020_irs_schedule_d.pdf",
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0,
+  "soft_gold": true,
+  "development_role": "open_struggle",
+  "category": "real_public",
+  "failure_classes": [
+    "C1_OVER_DETECT",
+    "C3_UNDER_DETECT",
+    "C8_MULTI_TABLE_COUNT_ERROR"
+  ],
+  "description": "IRS Schedule D form grids",
+  "license": "US government work",
+  "source_url": "https://www.irs.gov/pub/irs-pdf/f1040sd.pdf",
+  "must_contain": [],
+  "page_count": null
+}

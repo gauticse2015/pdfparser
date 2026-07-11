@@ -1,0 +1,69 @@
+{
+  "id": "C068_span_header_v4",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C068_span_header_v4.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "span_complex",
+  "failure_classes": [
+    "C15_SPAN_COMPLEX",
+    "C11_SAME_SHAPE_ZERO_TEDS"
+  ],
+  "description": "Colspan/rowspan header grid 5x4",
+  "challenges": [
+    "colspan",
+    "rowspan",
+    "merged_headers"
+  ],
+  "must_contain": [
+    "TOKEN_C068_DOC",
+    "TOKEN_C068_FY",
+    "TOKEN_C068_N"
+  ],
+  "expected_tables": [
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "Metric",
+          "FY TOKEN_C068_FY",
+          "",
+          "Notes"
+        ],
+        [
+          "",
+          "Act",
+          "Bud",
+          ""
+        ],
+        [
+          "Rev",
+          "10",
+          "9",
+          "TOKEN_C068_R"
+        ],
+        [
+          "Cost",
+          "4",
+          "5",
+          "ops"
+        ],
+        [
+          "NI",
+          "6",
+          "4",
+          "TOKEN_C068_N"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

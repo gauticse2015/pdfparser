@@ -1,0 +1,66 @@
+{
+  "id": "C057_invoice_items3",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C057_invoice_items3.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "invoice_footer",
+  "failure_classes": [
+    "C14_INVOICE_FOOTER",
+    "C7_ROW_OVERCOUNT"
+  ],
+  "description": "Invoice 3 items; gold excludes totals rows",
+  "challenges": [
+    "invoice_totals",
+    "footer_rows"
+  ],
+  "must_contain": [
+    "TOKEN_C057_DOC",
+    "TOKEN_C057_I1",
+    "TOKEN_C057_TOT"
+  ],
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 5,
+      "cells": [
+        [
+          "SKU",
+          "Description",
+          "Qty",
+          "Unit",
+          "Amount"
+        ],
+        [
+          "SKU-1",
+          "Item1 TOKEN_C057_I1",
+          "1",
+          "10",
+          "10"
+        ],
+        [
+          "SKU-2",
+          "Item2",
+          "2",
+          "20",
+          "40"
+        ],
+        [
+          "SKU-3",
+          "Item3",
+          "3",
+          "30",
+          "90"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

@@ -88,7 +88,8 @@ fn run_extract(
         include_invisible: true,
     };
     let table_opts = if tables {
-        TableOptions::from_preset(TablePreset::Full)
+        // Product default: exclusive expert routing (Auto). Use Full for ablation soup.
+        TableOptions::from_preset(TablePreset::Auto)
     } else {
         TableOptions::default()
     };

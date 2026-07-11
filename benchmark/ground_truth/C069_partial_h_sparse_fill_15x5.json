@@ -1,0 +1,139 @@
+{
+  "id": "C069_partial_h_sparse_fill_15x5",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C069_partial_h_sparse_fill_15x5.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "development_role": "open_struggle",
+  "expected_tables": [
+    {
+      "cells": [
+        [
+          "Key",
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        [
+          "R01",
+          "",
+          "3",
+          "",
+          "TOKEN_C069_R1"
+        ],
+        [
+          "R02",
+          "",
+          "",
+          "6",
+          ""
+        ],
+        [
+          "R03",
+          "9",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R04",
+          "",
+          "12",
+          "",
+          ""
+        ],
+        [
+          "R05",
+          "",
+          "",
+          "15",
+          ""
+        ],
+        [
+          "R06",
+          "18",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R07",
+          "",
+          "21",
+          "",
+          ""
+        ],
+        [
+          "R08",
+          "",
+          "",
+          "24",
+          ""
+        ],
+        [
+          "R09",
+          "27",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R10",
+          "",
+          "30",
+          "",
+          ""
+        ],
+        [
+          "R11",
+          "",
+          "",
+          "33",
+          ""
+        ],
+        [
+          "R12",
+          "36",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R13",
+          "",
+          "39",
+          "",
+          ""
+        ],
+        [
+          "R14",
+          "",
+          "",
+          "42",
+          "TOKEN_C069_LAST"
+        ]
+      ],
+      "rows": 15,
+      "cols": 5
+    }
+  ],
+  "expected_table_count": 1,
+  "category": "partial_h_sparse",
+  "failure_classes": [
+    "C5_HEADER_ONLY_SLICE",
+    "C10_COUNT_OK_STRUCT_BAD",
+    "C3_UNDER_DETECT"
+  ],
+  "description": "Partial H + sparse fill so text densify cannot recover rows",
+  "must_contain": [
+    "TOKEN_C069_DOC",
+    "TOKEN_C069_R1",
+    "TOKEN_C069_LAST"
+  ],
+  "page_count": 1
+}

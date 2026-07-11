@@ -1,6 +1,4 @@
 //! Table detection options and presets.
-//!
-//! Tunable thresholds live here so detectors stay free of silent magic numbers.
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -8,13 +6,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct TableModeSet {
-    /// Structure tree tables (S1).
+    /// Structure tree tables (unused today).
     pub structure: bool,
-    /// Ruled lattice (S2).
+    /// Ruled lattice.
     pub lattice: bool,
-    /// Whitespace stream (S3).
+    /// Borderless (network).
     pub stream: bool,
-    /// Hybrid partial borders (S4).
+    /// Hybrid partial borders.
     pub hybrid: bool,
 }
 
@@ -55,10 +53,12 @@ pub enum TablePreset {
     Off,
     /// Lattice only.
     LatticeOnly,
-    /// Lattice + stream.
+    /// Lattice + borderless network.
     LatticeStream,
-    /// Full pipeline.
+    /// Full production pipeline.
     Full,
+    /// Product default (same as Full).
+    Auto,
 }
 
 /// Public table options.
@@ -71,83 +71,86 @@ pub struct TableOptions {
     pub modes: TableModeSet,
     /// Min confidence to emit (lattice/hybrid).
     pub min_table_confidence: f32,
-    /// Min confidence for stream candidates.
+    /// Min confidence for borderless/network.
     pub min_confidence_stream: f32,
-    /// Cap candidates kept per page after NMS.
+    /// Cap tables kept per page after NMS.
     pub max_tables_per_page: u32,
     /// Snap tolerance for lattice lines (user units).
     pub line_snap_tol: f32,
     /// Min cell size (user units).
     pub min_cell_size: f32,
-    /// Multi-page stitch (D1).
+    /// Multi-page stitch.
     pub stitch_multipage: bool,
-    /// Form vs table discriminator (P1).
+    /// Form vs table discriminator.
     pub form_discriminator: bool,
-    /// Side-by-side empty-gutter split (P4).
+    /// Side-by-side empty-gutter split.
     pub side_by_side_split: bool,
-
-    // --- Over-segmentation / data-table scrub (document-level) ---
-    /// When logical table count exceeds this, low-scoring candidates are dropped.
-    /// Neutral default matches design soft-max per-page scale.
+    /// Over-seg trigger count.
     pub overseg_trigger: u32,
-    /// After over-seg filtering, keep at most this many logical tables (0 = unlimited).
+    /// Max logical tables after scrub (0 = unlimited).
     pub max_logical_tables: u32,
-    /// Minimum data-table score (0..1) to retain when over-segmented.
+    /// Min data-table score under over-seg.
     pub min_data_table_score: f32,
-
-    // --- Split / stitch geometry ---
-    /// Minimum absolute gutter width (user units) for side-by-side split.
+    /// Min absolute gutter for side-by-side split.
     pub min_gutter_gap: f32,
-    /// Gutter must be at least this fraction of median column width.
+    /// Gutter as fraction of median column width.
     pub min_gutter_vs_col: f32,
-    /// Fraction of page height treated as top/bottom band for multi-page stitch.
+    /// Stitch band as fraction of page height.
     pub stitch_band_frac: f32,
-    /// Max mean column-center delta (user units) for multi-page stitch.
+    /// Max mean column-center delta for stitch.
     pub stitch_max_col_dx: f32,
-    /// Min header text similarity for multi-page stitch.
+    /// Min header similarity for stitch.
     pub stitch_min_header_sim: f32,
-
-    // --- Stream prose / layout filters ---
-    /// Reject 2-col stream cells with mean chars above this and low numeric density.
+    /// Reject prose-like cells above this mean char count (2-col).
     pub stream_max_prose_mean_chars: f32,
-    /// Min column-separation score for stream emission.
+    /// Min column-separation score for stream/network.
     pub stream_min_col_sep: f32,
-    /// Min multi-column body bands for stream detection.
+    /// Min multi-column body bands.
     pub stream_min_body_bands: u32,
-    /// Vertical gap (as multiple of median font size) that splits stream regions.
+    /// Vertical gap (× font size) that splits borderless regions.
     pub stream_region_gap_font_mult: f32,
-    /// Absolute floor (user units) for stream multi-region vertical gap.
+    /// Absolute floor for borderless region gap.
     pub stream_region_gap_min: f32,
-
-    // --- Lattice geometry ---
-    /// Min axis-aligned segment length (user units) to participate in lattice.
+    /// Min rule segment length for lattice.
     pub lattice_min_seg_len: f32,
-    /// Expand segment ends when testing H∩V joints (broken-corner recovery).
+    /// Joint gap expand for broken corners.
     pub lattice_joint_gap: f32,
-    /// Minimum joints (line crossings) for a connected component to be a table.
+    /// Min joints per connected component.
     pub lattice_min_joints: u32,
-    /// Max lattice rows (safety cap).
+    /// Max lattice rows.
     pub lattice_max_rows: u32,
-    /// Max lattice cols (safety cap).
+    /// Max lattice cols.
     pub lattice_max_cols: u32,
-    /// Reject grids with empty-cell fraction ≥ this and fewer than `lattice_min_filled_cells`.
+    /// Empty-cell fraction reject threshold.
     pub lattice_empty_frac_reject: f32,
-    /// Min filled cells when applying empty-fraction reject.
+    /// Min filled cells with empty-frac reject.
     pub lattice_min_filled_cells: u32,
-    /// Min fill rate (else reject unless filled cells ≥ min filled).
+    /// Min fill rate.
     pub lattice_min_fill_rate: f32,
-    /// Edge completeness below this ⇒ `weak_edges` (orchestration).
+    /// Edge score below this ⇒ weak_edges.
     pub lattice_weak_edge_threshold: f32,
-    /// Min fraction of a cell side that must be covered by a rule to count as edged.
+    /// Min fraction of cell side covered by a rule.
     pub lattice_edge_cover_frac: f32,
-
-    // --- Hybrid ---
-    /// When hybrid recovers ≥3×3, confidence is at least this (NMS fairness vs weak lattice).
+    /// Min joints along a candidate grid line.
+    pub lattice_min_joints_per_line: u32,
+    /// Min table area (user units²).
+    pub lattice_min_table_area: f32,
+    /// Tiny grid reject max side.
+    pub lattice_min_side_for_tiny_reject: u32,
+    /// Tiny grid reject max filled cells.
+    pub lattice_tiny_max_filled: u32,
+    /// Hybrid confidence floor when ≥3×3.
     pub hybrid_min_conf_when_grid: f32,
-
-    // --- NMS / strong lattice ---
-    /// Min confidence for a lattice table to count as "strong" (blocks overlapping hybrid).
+    /// Lattice confidence for “strong” (blocks overlapping borderless).
     pub strong_lattice_min_conf: f32,
+    /// Containment NMS fraction.
+    pub nms_containment_frac: f32,
+    /// If strong lattice exists, drop overlapping borderless tables.
+    pub exclusive_under_strong_lattice: bool,
+    /// Collapse overdense H-lines using text bands (false underlines).
+    pub lattice_collapse_overdense_h: bool,
+    /// Trigger overdense-H collapse when H-rows > text_bands × factor.
+    pub lattice_overdense_h_factor: f32,
 }
 
 impl Default for TableOptions {
@@ -174,8 +177,8 @@ impl Default for TableOptions {
             stream_max_prose_mean_chars: 70.0,
             stream_min_col_sep: 0.30,
             stream_min_body_bands: 3,
-            stream_region_gap_font_mult: 2.5,
-            stream_region_gap_min: 16.0,
+            stream_region_gap_font_mult: 4.0,
+            stream_region_gap_min: 24.0,
             lattice_min_seg_len: 5.0,
             lattice_joint_gap: 3.5,
             lattice_min_joints: 4,
@@ -186,8 +189,16 @@ impl Default for TableOptions {
             lattice_min_fill_rate: 0.08,
             lattice_weak_edge_threshold: 0.55,
             lattice_edge_cover_frac: 0.45,
+            lattice_min_joints_per_line: 2,
+            lattice_min_table_area: 900.0,
+            lattice_min_side_for_tiny_reject: 2,
+            lattice_tiny_max_filled: 4,
             hybrid_min_conf_when_grid: 0.72,
             strong_lattice_min_conf: 0.65,
+            nms_containment_frac: 0.82,
+            exclusive_under_strong_lattice: true,
+            lattice_collapse_overdense_h: true,
+            lattice_overdense_h_factor: 1.35,
         }
     }
 }
@@ -212,7 +223,7 @@ impl TableOptions {
                 },
                 ..Self::default()
             },
-            TablePreset::Full => Self {
+            TablePreset::Full | TablePreset::Auto => Self {
                 detect_tables: true,
                 modes: TableModeSet {
                     structure: false,
@@ -220,6 +231,9 @@ impl TableOptions {
                     stream: true,
                     hybrid: true,
                 },
+                exclusive_under_strong_lattice: true,
+                // Multipage continued tables are a product feature.
+                stitch_multipage: true,
                 ..Self::default()
             },
         }

@@ -36,6 +36,7 @@ pub fn page_content(
     let iopts = InterpretOptions {
         max_ops: doc.governor.limits.max_page_ops,
         capture_rules,
+        ..InterpretOptions::default()
     };
     let mut result = interpret_page(&content, &fonts, &iopts);
     let mut warnings: Vec<ExtractWarning> = result

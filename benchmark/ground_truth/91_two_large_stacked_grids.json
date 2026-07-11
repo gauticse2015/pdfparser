@@ -1,0 +1,241 @@
+{
+  "id": "91_two_large_stacked_grids",
+  "tier": "hard_sensing",
+  "suite": "regression_sensing",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_sensing/91_two_large_stacked_grids.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "solved_regression",
+  "category": "two_large_stacked_grids",
+  "description": "STRUGGLE: two 12\u00d75 stroke lattices; baseline us n=0, camelot n=2",
+  "challenges": [
+    "multi_table_page",
+    "large_lattice",
+    "multi_region",
+    "under_detect",
+    "lattice_cc",
+    "joint_density"
+  ],
+  "failure_modes_covered": [
+    "UNDER_DETECT",
+    "MISS_ALL",
+    "WRONG_SHAPE"
+  ],
+  "must_contain": [
+    "TOKEN_S91_DOC",
+    "TOKEN_S91_A",
+    "TOKEN_S91_B"
+  ],
+  "table_cells_must_include": [
+    "TOKEN_S91_A",
+    "TOKEN_S91_B",
+    "A01",
+    "B01",
+    "A_LAST",
+    "B_LAST"
+  ],
+  "expected_tables": [
+    {
+      "rows": 12,
+      "cols": 5,
+      "cells": [
+        [
+          "K",
+          "V1",
+          "V2",
+          "V3",
+          "Note"
+        ],
+        [
+          "A01",
+          "A1a",
+          "A1b",
+          "A1c",
+          "TOKEN_S91_A"
+        ],
+        [
+          "A02",
+          "A2a",
+          "A2b",
+          "A2c",
+          "A2n"
+        ],
+        [
+          "A03",
+          "A3a",
+          "A3b",
+          "A3c",
+          "A3n"
+        ],
+        [
+          "A04",
+          "A4a",
+          "A4b",
+          "A4c",
+          "A4n"
+        ],
+        [
+          "A05",
+          "A5a",
+          "A5b",
+          "A5c",
+          "A5n"
+        ],
+        [
+          "A06",
+          "A6a",
+          "A6b",
+          "A6c",
+          "A6n"
+        ],
+        [
+          "A07",
+          "A7a",
+          "A7b",
+          "A7c",
+          "A7n"
+        ],
+        [
+          "A08",
+          "A8a",
+          "A8b",
+          "A8c",
+          "A8n"
+        ],
+        [
+          "A09",
+          "A9a",
+          "A9b",
+          "A9c",
+          "A9n"
+        ],
+        [
+          "A10",
+          "A10a",
+          "A10b",
+          "A10c",
+          "A10n"
+        ],
+        [
+          "A11",
+          "A11a",
+          "A11b",
+          "A11c",
+          "A_LAST"
+        ]
+      ]
+    },
+    {
+      "rows": 12,
+      "cols": 5,
+      "cells": [
+        [
+          "K",
+          "V1",
+          "V2",
+          "V3",
+          "Note"
+        ],
+        [
+          "B01",
+          "B1a",
+          "B1b",
+          "B1c",
+          "TOKEN_S91_B"
+        ],
+        [
+          "B02",
+          "B2a",
+          "B2b",
+          "B2c",
+          "B2n"
+        ],
+        [
+          "B03",
+          "B3a",
+          "B3b",
+          "B3c",
+          "B3n"
+        ],
+        [
+          "B04",
+          "B4a",
+          "B4b",
+          "B4c",
+          "B4n"
+        ],
+        [
+          "B05",
+          "B5a",
+          "B5b",
+          "B5c",
+          "B5n"
+        ],
+        [
+          "B06",
+          "B6a",
+          "B6b",
+          "B6c",
+          "B6n"
+        ],
+        [
+          "B07",
+          "B7a",
+          "B7b",
+          "B7c",
+          "B7n"
+        ],
+        [
+          "B08",
+          "B8a",
+          "B8b",
+          "B8c",
+          "B8n"
+        ],
+        [
+          "B09",
+          "B9a",
+          "B9b",
+          "B9c",
+          "B9n"
+        ],
+        [
+          "B10",
+          "B10a",
+          "B10b",
+          "B10c",
+          "B10n"
+        ],
+        [
+          "B11",
+          "B11a",
+          "B11b",
+          "B11c",
+          "B_LAST"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "preferred_method": "lattice",
+  "struggle_baseline": {
+    "pdfparser": "n=0",
+    "camelot_lattice": "n=2 shapes 12\u00d75",
+    "target_shapes": [
+      [
+        12,
+        5
+      ],
+      [
+        12,
+        5
+      ]
+    ]
+  },
+  "quality_notes": "WIN only when n=2 and both 12\u00d75 with A/B tokens. Do not weaken geometry to greenwash.",
+  "expected_table_count": 2
+}

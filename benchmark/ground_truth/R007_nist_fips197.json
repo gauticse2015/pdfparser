@@ -1,0 +1,27 @@
+{
+  "id": "R007_nist_fips197",
+  "tier": "compete_real",
+  "suite": "regression_compete",
+  "source": "public_download",
+  "icdar_derived": false,
+  "path": "corpus/compete_real/R007_nist_fips197.pdf",
+  "license": "US government work",
+  "source_url": "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf",
+  "description": "NIST FIPS 197 AES \u2014 technical tables + hex matrices",
+  "failure_classes": [
+    "C1_OVER_DETECT",
+    "C11_SAME_SHAPE_ZERO_TEDS"
+  ],
+  "challenges": [
+    "C1_OVER_DETECT",
+    "C11_SAME_SHAPE_ZERO_TEDS"
+  ],
+  "soft_gold": true,
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0,
+  "page_count": 52,
+  "must_contain": [],
+  "notes": "Soft gold: download for stress/manual labeling. Add expected_table_count and expected_tables after human review.",
+  "quality_notes": "OPEN for labeling \u2014 baseline extract stored separately"
+}

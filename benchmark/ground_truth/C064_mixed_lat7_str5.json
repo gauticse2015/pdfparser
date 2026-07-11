@@ -1,0 +1,111 @@
+{
+  "id": "C064_mixed_lat7_str5",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C064_mixed_lat7_str5.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "mixed_lattice_stream",
+  "failure_classes": [
+    "C13_MIXED_LATTICE_STREAM",
+    "C8_MULTI_TABLE_COUNT_ERROR"
+  ],
+  "description": "Lattice 7x4 + borderless stream 5x3",
+  "challenges": [
+    "mixed",
+    "multi_strategy"
+  ],
+  "must_contain": [
+    "TOKEN_C064_DOC",
+    "TOKEN_C064_L",
+    "TOKEN_C064_S"
+  ],
+  "expected_tables": [
+    {
+      "rows": 7,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "L01",
+          "11",
+          "12",
+          "TOKEN_C064_L"
+        ],
+        [
+          "L02",
+          "21",
+          "22",
+          "23"
+        ],
+        [
+          "L03",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "L04",
+          "41",
+          "42",
+          "43"
+        ],
+        [
+          "L05",
+          "51",
+          "52",
+          "53"
+        ],
+        [
+          "L06",
+          "61",
+          "62",
+          "63"
+        ]
+      ]
+    },
+    {
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2"
+        ],
+        [
+          "S01",
+          "11",
+          "TOKEN_C064_S"
+        ],
+        [
+          "S02",
+          "21",
+          "22"
+        ],
+        [
+          "S03",
+          "31",
+          "32"
+        ],
+        [
+          "S04",
+          "41",
+          "42"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 2,
+  "page_count": 1
+}

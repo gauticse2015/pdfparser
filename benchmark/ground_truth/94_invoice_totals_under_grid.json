@@ -1,0 +1,82 @@
+{
+  "id": "94_invoice_totals_under_grid",
+  "tier": "hard_sensing",
+  "suite": "regression_sensing",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_sensing/94_invoice_totals_under_grid.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "solved_regression",
+  "category": "invoice_totals_under_grid",
+  "description": "OPEN STRUGGLE: shared grid draws totals as extra rows; gold is items 4x5 only",
+  "challenges": [
+    "invoice_totals",
+    "footer_rows",
+    "wrong_shape",
+    "row_overcount"
+  ],
+  "failure_modes_covered": [
+    "ROW_MISCOUNT",
+    "WRONG_SHAPE",
+    "BAD_STRUCTURE"
+  ],
+  "must_contain": [
+    "TOKEN_S94_DOC",
+    "TOKEN_S94_A",
+    "TOKEN_S94_B",
+    "TOKEN_S94_SUB",
+    "TOKEN_S94_TOT"
+  ],
+  "table_cells_must_include": [
+    "SKU-A",
+    "TOKEN_S94_A",
+    "SKU-C",
+    "200",
+    "30"
+  ],
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 5,
+      "cells": [
+        [
+          "SKU",
+          "Description",
+          "Qty",
+          "Unit",
+          "Amount"
+        ],
+        [
+          "SKU-A",
+          "Service A TOKEN_S94_A",
+          "2",
+          "100",
+          "200"
+        ],
+        [
+          "SKU-B",
+          "Service B TOKEN_S94_B",
+          "1",
+          "50",
+          "50"
+        ],
+        [
+          "SKU-C",
+          "Service C",
+          "3",
+          "10",
+          "30"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "quality_notes": "Baseline: lattice emits 6x5 including totals. Need footer-row strip or separate totals region.",
+  "related_fixtures": [
+    "24_invoice_line_items"
+  ]
+}

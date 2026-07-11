@@ -1,0 +1,101 @@
+{
+  "id": "C059_invoice_items8",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C059_invoice_items8.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "invoice_footer",
+  "failure_classes": [
+    "C14_INVOICE_FOOTER",
+    "C7_ROW_OVERCOUNT"
+  ],
+  "description": "Invoice 8 items; gold excludes totals rows",
+  "challenges": [
+    "invoice_totals",
+    "footer_rows"
+  ],
+  "must_contain": [
+    "TOKEN_C059_DOC",
+    "TOKEN_C059_I1",
+    "TOKEN_C059_TOT"
+  ],
+  "expected_tables": [
+    {
+      "rows": 9,
+      "cols": 5,
+      "cells": [
+        [
+          "SKU",
+          "Description",
+          "Qty",
+          "Unit",
+          "Amount"
+        ],
+        [
+          "SKU-1",
+          "Item1 TOKEN_C059_I1",
+          "1",
+          "10",
+          "10"
+        ],
+        [
+          "SKU-2",
+          "Item2",
+          "2",
+          "20",
+          "40"
+        ],
+        [
+          "SKU-3",
+          "Item3",
+          "3",
+          "30",
+          "90"
+        ],
+        [
+          "SKU-4",
+          "Item4",
+          "4",
+          "40",
+          "160"
+        ],
+        [
+          "SKU-5",
+          "Item5",
+          "5",
+          "50",
+          "250"
+        ],
+        [
+          "SKU-6",
+          "Item6",
+          "6",
+          "60",
+          "360"
+        ],
+        [
+          "SKU-7",
+          "Item7",
+          "7",
+          "70",
+          "490"
+        ],
+        [
+          "SKU-8",
+          "Item8",
+          "8",
+          "80",
+          "640"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

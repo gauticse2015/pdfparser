@@ -1,0 +1,73 @@
+{
+  "id": "C044_false_underlines_x10",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C044_false_underlines_x10.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "false_underlines",
+  "failure_classes": [
+    "C7_ROW_OVERCOUNT",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "True 6x4 grid + 10 false H underlines",
+  "challenges": [
+    "phantom_lines",
+    "row_overcount"
+  ],
+  "must_contain": [
+    "TOKEN_C044_DOC",
+    "TOKEN_C044_A"
+  ],
+  "expected_tables": [
+    {
+      "rows": 6,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "U01",
+          "11",
+          "12",
+          "13"
+        ],
+        [
+          "U02",
+          "21",
+          "22",
+          "TOKEN_C044_A"
+        ],
+        [
+          "U03",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "U04",
+          "41",
+          "42",
+          "43"
+        ],
+        [
+          "U05",
+          "51",
+          "52",
+          "53"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

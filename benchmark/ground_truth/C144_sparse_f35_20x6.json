@@ -1,0 +1,200 @@
+{
+  "id": "C144_sparse_f35_20x6",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C144_sparse_f35_20x6.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "sparse_partial_h",
+  "failure_classes": [
+    "C5_HEADER_ONLY_SLICE",
+    "C10_COUNT_OK_STRUCT_BAD",
+    "C3_UNDER_DETECT"
+  ],
+  "description": "Partial H (every 5) + 35% sparse fill, gold 20x6",
+  "challenges": [
+    "sparse_cells",
+    "partial_hlines",
+    "densify_failure"
+  ],
+  "must_contain": [
+    "TOKEN_C144_DOC",
+    "TOKEN_C144_A"
+  ],
+  "expected_tables": [
+    {
+      "rows": 20,
+      "cols": 6,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3",
+          "H4",
+          "H5"
+        ],
+        [
+          "R01",
+          "",
+          "1.2",
+          "",
+          "1.4",
+          "TOKEN_C144_A"
+        ],
+        [
+          "R02",
+          "",
+          "",
+          "",
+          "2.4",
+          "2.5"
+        ],
+        [
+          "R03",
+          "",
+          "",
+          "",
+          "",
+          "3.5"
+        ],
+        [
+          "R04",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R05",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R06",
+          "6.1",
+          "",
+          "6.3",
+          "6.4",
+          ""
+        ],
+        [
+          "R07",
+          "",
+          "",
+          "",
+          "",
+          "7.5"
+        ],
+        [
+          "R08",
+          "",
+          "",
+          "",
+          "",
+          "8.5"
+        ],
+        [
+          "R09",
+          "",
+          "",
+          "9.3",
+          "",
+          ""
+        ],
+        [
+          "R10",
+          "",
+          "",
+          "10.3",
+          "10.4",
+          "10.5"
+        ],
+        [
+          "R11",
+          "",
+          "11.2",
+          "11.3",
+          "",
+          "11.5"
+        ],
+        [
+          "R12",
+          "12.1",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R13",
+          "",
+          "13.2",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R14",
+          "",
+          "14.2",
+          "",
+          "",
+          ""
+        ],
+        [
+          "R15",
+          "15.1",
+          "",
+          "15.3",
+          "",
+          "15.5"
+        ],
+        [
+          "R16",
+          "",
+          "16.2",
+          "16.3",
+          "16.4",
+          ""
+        ],
+        [
+          "R17",
+          "17.1",
+          "",
+          "",
+          "",
+          "17.5"
+        ],
+        [
+          "R18",
+          "",
+          "",
+          "18.3",
+          "",
+          ""
+        ],
+        [
+          "R19",
+          "TOKEN_C144_LAST",
+          "",
+          "",
+          "19.4",
+          ""
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "struggle_mode": "sparse_densify_row_undercount"
+}

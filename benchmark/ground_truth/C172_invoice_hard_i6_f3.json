@@ -1,0 +1,89 @@
+{
+  "id": "C172_invoice_hard_i6_f3",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C172_invoice_hard_i6_f3.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "invoice_footer_hard",
+  "failure_classes": [
+    "C14_INVOICE_FOOTER",
+    "C7_ROW_OVERCOUNT",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Invoice 6 items + 3 fee rows inside same grid; gold=body only",
+  "challenges": [
+    "invoice_totals",
+    "footer_inside_grid",
+    "row_overcount"
+  ],
+  "must_contain": [
+    "TOKEN_C172_DOC",
+    "TOKEN_C172_I1"
+  ],
+  "expected_tables": [
+    {
+      "rows": 7,
+      "cols": 5,
+      "cells": [
+        [
+          "SKU",
+          "Description",
+          "Qty",
+          "Unit",
+          "Amount"
+        ],
+        [
+          "SKU-1",
+          "Item1 TOKEN_C172_I1",
+          "1",
+          "10",
+          "10"
+        ],
+        [
+          "SKU-2",
+          "Item2",
+          "2",
+          "20",
+          "40"
+        ],
+        [
+          "SKU-3",
+          "Item3",
+          "3",
+          "30",
+          "90"
+        ],
+        [
+          "SKU-4",
+          "Item4",
+          "4",
+          "40",
+          "160"
+        ],
+        [
+          "SKU-5",
+          "Item5",
+          "5",
+          "50",
+          "250"
+        ],
+        [
+          "SKU-6",
+          "Item6",
+          "6",
+          "60",
+          "360"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "struggle_mode": "invoice_fees_inside_grid"
+}

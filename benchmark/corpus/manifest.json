@@ -1,6 +1,6 @@
 {
   "name": "pdfparser-competitive-corpus-v3",
-  "description": "Basic + stress + hard + hard_precision synthetic; optional real. No ICDAR.",
+  "description": "Basic + stress + hard synthetic regression corpus, plus optional real PDFs. ICDAR is NOT included (competitive-only, external).",
   "document_count": 59,
   "tiers": {
     "basic": 12,

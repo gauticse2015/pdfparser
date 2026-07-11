@@ -1,0 +1,87 @@
+{
+  "id": "C178_cell_assign_hard_v2",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C178_cell_assign_hard_v2.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "cell_assign_hard",
+  "failure_classes": [
+    "C11_SAME_SHAPE_ZERO_TEDS",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Wrapped multi-run cells; TEDS/cell F1 sensitive to assign/order",
+  "challenges": [
+    "wrapped_cells",
+    "multi_run_text",
+    "cell_assign"
+  ],
+  "must_contain": [
+    "TOKEN_C178_DOC",
+    "TOKEN_C178_D1"
+  ],
+  "expected_tables": [
+    {
+      "rows": 8,
+      "cols": 4,
+      "cells": [
+        [
+          "ID",
+          "Description",
+          "Qty",
+          "Price"
+        ],
+        [
+          "ID-1",
+          "Long item description line A for row 1; also line B TOKEN_C178_D1",
+          "3",
+          "9.5"
+        ],
+        [
+          "ID-2",
+          "Long item description line A for row 2; also line B TOKEN_C178_D2",
+          "6",
+          "19.0"
+        ],
+        [
+          "ID-3",
+          "Item 3 desc",
+          "9",
+          "28.5"
+        ],
+        [
+          "ID-4",
+          "Item 4 desc",
+          "12",
+          "38.0"
+        ],
+        [
+          "ID-5",
+          "Item 5 desc",
+          "15",
+          "47.5"
+        ],
+        [
+          "ID-6",
+          "Item 6 desc",
+          "18",
+          "57.0"
+        ],
+        [
+          "ID-7",
+          "Item 7 desc",
+          "21",
+          "66.5"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 1,
+  "page_count": 1,
+  "struggle_mode": "cell_content_assign"
+}

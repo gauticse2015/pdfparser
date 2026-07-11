@@ -1,0 +1,110 @@
+{
+  "id": "C168_span_hard_v2e1",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C168_span_hard_v2e1.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "span_complex_hard",
+  "failure_classes": [
+    "C15_SPAN_COMPLEX",
+    "C11_SAME_SHAPE_ZERO_TEDS",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Multi-level colspan financial grid variant 1 extra=1",
+  "challenges": [
+    "colspan",
+    "rowspan",
+    "multi_header",
+    "financial"
+  ],
+  "must_contain": [
+    "TOKEN_C168_DOC"
+  ],
+  "expected_tables": [
+    {
+      "cells": [
+        [
+          "X",
+          "Y"
+        ],
+        [
+          "1",
+          "2"
+        ]
+      ],
+      "rows": 2,
+      "cols": 2
+    },
+    {
+      "cells": [
+        [
+          "Item",
+          "Category A",
+          "",
+          "Category B",
+          "",
+          "Total"
+        ],
+        [
+          "",
+          "Act",
+          "Bud",
+          "Act",
+          "Bud",
+          ""
+        ],
+        [
+          "Rev",
+          "100",
+          "90",
+          "80",
+          "85",
+          "180"
+        ],
+        [
+          "COGS",
+          "40",
+          "42",
+          "35",
+          "36",
+          "75"
+        ],
+        [
+          "GM",
+          "60",
+          "48",
+          "45",
+          "49",
+          "105"
+        ],
+        [
+          "Opex",
+          "20",
+          "22",
+          "18",
+          "19",
+          "38"
+        ],
+        [
+          "NI",
+          "40",
+          "26",
+          "27",
+          "30",
+          "TOKEN_C168_NI"
+        ]
+      ],
+      "rows": 7,
+      "cols": 6
+    }
+  ],
+  "expected_table_count": 2,
+  "page_count": 1,
+  "struggle_mode": "complex_spans"
+}

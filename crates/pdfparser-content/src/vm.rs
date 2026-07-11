@@ -11,13 +11,23 @@ pub struct InterpretOptions {
     pub max_ops: u64,
     /// Capture stroked axis-aligned segments for table lattice.
     pub capture_rules: bool,
+    /// Max thickness (user units) for a filled rect to count as a ruled line.
+    /// Many PDFs draw table rules as thin filled rectangles (`re` + `f`/`f*`)
+    /// rather than stroked segments (`S`). 0 disables thin-fill capture.
+    pub thin_fill_rule_max: f32,
 }
+
+/// Default max thickness for thin filled rects treated as lattice rules.
+/// Slightly higher than 2.0 so medium painted bars still become rules (vector
+/// stand-in for Camelot-style line recovery without a full raster engine).
+const DEFAULT_THIN_FILL_RULE_MAX: f32 = 3.5;
 
 impl Default for InterpretOptions {
     fn default() -> Self {
         Self {
             max_ops: 2_000_000,
             capture_rules: true,
+            thin_fill_rule_max: DEFAULT_THIN_FILL_RULE_MAX,
         }
     }
 }
@@ -155,7 +165,16 @@ pub fn interpret_page(
                         stack.clear();
                     }
                     "f" | "F" | "f*" => {
-                        // fill only — discard path for lattice (no stroke rules)
+                        // Thin filled rectangles are a common way to paint table rules
+                        // (ReportLab/canvas rect fill, some Word/Excel exporters). Capture
+                        // them as lattice segments; thick filled shapes stay ignored.
+                        if opts.capture_rules && opts.thin_fill_rule_max > 0.0 {
+                            for seg in
+                                path.thin_fill_rules(&gs.ctm, opts.thin_fill_rule_max, 2.0)
+                            {
+                                rules.push(seg);
+                            }
+                        }
                         path.clear();
                         stack.clear();
                     }
@@ -396,6 +415,56 @@ impl PathBuilder {
             });
         }
         out
+    }
+
+    /// Convert thin axis-aligned filled shapes into lattice rule segments.
+    ///
+    /// A path whose axis-aligned bounding box has one side ≤ `thin_max` and the
+    /// other ≥ `min_len` is treated as a single horizontal or vertical rule
+    /// through the box center (the painted “line”).
+    fn thin_fill_rules(&self, ctm: &Matrix3x2, thin_max: f32, min_len: f32) -> Vec<RuleSegment> {
+        if self.segs.is_empty() {
+            return Vec::new();
+        }
+        let mut x0 = f32::INFINITY;
+        let mut y0 = f32::INFINITY;
+        let mut x1 = f32::NEG_INFINITY;
+        let mut y1 = f32::NEG_INFINITY;
+        for ((ax, ay), (bx, by)) in &self.segs {
+            for &(x, y) in &[(ax, ay), (bx, by)] {
+                let p = ctm.apply(*x, *y);
+                x0 = x0.min(p.x);
+                y0 = y0.min(p.y);
+                x1 = x1.max(p.x);
+                y1 = y1.max(p.y);
+            }
+        }
+        if !x0.is_finite() {
+            return Vec::new();
+        }
+        let w = (x1 - x0).abs();
+        let h = (y1 - y0).abs();
+        // Horizontal rule: flat filled band
+        if h <= thin_max && w >= min_len {
+            let y = (y0 + y1) * 0.5;
+            return vec![RuleSegment {
+                x0: x0.min(x1),
+                y0: y,
+                x1: x0.max(x1),
+                y1: y,
+            }];
+        }
+        // Vertical rule: thin filled strip
+        if w <= thin_max && h >= min_len {
+            let x = (x0 + x1) * 0.5;
+            return vec![RuleSegment {
+                x0: x,
+                y0: y0.min(y1),
+                x1: x,
+                y1: y0.max(y1),
+            }];
+        }
+        Vec::new()
     }
 }
 

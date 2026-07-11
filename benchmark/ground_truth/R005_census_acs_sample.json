@@ -1,0 +1,27 @@
+{
+  "id": "R005_census_acs_sample",
+  "tier": "compete_real",
+  "suite": "regression_compete",
+  "source": "public_download",
+  "icdar_derived": false,
+  "path": "corpus/compete_real/R005_census_acs_sample.pdf",
+  "license": "US government work",
+  "source_url": "https://www2.census.gov/programs-surveys/acs/tech_docs/subject_definitions/2022_ACSSubjectDefinitions.pdf",
+  "description": "Census ACS subject definitions \u2014 multipage text+tables mix",
+  "failure_classes": [
+    "C1_OVER_DETECT",
+    "C9_MULTIPAGE"
+  ],
+  "challenges": [
+    "C1_OVER_DETECT",
+    "C9_MULTIPAGE"
+  ],
+  "soft_gold": true,
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0,
+  "page_count": 168,
+  "must_contain": [],
+  "notes": "Soft gold: download for stress/manual labeling. Add expected_table_count and expected_tables after human review.",
+  "quality_notes": "OPEN for labeling \u2014 baseline extract stored separately"
+}

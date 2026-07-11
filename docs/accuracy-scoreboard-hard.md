@@ -1,6 +1,6 @@
 # PDF Parser Accuracy Scoreboard
 
-**Suite:** `regression_hard` · **Docs:** 13 · **ICDAR excluded** (competitive-only)
+**Suite:** `regression_compete_hard` · **Docs:** 81 · **ICDAR excluded** (competitive-only)
 
 ## Executive summary — table quality
 
@@ -8,31 +8,19 @@ Primary ranking for table-engine work (mean over docs that produce table metrics
 
 | Rank | Library | cell F1 | detect F1 | shape exact | overall | ms |
 |-----:|---------|--------:|----------:|------------:|--------:|---:|
-| 1 | **pdfparser** ← **ours** | 0.993 | 1.000 | 1.000 | 99.756 | 6.0 |
-| 2 | **pdfplumber** | 0.889 | 0.897 | 0.885 | 90.741 | 12.7 |
-| 3 | **camelot_lattice** | 0.817 | 0.821 | 0.808 | 77.741 | 32.8 |
-
-### Hard tier only (structure stress)
-
-| Rank | Library | cell F1 | detect F1 | shape exact | overall |
-|-----:|---------|--------:|----------:|------------:|--------:|
-| 1 | **pdfparser** ← **ours** | 0.993 | 1.000 | 1.000 | 99.756 |
-| 2 | **pdfplumber** | 0.889 | 0.897 | 0.885 | 90.741 |
-| 3 | **camelot_lattice** | 0.817 | 0.821 | 0.808 | 77.741 |
+| 1 | **pdfparser** ← **ours** | 0.383 | 0.795 | 0.204 | 50.425 | 5.0 |
 
 ### Overall product score (text+tables+objects)
 
 | Rank | Library | overall | text F1 | table cell F1 | ms |
 |-----:|---------|--------:|--------:|--------------:|---:|
-| 1 | **pdfparser** ← **ours** | 99.756 | 1.000 | 0.993 | 6.0 |
-| 2 | **pdfplumber** | 90.741 | 1.000 | 0.889 | 12.7 |
-| 3 | **camelot_lattice** | 77.741 | 0.559 | 0.817 | 32.8 |
+| 1 | **pdfparser** ← **ours** | 50.425 | 0.920 | 0.383 | 5.0 |
 
 > Table-primary tools (`camelot_*`, `img2table`) get lower **overall** when outside-table tokens are missing — judge them on **cell F1 / detect F1**.
 
 ---
 
-**Generated:** auto · **Docs scored:** 13 · **Libraries:** camelot_lattice, pdfparser, pdfplumber
+**Generated:** auto · **Docs scored:** 81 · **Libraries:** pdfparser
 
 ## Metric definitions
 | Metric | Meaning | Range |
@@ -50,18 +38,14 @@ Scores are only computed when gold exists for that component. Synthetic docs hav
 ## Overall leaderboard (mean over successful runs)
 | Library | overall | text | text F1 | CER↓ | table | detect F1 | cell F1 | objects | ms |
 |---------|--------:|-----:|--------:|-----:|------:|----------:|--------:|--------:|---:|
-| pdfparser | 99.756 | 100.000 | 1.000 | — | 99.713 | 1.000 | 0.993 | 100.000 | 6.0 |
-| pdfplumber | 90.741 | 100.000 | 1.000 | — | 89.107 | 0.897 | 0.889 | 100.000 | 12.7 |
-| camelot_lattice | 77.741 | 55.861 | 0.559 | — | 81.603 | 0.821 | 0.817 | — | 32.8 |
+| pdfparser | 50.425 | 91.975 | 0.920 | — | 48.238 | 0.795 | 0.383 | 90.124 | 5.0 |
 
 ## Grid-gold subset (synthetic tables with full cell grids)
 Best apples-to-apples table quality comparison.
 
 | Library | n | detect F1 | shape exact | cell F1 | table score |
 |---------|--:|----------:|------------:|--------:|------------:|
-| pdfparser | 13 | 1.000 | 1.000 | 0.993 | 99.713 |
-| pdfplumber | 13 | 0.897 | 0.885 | 0.889 | 89.107 |
-| camelot_lattice | 13 | 0.821 | 0.808 | 0.817 | 81.603 |
+| pdfparser | 81 | 0.795 | 0.204 | 0.383 | 48.238 |
 
 ## By tier
 
@@ -79,9 +63,6 @@ Best apples-to-apples table quality comparison.
 
 | Library | n | overall | text | table | detect F1 | cell F1 | shape exact | objects |
 |---------|--:|--------:|-----:|------:|----------:|--------:|------------:|--------:|
-| pdfparser | 13 | 99.756 | 100.000 | 99.713 | 1.000 | 0.993 | 1.000 | 100.000 |
-| pdfplumber | 13 | 90.741 | 100.000 | 89.107 | 0.897 | 0.889 | 0.885 | 100.000 |
-| camelot_lattice | 13 | 77.741 | 55.861 | 81.603 | 0.821 | 0.817 | 0.808 | — |
 
 ### real
 
@@ -90,39 +71,175 @@ Best apples-to-apples table quality comparison.
 
 ## Per-document matrix (overall score)
 
-| Doc | camelot_lattice | pdfparser | pdfplumber |
-|-----|-----:|-----:|-----:|
-| `50_multi_table_stacked_page` | 96.2 | 100.0 | 100.0 |
-| `51_multi_table_multipage` | 93.6 | 100.0 | 99.7 |
-| `52_page_border_noise` | 90.0 | 100.0 | 100.0 |
-| `53_column_span_header` | 97.5 | 99.1 | 100.0 |
-| `54_row_span_categories` | 97.5 | 98.1 | 100.0 |
-| `55_gap_broken_corners` | 0.0 | 100.0 | 100.0 |
-| `56_stacked_uneven_tables` | 95.0 | 100.0 | 99.5 |
-| `57_wide_statistical_grid` | 97.9 | 99.7 | 100.0 |
-| `58_multipage_continued_table` | 95.0 | 100.0 | 100.0 |
-| `59_stream_multi_region` | 0.0 | 100.0 | 15.0 |
-| `60_mixed_lattice_stream_page` | 56.7 | 100.0 | 66.7 |
-| `61_decorative_hline_noise` | 95.0 | 100.0 | 100.0 |
-| `62_two_close_grids` | 96.2 | 100.0 | 98.7 |
+| Doc | pdfparser |
+|-----|-----:|
+| `C100_img_rules_8x4` | 5.0 |
+| `C101_img_rules_10x5` | 5.0 |
+| `C102_img_rules_12x6` | 5.0 |
+| `C103_img_rules_15x6` | 5.0 |
+| `C104_img_rules_21x6` | 5.0 |
+| `C105_img_rules_12x8` | 5.0 |
+| `C106_img_rules_18x5` | 5.0 |
+| `C107_img_rules_9x7` | 5.0 |
+| `C108_hdr_slice_31x10` | 18.6 |
+| `C109_hdr_slice_44x12` | 36.0 |
+| `C110_hdr_slice_58x8` | 30.2 |
+| `C111_hdr_slice_35x11` | 36.2 |
+| `C112_hdr_slice_40x9` | 60.0 |
+| `C113_hdr_slice_50x10` | 13.5 |
+| `C114_hdr_slice_28x14` | 41.5 |
+| `C115_hdr_slice_36x8` | 18.6 |
+| `C116_partial_v_s2_12x10` | 38.2 |
+| `C117_partial_v_s2_15x12` | 38.2 |
+| `C118_partial_v_s2_20x12` | 38.2 |
+| `C119_partial_v_s2_15x14` | 38.2 |
+| `C120_partial_v_s2_10x16` | 38.2 |
+| `C121_partial_v_s2_18x10` | 38.2 |
+| `C122_partial_v_s3_12x10` | 38.2 |
+| `C123_partial_v_s3_15x12` | 38.2 |
+| `C124_partial_v_s3_20x12` | 38.2 |
+| `C125_partial_v_s3_15x14` | 38.2 |
+| `C126_partial_v_s3_10x16` | 38.2 |
+| `C127_partial_v_s3_18x10` | 38.2 |
+| `C128_partial_v_s4_12x10` | 38.2 |
+| `C129_partial_v_s4_15x12` | 38.2 |
+| `C130_partial_v_s4_20x12` | 38.2 |
+| `C131_partial_v_s4_15x14` | 38.2 |
+| `C132_partial_v_s4_10x16` | 38.2 |
+| `C133_partial_v_s4_18x10` | 38.2 |
+| `C134_cell_underlines_6x4` | 49.1 |
+| `C135_cell_underlines_8x5` | 46.7 |
+| `C136_cell_underlines_10x5` | 45.2 |
+| `C137_cell_underlines_12x6` | 44.1 |
+| `C138_cell_underlines_7x4` | 47.8 |
+| `C139_cell_underlines_9x5` | 45.9 |
+| `C140_cell_underlines_14x4` | 43.3 |
+| `C141_cell_underlines_11x6` | 44.6 |
+| `C142_sparse_f25_20x6` | 53.3 |
+| `C143_sparse_f25_25x8` | 47.5 |
+| `C144_sparse_f35_20x6` | 50.2 |
+| `C145_sparse_f35_25x8` | 47.4 |
+| `C146_sparse_f50_20x6` | 72.6 |
+| `C147_sparse_f50_28x7` | 60.0 |
+| `C148_sparse_f30_30x5` | 53.2 |
+| `C149_sparse_f40_18x9` | 71.3 |
+| `C150_mix_irreg_str20x6` | 56.2 |
+| `C151_mix_irreg_str30x6` | 67.1 |
+| `C152_mix_irreg_str40x7` | 96.7 |
+| `C153_mix_irreg_str25x8` | 66.5 |
+| `C154_mix_irreg_str35x5` | 45.8 |
+| `C155_mix_irreg_str22x9` | 66.3 |
+| `C156_multi_close_n3_g6` | 100.0 |
+| `C157_multi_close_n4_g8` | 100.0 |
+| `C158_multi_close_n5_g10` | 100.0 |
+| `C159_multi_close_n4_g5` | 34.8 |
+| `C160_multi_close_n6_g12` | 100.0 |
+| `C161_mp_chaos_p2_s3` | 46.7 |
+| `C162_mp_chaos_p3_s3` | 47.8 |
+| `C163_mp_chaos_p4_s4` | 49.1 |
+| `C164_mp_chaos_p3_s2` | 45.9 |
+| `C165_span_hard_v1e0` | 72.3 |
+| `C166_span_hard_v1e1` | 27.2 |
+| `C167_span_hard_v2e0` | 100.0 |
+| `C168_span_hard_v2e1` | 27.2 |
+| `C169_invoice_hard_i5_f4` | 76.2 |
+| `C170_invoice_hard_i8_f5` | 76.2 |
+| `C171_invoice_hard_i12_f6` | 76.2 |
+| `C172_invoice_hard_i6_f3` | 76.2 |
+| `C173_severe_overdetect_n8` | 88.9 |
+| `C174_severe_overdetect_n16` | 88.9 |
+| `C175_severe_overdetect_n24` | 88.9 |
+| `C176_severe_overdetect_n12` | 67.9 |
+| `C177_cell_assign_hard_v1` | 97.5 |
+| `C178_cell_assign_hard_v2` | 97.5 |
+| `C179_cell_assign_hard_v3` | 97.5 |
+| `C180_cell_assign_hard_v4` | 97.5 |
 
 ## Per-document table cell F1 (grid gold only)
 
-| Doc | camelot_lattice | pdfparser | pdfplumber |
-|-----|-----:|-----:|-----:|
-| `50_multi_table_stacked_page` | 1.000 | 1.000 | 1.000 |
-| `51_multi_table_multipage` | 1.000 | 1.000 | 0.991 |
-| `52_page_border_noise` | 1.000 | 1.000 | 1.000 |
-| `53_column_span_header` | 1.000 | 0.973 | 1.000 |
-| `54_row_span_categories` | 1.000 | 0.943 | 1.000 |
-| `55_gap_broken_corners` | 0.000 | 1.000 | 1.000 |
-| `56_stacked_uneven_tables` | 1.000 | 1.000 | 0.985 |
-| `57_wide_statistical_grid` | 1.000 | 0.990 | 1.000 |
-| `58_multipage_continued_table` | 1.000 | 1.000 | 1.000 |
-| `59_stream_multi_region` | 0.000 | 1.000 | 0.000 |
-| `60_mixed_lattice_stream_page` | 0.625 | 1.000 | 0.625 |
-| `61_decorative_hline_noise` | 1.000 | 1.000 | 1.000 |
-| `62_two_close_grids` | 1.000 | 1.000 | 0.963 |
+| Doc | pdfparser |
+|-----|-----:|
+| `C100_img_rules_8x4` | 0.000 |
+| `C101_img_rules_10x5` | 0.000 |
+| `C102_img_rules_12x6` | 0.000 |
+| `C103_img_rules_15x6` | 0.000 |
+| `C104_img_rules_21x6` | 0.000 |
+| `C105_img_rules_12x8` | 0.000 |
+| `C106_img_rules_18x5` | 0.000 |
+| `C107_img_rules_9x7` | 0.000 |
+| `C108_hdr_slice_31x10` | 0.008 |
+| `C109_hdr_slice_44x12` | 0.379 |
+| `C110_hdr_slice_58x8` | 0.314 |
+| `C111_hdr_slice_35x11` | 0.471 |
+| `C112_hdr_slice_40x9` | 0.865 |
+| `C113_hdr_slice_50x10` | 0.005 |
+| `C114_hdr_slice_28x14` | 0.523 |
+| `C115_hdr_slice_36x8` | 0.008 |
+| `C116_partial_v_s2_12x10` | 0.000 |
+| `C117_partial_v_s2_15x12` | 0.000 |
+| `C118_partial_v_s2_20x12` | 0.000 |
+| `C119_partial_v_s2_15x14` | 0.000 |
+| `C120_partial_v_s2_10x16` | 0.000 |
+| `C121_partial_v_s2_18x10` | 0.000 |
+| `C122_partial_v_s3_12x10` | 0.000 |
+| `C123_partial_v_s3_15x12` | 0.000 |
+| `C124_partial_v_s3_20x12` | 0.000 |
+| `C125_partial_v_s3_15x14` | 0.000 |
+| `C126_partial_v_s3_10x16` | 0.000 |
+| `C127_partial_v_s3_18x10` | 0.000 |
+| `C128_partial_v_s4_12x10` | 0.000 |
+| `C129_partial_v_s4_15x12` | 0.000 |
+| `C130_partial_v_s4_20x12` | 0.000 |
+| `C131_partial_v_s4_15x14` | 0.000 |
+| `C132_partial_v_s4_10x16` | 0.000 |
+| `C133_partial_v_s4_18x10` | 0.000 |
+| `C134_cell_underlines_6x4` | 0.286 |
+| `C135_cell_underlines_8x5` | 0.222 |
+| `C136_cell_underlines_10x5` | 0.182 |
+| `C137_cell_underlines_12x6` | 0.154 |
+| `C138_cell_underlines_7x4` | 0.250 |
+| `C139_cell_underlines_9x5` | 0.200 |
+| `C140_cell_underlines_14x4` | 0.133 |
+| `C141_cell_underlines_11x6` | 0.167 |
+| `C142_sparse_f25_20x6` | 0.395 |
+| `C143_sparse_f25_25x8` | 0.244 |
+| `C144_sparse_f35_20x6` | 0.315 |
+| `C145_sparse_f35_25x8` | 0.241 |
+| `C146_sparse_f50_20x6` | 0.904 |
+| `C147_sparse_f50_28x7` | 0.571 |
+| `C148_sparse_f30_30x5` | 0.393 |
+| `C149_sparse_f40_18x9` | 0.870 |
+| `C150_mix_irreg_str20x6` | 0.423 |
+| `C151_mix_irreg_str30x6` | 0.710 |
+| `C152_mix_irreg_str40x7` | 1.000 |
+| `C153_mix_irreg_str25x8` | 0.693 |
+| `C154_mix_irreg_str35x5` | 0.149 |
+| `C155_mix_irreg_str22x9` | 0.689 |
+| `C156_multi_close_n3_g6` | 1.000 |
+| `C157_multi_close_n4_g8` | 1.000 |
+| `C158_multi_close_n5_g10` | 1.000 |
+| `C159_multi_close_n4_g5` | 0.435 |
+| `C160_multi_close_n6_g12` | 1.000 |
+| `C161_mp_chaos_p2_s3` | 0.222 |
+| `C162_mp_chaos_p3_s3` | 0.250 |
+| `C163_mp_chaos_p4_s4` | 0.286 |
+| `C164_mp_chaos_p3_s2` | 0.200 |
+| `C165_span_hard_v1e0` | 0.895 |
+| `C166_span_hard_v1e1` | 0.000 |
+| `C167_span_hard_v2e0` | 1.000 |
+| `C168_span_hard_v2e1` | 0.000 |
+| `C169_invoice_hard_i5_f4` | 1.000 |
+| `C170_invoice_hard_i8_f5` | 1.000 |
+| `C171_invoice_hard_i12_f6` | 1.000 |
+| `C172_invoice_hard_i6_f3` | 1.000 |
+| `C173_severe_overdetect_n8` | 1.000 |
+| `C174_severe_overdetect_n16` | 1.000 |
+| `C175_severe_overdetect_n24` | 1.000 |
+| `C176_severe_overdetect_n12` | 1.000 |
+| `C177_cell_assign_hard_v1` | 1.000 |
+| `C178_cell_assign_hard_v2` | 1.000 |
+| `C179_cell_assign_hard_v3` | 1.000 |
+| `C180_cell_assign_hard_v4` | 1.000 |
 
 ## How to compare `pdfparser` later
 1. Add an adapter returning the same extract fields.
@@ -139,9 +256,9 @@ Best apples-to-apples table quality comparison.
 
 ## Run metadata
 
-- **Suite:** `regression_hard` (ICDAR never included in regression)
-- **Documents scored:** 13
-- **Libraries:** pdfparser, pdfplumber, camelot_lattice
+- **Suite:** `regression_compete_hard` (ICDAR never included in regression)
+- **Documents scored:** 81
+- **Libraries:** pdfparser
 - **Note:** `camelot_*` / `img2table` / `tabula` are table-primary; text scores use cell-concatenated text only (outside-table tokens may miss).
 - **Tabula:** skipped when no working JRE is installed.
 
@@ -149,53 +266,12 @@ Best apples-to-apples table quality comparison.
 
 | Rank | Library | detect F1 | shape exact | cell F1 | table score | ms |
 |-----:|---------|----------:|------------:|--------:|------------:|---:|
-| 1 | **pdfparser** | 1.000 | 1.000 | 0.993 | 99.713 | 6.0 |
-| 2 | **pdfplumber** | 0.897 | 0.885 | 0.889 | 89.107 | 12.7 |
-| 3 | **camelot_lattice** | 0.821 | 0.808 | 0.817 | 81.603 | 32.8 |
+| 1 | **pdfparser** | 0.795 | 0.204 | 0.383 | 48.238 | 5.0 |
 
 ## Hard tier (structure stress 50–62)
 
 | Library | n | detect F1 | shape exact | cell F1 | table score | overall |
 |---------|--:|----------:|------------:|--------:|------------:|--------:|
-| pdfparser | 13 | 1.000 | 1.000 | 0.993 | 99.713 | 99.756 |
-| pdfplumber | 13 | 0.897 | 0.885 | 0.889 | 89.107 | 90.741 |
-| camelot_lattice | 13 | 0.821 | 0.808 | 0.817 | 81.603 | 77.741 |
-
-## Hard suite — per-doc table detect F1
-
-| Doc | pdfparser | pdfplumber | camelot_lattice |
-|-----|-----:|-----:|-----:|
-| `50_multi_table_stacked_page` | 1.00 | 1.00 | 1.00 |
-| `51_multi_table_multipage` | 1.00 | 1.00 | 1.00 |
-| `52_page_border_noise` | 1.00 | 1.00 | 1.00 |
-| `53_column_span_header` | 1.00 | 1.00 | 1.00 |
-| `54_row_span_categories` | 1.00 | 1.00 | 1.00 |
-| `55_gap_broken_corners` | 1.00 | 1.00 | 0.00 |
-| `56_stacked_uneven_tables` | 1.00 | 1.00 | 1.00 |
-| `57_wide_statistical_grid` | 1.00 | 1.00 | 1.00 |
-| `58_multipage_continued_table` | 1.00 | 1.00 | 1.00 |
-| `59_stream_multi_region` | 1.00 | 0.00 | 0.00 |
-| `60_mixed_lattice_stream_page` | 1.00 | 0.67 | 0.67 |
-| `61_decorative_hline_noise` | 1.00 | 1.00 | 1.00 |
-| `62_two_close_grids` | 1.00 | 1.00 | 1.00 |
-
-## Hard suite — per-doc table cell F1
-
-| Doc | pdfparser | pdfplumber | camelot_lattice |
-|-----|-----:|-----:|-----:|
-| `50_multi_table_stacked_page` | 1.000 | 1.000 | 1.000 |
-| `51_multi_table_multipage` | 1.000 | 0.991 | 1.000 |
-| `52_page_border_noise` | 1.000 | 1.000 | 1.000 |
-| `53_column_span_header` | 0.973 | 1.000 | 1.000 |
-| `54_row_span_categories` | 0.943 | 1.000 | 1.000 |
-| `55_gap_broken_corners` | 1.000 | 1.000 | 0.000 |
-| `56_stacked_uneven_tables` | 1.000 | 0.985 | 1.000 |
-| `57_wide_statistical_grid` | 0.990 | 1.000 | 1.000 |
-| `58_multipage_continued_table` | 1.000 | 1.000 | 1.000 |
-| `59_stream_multi_region` | 1.000 | 0.000 | 0.000 |
-| `60_mixed_lattice_stream_page` | 1.000 | 0.625 | 0.625 |
-| `61_decorative_hline_noise` | 1.000 | 1.000 | 1.000 |
-| `62_two_close_grids` | 1.000 | 0.963 | 1.000 |
 
 ## How to re-run
 

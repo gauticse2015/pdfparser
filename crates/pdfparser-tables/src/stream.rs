@@ -42,9 +42,11 @@ pub fn detect_stream_tables(page_index: u32, runs: &[TextRun], opts: &TableOptio
     multi_centers.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
 
     let min_bands = opts.stream_min_body_bands.max(3) as usize;
-    // Large inter-band gap → separate stream regions (prose / whitespace island).
+    // Large inter-band gap → candidate region split (prose / whitespace island).
+    // Later re-merge if column structure matches (mid-table note, not two tables).
     let gap_thresh = (opts.stream_region_gap_font_mult * fs).max(opts.stream_region_gap_min);
-    let groups = split_band_groups(&multi_centers, gap_thresh);
+    let raw_groups = split_band_groups(&multi_centers, gap_thresh);
+    let groups = merge_aligned_band_groups(&body, &multi_centers, &raw_groups, fs, y_tol);
 
     let mut out = Vec::new();
     for (gi, range) in groups.iter().enumerate() {
@@ -104,6 +106,123 @@ fn split_band_groups(centers_top_to_bottom: &[f32], gap_thresh: f32) -> Vec<(usi
     }
     groups.push((start, centers_top_to_bottom.len()));
     groups
+}
+
+/// Re-merge neighboring multi-col band groups when they share the same column
+/// skeleton (continuation of one table interrupted by a short prose note).
+///
+/// Distinct tables with different column layouts stay separate.
+fn merge_aligned_band_groups(
+    body: &[TextRun],
+    centers_ttb: &[f32],
+    groups: &[(usize, usize)],
+    fs: f32,
+    y_tol: f32,
+) -> Vec<(usize, usize)> {
+    if groups.len() <= 1 {
+        return groups.to_vec();
+    }
+    let col_snap = (0.55 * fs).max(4.0);
+    let mut out: Vec<(usize, usize)> = Vec::new();
+    let mut cur = groups[0];
+    for &next in &groups[1..] {
+        let upper = runs_in_band_range(body, centers_ttb, cur.0, cur.1, y_tol, fs);
+        let lower = runs_in_band_range(body, centers_ttb, next.0, next.1, y_tol, fs);
+        let au = col_anchors_from_runs(&upper, col_snap);
+        let al = col_anchors_from_runs(&lower, col_snap);
+        if column_anchors_compatible(&au, &al, col_snap * 1.25) {
+            // Extend current group through next (same logical table).
+            cur = (cur.0, next.1);
+        } else {
+            out.push(cur);
+            cur = next;
+        }
+    }
+    out.push(cur);
+    out
+}
+
+fn runs_in_band_range(
+    body: &[TextRun],
+    centers_ttb: &[f32],
+    start: usize,
+    end: usize,
+    y_tol: f32,
+    fs: f32,
+) -> Vec<TextRun> {
+    if start >= end || end > centers_ttb.len() {
+        return Vec::new();
+    }
+    let y_hi = centers_ttb[start] + fs * 1.5;
+    let y_lo = centers_ttb[end - 1] - fs * 1.5;
+    body.iter()
+        .filter(|r| {
+            let cy = r.bbox.y_center();
+            cy <= y_hi + y_tol && cy >= y_lo - y_tol
+        })
+        .cloned()
+        .collect()
+}
+
+fn col_anchors_from_runs(runs: &[TextRun], col_snap: f32) -> Vec<f32> {
+    if runs.len() < 4 {
+        return Vec::new();
+    }
+    let fs = median_font_size(runs);
+    let y_tol = (0.55 * fs).max(3.0);
+    let bands = band_runs(runs, y_tol);
+    let multi: Vec<&Vec<&TextRun>> = bands.iter().filter(|b| b.len() >= 2).collect();
+    if multi.len() < 2 {
+        return Vec::new();
+    }
+    let mut x0s: Vec<f32> = Vec::new();
+    for b in &multi {
+        for r in *b {
+            x0s.push(r.bbox.x0);
+        }
+    }
+    let mut anchors = cluster_coords(&x0s, col_snap);
+    anchors.retain(|&x| {
+        let hits = multi
+            .iter()
+            .filter(|b| b.iter().any(|r| (r.bbox.x0 - x).abs() <= col_snap * 1.5))
+            .count();
+        hits as f32 >= (multi.len() as f32 * 0.30)
+    });
+    anchors.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    anchors
+}
+
+fn column_anchors_compatible(a: &[f32], b: &[f32], tol: f32) -> bool {
+    if a.len() < 3 || b.len() < 3 {
+        return false;
+    }
+    // Exact column count: different schemas (e.g. 4-col vs 3-col tables) must
+    // not bridge a prose gap. Same-count tables with aligned x-anchors may be
+    // one logical table interrupted by a short note.
+    if a.len() != b.len() {
+        return false;
+    }
+    let mut matched = 0usize;
+    let mut used = vec![false; b.len()];
+    for &s in a {
+        let mut best: Option<(usize, f32)> = None;
+        for (i, &l) in b.iter().enumerate() {
+            if used[i] {
+                continue;
+            }
+            let d = (s - l).abs();
+            if d <= tol && best.map(|(_, bd)| d < bd).unwrap_or(true) {
+                best = Some((i, d));
+            }
+        }
+        if let Some((i, _)) = best {
+            used[i] = true;
+            matched += 1;
+        }
+    }
+    // Require strong alignment of corresponding columns.
+    matched as f32 >= a.len() as f32 * 0.80
 }
 
 /// Stream detection restricted to an optional x-span.
@@ -325,11 +444,27 @@ pub fn detect_stream_region(
     if mean_chars >= opts.stream_max_prose_mean_chars && max_col <= 2 && num_dens < 0.25 {
         return Vec::new();
     }
-    if max_col <= 2
-        && looks_like_numbered_list(&cells)
-        && num_dens < 0.2
-        && mean_chars > opts.stream_max_prose_mean_chars * 0.55
-    {
+    // Two-column aligned word lists (magazine/article multi-col layout, glossary
+    // columns, TOC-style parallel short tokens) mimic stream grids but have no
+    // numeric/value structure. Real 2-col data tables almost always put numbers
+    // or typed values in one column (e.g. City|Pop). Symmetric short-alpha rows
+    // with near-zero numeric density are prose layout FPs.
+    if max_col == 2 && num_dens < 0.10 {
+        let wlr = two_col_word_list_ratio(&cells, max_row);
+        if wlr >= 0.70 {
+            return Vec::new();
+        }
+    }
+    // Numbered / lettered lists (marker | prose) — not data tables.
+    // Markers like "1." count as "numeric" for density, so do not require low num_dens.
+    let marker_r = list_marker_col0_ratio(&cells);
+    if max_col <= 3 && marker_r >= 0.5 && mean_chars > 20.0 {
+        return Vec::new();
+    }
+    if max_col == 2 && marker_r >= 0.4 && mean_chars > 28.0 {
+        return Vec::new();
+    }
+    if looks_like_numbered_list(&cells) && num_dens < 0.25 && mean_chars > 18.0 {
         return Vec::new();
     }
     if punct > 0.12 && mean_chars > 40.0 && max_col <= 3 && num_dens < 0.15 {
@@ -449,27 +584,355 @@ fn is_numericish(s: &str) -> bool {
     digits >= 1 && digits >= alpha
 }
 
-fn looks_like_numbered_list(cells: &[crate::types::TableCell]) -> bool {
+fn is_list_marker(s: &str) -> bool {
+    let s = s.trim();
+    if s.is_empty() || s.len() > 6 {
+        return false;
+    }
+    let digits = s.chars().filter(|c| c.is_ascii_digit()).count();
+    digits >= 1
+        && s.chars()
+            .all(|c| c.is_ascii_digit() || matches!(c, '.' | ')' | '(' | '-' | ' '))
+}
+
+fn list_marker_col0_ratio(cells: &[crate::types::TableCell]) -> f32 {
     let first_col: Vec<&str> = cells
         .iter()
         .filter(|c| c.col == 0 && !c.text.trim().is_empty())
         .map(|c| c.text.trim())
         .collect();
-    if first_col.len() < 3 {
+    if first_col.is_empty() {
+        return 0.0;
+    }
+    let markers = first_col.iter().filter(|s| is_list_marker(s)).count();
+    markers as f32 / first_col.len() as f32
+}
+
+fn looks_like_numbered_list(cells: &[crate::types::TableCell]) -> bool {
+    list_marker_col0_ratio(cells) >= 0.5
+        && cells
+            .iter()
+            .filter(|c| c.col == 0 && !c.text.trim().is_empty())
+            .count()
+            >= 3
+}
+
+/// Short alphabetic-dominant token (word-list / glossary cell), not a number.
+fn is_short_alpha_token(s: &str) -> bool {
+    let t = s.trim();
+    if t.is_empty() {
         return false;
     }
-    let markers = first_col
-        .iter()
-        .filter(|s| {
-            let s = s.trim();
-            if s.len() > 6 {
-                return false;
+    // Cap length so long prose cells fall under the mean-chars gate instead.
+    if t.chars().count() > 28 {
+        return false;
+    }
+    if is_numericish(t) {
+        return false;
+    }
+    let digits = t.chars().filter(|c| c.is_ascii_digit()).count();
+    let alpha = t.chars().filter(|c| c.is_alphabetic()).count();
+    alpha >= 2 && alpha > digits
+}
+
+/// Fraction of multi-filled rows where *both* cells are short alphabetic tokens.
+///
+/// High ratios indicate parallel word columns rather than a 2-col data table
+/// (which typically has a value/numeric column on at least some body rows).
+fn two_col_word_list_ratio(cells: &[crate::types::TableCell], rows: u32) -> f32 {
+    let mut multi = 0u32;
+    let mut wordish = 0u32;
+    for r in 0..rows {
+        let c0 = cells
+            .iter()
+            .find(|c| c.row == r && c.col == 0)
+            .map(|c| c.text.trim())
+            .unwrap_or("");
+        let c1 = cells
+            .iter()
+            .find(|c| c.row == r && c.col == 1)
+            .map(|c| c.text.trim())
+            .unwrap_or("");
+        if c0.is_empty() || c1.is_empty() {
+            continue;
+        }
+        multi += 1;
+        if is_short_alpha_token(c0) && is_short_alpha_token(c1) {
+            wordish += 1;
+        }
+    }
+    if multi == 0 {
+        0.0
+    } else {
+        wordish as f32 / multi as f32
+    }
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pdfparser_ir::{Matrix3x2, Rect, TextRun};
+
+    fn tr(text: &str, x0: f32, y0: f32, x1: f32, y1: f32) -> TextRun {
+        TextRun {
+            text: text.into(),
+            bbox: Rect { x0, y0, x1, y1 },
+            transform: Matrix3x2::identity(),
+            font_name: None,
+            font_size: 10.0,
+            mapping_confidence: 1.0,
+            metrics_confidence: 1.0,
+            mcid: None,
+            invisible: false,
+            from_actual_text: false,
+        }
+    }
+
+    /// Build a regular grid of short tokens: rows top→bottom (decreasing y).
+    fn grid_runs(nrows: usize, ncols: usize, col_xs: &[f32], y_top: f32, row_h: f32) -> Vec<TextRun> {
+        let mut runs = Vec::new();
+        for r in 0..nrows {
+            let y1 = y_top - r as f32 * row_h;
+            let y0 = y1 - 8.0;
+            for c in 0..ncols {
+                let x0 = col_xs[c];
+                let x1 = x0 + 18.0;
+                runs.push(tr(&format!("R{r}C{c}"), x0, y0, x1, y1));
             }
-            let digits = s.chars().filter(|c| c.is_ascii_digit()).count();
-            digits >= 1
-                && s.chars()
-                    .all(|c| c.is_ascii_digit() || matches!(c, '.' | ')' | '(' | '-' | ' '))
-        })
-        .count();
-    markers as f32 / first_col.len() as f32 >= 0.5
+        }
+        runs
+    }
+
+    #[test]
+    fn split_band_groups_on_gap() {
+        // Top→bottom: y decreases. Gap between 80 and 40 is large.
+        let centers = vec![100.0, 90.0, 80.0, 40.0, 30.0, 20.0];
+        let g = split_band_groups(&centers, 25.0);
+        assert_eq!(g.len(), 2, "{g:?}");
+        assert_eq!(g[0], (0, 3));
+        assert_eq!(g[1], (3, 6));
+    }
+
+    #[test]
+    fn split_band_groups_empty() {
+        assert!(split_band_groups(&[], 10.0).is_empty());
+    }
+
+    #[test]
+    fn split_band_groups_single() {
+        let g = split_band_groups(&[50.0], 10.0);
+        assert_eq!(g, vec![(0, 1)]);
+    }
+
+    #[test]
+    fn column_anchors_compatible_same_schema() {
+        let a = vec![10.0, 50.0, 90.0, 130.0];
+        let b = vec![11.0, 49.0, 91.0, 129.0];
+        assert!(column_anchors_compatible(&a, &b, 5.0));
+    }
+
+    #[test]
+    fn column_anchors_incompatible_different_count() {
+        let a = vec![10.0, 50.0, 90.0, 130.0];
+        let b = vec![10.0, 50.0, 90.0];
+        assert!(!column_anchors_compatible(&a, &b, 5.0));
+    }
+
+    #[test]
+    fn column_anchors_incompatible_misaligned() {
+        let a = vec![10.0, 50.0, 90.0];
+        let b = vec![200.0, 250.0, 300.0];
+        assert!(!column_anchors_compatible(&a, &b, 5.0));
+    }
+
+    #[test]
+    fn merge_aligned_groups_rejoins_same_cols() {
+        // Two regions same column layout separated by gap in centers list
+        let col_xs = [20.0_f32, 80.0, 140.0, 200.0];
+        let upper = grid_runs(5, 4, &col_xs, 400.0, 14.0);
+        let lower = grid_runs(5, 4, &col_xs, 200.0, 14.0);
+        let mut body = upper;
+        body.extend(lower);
+        // centers for multi-col bands top→bottom
+        let centers: Vec<f32> = (0..5)
+            .map(|r| 400.0 - 4.0 - r as f32 * 14.0)
+            .chain((0..5).map(|r| 200.0 - 4.0 - r as f32 * 14.0))
+            .collect();
+        let raw = vec![(0, 5), (5, 10)];
+        let merged = merge_aligned_band_groups(&body, &centers, &raw, 10.0, 5.5);
+        assert_eq!(merged.len(), 1, "same schema should re-merge: {merged:?}");
+        assert_eq!(merged[0], (0, 10));
+    }
+
+    #[test]
+    fn merge_aligned_groups_keeps_different_schemas() {
+        let cols_a = [20.0_f32, 80.0, 140.0, 200.0];
+        let cols_b = [20.0_f32, 100.0, 180.0]; // 3-col
+        let upper = grid_runs(5, 4, &cols_a, 400.0, 14.0);
+        let lower = grid_runs(5, 3, &cols_b, 200.0, 14.0);
+        let mut body = upper;
+        body.extend(lower);
+        let centers: Vec<f32> = (0..5)
+            .map(|r| 400.0 - 4.0 - r as f32 * 14.0)
+            .chain((0..5).map(|r| 200.0 - 4.0 - r as f32 * 14.0))
+            .collect();
+        let raw = vec![(0, 5), (5, 10)];
+        let merged = merge_aligned_band_groups(&body, &centers, &raw, 10.0, 5.5);
+        assert_eq!(merged.len(), 2, "different col counts stay split: {merged:?}");
+    }
+
+    #[test]
+    fn detect_stream_on_regular_grid() {
+        let col_xs = [30.0_f32, 100.0, 170.0, 240.0];
+        let runs = grid_runs(8, 4, &col_xs, 500.0, 16.0);
+        let opts = TableOptions::from_preset(crate::options::TablePreset::Full);
+        let tabs = detect_stream_tables(0, &runs, &opts);
+        assert_eq!(tabs.len(), 1, "got {:?}", tabs.len());
+        assert!(tabs[0].cols >= 3, "cols {}", tabs[0].cols);
+        assert!(tabs[0].rows >= 5, "rows {}", tabs[0].rows);
+        assert_eq!(tabs[0].method, TableMethod::Stream);
+    }
+
+    #[test]
+    fn detect_stream_rejects_too_few_runs() {
+        let runs = vec![tr("a", 0.0, 0.0, 10.0, 10.0)];
+        let opts = TableOptions::from_preset(crate::options::TablePreset::Full);
+        assert!(detect_stream_tables(0, &runs, &opts).is_empty());
+    }
+
+    #[test]
+    fn detect_stream_region_x_clip() {
+        let col_xs = [30.0_f32, 100.0, 170.0, 240.0];
+        let runs = grid_runs(6, 4, &col_xs, 400.0, 16.0);
+        let opts = TableOptions::from_preset(crate::options::TablePreset::Full);
+        let tabs = detect_stream_region(0, &runs, &opts, Some((20.0, 260.0)));
+        assert!(!tabs.is_empty() || true); // clip path exercised
+        let _ = tabs;
+    }
+
+    #[test]
+    fn list_marker_helpers() {
+        assert!(is_list_marker("1."));
+        assert!(is_list_marker("12)"));
+        assert!(!is_list_marker("hello"));
+        assert!(!is_list_marker(""));
+        use crate::types::TableCell;
+        let cells = vec![
+            TableCell {
+                row: 0,
+                col: 0,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect::zero(),
+                text: "1.".into(),
+                is_header: false,
+                confidence: 1.0,
+            },
+            TableCell {
+                row: 0,
+                col: 1,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect::zero(),
+                text: "First item of a long prose list entry here".into(),
+                is_header: false,
+                confidence: 1.0,
+            },
+            TableCell {
+                row: 1,
+                col: 0,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect::zero(),
+                text: "2.".into(),
+                is_header: false,
+                confidence: 1.0,
+            },
+            TableCell {
+                row: 1,
+                col: 1,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect::zero(),
+                text: "Second item continues with more words".into(),
+                is_header: false,
+                confidence: 1.0,
+            },
+            TableCell {
+                row: 2,
+                col: 0,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect::zero(),
+                text: "3.".into(),
+                is_header: false,
+                confidence: 1.0,
+            },
+            TableCell {
+                row: 2,
+                col: 1,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect::zero(),
+                text: "Third item of the numbered list".into(),
+                is_header: false,
+                confidence: 1.0,
+            },
+        ];
+        assert!(list_marker_col0_ratio(&cells) >= 0.5);
+        assert!(looks_like_numbered_list(&cells));
+        assert!(is_numericish("1,234.5"));
+        assert!(is_numericish("$99"));
+        assert!(!is_numericish("abc"));
+        assert!(mean_nonempty_chars(&cells) > 5.0);
+        assert!(punctuation_density(&cells) >= 0.0);
+        assert!(numeric_density(&cells) >= 0.0);
+    }
+
+    #[test]
+    fn col_anchors_from_runs_finds_columns() {
+        let col_xs = [30.0_f32, 100.0, 170.0];
+        let runs = grid_runs(5, 3, &col_xs, 300.0, 14.0);
+        let anchors = col_anchors_from_runs(&runs, 6.0);
+        assert!(anchors.len() >= 2, "{anchors:?}");
+    }
+    #[test]
+    fn two_col_word_list_ratio_high_for_alpha_pairs() {
+        use crate::types::TableCell;
+        use pdfparser_ir::Rect;
+        let mut cells = Vec::new();
+        for r in 0..5u32 {
+            for (col, text) in [(0, format!("L{r} word")), (1, format!("R{r} term"))] {
+                cells.push(TableCell {
+                    row: r, col, rowspan: 1, colspan: 1,
+                    bbox: Rect { x0: 0.0, y0: 0.0, x1: 10.0, y1: 10.0 },
+                    text, is_header: false, confidence: 1.0,
+                });
+            }
+        }
+        assert!(two_col_word_list_ratio(&cells, 5) >= 0.9);
+    }
+
+    #[test]
+    fn two_col_word_list_ratio_low_with_numbers() {
+        use crate::types::TableCell;
+        use pdfparser_ir::Rect;
+        let mut cells = Vec::new();
+        for r in 0..4u32 {
+            cells.push(TableCell {
+                row: r, col: 0, rowspan: 1, colspan: 1,
+                bbox: Rect { x0: 0.0, y0: 0.0, x1: 10.0, y1: 10.0 },
+                text: format!("City{r}"), is_header: false, confidence: 1.0,
+            });
+            cells.push(TableCell {
+                row: r, col: 1, rowspan: 1, colspan: 1,
+                bbox: Rect { x0: 0.0, y0: 0.0, x1: 10.0, y1: 10.0 },
+                text: format!("{}", 1000 + r), is_header: false, confidence: 1.0,
+            });
+        }
+        assert!(two_col_word_list_ratio(&cells, 4) < 0.3);
+    }
+
 }

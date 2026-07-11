@@ -1,0 +1,135 @@
+{
+  "id": "93_partial_body_hlines",
+  "tier": "hard_sensing",
+  "suite": "regression_sensing",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/hard_sensing/93_partial_body_hlines.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "solved_regression",
+  "category": "partial_body_hlines",
+  "description": "OPEN STRUGGLE: sparse intermediate H rules \u2192 row undercount vs 12x5 gold",
+  "challenges": [
+    "partial_hlines",
+    "row_undercount",
+    "lattice_row_recovery",
+    "sparse_rules"
+  ],
+  "failure_modes_covered": [
+    "ROW_MISCOUNT",
+    "WRONG_SHAPE",
+    "BAD_STRUCTURE"
+  ],
+  "must_contain": [
+    "TOKEN_S93_DOC",
+    "TOKEN_S93_R1",
+    "TOKEN_S93_MID",
+    "TOKEN_S93_LAST"
+  ],
+  "table_cells_must_include": [
+    "Metric",
+    "TOKEN_S93_R1",
+    "TOKEN_S93_LAST",
+    "M01",
+    "M11"
+  ],
+  "expected_tables": [
+    {
+      "rows": 12,
+      "cols": 5,
+      "cells": [
+        [
+          "Metric",
+          "A",
+          "B",
+          "C",
+          "Note"
+        ],
+        [
+          "M01",
+          "11",
+          "21",
+          "31",
+          "TOKEN_S93_R1"
+        ],
+        [
+          "M02",
+          "12",
+          "22",
+          "32",
+          "n2"
+        ],
+        [
+          "M03",
+          "13",
+          "23",
+          "33",
+          "n3"
+        ],
+        [
+          "M04",
+          "14",
+          "24",
+          "34",
+          "n4"
+        ],
+        [
+          "M05",
+          "15",
+          "25",
+          "35",
+          "n5"
+        ],
+        [
+          "M06",
+          "16",
+          "26",
+          "36",
+          "TOKEN_S93_MID"
+        ],
+        [
+          "M07",
+          "17",
+          "27",
+          "37",
+          "n7"
+        ],
+        [
+          "M08",
+          "18",
+          "28",
+          "38",
+          "n8"
+        ],
+        [
+          "M09",
+          "19",
+          "29",
+          "39",
+          "n9"
+        ],
+        [
+          "M10",
+          "20",
+          "30",
+          "40",
+          "n10"
+        ],
+        [
+          "M11",
+          "21",
+          "31",
+          "41",
+          "TOKEN_S93_LAST"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "preferred_method": "lattice",
+  "quality_notes": "Baseline: lattice collapses rows to H-line count. Needs text-assisted row bands or H inference.",
+  "expected_table_count": 1
+}

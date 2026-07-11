@@ -1,0 +1,23 @@
+{
+  "id": "R017_tabula_argentina",
+  "tier": "compete_real",
+  "suite": "regression_compete",
+  "source": "public_download",
+  "icdar_derived": false,
+  "path": "corpus/compete_real/R017_tabula_argentina.pdf",
+  "weight_text": 0.2,
+  "weight_tables": 0.8,
+  "weight_objects": 0.0,
+  "soft_gold": true,
+  "development_role": "open_struggle",
+  "category": "real_public",
+  "failure_classes": [
+    "C8_MULTI_TABLE_COUNT_ERROR",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Argentina diputados voting record",
+  "license": "Public sample (Tabula test resource)",
+  "source_url": "https://github.com/tabulapdf/tabula-java/raw/master/src/test/resources/technology/tabula/argentina_diputados_voting_record.pdf",
+  "must_contain": [],
+  "page_count": null
+}

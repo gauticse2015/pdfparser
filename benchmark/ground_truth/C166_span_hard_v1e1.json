@@ -1,0 +1,108 @@
+{
+  "id": "C166_span_hard_v1e1",
+  "tier": "compete_hard",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C166_span_hard_v1e1.pdf",
+  "weight_text": 0.05,
+  "weight_tables": 0.95,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "span_complex_hard",
+  "failure_classes": [
+    "C15_SPAN_COMPLEX",
+    "C11_SAME_SHAPE_ZERO_TEDS",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Multi-level colspan financial grid variant 0 extra=1",
+  "challenges": [
+    "colspan",
+    "rowspan",
+    "multi_header",
+    "financial"
+  ],
+  "must_contain": [
+    "TOKEN_C166_DOC"
+  ],
+  "expected_tables": [
+    {
+      "cells": [
+        [
+          "X",
+          "Y"
+        ],
+        [
+          "1",
+          "2"
+        ]
+      ],
+      "rows": 2,
+      "cols": 2
+    },
+    {
+      "cells": [
+        [
+          "Division",
+          "FY2023",
+          "",
+          "",
+          "FY2024",
+          "",
+          "Notes"
+        ],
+        [
+          "",
+          "Q1",
+          "Q2",
+          "H1",
+          "Q1",
+          "Q2",
+          ""
+        ],
+        [
+          "North",
+          "10",
+          "12",
+          "22",
+          "11",
+          "13",
+          "TOKEN_C166_N"
+        ],
+        [
+          "South",
+          "8",
+          "9",
+          "17",
+          "9",
+          "10",
+          "ops"
+        ],
+        [
+          "West",
+          "5",
+          "6",
+          "11",
+          "6",
+          "7",
+          "TOKEN_C166_W"
+        ],
+        [
+          "Total",
+          "23",
+          "27",
+          "50",
+          "26",
+          "30",
+          "sum"
+        ]
+      ],
+      "rows": 6,
+      "cols": 7
+    }
+  ],
+  "expected_table_count": 2,
+  "page_count": 1,
+  "struggle_mode": "complex_spans"
+}

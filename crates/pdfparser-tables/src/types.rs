@@ -16,6 +16,8 @@ pub enum PipelineId {
     S3Stream,
     /// Hybrid.
     S4Hybrid,
+    /// Network-class borderless.
+    S5Network,
     /// Form discriminator.
     P1FormDisc,
     /// Dense numeric.

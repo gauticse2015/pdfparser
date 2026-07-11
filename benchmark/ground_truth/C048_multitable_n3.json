@@ -1,0 +1,127 @@
+{
+  "id": "C048_multitable_n3",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C048_multitable_n3.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "multi_table_page",
+  "failure_classes": [
+    "C8_MULTI_TABLE_COUNT_ERROR",
+    "C1_OVER_DETECT",
+    "C12_ORDER_SENSITIVE"
+  ],
+  "description": "3 heterogeneous lattices one page + chrome",
+  "challenges": [
+    "multiple_tables_per_page",
+    "heterogeneous_shapes",
+    "order"
+  ],
+  "must_contain": [
+    "TOKEN_C048_DOC",
+    "TOKEN_C048_T0",
+    "TOKEN_C048_T1",
+    "TOKEN_C048_T2"
+  ],
+  "expected_tables": [
+    {
+      "rows": 4,
+      "cols": 3,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2"
+        ],
+        [
+          "T001",
+          "11",
+          "TOKEN_C048_T0"
+        ],
+        [
+          "T002",
+          "21",
+          "22"
+        ],
+        [
+          "T003",
+          "31",
+          "32"
+        ]
+      ]
+    },
+    {
+      "rows": 5,
+      "cols": 4,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2",
+          "H3"
+        ],
+        [
+          "T101",
+          "11",
+          "12",
+          "TOKEN_C048_T1"
+        ],
+        [
+          "T102",
+          "21",
+          "22",
+          "23"
+        ],
+        [
+          "T103",
+          "31",
+          "32",
+          "33"
+        ],
+        [
+          "T104",
+          "41",
+          "42",
+          "43"
+        ]
+      ]
+    },
+    {
+      "rows": 6,
+      "cols": 2,
+      "cells": [
+        [
+          "Key",
+          "H1"
+        ],
+        [
+          "T201",
+          "TOKEN_C048_T2"
+        ],
+        [
+          "T202",
+          "21"
+        ],
+        [
+          "T203",
+          "31"
+        ],
+        [
+          "T204",
+          "41"
+        ],
+        [
+          "T205",
+          "51"
+        ]
+      ]
+    }
+  ],
+  "expected_table_count": 3,
+  "page_count": 1
+}

@@ -1,0 +1,73 @@
+{
+  "id": "C017_painted_rect_7x3",
+  "tier": "compete",
+  "suite": "regression_compete",
+  "source": "synthetic",
+  "icdar_derived": false,
+  "path": "corpus/compete_synthetic/C017_painted_rect_7x3.pdf",
+  "weight_text": 0.1,
+  "weight_tables": 0.9,
+  "weight_objects": 0.0,
+  "expected_images": 0,
+  "development_role": "open_struggle",
+  "category": "painted_rules",
+  "failure_classes": [
+    "C3_UNDER_DETECT",
+    "C10_COUNT_OK_STRUCT_BAD"
+  ],
+  "description": "Thin-fill-rect ruled table 7x3",
+  "challenges": [
+    "painted_rules",
+    "thin_rect",
+    "lattice_sensing"
+  ],
+  "must_contain": [
+    "TOKEN_C017_DOC",
+    "TOKEN_C017_A"
+  ],
+  "expected_tables": [
+    {
+      "rows": 7,
+      "cols": 3,
+      "cells": [
+        [
+          "Key",
+          "H1",
+          "H2"
+        ],
+        [
+          "P01",
+          "11",
+          "12"
+        ],
+        [
+          "P02",
+          "21",
+          "TOKEN_C017_A"
+        ],
+        [
+          "P03",
+          "31",
+          "32"
+        ],
+        [
+          "P04",
+          "41",
+          "42"
+        ],
+        [
+          "P05",
+          "51",
+          "52"
+        ],
+        [
+          "P06",
+          "61",
+          "62"
+        ]
+      ]
+    }
+  ],
+  "page_count": 1,
+  "expected_table_count": 1
+}

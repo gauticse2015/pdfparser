@@ -4,7 +4,9 @@
     "regression_never_includes_icdar": true,
     "icdar_use": "Competitive analysis only. ICDAR PDFs and gold XML must not be copied into benchmark/corpus/ or used as regression targets during algorithm development. Run competitive evals from an external Camelot/ICDAR checkout.",
     "synthetic_hard_purpose": "Hard fixtures synthesize multi-table, span, noise-line, and multipage failure modes inspired by competitive gaps \u2014 original content only.",
-    "regression_precision_purpose": "Day-to-day gate for FP control and structure work. Not ICDAR."
+    "sensing_suite_purpose": "STRUGGLE-only capability modes. Include docs only when pdfparser fails gold (and preferably a peer/algorithm path succeeds). Do not pad with free wins \u2014 those belong in hard_precision. Original synthetic only.",
+    "compete_suite": "Competitive-gap corpus: C001\u2013C068 coverage + C100+ open_struggle hard wave + real. Hard wave reverse-engineered from ICDAR failure modes; validated to stress F1/TEDS/row/col. No ICDAR files.",
+    "compete_hard_purpose": "open_struggle fixtures where current pdfparser fails shape/count/cell metrics. Freeze baseline before algorithm work. Do not delete failures when fixing \u2014 mark solved_regression."
   },
   "suites": {
     "regression": {
@@ -76,26 +78,220 @@
       ],
       "forbidden_in_regression": true
     },
+    "regression_sensing": {
+      "description": "Sensing suite: open struggles (93+) + solved regression (90-92). Original only.",
+      "tiers": [
+        "hard_sensing"
+      ],
+      "document_ids": [
+        "90_painted_thin_rect_rules",
+        "91_two_large_stacked_grids",
+        "92_large_borderless_prose_gap",
+        "93_partial_body_hlines",
+        "94_invoice_totals_under_grid",
+        "95_multicolumn_prose_not_table"
+      ],
+      "icdar_derived": false,
+      "scoring_guidance": "Track open_struggle docs primarily. Suite mean is secondary.",
+      "open_struggle_ids": [
+        "93_partial_body_hlines",
+        "94_invoice_totals_under_grid",
+        "95_multicolumn_prose_not_table"
+      ],
+      "solved_regression_ids": [
+        "90_painted_thin_rect_rules",
+        "91_two_large_stacked_grids",
+        "92_large_borderless_prose_gap"
+      ]
+    },
+    "regression_compete": {
+      "description": "Full compete suite (coverage + hard struggle + real soft gold).",
+      "tiers": [
+        "compete",
+        "compete_hard",
+        "compete_real"
+      ],
+      "document_ids": [
+        "C001_overdetect_deco_h3",
+        "C002_overdetect_deco_h6",
+        "C003_overdetect_deco_h10",
+        "C004_overdetect_deco_h15",
+        "C009_overdetect_stream_bait_n8",
+        "C010_overdetect_stream_bait_n12",
+        "C011_overdetect_stream_bait_n16",
+        "C012_overdetect_stream_bait_n20",
+        "C013_painted_rect_5x4",
+        "C014_painted_rect_6x5",
+        "C015_painted_rect_8x4",
+        "C016_painted_rect_10x6",
+        "C017_painted_rect_7x3",
+        "C018_painted_rect_12x5",
+        "C019_partial_h_step2_12x5",
+        "C020_partial_h_step3_12x6",
+        "C021_partial_h_step4_12x5",
+        "C022_partial_h_step2_12x6",
+        "C023_partial_h_step3_12x5",
+        "C024_partial_h_step4_12x6",
+        "C025_borderless_20x6",
+        "C026_borderless_25x8",
+        "C027_borderless_30x8_gap",
+        "C028_borderless_35x10_gap",
+        "C029_borderless_40x6",
+        "C030_borderless_28x12_gap",
+        "C031_borderless_22x5",
+        "C032_borderless_32x7_gap",
+        "C033_borderless_18x9",
+        "C034_borderless_45x5_gap",
+        "C035_borderless_26x8",
+        "C036_borderless_38x8_gap",
+        "C037_wide_8x10",
+        "C038_wide_10x12",
+        "C039_wide_12x14",
+        "C040_wide_6x16",
+        "C041_wide_15x10",
+        "C042_wide_20x8",
+        "C043_false_underlines_x5",
+        "C044_false_underlines_x10",
+        "C045_false_underlines_x15",
+        "C046_false_underlines_x20",
+        "C047_multitable_n2",
+        "C048_multitable_n3",
+        "C049_multitable_n4",
+        "C050_multitable_n5",
+        "C051_multitable_n3",
+        "C052_multitable_n4",
+        "C053_multipage_p2",
+        "C054_multipage_p3",
+        "C055_multipage_p4",
+        "C056_multipage_p2",
+        "C057_invoice_items3",
+        "C058_invoice_items5",
+        "C059_invoice_items8",
+        "C060_invoice_items4",
+        "C061_mixed_lat5_str6",
+        "C062_mixed_lat6_str8",
+        "C063_mixed_lat4_str10",
+        "C064_mixed_lat7_str5",
+        "C065_span_header_v1",
+        "C066_span_header_v2",
+        "C067_span_header_v3",
+        "C068_span_header_v4",
+        "C069_partial_h_sparse_fill_15x5",
+        "C100_img_rules_8x4",
+        "C101_img_rules_10x5",
+        "C102_img_rules_12x6",
+        "C103_img_rules_15x6",
+        "C104_img_rules_21x6",
+        "C105_img_rules_12x8",
+        "C106_img_rules_18x5",
+        "C107_img_rules_9x7",
+        "C108_hdr_slice_31x10",
+        "C109_hdr_slice_44x12",
+        "C110_hdr_slice_58x8",
+        "C111_hdr_slice_35x11",
+        "C112_hdr_slice_40x9",
+        "C113_hdr_slice_50x10",
+        "C114_hdr_slice_28x14",
+        "C115_hdr_slice_36x8",
+        "C116_partial_v_s2_12x10",
+        "C117_partial_v_s2_15x12",
+        "C118_partial_v_s2_20x12",
+        "C119_partial_v_s2_15x14",
+        "C120_partial_v_s2_10x16",
+        "C121_partial_v_s2_18x10",
+        "C122_partial_v_s3_12x10",
+        "C123_partial_v_s3_15x12",
+        "C124_partial_v_s3_20x12",
+        "C125_partial_v_s3_15x14",
+        "C126_partial_v_s3_10x16",
+        "C127_partial_v_s3_18x10",
+        "C128_partial_v_s4_12x10",
+        "C129_partial_v_s4_15x12",
+        "C130_partial_v_s4_20x12",
+        "C131_partial_v_s4_15x14",
+        "C132_partial_v_s4_10x16",
+        "C133_partial_v_s4_18x10",
+        "C134_cell_underlines_6x4",
+        "C135_cell_underlines_8x5",
+        "C136_cell_underlines_10x5",
+        "C137_cell_underlines_12x6",
+        "C138_cell_underlines_7x4",
+        "C139_cell_underlines_9x5",
+        "C140_cell_underlines_14x4",
+        "C141_cell_underlines_11x6",
+        "C142_sparse_f25_20x6",
+        "C143_sparse_f25_25x8",
+        "C144_sparse_f35_20x6",
+        "C145_sparse_f35_25x8",
+        "C146_sparse_f50_20x6",
+        "C147_sparse_f50_28x7",
+        "C148_sparse_f30_30x5",
+        "C149_sparse_f40_18x9",
+        "C150_mix_irreg_str20x6",
+        "C151_mix_irreg_str30x6",
+        "C152_mix_irreg_str40x7",
+        "C153_mix_irreg_str25x8",
+        "C154_mix_irreg_str35x5",
+        "C155_mix_irreg_str22x9",
+        "C156_multi_close_n3_g6",
+        "C157_multi_close_n4_g8",
+        "C158_multi_close_n5_g10",
+        "C159_multi_close_n4_g5",
+        "C160_multi_close_n6_g12",
+        "C161_mp_chaos_p2_s3",
+        "C162_mp_chaos_p3_s3",
+        "C163_mp_chaos_p4_s4",
+        "C164_mp_chaos_p3_s2",
+        "C165_span_hard_v1e0",
+        "C166_span_hard_v1e1",
+        "C167_span_hard_v2e0",
+        "C168_span_hard_v2e1",
+        "C169_invoice_hard_i5_f4",
+        "C170_invoice_hard_i8_f5",
+        "C171_invoice_hard_i12_f6",
+        "C172_invoice_hard_i6_f3",
+        "C173_severe_overdetect_n8",
+        "C174_severe_overdetect_n16",
+        "C175_severe_overdetect_n24",
+        "C176_severe_overdetect_n12",
+        "C177_cell_assign_hard_v1",
+        "C178_cell_assign_hard_v2",
+        "C179_cell_assign_hard_v3",
+        "C180_cell_assign_hard_v4",
+        "R001_irs_f1040_schedule_c",
+        "R002_irs_f1040",
+        "R003_bea_gdp_sample",
+        "R005_census_acs_sample",
+        "R006_fed_beigebook",
+        "R007_nist_fips197",
+        "R008_cdc_mmwr_sample",
+        "R009_sec_10q_sample",
+        "R010_bea_nipa_highlights",
+        "R016_tabula_12s0324",
+        "R017_tabula_argentina",
+        "R018_camelot_health",
+        "R019_camelot_foo",
+        "R020_irs_schedule_d"
+      ],
+      "icdar_derived": false,
+      "scoring_guidance": "Primary: table_detect_f1, table_row_accuracy, table_col_accuracy, table_cell_f1 (TEDS-like), shape_exact_rate. Break down by failure_classes / struggle_mode. Hard subset (tier=compete_hard) should remain low until Auto/Network/raster land."
+    },
+    "regression_compete_hard": {
+      "description": "Open-struggle hard wave only (C100+ / tier=compete_hard).",
+      "tiers": [
+        "compete_hard"
+      ],
+      "filter": {
+        "development_role": "open_struggle"
+      },
+      "icdar_derived": false
+    },
     "regression_precision": {
-      "description": "Precision/structure suite (70\u201382). OVER_DETECT, phantom lines, stream FPs, sparse grids \u2014 ICDAR-like modes without ICDAR files.",
+      "description": "Precision suite 70-82",
       "tiers": [
         "hard_precision"
       ],
-      "document_ids": [
-        "70_deco_rules_one_table",
-        "71_frame_and_table",
-        "72_two_tables_margin_ticks",
-        "73_false_row_underlines",
-        "74_sparse_data_grid",
-        "75_prose_not_stream",
-        "76_caption_not_table",
-        "77_three_stacked_disjoint",
-        "78_multipage_footer_rules",
-        "79_span_header_precision",
-        "80_form_boxes_above_table",
-        "81_phantom_verticals",
-        "82_stream_gap_boundary"
-      ]
+      "icdar_derived": false
     }
   },
   "hard_failure_mode_coverage": {
@@ -128,6 +324,30 @@
     ],
     "WIDE_GRID": [
       "57_wide_statistical_grid"
+    ],
+    "PAINTED_RULES": [
+      "90_painted_thin_rect_rules"
+    ],
+    "LARGE_BORDERLESS": [
+      "92_large_borderless_grid"
+    ],
+    "CHROME_PLUS_LATTICE": [
+      "93_ruled_plus_page_chrome"
+    ],
+    "MULTI_LARGE_LATTICE_UNDERDETECT": [
+      "91_two_large_stacked_grids"
+    ],
+    "BORDERLESS_PROSE_SPLIT": [
+      "92_large_borderless_prose_gap"
+    ],
+    "PARTIAL_HLINES": [
+      "93_partial_body_hlines"
+    ],
+    "INVOICE_TOTALS": [
+      "94_invoice_totals_under_grid"
+    ],
+    "PROSE_STREAM_FP": [
+      "95_multicolumn_prose_not_table"
     ]
   }
 }
