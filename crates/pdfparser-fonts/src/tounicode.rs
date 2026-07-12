@@ -1,12 +1,14 @@
 //! Minimal ToUnicode CMap parser (bfchar / bfrange).
 use std::collections::HashMap;
 
+/// Character-code → Unicode mapping from a PDF ToUnicode CMap stream.
 #[derive(Debug, Clone, Default)]
 pub struct ToUnicodeMap {
     map: HashMap<u32, String>,
 }
 
 impl ToUnicodeMap {
+    /// Parse a (decoded) ToUnicode CMap byte stream.
     pub fn parse(data: &[u8]) -> Result<Self, ()> {
         let text = String::from_utf8_lossy(data);
         let mut map = HashMap::new();
@@ -37,8 +39,24 @@ impl ToUnicodeMap {
         Ok(Self { map })
     }
 
+    /// Look up a character code (or CID for Type0).
     pub fn get(&self, code: u32) -> Option<String> {
         self.map.get(&code).cloned()
+    }
+
+    /// Number of mapped codes (for diagnostics/tests).
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
+
+    /// Whether the map is empty.
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+
+    /// Iterate a few entries for diagnostics.
+    pub fn iter(&self) -> impl Iterator<Item = (&u32, &String)> {
+        self.map.iter()
     }
 }
 
@@ -84,32 +102,64 @@ fn utf16be_to_string(b: &[u8]) -> String {
     s
 }
 
+/// Extract `<hex>` tokens from a CMap line (handles glued forms like `<21><21><0041>`).
+fn hex_tokens(l: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let bytes = l.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'<' {
+            if let Some(j) = bytes[i + 1..].iter().position(|&b| b == b'>') {
+                let end = i + 1 + j;
+                out.push(l[i..=end].to_string());
+                i = end + 1;
+                continue;
+            }
+        }
+        i += 1;
+    }
+    out
+}
+
 fn parse_bfchar_line(l: &str) -> Option<(u32, String)> {
-    let mut parts = l.split_whitespace();
-    let src = parse_hex_token(parts.next()?)?;
-    let dst = parse_hex_token(parts.next()?)?;
+    let toks = hex_tokens(l);
+    if toks.len() < 2 {
+        // Fallback: whitespace-separated
+        let mut parts = l.split_whitespace();
+        let src = parse_hex_token(parts.next()?)?;
+        let dst = parse_hex_token(parts.next()?)?;
+        return Some((bytes_to_u32(&src), utf16be_to_string(&dst)));
+    }
+    let src = parse_hex_token(&toks[0])?;
+    let dst = parse_hex_token(&toks[1])?;
     Some((bytes_to_u32(&src), utf16be_to_string(&dst)))
 }
 
 fn parse_bfrange_line(l: &str, map: &mut HashMap<u32, String>) {
-    let tokens: Vec<&str> = l.split_whitespace().collect();
-    if tokens.len() < 3 {
+    // Array form: <lo> <hi> [<dst>…] — skip for now if '[' present without simple triple.
+    if l.contains('[') {
         return;
     }
-    let start = match parse_hex_token(tokens[0]) {
+    let toks = hex_tokens(l);
+    if toks.len() < 3 {
+        return;
+    }
+    let start = match parse_hex_token(&toks[0]) {
         Some(b) => bytes_to_u32(&b),
         None => return,
     };
-    let end = match parse_hex_token(tokens[1]) {
+    let end = match parse_hex_token(&toks[1]) {
         Some(b) => bytes_to_u32(&b),
         None => return,
     };
-    if tokens[2].starts_with('[') {
-        // array form — skip complex for Phase T
-        return;
-    }
-    if let Some(dst) = parse_hex_token(tokens[2]) {
-        let base = bytes_to_u32(&dst);
+    if let Some(dst) = parse_hex_token(&toks[2]) {
+        // Destination is UTF-16BE code unit(s). For single BMP char ranges the
+        // first unit is the base codepoint (standard ToUnicode identity ranges).
+        let base = if dst.len() >= 2 {
+            ((dst[0] as u32) << 8) | (dst[1] as u32)
+        } else {
+            bytes_to_u32(&dst)
+        };
         for c in start..=end {
             let cp = base + (c - start);
             if let Some(ch) = char::from_u32(cp) {

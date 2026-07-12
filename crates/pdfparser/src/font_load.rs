@@ -234,14 +234,24 @@ fn descriptor_metrics(
 
 fn to_unicode_stream(doc: &Document, font_dict: &Dictionary) -> Option<Vec<u8>> {
     let obj = match font_dict.get(b"ToUnicode").ok()? {
-        Object::Reference(r) => doc.get_object(*r).ok()?,
-        Object::Stream(s) => {
-            return decode_maybe_compressed(&s.content);
-        }
+        Object::Reference(r) => doc.get_object(*r).ok()?.clone(),
+        Object::Stream(s) => Object::Stream(s.clone()),
         _ => return None,
     };
     match obj {
-        Object::Stream(s) => decode_maybe_compressed(&s.content),
+        Object::Stream(s) => {
+            // Prefer full stream filter decode (FlateDecode + predictors, etc.).
+            // Raw-content zlib alone fails for many ToUnicode CMaps.
+            let gov = pdfparser_core::ResourceGovernor::new(pdfparser_core::ResourceLimits::default());
+            if let Ok(decoded) =
+                pdfparser_core::decode_stream_data(&s.dict, &s.content, &gov)
+            {
+                if looks_like_cmap(&decoded) || !decoded.is_empty() {
+                    return Some(decoded);
+                }
+            }
+            decode_maybe_compressed(&s.content)
+        }
         _ => None,
     }
 }

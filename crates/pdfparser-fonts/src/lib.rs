@@ -6,7 +6,7 @@ mod tounicode;
 
 use encodings::{decode_simple, BaseEncoding, EncodingKind};
 use thiserror::Error;
-use tounicode::ToUnicodeMap;
+pub use tounicode::ToUnicodeMap;
 
 /// Font errors.
 #[derive(Debug, Error)]
