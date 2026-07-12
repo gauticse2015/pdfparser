@@ -9,6 +9,7 @@
 mod form;
 mod geom;
 mod hybrid;
+pub mod builders;
 mod lattice;
 mod network;
 mod options;
