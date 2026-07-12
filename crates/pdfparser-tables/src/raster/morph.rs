@@ -174,21 +174,367 @@ struct PixV {
 
 /// Detect H/V line segments from a grayscale page.
 pub fn detect_line_segments(page: &RasterPage, cfg: &RasterConfig) -> Vec<RasterRule> {
-    if page.width < 8 || page.height < 8 || page.pixels.len() < page.width * page.height {
+    let Some(ink) = threshold_ink(page, cfg) else {
         return Vec::new();
-    }
+    };
+    detect_line_segments_from_ink(page, &ink, cfg)
+}
 
+/// Detect H/V lines after OR-ing near-axis vector rules into the ink mask (K28).
+///
+/// Pipeline: adaptive threshold → stamp vector H/V → morph close + directional
+/// open → RLE / projection → joint + regularity gates → page-space rules.
+pub fn detect_line_segments_combined(
+    page: &RasterPage,
+    vector_rules: &[pdfparser_content::RuleSegment],
+    cfg: &RasterConfig,
+) -> Vec<RasterRule> {
+    let Some(mut ink) = threshold_ink(page, cfg) else {
+        return Vec::new();
+    };
+    stamp_vector_rules_into_mask(
+        &mut ink,
+        page.width,
+        page.height,
+        page,
+        vector_rules,
+        2,
+        None,
+    );
+    detect_line_segments_from_ink(page, &ink, cfg)
+}
+
+/// Build binary ink (1 = dark) from grayscale via invert/despeckle/threshold.
+///
+/// Does **not** morph-close; callers may stamp vectors then close inside
+/// [`detect_line_segments_from_ink`].
+pub fn threshold_ink(page: &RasterPage, cfg: &RasterConfig) -> Option<Vec<u8>> {
+    if page.width < 8 || page.height < 8 || page.pixels.len() < page.width * page.height {
+        return None;
+    }
     let mut pixels = page.pixels[..page.width * page.height].to_vec();
     maybe_invert(&mut pixels, cfg.invert_mean_below);
     if cfg.despeckle_min_neighbors > 0 {
-        despeckle_luma(&mut pixels, page.width, page.height, cfg.despeckle_min_neighbors);
+        despeckle_luma(
+            &mut pixels,
+            page.width,
+            page.height,
+            cfg.despeckle_min_neighbors,
+        );
+    }
+    Some(adaptive_threshold(
+        &pixels,
+        page.width,
+        page.height,
+        cfg,
+    ))
+}
+
+/// Map page-space point to continuous pixel coordinates (row 0 = top when
+/// [`RasterPage::y_down_pixels`]).
+pub fn page_to_pix(page: &RasterPage, x: f32, y: f32) -> (f32, f32) {
+    let sx = if page.scale_x.abs() < 1e-9 {
+        1.0
+    } else {
+        page.scale_x
+    };
+    let sy = if page.scale_y.abs() < 1e-9 {
+        1.0
+    } else {
+        page.scale_y
+    };
+    let px = (x - page.origin_x) / sx;
+    let py = if page.y_down_pixels {
+        page.height as f32 - (y - page.origin_y) / sy
+    } else {
+        (y - page.origin_y) / sy
+    };
+    (px, py)
+}
+
+/// Stamp near-horizontal / near-vertical vector rules into a binary ink mask.
+///
+/// Each H/V segment is painted as `stroke_px` thick ink (`1`) in the pixel space
+/// of `page` (origin/scale/y orientation). Non-axis-aligned segments are skipped.
+/// `axis_tol_page` defaults to `max(1.0, 2 * max(|scale_x|, |scale_y|))`.
+pub fn stamp_vector_rules_into_mask(
+    ink: &mut [u8],
+    width: usize,
+    height: usize,
+    page: &RasterPage,
+    rules: &[pdfparser_content::RuleSegment],
+    stroke_px: usize,
+    axis_tol_page: Option<f32>,
+) {
+    if ink.len() < width * height || width == 0 || height == 0 {
+        return;
+    }
+    let tol = axis_tol_page.unwrap_or_else(|| {
+        let s = page.scale_x.abs().max(page.scale_y.abs()).max(1e-6);
+        (2.0 * s).max(1.0)
+    });
+    let half = stroke_px.max(1).saturating_sub(1) / 2;
+    let half_hi = stroke_px.max(1) / 2;
+
+    for r in rules {
+        if r.is_horizontal(tol) {
+            let (px0, py0) = page_to_pix(page, r.x0, r.y0);
+            let (px1, py1) = page_to_pix(page, r.x1, r.y1);
+            let y = ((py0 + py1) * 0.5).round() as i32;
+            let x_a = px0.min(px1).floor() as i32;
+            let x_b = px0.max(px1).ceil() as i32;
+            for dy in -(half as i32)..=(half_hi as i32) {
+                let yy = y + dy;
+                if yy < 0 || yy >= height as i32 {
+                    continue;
+                }
+                let row = yy as usize * width;
+                for x in x_a..=x_b {
+                    if x >= 0 && x < width as i32 {
+                        ink[row + x as usize] = 1;
+                    }
+                }
+            }
+        } else if r.is_vertical(tol) {
+            let (px0, py0) = page_to_pix(page, r.x0, r.y0);
+            let (px1, py1) = page_to_pix(page, r.x1, r.y1);
+            let x = ((px0 + px1) * 0.5).round() as i32;
+            let y_a = py0.min(py1).floor() as i32;
+            let y_b = py0.max(py1).ceil() as i32;
+            for dx in -(half as i32)..=(half_hi as i32) {
+                let xx = x + dx;
+                if xx < 0 || xx >= width as i32 {
+                    continue;
+                }
+                for y in y_a..=y_b {
+                    if y >= 0 && y < height as i32 {
+                        ink[y as usize * width + xx as usize] = 1;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Stamp near-H/V vector rules as black strokes into a grayscale [`RasterPage`].
+///
+/// Useful for synthetic tests and callers that prefer pre-threshold painting.
+/// Stroke value is `0` (ink) on a typical white (`255`) page.
+#[allow(dead_code)] // exercised in raster unit tests via re-export
+pub fn stamp_vector_rules_into_gray(
+    page: &mut RasterPage,
+    rules: &[pdfparser_content::RuleSegment],
+    stroke_px: usize,
+    axis_tol_page: Option<f32>,
+) {
+    let n = page.width.saturating_mul(page.height);
+    if page.pixels.len() < n || n == 0 {
+        return;
+    }
+    // Reuse binary stamp into a temp mask, then darken gray where mask is ink.
+    let mut ink = vec![0u8; n];
+    stamp_vector_rules_into_mask(
+        &mut ink,
+        page.width,
+        page.height,
+        page,
+        rules,
+        stroke_px,
+        axis_tol_page,
+    );
+    for i in 0..n {
+        if ink[i] != 0 {
+            page.pixels[i] = 0;
+        }
+    }
+}
+
+/// Pixel-space axis-aligned contour seed (connected component of line ink).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ContourSeed {
+    /// Inclusive min x (pixels).
+    pub px0: u32,
+    /// Inclusive min y (pixels).
+    pub py0: u32,
+    /// Exclusive max x (pixels).
+    pub px1: u32,
+    /// Exclusive max y (pixels).
+    pub py1: u32,
+    /// Number of ink pixels in the component.
+    pub area: usize,
+}
+
+impl ContourSeed {
+    /// Width in pixels.
+    #[allow(dead_code)] // used by diagnostics / external callers
+    pub fn width(&self) -> u32 {
+        self.px1.saturating_sub(self.px0)
+    }
+    /// Height in pixels.
+    #[allow(dead_code)]
+    pub fn height(&self) -> u32 {
+        self.py1.saturating_sub(self.py0)
     }
 
-    let ink = adaptive_threshold(&pixels, page.width, page.height, cfg);
+    /// Map seed AABB to page-space corners `(x0,y0,x1,y1)` (min/max).
+    pub fn to_page_bbox(&self, page: &RasterPage) -> (f32, f32, f32, f32) {
+        let (x0, y0) = pix_to_page(page, self.px0 as f32, self.py0 as f32);
+        let (x1, y1) = pix_to_page(
+            page,
+            self.px1.saturating_sub(1) as f32,
+            self.py1.saturating_sub(1) as f32,
+        );
+        (x0.min(x1), y0.min(y1), x0.max(x1), y0.max(y1))
+    }
+}
+
+/// Build directional H/V line masks from threshold ink (optional vector stamp).
+///
+/// Returns `(h_mask, v_mask, ink_after_close)` for contour / joint consumers.
+pub fn combined_line_masks(
+    page: &RasterPage,
+    vector_rules: &[pdfparser_content::RuleSegment],
+    cfg: &RasterConfig,
+    stamp: bool,
+) -> Option<(Vec<u8>, Vec<u8>, Vec<u8>)> {
+    let mut ink = threshold_ink(page, cfg)?;
+    if stamp && !vector_rules.is_empty() {
+        stamp_vector_rules_into_mask(
+            &mut ink,
+            page.width,
+            page.height,
+            page,
+            vector_rules,
+            2,
+            None,
+        );
+    }
     let ink = if cfg.close_kernel >= 2 {
         morph_close(&ink, page.width, page.height, cfg.close_kernel)
     } else {
         ink
+    };
+    let h_kernel = cfg.h_kernel.max(3);
+    let v_kernel = cfg.v_kernel.max(3);
+    let mut h_mask = morph_open_horizontal(&ink, page.width, page.height, h_kernel);
+    let mut v_mask = morph_open_vertical(&ink, page.width, page.height, v_kernel);
+    if cfg.multi_scale_factor >= 2 {
+        let hk2 = (h_kernel * cfg.multi_scale_factor).min(page.width.max(3));
+        let vk2 = (v_kernel * cfg.multi_scale_factor).min(page.height.max(3));
+        if hk2 > h_kernel + 4 {
+            let h2 = morph_open_horizontal(&ink, page.width, page.height, hk2);
+            or_masks(&mut h_mask, &h2);
+        }
+        if vk2 > v_kernel + 4 {
+            let v2 = morph_open_vertical(&ink, page.width, page.height, vk2);
+            or_masks(&mut v_mask, &v2);
+        }
+    }
+    Some((h_mask, v_mask, ink))
+}
+
+/// Connected-component AABBs on a binary mask (`!= 0` = foreground).
+///
+/// 4-connected flood fill; components with `area < min_area` are dropped.
+pub fn find_contour_seeds(
+    mask: &[u8],
+    width: usize,
+    height: usize,
+    min_area: usize,
+) -> Vec<ContourSeed> {
+    if width == 0 || height == 0 || mask.len() < width * height {
+        return Vec::new();
+    }
+    let mut seen = vec![false; width * height];
+    let mut seeds = Vec::new();
+    let mut stack = Vec::new();
+
+    for y0 in 0..height {
+        for x0 in 0..width {
+            let i0 = y0 * width + x0;
+            if mask[i0] == 0 || seen[i0] {
+                continue;
+            }
+            stack.clear();
+            stack.push((x0, y0));
+            seen[i0] = true;
+            let mut area = 0usize;
+            let mut min_x = x0;
+            let mut max_x = x0;
+            let mut min_y = y0;
+            let mut max_y = y0;
+            while let Some((x, y)) = stack.pop() {
+                area += 1;
+                min_x = min_x.min(x);
+                max_x = max_x.max(x);
+                min_y = min_y.min(y);
+                max_y = max_y.max(y);
+                for (nx, ny) in [
+                    (x.wrapping_sub(1), y),
+                    (x + 1, y),
+                    (x, y.wrapping_sub(1)),
+                    (x, y + 1),
+                ] {
+                    if nx >= width || ny >= height {
+                        continue;
+                    }
+                    let j = ny * width + nx;
+                    if mask[j] != 0 && !seen[j] {
+                        seen[j] = true;
+                        stack.push((nx, ny));
+                    }
+                }
+            }
+            if area >= min_area {
+                seeds.push(ContourSeed {
+                    px0: min_x as u32,
+                    py0: min_y as u32,
+                    px1: (max_x + 1) as u32,
+                    py1: (max_y + 1) as u32,
+                    area,
+                });
+            }
+        }
+    }
+    seeds
+}
+
+/// Contour region seeds from H∨V morph masks (K6), with optional K28 stamp.
+///
+/// `min_area_frac` is relative to `width * height` (clamped to at least 16 px).
+pub fn contour_seeds_from_page(
+    page: &RasterPage,
+    vector_rules: &[pdfparser_content::RuleSegment],
+    cfg: &RasterConfig,
+    stamp: bool,
+    min_area_frac: f32,
+) -> Vec<ContourSeed> {
+    let Some((h_mask, v_mask, _)) = combined_line_masks(page, vector_rules, cfg, stamp) else {
+        return Vec::new();
+    };
+    let mut union = h_mask;
+    or_masks(&mut union, &v_mask);
+    let area = page.width.saturating_mul(page.height) as f32;
+    let min_area = ((area * min_area_frac.max(0.0)).round() as usize).max(16);
+    find_contour_seeds(&union, page.width, page.height, min_area)
+}
+
+/// Detect H/V line segments from a pre-thresholded binary ink mask.
+///
+/// Applies morph close, directional open, RLE, projection, and grid gates.
+pub fn detect_line_segments_from_ink(
+    page: &RasterPage,
+    ink: &[u8],
+    cfg: &RasterConfig,
+) -> Vec<RasterRule> {
+    if page.width < 8 || page.height < 8 || ink.len() < page.width * page.height {
+        return Vec::new();
+    }
+
+    let ink = if cfg.close_kernel >= 2 {
+        morph_close(ink, page.width, page.height, cfg.close_kernel)
+    } else {
+        ink.to_vec()
     };
 
     let h_kernel = cfg.h_kernel.max(3);
@@ -1016,10 +1362,14 @@ fn spacing_reasonable(mut coords: Vec<f32>) -> bool {
     if mean < 1.0 {
         return false;
     }
-    let var = gaps.iter().map(|g| {
-        let d = g - mean;
-        d * d
-    }).sum::<f32>() / gaps.len() as f32;
+    let var = gaps
+        .iter()
+        .map(|g| {
+            let d = g - mean;
+            d * d
+        })
+        .sum::<f32>()
+        / gaps.len() as f32;
     let cv = (var.sqrt()) / mean;
     // Allow irregular multi-header tables (CV up to ~1.2) but reject pure noise
     cv < 1.35
@@ -1082,7 +1432,10 @@ mod unit_tests {
     #[test]
     fn synthetic_grid_detected() {
         let page = grid_page(5, 4, 24, 2);
-        let segs = detect_line_segments(&page, &RasterConfig::for_dimensions(page.width, page.height));
+        let segs = detect_line_segments(
+            &page,
+            &RasterConfig::for_dimensions(page.width, page.height),
+        );
         let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 1.5).count();
         let n_v = segs.iter().filter(|s| (s.x0 - s.x1).abs() < 1.5).count();
         assert!(n_h >= 5, "H={n_h} segs={}", segs.len());
@@ -1125,7 +1478,11 @@ mod unit_tests {
             y_down_pixels: true,
         };
         let segs = detect_line_segments(&page, &RasterConfig::for_dimensions(w, h));
-        assert!(segs.is_empty(), "chart axes must not emit table rules, got {}", segs.len());
+        assert!(
+            segs.is_empty(),
+            "chart axes must not emit table rules, got {}",
+            segs.len()
+        );
     }
 
     #[test]
@@ -1173,6 +1530,10 @@ mod unit_tests {
         cfg.min_seg_px = 10;
         let segs = detect_line_segments(&page, &cfg);
         let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 1.5).count();
-        assert!(n_h >= 3, "dashed H should bridge, H={n_h} total={}", segs.len());
+        assert!(
+            n_h >= 3,
+            "dashed H should bridge, H={n_h} total={}",
+            segs.len()
+        );
     }
 }
