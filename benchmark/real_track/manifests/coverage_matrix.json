@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "policy": "Every mode needs real docs where possible. Synthetic only if waived. No ICDAR files.",
+  "updated": "2026-07-12",
+  "sources": "benchmark/real_track/SOURCES.md",
+  "modes": {
+    "visible_rules": {
+      "detect_docs": [
+        "35_real_camelot_fuel",
+        "37_real_liabilities_superscript",
+        "R019_camelot_foo"
+      ],
+      "structure_docs": [
+        "35_real_camelot_fuel",
+        "37_real_liabilities_superscript",
+        "33_real_argentina_votes"
+      ],
+      "waiver": null,
+      "prefer_source": "Camelot samples, gov ruled tables"
+    },
+    "borderless_multicol": {
+      "detect_docs": [
+        "34_real_schools_contributions",
+        "33_real_argentina_votes"
+      ],
+      "structure_docs": [
+        "34_real_schools_contributions",
+        "33_real_argentina_votes"
+      ],
+      "waiver": null,
+      "prefer_source": "Schools / votes / ACS whitespace columns"
+    },
+    "partial_rules": {
+      "detect_docs": [],
+      "structure_docs": [],
+      "waiver": "no licensed public partial-frame PDF annotated yet (Phase 11)",
+      "prefer_source": "Financial partial frames"
+    },
+    "row_fragment": {
+      "detect_docs": [],
+      "structure_docs": [],
+      "waiver": "need large borderless real with gold; deferred H1",
+      "prefer_source": "Large borderless + section notes"
+    },
+    "header_slice": {
+      "detect_docs": [
+        "31_real_background_checks"
+      ],
+      "structure_docs": [
+        "31_real_background_checks"
+      ],
+      "waiver": null,
+      "prefer_source": "Multi-level headers (NICS)"
+    },
+    "col_collapse": {
+      "detect_docs": [
+        "32_real_census_table324"
+      ],
+      "structure_docs": [
+        "32_real_census_table324"
+      ],
+      "waiver": null,
+      "prefer_source": "Wide stats, partial V"
+    },
+    "over_detect": {
+      "detect_docs": [
+        "39_real_fed_beigebook",
+        "41_real_nist_withdrawn_notice"
+      ],
+      "structure_docs": [],
+      "waiver": "FP smoke primary; structure N/A",
+      "prefer_source": "Pages with chrome + few tables"
+    },
+    "multi_table": {
+      "detect_docs": [
+        "36_real_two_tables",
+        "R018_camelot_health"
+      ],
+      "structure_docs": [
+        "36_real_two_tables"
+      ],
+      "waiver": null,
+      "prefer_source": "Stacked report tables"
+    },
+    "multi_page_continuation": {
+      "detect_docs": [
+        "30_real_ca_warn_report",
+        "34_real_schools_contributions"
+      ],
+      "structure_docs": [
+        "30_real_ca_warn_report"
+      ],
+      "waiver": "continuation stitch semantics TBD; detect only until H1 multipage T3",
+      "prefer_source": "Multipage stats ledgers"
+    },
+    "form_not_table": {
+      "detect_docs": [
+        "38_real_irs_f1040",
+        "R001_irs_f1040_schedule_c"
+      ],
+      "structure_docs": [],
+      "waiver": "FP smoke only \u2014 not structure core",
+      "prefer_source": "IRS / AcroForm-like lines"
+    },
+    "chrome_rules_fp": {
+      "detect_docs": [
+        "39_real_fed_beigebook"
+      ],
+      "structure_docs": [],
+      "waiver": "covered via over_detect FP smoke",
+      "prefer_source": "Deco page frames"
+    },
+    "borderless_prose_fp": {
+      "detect_docs": [
+        "40_real_arxiv_tensorflow",
+        "R007_nist_fips197"
+      ],
+      "structure_docs": [],
+      "waiver": null,
+      "prefer_source": "2-col articles / magazines"
+    },
+    "span_complex": {
+      "detect_docs": [],
+      "structure_docs": [],
+      "waiver": "need clear colspan public PDF; deferred",
+      "prefer_source": "Financial category stubs"
+    },
+    "empty_grid": {
+      "detect_docs": [
+        "32_real_census_table324"
+      ],
+      "structure_docs": [
+        "32_real_census_table324"
+      ],
+      "waiver": null,
+      "prefer_source": "Wide sparse census"
+    },
+    "mixed_lattice_stream": {
+      "detect_docs": [
+        "32_real_census_table324"
+      ],
+      "structure_docs": [
+        "32_real_census_table324"
+      ],
+      "waiver": null,
+      "prefer_source": "Mixed reports"
+    },
+    "missing_rules": {
+      "detect_docs": [],
+      "structure_docs": [],
+      "waiver": "raster_needed painted docs need render-path gold; deferred",
+      "prefer_source": "Image-only grids (licensed)"
+    },
+    "raster_needed": {
+      "detect_docs": [],
+      "structure_docs": [],
+      "waiver": "image-only table PDF not yet licensed in tree",
+      "prefer_source": "Scanned / paint-only rules"
+    },
+    "wide_tables": {
+      "detect_docs": [
+        "30_real_ca_warn_report",
+        "31_real_background_checks"
+      ],
+      "structure_docs": [
+        "30_real_ca_warn_report"
+      ],
+      "waiver": null,
+      "prefer_source": "Government dumps"
+    },
+    "non_english": {
+      "detect_docs": [
+        "33_real_argentina_votes",
+        "42_real_insurance_italian"
+      ],
+      "structure_docs": [],
+      "waiver": null,
+      "prefer_source": "International open data"
+    }
+  },
+  "summary": {
+    "modes_total": 19,
+    "modes_with_detect_docs": 10,
+    "modes_waived": 9,
+    "structure_docs_total": 0,
+    "note": "structure_docs empty until T3 gold lands (C4/C5). C3 grows detect_docs \u226520 and fills waivers.",
+    "modes_empty_no_waiver": 0
+  },
+  "notes": "structure_docs empty until T3 gold lands (C4/C5). Fill detect_docs with new real PDFs in C3. Missing modes must keep explicit waiver strings \u2014 silence is not allowed.",
+  "fp_smoke_suite": "manifests/real_fp_smoke_v0.json",
+  "detect_smoke_suite": "manifests/real_detect_smoke_v0.json",
+  "structure_suite": "manifests/real_structure_v0.json"
+}

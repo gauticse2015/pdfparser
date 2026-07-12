@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "suite_id": "real_structure_g2",
+  "mode": "steady",
+  "generated_at": "2026-07-12T10:39:45.063493+00:00",
+  "policy": {
+    "product_auto_is_engine_v2": true,
+    "g1_corpus_ready": true,
+    "legacy_router_rollback": "TableOptions.legacy_router=true",
+    "note": "Steady freeze post Phase17-19 completion. Not market SOTA."
+  },
+  "corpus": {
+    "n_docs": 15,
+    "g1_ready": true,
+    "struggle_n": 10
+  },
+  "binary": "/Users/gautamkumar/Desktop/pdfParser/target/release/pdfparser",
+  "summaries": {
+    "auto": {
+      "n_docs": 15,
+      "n_ok": 15,
+      "n_fail": 0,
+      "micro_cell_f1": 0.6372333167816467,
+      "micro_shape_exact_rate": 0.5333333333333333,
+      "micro_det_count_f1": 0.9644444444444444,
+      "micro_det_iou_f1": 0.9407407407407408,
+      "micro_score_0_100": 72.57822156015476,
+      "note": "soft progressive scores; G1 not claimed"
+    },
+    "engine_v2": {
+      "n_docs": 15,
+      "n_ok": 15,
+      "n_fail": 0,
+      "micro_cell_f1": 0.6372333167816467,
+      "micro_shape_exact_rate": 0.5333333333333333,
+      "micro_det_count_f1": 0.9644444444444444,
+      "micro_det_iou_f1": 0.9407407407407408,
+      "micro_score_0_100": 72.57822156015476,
+      "note": "soft progressive scores; G1 not claimed"
+    }
+  },
+  "documents_auto": [
+    {
+      "id": "30_real_ca_warn_report",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.8385650224215245,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 93.54260089686099,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.5966850828729281,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 58.86740331491712,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.46020761245674735,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 78.4083044982699,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.7164179104477612,
+      "det_f1": 0.6666666666666666,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 76.99004975124379,
+      "n_pred": 2,
+      "n_exp": 1
+    },
+    {
+      "id": "36_real_two_tables",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.42105263157894735,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 51.84210526315789,
+      "n_pred": 2,
+      "n_exp": 2
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.24663677130044842,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 44.865470852017935,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "31_real_background_checks",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.821213338690237,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 67.84853354760948,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "32_real_census_table324",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.0,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 35.0,
+      "n_pred": 2,
+      "n_exp": 2
+    },
+    {
+      "id": "R018_camelot_health",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.9948979591836734,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 99.79591836734694,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "R003_bea_gdp_sample",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.8682505399568035,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 69.73002159827215,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "R010_bea_nipa_highlights",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.0,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 35.0,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.9500000000000001,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 98.0,
+      "n_pred": 2,
+      "n_exp": 2
+    },
+    {
+      "id": "43_real_row_span_gmc",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.9947089947089947,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 99.78835978835978,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "44_real_spanning_cells",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.7064676616915423,
+      "det_f1": 0.8,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 81.2587064676617,
+      "n_pred": 3,
+      "n_exp": 2
+    },
+    {
+      "id": "45_real_campaign_donors",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.9433962264150944,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 97.73584905660377,
+      "n_pred": 1,
+      "n_exp": 1
+    }
+  ],
+  "peer_means": {
+    "pdfparser_auto": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.622983179887165,
+      "mean_det_f1": 0.9644444444444444,
+      "mean_shape": 0.4666666666666667,
+      "mean_score_0_100": 70.34154941770882,
+      "wins_best_cell": 2
+    },
+    "pdfparser_engine_v2": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.622983179887165,
+      "mean_det_f1": 0.9644444444444444,
+      "mean_shape": 0.4666666666666667,
+      "mean_score_0_100": 70.34154941770882,
+      "wins_best_cell": 0
+    },
+    "camelot_lattice": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.5780625934474188,
+      "mean_det_f1": 0.8444444444444444,
+      "mean_shape": 0.5333333333333333,
+      "mean_score_0_100": 66.01139262678564,
+      "wins_best_cell": 7
+    },
+    "camelot_stream": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.3465154347781931,
+      "mean_det_f1": 0.9222222222222223,
+      "mean_shape": 0.2,
+      "mean_score_0_100": 51.1383951689055,
+      "wins_best_cell": 3
+    },
+    "pdfplumber": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.5831883328214504,
+      "mean_det_f1": 0.8121212121212121,
+      "mean_shape": 0.5666666666666667,
+      "mean_score_0_100": 65.9184424037671,
+      "wins_best_cell": 3
+    }
+  }
+}

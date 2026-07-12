@@ -6,335 +6,249 @@
 
 **Native, library-first PDF parser in Rust** for born-digital (vector/text) PDFs.
 
-`pdfparser` extracts text, tables, and common document objects through a security-conscious pipeline (resource limits, no silent encrypted opens in v0.1). Tables are **opt-in** and multi-strategy: lattice (ruled), hybrid (partial rules), and network (borderless).
+Extracts **text**, **tables**, and common **document objects** with security budgets (stream limits; encrypted PDFs hard-error until crypto ships). Tables are **opt-in**.
 
-> Not an OCR engine and not a full page renderer. Full-page scan OCR is out of scope for v0.1; **embedded image-painted grids** are recovered via Camelot-class raster morphology.
+> Not a full-page OCR engine. Scan-to-image OCR is out of scope. **Embedded image-painted grids** are recovered via morphology on Image XObjects; optional **external** full-page render (pdftoppm/mutool/gs) is fail-soft for line sensing only.
+
+---
+
+## Architecture (current)
+
+Product default: **`TablePreset::Auto` = Engine V2 exclusive router**.
+
+```text
+PDF page
+  → content VM (text runs + vector rules; Form XObjects; thin-fill rect rules)
+  → embedded Image XObject raster morph (optional full-page render: HQ or K25 opportunistic)
+  → lattice / hybrid / network proposals
+  → exclusive AutoRouter
+        · K26 vertical merge (header/body)
+        · partition + ownership
+        · nested multi-table keep (outer form + inner rate grid)
+        · stream-under-ruled + weak 2-col prose cleanup
+  → form scrub
+  → optional multipage stitch
+```
+
+| Preset | Role |
+|--------|------|
+| **`Auto` / `Full`** | Production default — Engine V2 router |
+| **`EngineV2`** | Same router + shadow diagnostics |
+| **`HighQuality`** | Engine V2 + explicit full-page render request |
+| **`LatticeOnly`** | Ruled grids only |
+| Rollback | `TableOptions.legacy_router = true` → soup NMS path |
+
+Steady quality freeze: [`benchmark/real_track/freezes/g2.json`](benchmark/real_track/freezes/g2.json).  
+Design: [`docs/design-table-engine-v2.md`](docs/design-table-engine-v2.md).
 
 ---
 
 ## Capabilities
 
-| Area | Status | What you get |
-|------|--------|----------------|
+| Area | Status | Notes |
+|------|--------|--------|
 | **Text** | Production | Reading-order sort, `/Rotate`, WinAnsi / MacRoman / Differences / ToUnicode, space insertion |
-| **Ruled tables (lattice)** | Production | Vector H/V rules + **thin-fill painted rect rules**, multi-region CC, spans, text densify-Y, false-underline collapse |
-| **Raster line sensing** | Production | Camelot-class morph on **embedded Image XObjects**: adaptive threshold, dashed-gap close, H/V open, multi-scale, joint-graph + regularity gate → lattice rules |
-| **Partial borders (hybrid)** | Production | Incomplete frames recovered with text columns/rows |
-| **Borderless tables (network)** | Production | Textline + column-alignment builder; gap split + same-schema re-merge; list/prose FP reject |
-| **Orchestration** | Production | Strong lattice **excludes** overlapping borderless tables (no dual soup by default) |
-| **Multi-page** | Production | Optional stitch when continued tables share header/columns |
-| **FP control** | Production | Form-like chrome scrub, caption/tiny grid reject, 2-col prose / numbered-list reject; chart-axis raster reject |
-| **Objects** | Production | Image count/meta, URI links, AcroForm fields, outline titles |
-| **Security** | Production | Stream expansion budgets; encrypted PDFs hard-error until crypto ships |
-| **Full-page render OCR** | Not yet | Deferred; optional external render path, not the product table core |
+| **Ruled tables (lattice)** | Production | Vector H/V + thin-fill painted rules, multi-region CC, spans, densify X/Y, empty-column cleanup, exterior stub expansion |
+| **Raster line sensing** | Production | Camelot-class morph on **embedded** images; optional external full-page gray render |
+| **Partial borders (hybrid)** | Production | Incomplete frames + text columns/rows |
+| **Borderless (network)** | Production | Textline network, gap split / same-schema merge, glued label+numeric rows, list/prose FP reject |
+| **Nested multi-table** | Production | Outer + inner lattices both kept when nested |
+| **Multi-page stitch** | Production | Optional header/column continuity stitch |
+| **Objects** | Production | Images, URI links, AcroForm fields, outline |
+| **Security** | Production | Stream expansion budgets; no silent encrypted open |
+| **Full-page OCR** | Not in product | No text from full-page scans |
 
-### Table pipeline (product default: `TablePreset::Auto`)
+### Limitations
 
-```text
-page rules + text + embedded images
-    → raster morph (Image XObject → H/V rules, grid-validated)
-    → lattice (vector + thin-fill + raster rules)
-    → hybrid only outside strong lattice
-    → network borderless only outside strong lattice
-    → form scrub + NMS
+- **Scan/OCR PDFs** without vector text: not supported as a product path.
+- **ICDAR-class wild pages** (complex multi-table, background lines, image-only cells): still behind Camelot / PyMuPDF on quality (see ICDAR board below).
+- **Encoding-broken pages** (missing ToUnicode / odd CMaps): cell quality can collapse (e.g. some BEA NIPA pages).
+- **Glued numeric streams** (RBI-style): improved but not perfect vs human grids.
+- **ICDAR is never in CI** and is never used for threshold tuning (`assert_no_icdar.py`).
+
+---
+
+## Performance (refreshed 2026-07-12)
+
+**Do not mix tracks.** Owned synthetic ≠ real G1 gold ≠ ICDAR.
+
+### 1) Real-structure track (primary product bar)
+
+15 reviewed T3 golds · stitch off · Auto = Engine V2.  
+Source: `benchmark/real_track/results/real_structure_latest.json` · freeze: `freezes/g2.json`.
+
+| Metric | Value |
+|--------|------:|
+| n_docs | **15** |
+| micro **cell F1** | **0.637** |
+| micro **det count F1** | **0.964** |
+| shape exact rate | **0.533** |
+| score 0–100 | **72.6** |
+
+**Peers on the same gold** (equal-weight mean cell F1):  
+Source: `benchmark/real_track/results/REALITY_CHECK_PEERS.md`.
+
+| Rank | Library | mean cell F1 | mean det F1 | wins (best cell) |
+|-----:|---------|-------------:|------------:|-----------------:|
+| 1 | **pdfparser Auto** | **0.623** | **0.964** | 2 |
+| 2 | pdfplumber | 0.583 | 0.812 | 3 |
+| 3 | Camelot lattice | 0.578 | 0.844 | 7 |
+| 4 | Camelot stream | 0.347 | 0.922 | 3 |
+
+> Progressive **lab** numbers on a fixed reviewed set — **not** a market SOTA claim.
+
+Strong on this set: R018/43 (~0.99), 45 donors (~0.94), 42 nested insurance (~0.95), R003 (~0.87).  
+Weak: R010 (encoding), 32 census cells, residual 34/36/37.
+
+### 2) Owned multi-lib regression (synthetic / designed)
+
+| Suite | pdfparser cell F1 | det F1 | shape | overall | Source |
+|-------|------------------:|-------:|------:|--------:|--------|
+| Main (basic+stress+hard) | **0.975** | **0.969** | **0.938** | **98.5** | `accuracy_results.json` |
+| Hard 50–62 | **1.000** | **1.000** | **1.000** | **100** | `accuracy_results_hard.json` |
+| Compete hard (81 docs) | **0.799** | **0.934** | **0.796** | **84.9** | `accuracy_results_compete_hard.json` |
+
+On these **owned** suites pdfparser is **#1** among open-source peers — progress on fixtures we control, **not** wild-PDF SOTA.
+
+### 3) External ICDAR-2013 (67 PDFs) — honesty check
+
+Camelot-shipped PDFs + `*-str.xml`, Camelot-compatible F1 / TEDS / row / col.  
+**Not in repo · not CI · not for tuning.**  
+Source: `benchmark/results/camelot_icdar_headtohead.json` · report: [`docs/icdar-competitive-report.md`](docs/icdar-competitive-report.md).
+
+**Latest run (2026-07-12, product Auto, post production-readiness):**
+
+| Rank | Tool | F1 | TEDS | row | col | time (s) |
+|-----:|------|---:|-----:|----:|----:|---------:|
+| 1 | camelot auto | **0.864** | **0.786** | 0.564 | 0.792 | 73.4 |
+| 2 | pymupdf | 0.776 | 0.674 | 0.578 | 0.642 | 10.7 |
+| 3 | camelot lattice (vector) | 0.766 | 0.784 | **0.748** | **0.806** | 3.6 |
+| 4 | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.5 |
+| **5** | **pdfparser** | **0.495** | **0.322** | 0.329 | 0.452 | 28.1 |
+
+**Honest read:** pdfparser is **not competitive for #1 on ICDAR**. Quality lags Camelot and PyMuPDF (over-detect / shape / structure). Latency on this run includes opportunistic render probing and is not our best speed path (owned harness is still milliseconds per page without external render).
+
+**ICDAR trajectory:** mid-cycle ~**0.58** → pre-readiness **0.457** (over-detect ~481 preds / 158 GT) → post-readiness **0.495** (~432 preds / 158 GT). Still over-detect-dominated; rank remains **#5**. Analysis: [`docs/icdar-regression-analysis.md`](docs/icdar-regression-analysis.md).
+
+---
+
+## Future improvement plan
+
+Prioritized roadmap. **Do not** retune thresholds on ICDAR gold in CI. Every detector change must A/B **real_structure G1** (and nested keep on doc 42) before shipping; ICDAR remains an external honesty check only.
+
+### P0 — Detection discipline (shared builders; lifts ICDAR without undoing V2)
+
+| # | Item | Why | Guard |
+|---|------|-----|-------|
+| 1 | **Stricter multi-region lattice merge** — same-schema adjacent fragments that share nearly full page width | Kills phantom slices (e.g. extra 4×4 next to real grids on `eu-001`-class pages) | real G1 det/cell; nested 42 still 2 tables |
+| 2 | **Nested keep gates** — require min area ratio + min rows / independent structure on both regions | Nested keep is correct for insurance forms; too loose → corner grid + full grid as two tables on competition layouts | doc 42 cell F1; no mass OVER_DETECT on real set |
+| 3 | **Per-page proposal budget / fragment fusion** — merge or drop weak lattice/stream fragments after exclusive route | ICDAR failure mode is **OVER_DETECT (54/67)**, not miss-all; 3× table count destroys Camelot F1 | pred count ↓ on ICDAR external; real G1 det stays high |
+
+**Not planned:** flipping product Auto back to `legacy_router` for ICDAR. A/B shows legacy does **not** restore the ~0.58 snapshot; residual pain is in shared sensing/builders.
+
+### P1 — Structure quality (real G1 residuals + ICDAR TEDS)
+
+| # | Item | Why |
+|---|------|-----|
+| 4 | **R010 encoding path** — better Differences / missing ToUnicode handling | Cell F1 collapses when text is mojibake even if grid is right |
+| 5 | **Census / dense numeric grids (doc 32)** — row/col assignment and glued stream densify | High det, weak cells |
+| 6 | **Residual real docs 34 / 36 / 37** — shape + content alignment | Close shape gaps that still hurt micro cell F1 |
+| 7 | **TEDS / row-col miscount** on ICDAR — fewer decorative-line rows, better span merge | ROW_MISCOUNT 54, WRONG_SHAPE 56, BAD_STRUCTURE 51 on latest board |
+
+### P2 — Latency and product polish
+
+| # | Item | Why |
+|---|------|-----|
+| 8 | **Tighten K25 / opportunistic full-page render** — cheaper Auto path when vector rules suffice | ICDAR product run ~30s partly from render probes; owned harness without external render is still ms/page |
+| 9 | **CLI / preset clarity** — document when to use HQ vs Auto vs lattice-only for batch jobs | Users should not pay render cost by default for pure vector corpora |
+| 10 | **Expand real_structure gold** (n≫15) once P0–P1 stabilize | Broaden the primary bar without folding ICDAR into CI |
+
+### Acceptance bar for shipping detector changes
+
+1. **real_structure** micro cell F1 and det F1 do not regress vs freeze `g2.json` (or intentional freeze bump with review).
+2. Nested multi-table (doc **42**) stays outer + inner, not collapsed or triple-split.
+3. Owned multi-lib suites (main / hard / compete-hard) stay green.
+4. ICDAR re-run is **optional external** evidence only — improve pred/GT ratio and F1 if measured; never gate CI on it.
+
+### Explicit non-goals (near term)
+
+- Full-page OCR product path
+- Ranking #1 on ICDAR as a release gate
+- Threshold magic keyed on ICDAR filenames
+- Replacing Engine V2 Auto with legacy NMS as the default
+
+---
+
+## Quick start
+
+```bash
+cargo build --release -p pdfparser-cli
+
+# Text
+./target/release/pdfparser extract path/to/file.pdf
+
+# Tables (product Auto = Engine V2)
+./target/release/pdfparser extract --tables --format json path/to/file.pdf
+
+# Eval-friendly (per-page fragments, no multipage stitch)
+./target/release/pdfparser extract --tables --no-stitch --page-tables --format json path.pdf
+
+# Diagnostics
+./target/release/pdfparser extract --tables --dump-evidence --format json path.pdf 2>evidence.json
+
+# High-quality (request full-page render for lines)
+./target/release/pdfparser extract --tables-hq --format json path.pdf
+```
+
+Library:
+
+```rust
+use pdfparser::{Document, TableOptions, TablePreset, TextOptions};
+
+let doc = Document::open("file.pdf")?;
+let text = doc.page(0)?.text(&TextOptions::default())?;
+let opts = TableOptions::from_preset(TablePreset::Auto);
+let (pages, logical) = doc.tables(&TextOptions::default(), &opts)?;
 ```
 
 ---
 
-## Accuracy benchmarks
-
-**Last refreshed:** 2026-07-11 (release CLI + current table engine).
-
-Two different measurement tracks — **do not mix them**:
-
-| Track | What it is | pdfparser status |
-|-------|------------|------------------|
-| **Owned multi-lib harness** | Synthetic + designed fixtures in this repo | **#1** on main / hard / precision / compete_hard |
-| **ICDAR-2013 competitive** | External 67-PDF Camelot ICDAR set | **#5** — **not SOTA** (F1 0.58, TEDS 0.33) |
-
-### Metric definitions
-
-| Metric | Meaning |
-|--------|---------|
-| **overall** | Weighted 0–100 score (text / tables / objects per-doc GT weights) — owned harness only |
-| **text F1** | Token F1 on `must_contain` / required substrings |
-| **det F1** | Table **count** detection F1 vs gold |
-| **cell F1** | Aligned cell-text micro-F1 (owned harness) |
-| **shape** | Fraction of gold tables with exact R×C |
-| **row / col** | Exact row / column count accuracy |
-| **F1 / TEDS** | ICDAR only — Camelot `bench/_metrics.score` (detection F1 + difflib TEDS proxy) |
-| **ms / time** | Mean wall time per doc (owned) or full-set seconds (ICDAR) |
-
-### 1) Main multi-library scoreboard (owned corpus)
-
-Suite: basic + stress + hard synthetic (full grid gold where available).  
-Source: `benchmark/results/accuracy_results.json`.
-
-| Rank | Library | overall | det F1 | cell F1 | shape | ms/doc |
-|-----:|---------|--------:|-------:|--------:|------:|-------:|
-| 1 | **pdfparser** | **98.9** | **0.969** | **0.977** | **0.958** | **26** |
-| 2 | pdfplumber | 89.1 | 0.919 | 0.860 | 0.812 | 61 |
-| 3 | pymupdf | 88.8 | 0.889 | 0.816 | 0.812 | 73 |
-| 4 | camelot auto | 67.3 | 0.919 | 0.848 | 0.792 | 376 |
-| 5 | camelot stream | 60.4 | 0.707 | 0.333 | 0.302 | 11 |
-| 6 | camelot lattice | 59.0 | 0.889 | 0.821 | 0.771 | 26 |
-| 7 | img2table | 57.8 | 0.854 | 0.769 | 0.771 | 73 |
-| 8 | pypdf | 39.4 | 0.242 | 0.000 | 0.000 | 8 |
-| 9 | pypdfium2 | 36.1 | 0.242 | 0.000 | 0.000 | 2 |
-| 10 | pdfminer.six | 36.0 | 0.242 | 0.000 | 0.000 | 66 |
-
-> **Reading this table:** #1 on *owned* regression is product progress, **not** a claim of SOTA on wild PDFs. See ICDAR (§3).
-
-### 2) By owned suite (multi-lib)
-
-#### Basic + stress
-
-Source: `accuracy_results_basic_stress.json`.
-
-| Library | overall | cell F1 | det F1 | shape | ms/doc |
-|---------|--------:|--------:|-------:|------:|-------:|
-| **pdfparser** | **98.1** | **0.950** | **0.947** | **0.909** | **11** |
-| pdfplumber | 88.1 | 0.826 | 0.933 | 0.727 | 93 |
-| camelot auto | 54.3 | 0.826 | 0.883 | 0.727 | 338 |
-| camelot lattice | 46.9 | 0.826 | 0.933 | 0.727 | 36 |
-
-#### Hard structure 50–62
-
-Source: `accuracy_results_hard.json`.
-
-| Library | overall | cell F1 | det F1 | shape | ms/doc |
-|---------|--------:|--------:|-------:|------:|-------:|
-| **pdfparser** | **100.0** | **1.000** | **1.000** | **1.000** | **8** |
-| pdfplumber | 90.7 | 0.890 | 0.897 | 0.885 | 14 |
-| camelot auto | 87.1 | 0.866 | 0.974 | 0.846 | 430 |
-| camelot lattice | 77.7 | 0.817 | 0.821 | 0.808 | 40 |
-
-#### Precision FP suite 70–82
-
-Source: `accuracy_results_regression_precision.json`.
-
-| Library | overall | cell F1 | det F1 | shape | ms/doc |
-|---------|--------:|--------:|-------:|------:|-------:|
-| **pdfparser** | **99.4** | **1.000** | **1.000** | **1.000** | **7** |
-| pdfplumber | 89.8 | 0.894 | 0.897 | 0.833 | 8 |
-| camelot lattice | 83.2 | 0.900 | 0.897 | 0.833 | 34 |
-| camelot auto | 81.3 | 0.900 | 0.897 | 0.833 | 392 |
-
-#### Compete hard struggle suite C100–C180 (81 docs)
-
-Source: `accuracy_results_compete_hard.json` (multi-lib).  
-Freeze: `compete_hard_baseline_post_generic.json`.
-
-| Rank | Library | cell F1 | det F1 | shape | overall | ms/doc |
-|-----:|---------|--------:|-------:|------:|--------:|-------:|
-| 1 | **pdfparser** | **0.827** | **0.945** | **0.846** | **87.5** | **10** |
-| 2 | camelot stream | 0.630 | 0.913 | 0.543 | 69.8 | 25 |
-| 3 | camelot auto | 0.328 | 0.795 | 0.284 | 48.1 | 412 |
-| 4 | pdfplumber | 0.319 | 0.735 | 0.247 | 47.0 | 14 |
-| 5 | camelot lattice | 0.319 | 0.735 | 0.247 | 44.1 | 32 |
-| 6 | pymupdf | 0.312 | 0.735 | 0.247 | 46.7 | 17 |
-
-Progress vs pre-algorithm freeze (pdfparser only): cell **0.383 → 0.827**, shape **0.204 → 0.846**, overall **50.4 → 87.5**.
-
-Capabilities exercised: lattice densify X/Y, network regioning, embedded-image raster lines, exclusive-under-lattice, FP scrub.  
-Still open on this suite: image **cell text** (OCR), complex spans, invoice footer shape, severe overdetect count, header-slice row exactness.
-
-### 3) External competitive: ICDAR-2013 (67 PDFs) — **market claim source of truth**
-
-Black-box head-to-head on **Camelot-shipped ICDAR-2013** PDFs + `*-str.xml`, scored with Camelot `bench/_metrics.score`.  
-**ICDAR is not in this repo** and **not** part of regression.  
-Source: `benchmark/results/camelot_icdar_headtohead.json` · full write-up: `docs/icdar-competitive-report.md`.
-
-| Rank | Tool | F1 | TEDS | row | col | time (s, full set) |
-|-----:|------|---:|-----:|----:|----:|-------------------:|
-| 1 | camelot auto | **0.864** | **0.786** | 0.564 | 0.792 | 72.6 |
-| 2 | pymupdf | 0.776 | 0.674 | 0.578 | 0.642 | 10.7 |
-| 3 | camelot lattice (vector) | 0.766 | 0.784 | **0.748** | **0.806** | 3.5 |
-| 4 | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.5 |
-| **5** | **pdfparser** | **0.584** | **0.333** | 0.338 | 0.500 | **0.80** |
-
-| vs prior ICDAR snapshot | Previous | Now | Δ |
-|-------------------------|---------:|----:|--:|
-| F1 | 0.672 | **0.584** | **−0.088** |
-| TEDS | 0.331 | **0.333** | +0.001 |
-| row | 0.382 | 0.338 | −0.043 |
-| col | 0.489 | 0.500 | +0.011 |
-
-Dominant pdfparser failure modes on ICDAR: **over-detect**, wrong shape, row/col miscount (see competitive report).
-
-### Honest summary
-
-| Track | pdfparser | Claim |
-|-------|-----------|--------|
-| Owned multi-lib regression / hard / precision | **#1** | Strong born-digital product path |
-| Owned compete_hard struggle (81 docs) | **#1** vs open-source peers | Geometry progress is real on designed hard modes |
-| **ICDAR-2013 competitive** | **#5**, F1 **0.58**, TEDS **0.33** | **Not SOTA.** Behind Camelot and PyMuPDF on quality; fastest latency |
-| Speed | ~8–26 ms/doc owned; **0.8 s / 67 ICDAR docs** | ~90× faster than camelot auto on ICDAR set |
-
-### Reproducing benchmarks
+## Reproducing benchmarks
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r benchmark/requirements.txt
 cargo build --release -p pdfparser-cli
 
-# Owned multi-library boards
-python benchmark/scripts/run_accuracy_benchmark.py
-python benchmark/scripts/run_accuracy_benchmark.py --suite regression_hard --tag hard
-python benchmark/scripts/run_accuracy_benchmark.py --suite regression_precision --tag regression_precision
-python benchmark/scripts/run_accuracy_benchmark.py --suite regression_compete_hard --tag compete_hard
+# Real structure + peers
+python3 benchmark/scripts/run_real_structure.py --preset auto --compare
+python3 benchmark/scripts/run_reality_check_peers.py
 
-# ICDAR competitive (external data — market claim)
-python benchmark/scripts/run_icdar_competitive.py \
-  --data-dir /path/to/icdar2013-dataset \
-  --camelot-root /path/to/camelot-upstream
-```
+# Owned multi-lib
+python3 benchmark/scripts/run_accuracy_benchmark.py --suite regression
+python3 benchmark/scripts/run_accuracy_benchmark.py --suite regression_hard
 
-Scoreboards: `docs/accuracy-scoreboard.md`, `docs/accuracy-scoreboard-hard.md`, `docs/accuracy-scoreboard-compete-hard.md`, `docs/icdar-competitive-report.md`.
-
----
-
-## Quick start
-
-### Requirements
-
-- Rust **1.75+** ([rustup](https://rustup.rs/))
-- Optional (benchmarks only): Python **3.10+**
-
-### Install CLI from source
-
-```bash
-git clone https://github.com/gauticse2015/pdfparser.git
-cd pdfparser
-cargo build --release -p pdfparser-cli
-./target/release/pdfparser extract path/to/file.pdf
-./target/release/pdfparser extract --tables --format json path/to/file.pdf
-```
-
-### Library usage
-
-```toml
-[dependencies]
-pdfparser = { path = "crates/pdfparser" }
-```
-
-```rust
-use pdfparser::{Document, TableOptions, TablePreset, TextOptions};
-
-fn main() -> pdfparser::Result<()> {
-    let doc = Document::open("document.pdf")?;
-    let text_opts = TextOptions::default();
-    let table_opts = TableOptions::from_preset(TablePreset::Auto);
-
-    for i in 0..doc.page_count() {
-        let page = doc.page(i)?;
-        let text = page.text(&text_opts)?;
-        let tables = page.tables(&text_opts, &table_opts)?;
-        println!("page {i}: {} chars, {} tables", text.len(), tables.len());
-    }
-    Ok(())
-}
-```
-
-### CLI
-
-```bash
-# Plain text (reading order)
-pdfparser extract document.pdf
-
-# JSON (pages + metadata)
-pdfparser extract --format json document.pdf
-
-# Tables (Auto pipeline)
-pdfparser extract --tables --format json document.pdf
-
-# Page range (1-based)
-pdfparser extract --pages 1-3 document.pdf
-
-pdfparser info document.pdf
+# ICDAR (external data only)
+python3 benchmark/scripts/run_icdar_competitive.py \
+  --data-dir /path/to/icdar2013-dataset
 ```
 
 ---
 
-## Workspace layout
+## Project layout
 
-```text
-pdfparser/
-├── crates/
-│   ├── pdfparser/           # Public library façade
-│   ├── pdfparser-cli/       # Binary: pdfparser
-│   ├── pdfparser-ir/        # IR types
-│   ├── pdfparser-core/      # Open, page tree, filters, limits
-│   ├── pdfparser-fonts/     # Encodings, widths, ToUnicode
-│   ├── pdfparser-content/   # Content-stream VM (+ thin-fill rules)
-│   ├── pdfparser-layout/    # Reading order, spaces, rotate
-│   ├── pdfparser-export/    # JSON helpers
-│   └── pdfparser-tables/    # Lattice / hybrid / network tables
-├── benchmark/               # Corpus, gold, multi-lib harness
-├── docs/                    # Design, scoreboards, competitive notes
-└── README.md
-```
-
----
-
-## Development
-
-```bash
-cargo fmt --all
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace
-cargo build --release -p pdfparser-cli
-```
-
----
-
-## Design documentation
-
-| Document | Description |
-|----------|-------------|
-| [docs/design-native-pdf-parser.md](docs/design-native-pdf-parser.md) | Product design & roadmap |
-| [docs/design-architecture-feature-extraction.md](docs/design-architecture-feature-extraction.md) | Architecture / feature LLD |
-| [docs/table-orchestrator-architecture.md](docs/table-orchestrator-architecture.md) | Production table pipeline |
-| [docs/compete-struggle-analysis.md](docs/compete-struggle-analysis.md) | Hard-suite failure taxonomy |
-| [docs/icdar-competitive-report.md](docs/icdar-competitive-report.md) | ICDAR head-to-head report |
-| [docs/accuracy-scoreboard.md](docs/accuracy-scoreboard.md) | Latest multi-lib owned board |
-
----
-
-## Roadmap
-
-1. **Done** — text path, lattice/hybrid/network tables, embedded-image raster line sensing, objects, owned multi-lib scoreboard  
-2. **In progress** — compete_hard residual (header-slice row exact, spans, invoice shape, overdetect count)  
-3. **Next** — ICDAR TEDS/row/col; optional full-page render / OCR for image text  
-4. **Later** — encryption subset, structure tree, crates.io publish  
-
----
-
-## Security notes
-
-- **v0.1 does not open encrypted PDFs** (hard error).  
-- Stream decoding is budgeted via a **resource governor**. Prefer process isolation for untrusted multi-tenant uploads.  
-- PDF is a high-risk format; treat untrusted files accordingly.
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). Run `cargo fmt`, `cargo clippy`, and `cargo test` before opening a PR.
+| Path | Role |
+|------|------|
+| `crates/` | Rust workspace (core, content, tables, CLI) |
+| `docs/` | Architecture + ICDAR report |
+| `benchmark/corpus/` | Owned PDFs (synthetic + real) |
+| `benchmark/real_track/gold/` | Reviewed T3 structure golds |
+| `benchmark/real_track/freezes/` | Steady freeze `g2.json` |
+| `benchmark/real_track/results/` | Latest structure / peer / smoke JSON |
+| `benchmark/results/` | Owned multi-lib scoreboards + ICDAR JSON |
 
 ---
 
 ## License
 
-Licensed under either of:
-
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
-- MIT license ([LICENSE-MIT](LICENSE-MIT))
-
-at your option.
-
-### Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
-dual licensed as above, without any additional terms or conditions.
+MIT OR Apache-2.0. See `LICENSE-MIT` and `LICENSE-APACHE`.

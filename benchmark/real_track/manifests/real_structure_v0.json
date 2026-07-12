@@ -1,0 +1,226 @@
+{
+  "suite": "real_structure",
+  "version": 0,
+  "policy": "T3 full cell grids. Vision extract + peer validate + quality/human review. No pdfparser self-gold. stitch_multipage=false. No ICDAR.",
+  "g1_min_docs": 15,
+  "struggle_first_min_frac": 0.6,
+  "g1_ready": true,
+  "n_docs": 15,
+  "documents": [
+    {
+      "id": "30_real_ca_warn_report",
+      "pdf": "corpus/real/30_real_ca_warn_report.pdf",
+      "gold": "30_real_ca_warn_report.json",
+      "gold_path": "gold/30_real_ca_warn_report.json",
+      "struggle": false,
+      "failure_classes": [
+        "wide_tables",
+        "multi_page",
+        "government_layout"
+      ],
+      "peer_primary": "camelot_lattice"
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "pdf": "corpus/real/33_real_argentina_votes.pdf",
+      "gold": "33_real_argentina_votes.json",
+      "gold_path": "gold/33_real_argentina_votes.json",
+      "struggle": false,
+      "failure_classes": [
+        "spanish",
+        "irregular_grid",
+        "visible_rules"
+      ],
+      "peer_primary": "camelot_lattice"
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "pdf": "corpus/real/34_real_schools_contributions.pdf",
+      "gold": "34_real_schools_contributions.json",
+      "gold_path": "gold/34_real_schools_contributions.json",
+      "struggle": true,
+      "failure_classes": [
+        "stream_like",
+        "name_address_money",
+        "col_merge"
+      ],
+      "peer_primary": "camelot_lattice"
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "pdf": "corpus/real/35_real_camelot_fuel.pdf",
+      "gold": "35_real_camelot_fuel.json",
+      "gold_path": "gold/35_real_camelot_fuel.json",
+      "struggle": false,
+      "failure_classes": [
+        "visible_rules",
+        "scientific_layout"
+      ],
+      "peer_primary": "camelot_lattice"
+    },
+    {
+      "id": "36_real_two_tables",
+      "pdf": "corpus/real/36_real_two_tables.pdf",
+      "gold": "36_real_two_tables.json",
+      "gold_path": "gold/36_real_two_tables.json",
+      "struggle": true,
+      "failure_classes": [
+        "multi_table",
+        "government_health"
+      ],
+      "peer_primary": "camelot_lattice"
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "pdf": "corpus/real/37_real_liabilities_superscript.pdf",
+      "gold": "37_real_liabilities_superscript.json",
+      "gold_path": "gold/37_real_liabilities_superscript.json",
+      "struggle": false,
+      "failure_classes": [
+        "superscripts",
+        "financial_columns",
+        "continued_table"
+      ],
+      "peer_primary": "camelot_stream"
+    },
+    {
+      "id": "31_real_background_checks",
+      "pdf": "corpus/real/31_real_background_checks.pdf",
+      "gold": "31_real_background_checks.json",
+      "gold_path": "gold/31_real_background_checks.json",
+      "struggle": true,
+      "failure_classes": [
+        "wide_tables",
+        "multi_line_headers",
+        "dense_columns"
+      ],
+      "peer_primary": "vision+camelot_stream",
+      "human_spotcheck_requested": true
+    },
+    {
+      "id": "32_real_census_table324",
+      "pdf": "corpus/real/32_real_census_table324.pdf",
+      "gold": "32_real_census_table324.json",
+      "gold_path": "gold/32_real_census_table324.json",
+      "struggle": true,
+      "failure_classes": [
+        "statistical_table",
+        "col_collapse",
+        "multi_level_header"
+      ],
+      "peer_primary": "vision+camelot_stream",
+      "human_spotcheck_requested": true
+    },
+    {
+      "id": "R018_camelot_health",
+      "pdf": "corpus/real/R018_camelot_health.pdf",
+      "gold": "R018_camelot_health.json",
+      "gold_path": "gold/R018_camelot_health.json",
+      "struggle": false,
+      "failure_classes": [
+        "visible_rules",
+        "multi_level_header"
+      ],
+      "peer_primary": "vision+camelot_lattice",
+      "human_spotcheck_requested": false,
+      "promoted_at": "2026-07-12T08:38:18.611499+00:00"
+    },
+    {
+      "id": "R003_bea_gdp_sample",
+      "pdf": "corpus/real/R003_bea_gdp_sample.pdf",
+      "gold": "R003_bea_gdp_sample.json",
+      "gold_path": "gold/R003_bea_gdp_sample.json",
+      "struggle": true,
+      "failure_classes": [
+        "multi_level_header",
+        "government_layout",
+        "wide_tables"
+      ],
+      "peer_primary": "vision+pdfplumber",
+      "human_spotcheck_requested": false,
+      "promoted_at": "2026-07-12T08:38:18.611499+00:00"
+    },
+    {
+      "id": "R010_bea_nipa_highlights",
+      "pdf": "corpus/real/R010_bea_nipa_highlights.pdf",
+      "gold": "R010_bea_nipa_highlights.json",
+      "gold_path": "gold/R010_bea_nipa_highlights.json",
+      "struggle": true,
+      "failure_classes": [
+        "wide_tables",
+        "multi_level_header",
+        "government_layout",
+        "col_collapse"
+      ],
+      "peer_primary": "vision+camelot_stream",
+      "human_spotcheck_requested": false,
+      "promoted_at": "2026-07-12T08:38:18.611499+00:00"
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "pdf": "corpus/real/42_real_insurance_italian.pdf",
+      "gold": "42_real_insurance_italian.json",
+      "gold_path": "gold/42_real_insurance_italian.json",
+      "struggle": true,
+      "failure_classes": [
+        "non_english",
+        "nested_table",
+        "form_like_outer",
+        "multi_table"
+      ],
+      "peer_primary": "pdfplumber",
+      "human_spotcheck_requested": false,
+      "promoted_at": "2026-07-12T08:48:08.477951+00:00"
+    },
+    {
+      "id": "43_real_row_span_gmc",
+      "pdf": "corpus/real/43_real_row_span_gmc.pdf",
+      "gold": "43_real_row_span_gmc.json",
+      "gold_path": "gold/43_real_row_span_gmc.json",
+      "struggle": true,
+      "failure_classes": [
+        "row_span",
+        "merged_cells",
+        "government_health",
+        "multi_level_structure"
+      ],
+      "peer_primary": "camelot_lattice",
+      "human_spotcheck_requested": false,
+      "promoted_at": "2026-07-12T08:48:08.477951+00:00"
+    },
+    {
+      "id": "44_real_spanning_cells",
+      "pdf": "corpus/real/44_real_spanning_cells.pdf",
+      "gold": "44_real_spanning_cells.json",
+      "gold_path": "gold/44_real_spanning_cells.json",
+      "struggle": true,
+      "failure_classes": [
+        "col_span",
+        "multi_table",
+        "section_headers",
+        "numeric_grid"
+      ],
+      "peer_primary": "camelot_lattice",
+      "human_spotcheck_requested": false,
+      "promoted_at": "2026-07-12T08:48:08.477951+00:00"
+    },
+    {
+      "id": "45_real_campaign_donors",
+      "pdf": "corpus/real/45_real_campaign_donors.pdf",
+      "gold": "45_real_campaign_donors.json",
+      "gold_path": "gold/45_real_campaign_donors.json",
+      "struggle": true,
+      "failure_classes": [
+        "stream_like",
+        "spanish",
+        "dense_rows",
+        "borderless_like"
+      ],
+      "peer_primary": "camelot_stream",
+      "human_spotcheck_requested": false,
+      "promoted_at": "2026-07-12T08:48:08.477951+00:00"
+    }
+  ],
+  "rejected_not_in_core": {},
+  "notes": "n=15 struggle=10/15 (67%). G1 wave promoted: ['42_real_insurance_italian', '43_real_row_span_gmc', '44_real_spanning_cells', '45_real_campaign_donors']. g1_ready=True (need n\u226515 and struggle\u226560%)."
+}
