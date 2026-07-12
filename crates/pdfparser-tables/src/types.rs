@@ -117,4 +117,10 @@ pub struct Table {
     /// Typed signal for orchestration (not string notes).
     #[cfg_attr(feature = "serde", serde(default))]
     pub weak_edges: bool,
+    /// Lattice H∩V joint count when known (0 = unknown / non-lattice).
+    ///
+    /// Used by Engine V2 proposal mapping so router gates see real structure,
+    /// not fabricated rows×cols estimates.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub joint_count: u32,
 }

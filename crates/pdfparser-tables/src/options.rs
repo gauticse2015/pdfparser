@@ -57,8 +57,21 @@ pub enum TablePreset {
     LatticeStream,
     /// Full production pipeline.
     Full,
-    /// Product default (same as Full).
+    /// Product default: Engine V2 exclusive router (same as [`EngineV2`]).
+    ///
+    /// Flipped when real_structure Auto ≡ EngineV2 (nested multi-table + G1 parity).
+    /// Rollback: set `TableOptions.legacy_router = true`.
     Auto,
+    /// Engine V2 path (exclusive AutoRouter). Equivalent to product [`Auto`] post-flip.
+    ///
+    /// Builders remain the production lattice/hybrid/network stack; routing is
+    /// exclusive partition with nested-lattice keep. See `docs/design-table-engine-v2.md`.
+    EngineV2,
+    /// Best-effort quality path: same as [`EngineV2`] but requests full-page render
+    /// line sensing when the compile feature is available (`enable_full_page_render=true`).
+    ///
+    /// Pure-Rust / feature-off builds ignore the render request fail-soft.
+    HighQuality,
 }
 
 /// Public table options.
@@ -151,6 +164,10 @@ pub struct TableOptions {
     pub lattice_collapse_overdense_h: bool,
     /// Trigger overdense-H collapse when H-rows > text_bands × factor.
     pub lattice_overdense_h_factor: f32,
+    /// Text densify X/Y recovery for partial ruled grids (stub cols / missing H).
+    ///
+    /// When false, lattice keeps joint-only anchors (no text-inferred lines).
+    pub lattice_text_densify: bool,
 
     // --- Raster line sensing (Camelot-class morphology on page images) ---
     /// Recover H/V rules from raster bitmaps (embedded Image XObjects).
@@ -173,6 +190,25 @@ pub struct TableOptions {
     /// Keep lattice grids with little/no extractable text when rules came from raster
     /// (text is painted into the image). Only strong multi-cell grids pass.
     pub raster_allow_empty_cells: bool,
+
+    // --- Engine V2 migration flags (see docs/design-table-engine-v2.md) ---
+    /// Collect shadow diagnostics (method mix, rule counts) without changing routing.
+    ///
+    /// Enabled by default on [`TablePreset::EngineV2`] and [`TablePreset::HighQuality`].
+    pub shadow_diagnostics: bool,
+    /// Prefer Engine V2 exclusive router (product Auto post-flip).
+    pub use_engine_v2: bool,
+    /// Force legacy orchestrator even if `use_engine_v2` (rollback switch).
+    pub legacy_router: bool,
+    /// Runtime opt-in for full-page render line sensing (requires compile feature later).
+    ///
+    /// Compile feature alone must never enable render. Set by [`TablePreset::HighQuality`].
+    pub enable_full_page_render: bool,
+    /// Allow opportunistic full-page render (K25) when feature is compiled and probes fire.
+    ///
+    /// Embedders set `false` for a hard off. Default `true`. Independent of
+    /// [`Self::enable_full_page_render`] (explicit on).
+    pub allow_auto_render: bool,
 }
 
 impl Default for TableOptions {
@@ -221,6 +257,7 @@ impl Default for TableOptions {
             exclusive_under_strong_lattice: true,
             lattice_collapse_overdense_h: true,
             lattice_overdense_h_factor: 1.35,
+            lattice_text_densify: true,
             raster_line_detect: true,
             raster_adaptive_radius: 6,
             raster_adaptive_bias: 12,
@@ -229,6 +266,11 @@ impl Default for TableOptions {
             raster_merge_gap_px: 4,
             raster_pos_snap_px: 2.0,
             raster_allow_empty_cells: true,
+            shadow_diagnostics: false,
+            use_engine_v2: false,
+            legacy_router: true,
+            enable_full_page_render: false,
+            allow_auto_render: true,
         }
     }
 }
@@ -253,6 +295,7 @@ impl TableOptions {
                 },
                 ..Self::default()
             },
+            // Post flip: Auto/Full use exclusive Engine V2 router (parity with EngineV2).
             TablePreset::Full | TablePreset::Auto => Self {
                 detect_tables: true,
                 modes: TableModeSet {
@@ -264,6 +307,46 @@ impl TableOptions {
                 exclusive_under_strong_lattice: true,
                 // Multipage continued tables are a product feature.
                 stitch_multipage: true,
+                use_engine_v2: true,
+                legacy_router: false,
+                shadow_diagnostics: false,
+                enable_full_page_render: false,
+                allow_auto_render: true,
+                ..Self::default()
+            },
+            TablePreset::EngineV2 => Self {
+                detect_tables: true,
+                modes: TableModeSet {
+                    structure: false,
+                    lattice: true,
+                    stream: true,
+                    hybrid: true,
+                },
+                exclusive_under_strong_lattice: true,
+                stitch_multipage: true,
+                use_engine_v2: true,
+                legacy_router: false,
+                shadow_diagnostics: true,
+                enable_full_page_render: false,
+                allow_auto_render: true,
+                ..Self::default()
+            },
+            TablePreset::HighQuality => Self {
+                detect_tables: true,
+                modes: TableModeSet {
+                    structure: false,
+                    lattice: true,
+                    stream: true,
+                    hybrid: true,
+                },
+                exclusive_under_strong_lattice: true,
+                stitch_multipage: true,
+                use_engine_v2: true,
+                legacy_router: false,
+                shadow_diagnostics: true,
+                // Request full-page render when feature is compiled (fail-soft otherwise).
+                enable_full_page_render: true,
+                allow_auto_render: true,
                 ..Self::default()
             },
         }
