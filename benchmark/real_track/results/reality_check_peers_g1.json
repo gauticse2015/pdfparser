@@ -1,0 +1,4706 @@
+{
+  "generated_at": "2026-07-12T11:28:45.266099+00:00",
+  "manifest": "/Users/gautamkumar/Desktop/pdfParser/benchmark/real_track/manifests/real_structure_v0.json",
+  "binary": "/Users/gautamkumar/Desktop/pdfParser/target/release/pdfparser",
+  "policy": "same gold + metrics as run_real_structure; stitch off; gold pages only",
+  "libraries": [
+    "pdfparser_auto",
+    "pdfparser_engine_v2",
+    "camelot_lattice",
+    "camelot_stream",
+    "pdfplumber"
+  ],
+  "summary": {
+    "pdfparser_auto": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.6372333167816467,
+      "mean_det_f1": 0.9644444444444444,
+      "mean_shape": 0.5333333333333333,
+      "mean_score_0_100": 72.57822156015476,
+      "wins_best_cell": 1
+    },
+    "pdfparser_engine_v2": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.6372333167816467,
+      "mean_det_f1": 0.9644444444444444,
+      "mean_shape": 0.5333333333333333,
+      "mean_score_0_100": 72.57822156015476,
+      "wins_best_cell": 0
+    },
+    "camelot_lattice": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.5780625934474188,
+      "mean_det_f1": 0.8444444444444444,
+      "mean_shape": 0.5333333333333333,
+      "mean_score_0_100": 66.01139262678564,
+      "wins_best_cell": 8
+    },
+    "camelot_stream": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.3465154347781931,
+      "mean_det_f1": 0.9222222222222223,
+      "mean_shape": 0.2,
+      "mean_score_0_100": 51.1383951689055,
+      "wins_best_cell": 3
+    },
+    "pdfplumber": {
+      "n_scored": 15,
+      "n_error": 0,
+      "mean_cell_f1": 0.5831883328214504,
+      "mean_det_f1": 0.8121212121212121,
+      "mean_shape": 0.5666666666666667,
+      "mean_score_0_100": 65.9184424037671,
+      "wins_best_cell": 3
+    }
+  },
+  "documents": [
+    {
+      "id": "30_real_ca_warn_report",
+      "struggle": false,
+      "failure_classes": [
+        "wide_tables",
+        "multi_page",
+        "government_layout"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/30_real_ca_warn_report.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9954914653750897
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9946808510638298,
+            "recall": 0.7248062015503876,
+            "f1": 0.8385650224215245,
+            "tp": 187,
+            "fp": 1,
+            "fn": 71
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                37,
+                7
+              ],
+              "pred_shape": [
+                37,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.9946808510638298,
+              "cell_recall": 0.7248062015503876,
+              "cell_f1": 0.8385650224215245,
+              "cells_matched": 187,
+              "gold_nonzero_cells": 258,
+              "tp": 187,
+              "fp": 1,
+              "fn": 71
+            }
+          ],
+          "score_0_100": 93.54260089686099,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 16,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9954914653750897
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9946808510638298,
+            "recall": 0.7248062015503876,
+            "f1": 0.8385650224215245,
+            "tp": 187,
+            "fp": 1,
+            "fn": 71
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                37,
+                7
+              ],
+              "pred_shape": [
+                37,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.9946808510638298,
+              "cell_recall": 0.7248062015503876,
+              "cell_f1": 0.8385650224215245,
+              "cells_matched": 187,
+              "gold_nonzero_cells": 258,
+              "tp": 187,
+              "fp": 1,
+              "fn": 71
+            }
+          ],
+          "score_0_100": 93.54260089686099,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 16,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 258,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.875,
+            "recall": 0.027131782945736434,
+            "f1": 0.05263157894736842,
+            "tp": 7,
+            "fp": 1,
+            "fn": 251
+          },
+          "score_0_100": 37.10526315789473,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9946808510638298,
+            "recall": 0.7248062015503876,
+            "f1": 0.8385650224215245,
+            "tp": 187,
+            "fp": 1,
+            "fn": 71
+          },
+          "score_0_100": 93.54260089686099,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.089,
+        "pdfparser_engine_v2": 0.092,
+        "camelot_lattice": 1.36,
+        "camelot_stream": 0.084,
+        "pdfplumber": 0.206
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "struggle": false,
+      "failure_classes": [
+        "spanish",
+        "irregular_grid",
+        "visible_rules"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/33_real_argentina_votes.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9897553476226675
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.4251968503937008,
+            "f1": 0.5966850828729281,
+            "tp": 54,
+            "fp": 0,
+            "fn": 73
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                32,
+                4
+              ],
+              "pred_shape": [
+                33,
+                4
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 1.0,
+              "cell_recall": 0.4251968503937008,
+              "cell_f1": 0.5966850828729281,
+              "cells_matched": 54,
+              "gold_nonzero_cells": 127,
+              "tp": 54,
+              "fp": 0,
+              "fn": 73
+            }
+          ],
+          "score_0_100": 58.86740331491712,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9897553476226675
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.4251968503937008,
+            "f1": 0.5966850828729281,
+            "tp": 54,
+            "fp": 0,
+            "fn": 73
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                32,
+                4
+              ],
+              "pred_shape": [
+                33,
+                4
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 1.0,
+              "cell_recall": 0.4251968503937008,
+              "cell_f1": 0.5966850828729281,
+              "cells_matched": 54,
+              "gold_nonzero_cells": 127,
+              "tp": 54,
+              "fp": 0,
+              "fn": 73
+            }
+          ],
+          "score_0_100": 58.86740331491712,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 127,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 3,
+            "tp": 1,
+            "fp": 2,
+            "fn": 0,
+            "precision": 0.3333333333333333,
+            "recall": 1.0,
+            "f1": 0.5,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 3
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9818181818181818,
+            "recall": 0.4251968503937008,
+            "f1": 0.5934065934065934,
+            "tp": 54,
+            "fp": 1,
+            "fn": 73
+          },
+          "score_0_100": 41.23626373626374,
+          "n_pred": 3,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 127,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.01,
+        "pdfparser_engine_v2": 0.009,
+        "camelot_lattice": 0.218,
+        "camelot_stream": 0.045,
+        "pdfplumber": 0.083
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "struggle": true,
+      "failure_classes": [
+        "stream_like",
+        "name_address_money",
+        "col_merge"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/34_real_schools_contributions.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9965177010253059
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8525641025641025,
+            "recall": 0.31516587677725116,
+            "f1": 0.46020761245674735,
+            "tp": 133,
+            "fp": 23,
+            "fn": 289
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                46,
+                10
+              ],
+              "pred_shape": [
+                46,
+                10
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.8525641025641025,
+              "cell_recall": 0.31516587677725116,
+              "cell_f1": 0.46020761245674735,
+              "cells_matched": 133,
+              "gold_nonzero_cells": 422,
+              "tp": 133,
+              "fp": 23,
+              "fn": 289
+            }
+          ],
+          "score_0_100": 78.4083044982699,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 6,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9965177010253059
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8525641025641025,
+            "recall": 0.31516587677725116,
+            "f1": 0.46020761245674735,
+            "tp": 133,
+            "fp": 23,
+            "fn": 289
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                46,
+                10
+              ],
+              "pred_shape": [
+                46,
+                10
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.8525641025641025,
+              "cell_recall": 0.31516587677725116,
+              "cell_f1": 0.46020761245674735,
+              "cells_matched": 133,
+              "gold_nonzero_cells": 422,
+              "tp": 133,
+              "fp": 23,
+              "fn": 289
+            }
+          ],
+          "score_0_100": 78.4083044982699,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 6,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.8933649289099526,
+            "f1": 0.9436795994993742,
+            "tp": 377,
+            "fp": 0,
+            "fn": 45
+          },
+          "score_0_100": 97.74718397997498,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.75,
+            "recall": 0.22037914691943128,
+            "f1": 0.34065934065934067,
+            "tp": 93,
+            "fp": 31,
+            "fn": 329
+          },
+          "score_0_100": 48.62637362637363,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9813953488372092,
+            "recall": 1.0,
+            "f1": 0.9906103286384975,
+            "tp": 422,
+            "fp": 8,
+            "fn": 0
+          },
+          "score_0_100": 99.6244131455399,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.053,
+        "pdfparser_engine_v2": 0.052,
+        "camelot_lattice": 0.203,
+        "camelot_stream": 0.034,
+        "pdfplumber": 0.11
+      },
+      "best_cell_lib": "pdfplumber",
+      "best_cell_f1": 0.9906103286384975
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "struggle": false,
+      "failure_classes": [
+        "visible_rules",
+        "scientific_layout"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/35_real_camelot_fuel.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 2,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 2,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "pairs": [
+              {
+                "pred_i": 1,
+                "gold_i": 0,
+                "iou": 0.989037068836021
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.5581395348837209,
+            "f1": 0.7164179104477612,
+            "tp": 24,
+            "fp": 0,
+            "fn": 19
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 1,
+              "gold_shape": [
+                7,
+                7
+              ],
+              "pred_shape": [
+                7,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.5581395348837209,
+              "cell_f1": 0.7164179104477612,
+              "cells_matched": 24,
+              "gold_nonzero_cells": 43,
+              "tp": 24,
+              "fp": 0,
+              "fn": 19
+            }
+          ],
+          "score_0_100": 76.99004975124379,
+          "n_pred": 2,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 2,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 2,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "pairs": [
+              {
+                "pred_i": 1,
+                "gold_i": 0,
+                "iou": 0.989037068836021
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.5581395348837209,
+            "f1": 0.7164179104477612,
+            "tp": 24,
+            "fp": 0,
+            "fn": 19
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 1,
+              "gold_shape": [
+                7,
+                7
+              ],
+              "pred_shape": [
+                7,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.5581395348837209,
+              "cell_f1": 0.7164179104477612,
+              "cells_matched": 24,
+              "gold_nonzero_cells": 43,
+              "tp": 24,
+              "fp": 0,
+              "fn": 19
+            }
+          ],
+          "score_0_100": 76.99004975124379,
+          "n_pred": 2,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 43,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 43
+          },
+          "score_0_100": 35.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 43,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.01,
+        "pdfparser_engine_v2": 0.008,
+        "camelot_lattice": 0.196,
+        "camelot_stream": 0.021,
+        "pdfplumber": 0.047
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "36_real_two_tables",
+      "struggle": true,
+      "failure_classes": [
+        "multi_table",
+        "government_health"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/36_real_two_tables.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 1,
+                "gold_i": 1,
+                "iou": 0.9964719393465131
+              },
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.994283840176876
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9411764705882353,
+            "recall": 0.2711864406779661,
+            "f1": 0.42105263157894735,
+            "tp": 16,
+            "fp": 1,
+            "fn": 43
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                3,
+                10
+              ],
+              "pred_shape": [
+                23,
+                10
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 0.8888888888888888,
+              "cell_recall": 0.3076923076923077,
+              "cell_f1": 0.4571428571428572,
+              "cells_matched": 8,
+              "gold_nonzero_cells": 26,
+              "tp": 8,
+              "fp": 1,
+              "fn": 18
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 1,
+              "gold_shape": [
+                5,
+                9
+              ],
+              "pred_shape": [
+                31,
+                9
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 1.0,
+              "cell_recall": 0.24242424242424243,
+              "cell_f1": 0.3902439024390244,
+              "cells_matched": 8,
+              "gold_nonzero_cells": 33,
+              "tp": 8,
+              "fp": 0,
+              "fn": 25
+            }
+          ],
+          "score_0_100": 51.84210526315789,
+          "n_pred": 2,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 1,
+                "gold_i": 1,
+                "iou": 0.9964719393465131
+              },
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.994283840176876
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9411764705882353,
+            "recall": 0.2711864406779661,
+            "f1": 0.42105263157894735,
+            "tp": 16,
+            "fp": 1,
+            "fn": 43
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                3,
+                10
+              ],
+              "pred_shape": [
+                23,
+                10
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 0.8888888888888888,
+              "cell_recall": 0.3076923076923077,
+              "cell_f1": 0.4571428571428572,
+              "cells_matched": 8,
+              "gold_nonzero_cells": 26,
+              "tp": 8,
+              "fp": 1,
+              "fn": 18
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 1,
+              "gold_shape": [
+                5,
+                9
+              ],
+              "pred_shape": [
+                31,
+                9
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 1.0,
+              "cell_recall": 0.24242424242424243,
+              "cell_f1": 0.3902439024390244,
+              "cells_matched": 8,
+              "gold_nonzero_cells": 33,
+              "tp": 8,
+              "fp": 0,
+              "fn": 25
+            }
+          ],
+          "score_0_100": 51.84210526315789,
+          "n_pred": 2,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 59,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 2,
+          "n_exp": 2
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8888888888888888,
+            "recall": 0.2711864406779661,
+            "f1": 0.4155844155844156,
+            "tp": 16,
+            "fp": 2,
+            "fn": 43
+          },
+          "score_0_100": 51.62337662337663,
+          "n_pred": 2,
+          "n_exp": 2
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 20,
+            "tp": 2,
+            "fp": 18,
+            "fn": 0,
+            "precision": 0.1,
+            "recall": 1.0,
+            "f1": 0.18181818181818182,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.5,
+            "col_accuracy": 0.5,
+            "shape_exact_rate": 0.5,
+            "n_gold_tables": 2,
+            "n_pred_tables": 20
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9333333333333333,
+            "recall": 0.4745762711864407,
+            "f1": 0.6292134831460674,
+            "tp": 28,
+            "fp": 2,
+            "fn": 31
+          },
+          "score_0_100": 44.03217568947906,
+          "n_pred": 20,
+          "n_exp": 2
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.013,
+        "pdfparser_engine_v2": 0.012,
+        "camelot_lattice": 0.224,
+        "camelot_stream": 0.034,
+        "pdfplumber": 0.098
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "struggle": false,
+      "failure_classes": [
+        "superscripts",
+        "financial_columns",
+        "continued_table"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/37_real_liabilities_superscript.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.90951764108891
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.7534246575342466,
+            "recall": 0.14745308310991956,
+            "f1": 0.24663677130044842,
+            "tp": 55,
+            "fp": 18,
+            "fn": 318
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                36,
+                11
+              ],
+              "pred_shape": [
+                30,
+                10
+              ],
+              "row_exact": false,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.7534246575342466,
+              "cell_recall": 0.14745308310991956,
+              "cell_f1": 0.24663677130044842,
+              "cells_matched": 55,
+              "gold_nonzero_cells": 373,
+              "tp": 55,
+              "fp": 18,
+              "fn": 318
+            }
+          ],
+          "score_0_100": 44.865470852017935,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.90951764108891
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.7534246575342466,
+            "recall": 0.14745308310991956,
+            "f1": 0.24663677130044842,
+            "tp": 55,
+            "fp": 18,
+            "fn": 318
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                36,
+                11
+              ],
+              "pred_shape": [
+                30,
+                10
+              ],
+              "row_exact": false,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.7534246575342466,
+              "cell_recall": 0.14745308310991956,
+              "cell_f1": 0.24663677130044842,
+              "cells_matched": 55,
+              "gold_nonzero_cells": 373,
+              "tp": 55,
+              "fp": 18,
+              "fn": 318
+            }
+          ],
+          "score_0_100": 44.865470852017935,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 0
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 373
+          },
+          "score_0_100": 0.0,
+          "n_pred": 0,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 373,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 0
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 373
+          },
+          "score_0_100": 0.0,
+          "n_pred": 0,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.009,
+        "pdfparser_engine_v2": 0.008,
+        "camelot_lattice": 0.294,
+        "camelot_stream": 0.136,
+        "pdfplumber": 0.019
+      },
+      "best_cell_lib": "camelot_stream",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "31_real_background_checks",
+      "struggle": true,
+      "failure_classes": [
+        "wide_tables",
+        "multi_line_headers",
+        "dense_columns"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/31_real_background_checks.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9990224828934506,
+            "recall": 0.6971350613915416,
+            "f1": 0.821213338690237,
+            "tp": 1022,
+            "fp": 1,
+            "fn": 444
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                59,
+                25
+              ],
+              "pred_shape": [
+                58,
+                25
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 0.9990224828934506,
+              "cell_recall": 0.6971350613915416,
+              "cell_f1": 0.821213338690237,
+              "cells_matched": 1022,
+              "gold_nonzero_cells": 1466,
+              "tp": 1022,
+              "fp": 1,
+              "fn": 444
+            }
+          ],
+          "score_0_100": 67.84853354760948,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9990224828934506,
+            "recall": 0.6971350613915416,
+            "f1": 0.821213338690237,
+            "tp": 1022,
+            "fp": 1,
+            "fn": 444
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                59,
+                25
+              ],
+              "pred_shape": [
+                58,
+                25
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 0.9990224828934506,
+              "cell_recall": 0.6971350613915416,
+              "cell_f1": 0.821213338690237,
+              "cells_matched": 1022,
+              "gold_nonzero_cells": 1466,
+              "tp": 1022,
+              "fp": 1,
+              "fn": 444
+            }
+          ],
+          "score_0_100": 67.84853354760948,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8181818181818182,
+            "recall": 0.006139154160982265,
+            "f1": 0.012186865267433986,
+            "tp": 9,
+            "fp": 2,
+            "fn": 1457
+          },
+          "score_0_100": 35.487474610697355,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9954128440366973,
+            "recall": 0.1480218281036835,
+            "f1": 0.25771971496437057,
+            "tp": 217,
+            "fp": 1,
+            "fn": 1249
+          },
+          "score_0_100": 45.30878859857482,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9444444444444444,
+            "recall": 0.011596180081855388,
+            "f1": 0.022911051212938006,
+            "tp": 17,
+            "fp": 1,
+            "fn": 1449
+          },
+          "score_0_100": 35.91644204851752,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.028,
+        "pdfparser_engine_v2": 0.028,
+        "camelot_lattice": 0.327,
+        "camelot_stream": 0.08,
+        "pdfplumber": 0.152
+      },
+      "best_cell_lib": "pdfparser_auto",
+      "best_cell_f1": 0.821213338690237
+    },
+    {
+      "id": "32_real_census_table324",
+      "struggle": true,
+      "failure_classes": [
+        "statistical_table",
+        "col_collapse",
+        "multi_level_header"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/32_real_census_table324.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.5,
+            "col_accuracy": 0.5,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 3,
+            "fn": 531
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                34,
+                10
+              ],
+              "pred_shape": [
+                34,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.0,
+              "cell_recall": 0.0,
+              "cell_f1": 0.0,
+              "cells_matched": 0,
+              "gold_nonzero_cells": 333,
+              "tp": 0,
+              "fp": 3,
+              "fn": 333
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 1,
+              "gold_shape": [
+                33,
+                6
+              ],
+              "pred_shape": [
+                29,
+                6
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 0.0,
+              "cell_recall": 0.0,
+              "cell_f1": 0.0,
+              "cells_matched": 0,
+              "gold_nonzero_cells": 198,
+              "tp": 0,
+              "fp": 0,
+              "fn": 198
+            }
+          ],
+          "score_0_100": 35.0,
+          "n_pred": 2,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.5,
+            "col_accuracy": 0.5,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 3,
+            "fn": 531
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                34,
+                10
+              ],
+              "pred_shape": [
+                34,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.0,
+              "cell_recall": 0.0,
+              "cell_f1": 0.0,
+              "cells_matched": 0,
+              "gold_nonzero_cells": 333,
+              "tp": 0,
+              "fp": 3,
+              "fn": 333
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 1,
+              "gold_shape": [
+                33,
+                6
+              ],
+              "pred_shape": [
+                29,
+                6
+              ],
+              "row_exact": false,
+              "col_exact": true,
+              "shape_exact": false,
+              "cell_precision": 0.0,
+              "cell_recall": 0.0,
+              "cell_f1": 0.0,
+              "cells_matched": 0,
+              "gold_nonzero_cells": 198,
+              "tp": 0,
+              "fp": 0,
+              "fn": 198
+            }
+          ],
+          "score_0_100": 35.0,
+          "n_pred": 2,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8333333333333334,
+            "recall": 0.018832391713747645,
+            "f1": 0.03683241252302026,
+            "tp": 10,
+            "fp": 2,
+            "fn": 521
+          },
+          "score_0_100": 36.47329650092081,
+          "n_pred": 2,
+          "n_exp": 2
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.5,
+            "recall": 0.0018832391713747645,
+            "f1": 0.0037523452157598495,
+            "tp": 1,
+            "fp": 1,
+            "fn": 530
+          },
+          "score_0_100": 35.15009380863039,
+          "n_pred": 2,
+          "n_exp": 2
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.5,
+            "recall": 0.0018832391713747645,
+            "f1": 0.0037523452157598495,
+            "tp": 1,
+            "fp": 1,
+            "fn": 530
+          },
+          "score_0_100": 35.15009380863039,
+          "n_pred": 2,
+          "n_exp": 2
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.02,
+        "pdfparser_engine_v2": 0.019,
+        "camelot_lattice": 0.189,
+        "camelot_stream": 0.118,
+        "pdfplumber": 0.113
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 0.03683241252302026
+    },
+    {
+      "id": "R018_camelot_health",
+      "struggle": false,
+      "failure_classes": [
+        "visible_rules",
+        "multi_level_header",
+        "multi_table_mode_candidate"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/R018_camelot_health.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9931976258335525
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.9898477157360406,
+            "f1": 0.9948979591836734,
+            "tp": 390,
+            "fp": 0,
+            "fn": 4
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                50,
+                8
+              ],
+              "pred_shape": [
+                50,
+                8
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.9898477157360406,
+              "cell_f1": 0.9948979591836734,
+              "cells_matched": 390,
+              "gold_nonzero_cells": 394,
+              "tp": 390,
+              "fp": 0,
+              "fn": 4
+            }
+          ],
+          "score_0_100": 99.79591836734694,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9931976258335525
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.9898477157360406,
+            "f1": 0.9948979591836734,
+            "tp": 390,
+            "fp": 0,
+            "fn": 4
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                50,
+                8
+              ],
+              "pred_shape": [
+                50,
+                8
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.9898477157360406,
+              "cell_f1": 0.9948979591836734,
+              "cells_matched": 390,
+              "gold_nonzero_cells": 394,
+              "tp": 390,
+              "fp": 0,
+              "fn": 4
+            }
+          ],
+          "score_0_100": 99.79591836734694,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 394,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8888888888888888,
+            "recall": 0.02030456852791878,
+            "f1": 0.03970223325062035,
+            "tp": 8,
+            "fp": 1,
+            "fn": 386
+          },
+          "score_0_100": 36.58808933002481,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8709677419354839,
+            "recall": 0.06852791878172589,
+            "f1": 0.12705882352941175,
+            "tp": 27,
+            "fp": 4,
+            "fn": 367
+          },
+          "score_0_100": 40.08235294117647,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.011,
+        "pdfparser_engine_v2": 0.01,
+        "camelot_lattice": 0.367,
+        "camelot_stream": 0.189,
+        "pdfplumber": 0.095
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "R003_bea_gdp_sample",
+      "struggle": true,
+      "failure_classes": [
+        "multi_level_header",
+        "government_layout",
+        "wide_tables"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/R003_bea_gdp_sample.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9617224880382775,
+            "recall": 0.7913385826771654,
+            "f1": 0.8682505399568035,
+            "tp": 201,
+            "fp": 8,
+            "fn": 53
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                30,
+                9
+              ],
+              "pred_shape": [
+                32,
+                10
+              ],
+              "row_exact": false,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.9617224880382775,
+              "cell_recall": 0.7913385826771654,
+              "cell_f1": 0.8682505399568035,
+              "cells_matched": 201,
+              "gold_nonzero_cells": 254,
+              "tp": 201,
+              "fp": 8,
+              "fn": 53
+            }
+          ],
+          "score_0_100": 69.73002159827215,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 187,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9617224880382775,
+            "recall": 0.7913385826771654,
+            "f1": 0.8682505399568035,
+            "tp": 201,
+            "fp": 8,
+            "fn": 53
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                30,
+                9
+              ],
+              "pred_shape": [
+                32,
+                10
+              ],
+              "row_exact": false,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.9617224880382775,
+              "cell_recall": 0.7913385826771654,
+              "cell_f1": 0.8682505399568035,
+              "cells_matched": 201,
+              "gold_nonzero_cells": 254,
+              "tp": 201,
+              "fp": 8,
+              "fn": 53
+            }
+          ],
+          "score_0_100": 69.73002159827215,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 186,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.047244094488188976,
+            "f1": 0.09022556390977444,
+            "tp": 12,
+            "fp": 0,
+            "fn": 242
+          },
+          "score_0_100": 38.609022556390975,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.4,
+            "recall": 0.015748031496062992,
+            "f1": 0.030303030303030304,
+            "tp": 4,
+            "fp": 6,
+            "fn": 250
+          },
+          "score_0_100": 36.21212121212121,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.9881889763779528,
+            "f1": 0.994059405940594,
+            "tp": 251,
+            "fp": 0,
+            "fn": 3
+          },
+          "score_0_100": 99.76237623762376,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 1.421,
+        "pdfparser_engine_v2": 1.396,
+        "camelot_lattice": 0.205,
+        "camelot_stream": 0.049,
+        "pdfplumber": 0.1
+      },
+      "best_cell_lib": "pdfplumber",
+      "best_cell_f1": 0.994059405940594
+    },
+    {
+      "id": "R010_bea_nipa_highlights",
+      "struggle": true,
+      "failure_classes": [
+        "wide_tables",
+        "multi_level_header",
+        "government_layout",
+        "col_collapse"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/R010_bea_nipa_highlights.pdf",
+      "gold_pages": [
+        7
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 8,
+            "fn": 964
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                51,
+                22
+              ],
+              "pred_shape": [
+                38,
+                3
+              ],
+              "row_exact": false,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.0,
+              "cell_recall": 0.0,
+              "cell_f1": 0.0,
+              "cells_matched": 0,
+              "gold_nonzero_cells": 964,
+              "tp": 0,
+              "fp": 8,
+              "fn": 964
+            }
+          ],
+          "score_0_100": 35.0,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              7
+            ],
+            "n_pred_all_pages": 24,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 8,
+            "fn": 964
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                51,
+                22
+              ],
+              "pred_shape": [
+                38,
+                3
+              ],
+              "row_exact": false,
+              "col_exact": false,
+              "shape_exact": false,
+              "cell_precision": 0.0,
+              "cell_recall": 0.0,
+              "cell_f1": 0.0,
+              "cells_matched": 0,
+              "gold_nonzero_cells": 964,
+              "tp": 0,
+              "fp": 8,
+              "fn": 964
+            }
+          ],
+          "score_0_100": 35.0,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              7
+            ],
+            "n_pred_all_pages": 24,
+            "n_pred_gold_pages": 1,
+            "filtered": true
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.6428571428571429,
+            "recall": 0.01867219917012448,
+            "f1": 0.03629032258064516,
+            "tp": 18,
+            "fp": 10,
+            "fn": 946
+          },
+          "score_0_100": 36.45161290322581,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 964,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.8240740740740741,
+            "recall": 0.09232365145228216,
+            "f1": 0.166044776119403,
+            "tp": 89,
+            "fp": 19,
+            "fn": 875
+          },
+          "score_0_100": 41.64179104477611,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.654,
+        "pdfparser_engine_v2": 0.657,
+        "camelot_lattice": 1.749,
+        "camelot_stream": 1.61,
+        "pdfplumber": 0.105
+      },
+      "best_cell_lib": "camelot_stream",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "struggle": true,
+      "failure_classes": [
+        "non_english",
+        "nested_table",
+        "form_like_outer",
+        "multi_table"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/42_real_insurance_italian.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.9047619047619048,
+            "f1": 0.9500000000000001,
+            "tp": 19,
+            "fp": 0,
+            "fn": 2
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                7,
+                2
+              ],
+              "pred_shape": [
+                7,
+                2
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.8461538461538461,
+              "cell_f1": 0.9166666666666666,
+              "cells_matched": 11,
+              "gold_nonzero_cells": 13,
+              "tp": 11,
+              "fp": 0,
+              "fn": 2
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 1,
+              "gold_shape": [
+                4,
+                2
+              ],
+              "pred_shape": [
+                4,
+                2
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 1.0,
+              "cell_f1": 1.0,
+              "cells_matched": 8,
+              "gold_nonzero_cells": 8,
+              "tp": 8,
+              "fp": 0,
+              "fn": 0
+            }
+          ],
+          "score_0_100": 98.0,
+          "n_pred": 2,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.9047619047619048,
+            "f1": 0.9500000000000001,
+            "tp": 19,
+            "fp": 0,
+            "fn": 2
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                7,
+                2
+              ],
+              "pred_shape": [
+                7,
+                2
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.8461538461538461,
+              "cell_f1": 0.9166666666666666,
+              "cells_matched": 11,
+              "gold_nonzero_cells": 13,
+              "tp": 11,
+              "fp": 0,
+              "fn": 2
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 1,
+              "gold_shape": [
+                4,
+                2
+              ],
+              "pred_shape": [
+                4,
+                2
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 1.0,
+              "cell_f1": 1.0,
+              "cells_matched": 8,
+              "gold_nonzero_cells": 8,
+              "tp": 8,
+              "fp": 0,
+              "fn": 0
+            }
+          ],
+          "score_0_100": 98.0,
+          "n_pred": 2,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 2,
+            "n_pred_gold_pages": 2,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6666666666666666,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.38095238095238093,
+            "f1": 0.5517241379310345,
+            "tp": 8,
+            "fp": 0,
+            "fn": 13
+          },
+          "score_0_100": 45.40229885057471,
+          "n_pred": 1,
+          "n_exp": 2
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6666666666666666,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.5,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 21
+          },
+          "score_0_100": 23.333333333333332,
+          "n_pred": 1,
+          "n_exp": 2
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.9523809523809523,
+            "f1": 0.975609756097561,
+            "tp": 20,
+            "fp": 0,
+            "fn": 1
+          },
+          "score_0_100": 99.02439024390245,
+          "n_pred": 2,
+          "n_exp": 2
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.01,
+        "pdfparser_engine_v2": 0.008,
+        "camelot_lattice": 0.183,
+        "camelot_stream": 0.013,
+        "pdfplumber": 0.043
+      },
+      "best_cell_lib": "pdfplumber",
+      "best_cell_f1": 0.975609756097561
+    },
+    {
+      "id": "43_real_row_span_gmc",
+      "struggle": true,
+      "failure_classes": [
+        "row_span",
+        "merged_cells",
+        "government_health",
+        "multi_level_structure"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/43_real_row_span_gmc.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9164009058435908
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9894736842105263,
+            "recall": 1.0,
+            "f1": 0.9947089947089947,
+            "tp": 94,
+            "fp": 1,
+            "fn": 0
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                40,
+                4
+              ],
+              "pred_shape": [
+                40,
+                4
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.9894736842105263,
+              "cell_recall": 1.0,
+              "cell_f1": 0.9947089947089947,
+              "cells_matched": 94,
+              "gold_nonzero_cells": 94,
+              "tp": 94,
+              "fp": 1,
+              "fn": 0
+            }
+          ],
+          "score_0_100": 99.78835978835978,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9164009058435908
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9894736842105263,
+            "recall": 1.0,
+            "f1": 0.9947089947089947,
+            "tp": 94,
+            "fp": 1,
+            "fn": 0
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                40,
+                4
+              ],
+              "pred_shape": [
+                40,
+                4
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.9894736842105263,
+              "cell_recall": 1.0,
+              "cell_f1": 0.9947089947089947,
+              "cells_matched": 94,
+              "gold_nonzero_cells": 94,
+              "tp": 94,
+              "fp": 1,
+              "fn": 0
+            }
+          ],
+          "score_0_100": 99.78835978835978,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 94,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.01818181818181818,
+            "recall": 0.010638297872340425,
+            "f1": 0.013422818791946308,
+            "tp": 1,
+            "fp": 54,
+            "fn": 93
+          },
+          "score_0_100": 35.53691275167785,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 94,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.011,
+        "pdfparser_engine_v2": 0.009,
+        "camelot_lattice": 0.178,
+        "camelot_stream": 0.015,
+        "pdfplumber": 0.035
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "44_real_spanning_cells",
+      "struggle": true,
+      "failure_classes": [
+        "col_span",
+        "multi_table",
+        "section_headers",
+        "numeric_grid"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/44_real_spanning_cells.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 3,
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 2,
+            "predicted": 3,
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9944003790700465
+              },
+              {
+                "pred_i": 2,
+                "gold_i": 1,
+                "iou": 0.9770942017838904
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 3
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.5461538461538461,
+            "f1": 0.7064676616915423,
+            "tp": 71,
+            "fp": 0,
+            "fn": 59
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                21,
+                6
+              ],
+              "pred_shape": [
+                21,
+                6
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.4864864864864865,
+              "cell_f1": 0.6545454545454547,
+              "cells_matched": 54,
+              "gold_nonzero_cells": 111,
+              "tp": 54,
+              "fp": 0,
+              "fn": 57
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 2,
+              "gold_shape": [
+                4,
+                6
+              ],
+              "pred_shape": [
+                4,
+                6
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.8947368421052632,
+              "cell_f1": 0.9444444444444444,
+              "cells_matched": 17,
+              "gold_nonzero_cells": 19,
+              "tp": 17,
+              "fp": 0,
+              "fn": 2
+            }
+          ],
+          "score_0_100": 81.2587064676617,
+          "n_pred": 3,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 3,
+            "n_pred_gold_pages": 3,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 3,
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "detection_iou": {
+            "skipped": false,
+            "match_mode": "iou",
+            "expected": 2,
+            "predicted": 3,
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8,
+            "pairs": [
+              {
+                "pred_i": 0,
+                "gold_i": 0,
+                "iou": 0.9944003790700465
+              },
+              {
+                "pred_i": 2,
+                "gold_i": 1,
+                "iou": 0.9770942017838904
+              }
+            ],
+            "iou_thresh": 0.5
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 3
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 0.5461538461538461,
+            "f1": 0.7064676616915423,
+            "tp": 71,
+            "fp": 0,
+            "fn": 59
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                21,
+                6
+              ],
+              "pred_shape": [
+                21,
+                6
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.4864864864864865,
+              "cell_f1": 0.6545454545454547,
+              "cells_matched": 54,
+              "gold_nonzero_cells": 111,
+              "tp": 54,
+              "fp": 0,
+              "fn": 57
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 2,
+              "gold_shape": [
+                4,
+                6
+              ],
+              "pred_shape": [
+                4,
+                6
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 1.0,
+              "cell_recall": 0.8947368421052632,
+              "cell_f1": 0.9444444444444444,
+              "cells_matched": 17,
+              "gold_nonzero_cells": 19,
+              "tp": 17,
+              "fp": 0,
+              "fn": 2
+            }
+          ],
+          "score_0_100": 81.2587064676617,
+          "n_pred": 3,
+          "n_exp": 2,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 3,
+            "n_pred_gold_pages": 3,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 130,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 2,
+          "n_exp": 2
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6666666666666666,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.5,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.7884615384615384,
+            "recall": 0.3153846153846154,
+            "f1": 0.4505494505494505,
+            "tp": 41,
+            "fp": 11,
+            "fn": 89
+          },
+          "score_0_100": 41.35531135531135,
+          "n_pred": 1,
+          "n_exp": 2
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 2,
+            "predicted": 2,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 2,
+            "n_pred_tables": 2
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 130,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 2,
+          "n_exp": 2
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.011,
+        "pdfparser_engine_v2": 0.009,
+        "camelot_lattice": 0.178,
+        "camelot_stream": 0.034,
+        "pdfplumber": 0.05
+      },
+      "best_cell_lib": "camelot_lattice",
+      "best_cell_f1": 1.0
+    },
+    {
+      "id": "45_real_campaign_donors",
+      "struggle": true,
+      "failure_classes": [
+        "stream_like",
+        "spanish",
+        "dense_rows",
+        "borderless_like"
+      ],
+      "pdf": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/45_real_campaign_donors.pdf",
+      "gold_pages": [
+        0
+      ],
+      "metrics": {
+        "pdfparser_auto": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9971509971509972,
+            "recall": 0.8951406649616368,
+            "f1": 0.9433962264150944,
+            "tp": 350,
+            "fp": 1,
+            "fn": 41
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                56,
+                7
+              ],
+              "pred_shape": [
+                56,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.9971509971509972,
+              "cell_recall": 0.8951406649616368,
+              "cell_f1": 0.9433962264150944,
+              "cells_matched": 350,
+              "gold_nonzero_cells": 391,
+              "tp": 350,
+              "fp": 1,
+              "fn": 41
+            }
+          ],
+          "score_0_100": 97.73584905660377,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "pdfparser_engine_v2": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "detection_iou": null,
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.9971509971509972,
+            "recall": 0.8951406649616368,
+            "f1": 0.9433962264150944,
+            "tp": 350,
+            "fp": 1,
+            "fn": 41
+          },
+          "per_table": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "gold_shape": [
+                56,
+                7
+              ],
+              "pred_shape": [
+                56,
+                7
+              ],
+              "row_exact": true,
+              "col_exact": true,
+              "shape_exact": true,
+              "cell_precision": 0.9971509971509972,
+              "cell_recall": 0.8951406649616368,
+              "cell_f1": 0.9433962264150944,
+              "cells_matched": 350,
+              "gold_nonzero_cells": 391,
+              "tp": 350,
+              "fp": 1,
+              "fn": 41
+            }
+          ],
+          "score_0_100": 97.73584905660377,
+          "n_pred": 1,
+          "n_exp": 1,
+          "page_filter": {
+            "gold_pages": [
+              0
+            ],
+            "n_pred_all_pages": 1,
+            "n_pred_gold_pages": 1,
+            "filtered": false
+          }
+        },
+        "camelot_lattice": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 0
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 391
+          },
+          "score_0_100": 0.0,
+          "n_pred": 0,
+          "n_exp": 1
+        },
+        "camelot_stream": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "exact": true,
+            "within_tolerance": true,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 1.0,
+            "col_accuracy": 1.0,
+            "shape_exact_rate": 1.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 1
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 391,
+            "fp": 0,
+            "fn": 0
+          },
+          "score_0_100": 100.0,
+          "n_pred": 1,
+          "n_exp": 1
+        },
+        "pdfplumber": {
+          "detection_count": {
+            "skipped": false,
+            "expected": 1,
+            "predicted": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "exact": false,
+            "within_tolerance": false,
+            "tolerance": 0
+          },
+          "structure": {
+            "skipped": false,
+            "row_accuracy": 0.0,
+            "col_accuracy": 0.0,
+            "shape_exact_rate": 0.0,
+            "n_gold_tables": 1,
+            "n_pred_tables": 0
+          },
+          "cell": {
+            "skipped": false,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 391
+          },
+          "score_0_100": 0.0,
+          "n_pred": 0,
+          "n_exp": 1
+        }
+      },
+      "errors": {},
+      "elapsed_s": {
+        "pdfparser_auto": 0.517,
+        "pdfparser_engine_v2": 0.512,
+        "camelot_lattice": 0.46,
+        "camelot_stream": 0.184,
+        "pdfplumber": 0.069
+      },
+      "best_cell_lib": "camelot_stream",
+      "best_cell_f1": 1.0
+    }
+  ]
+}

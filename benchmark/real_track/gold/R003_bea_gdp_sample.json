@@ -1,0 +1,378 @@
+{
+  "id": "R003_bea_gdp_sample",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "US government work (BEA)",
+  "source_url": "https://apps.bea.gov/national/pdf/SNTables.pdf",
+  "source": "benchmark/corpus/real/R003_bea_gdp_sample.pdf",
+  "failure_classes": [
+    "multi_level_header",
+    "government_layout",
+    "wide_tables"
+  ],
+  "struggle_tags": [
+    "multi_level_header"
+  ],
+  "builder": "vision_layout + pdfplumber_values",
+  "peer_primary": "pdfplumber",
+  "vision_page_png": "benchmark/real_track/gold/drafts/vision_h2/R003_bea_gdp_sample_p1.png",
+  "review_notes": "Vision confirms BEA Table 1.1.1 multi-level header (2024/2025 annual + 2025Q1–Q4 + 2026Q1). Body values from pdfplumber (match vision). Headers vision-corrected (plumber header incomplete). Spot-check lines 1, 11, 14 (---), 27. Human confirmed vision+peer draft perfect (H2 promote 2026-07-12).",
+  "built_at": "2026-07-12T08:32:09.776234+00:00",
+  "policy": "Human confirmed vision+peer gold. Not from pdfparser extract. stitch_multipage=false for eval.",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "rows": 30,
+      "cols": 9,
+      "cells": [
+        [
+          "Line",
+          "",
+          "2024",
+          "2025",
+          "2025",
+          "",
+          "",
+          "",
+          "2026"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4",
+          "Q1"
+        ],
+        [
+          "1",
+          "Gross domestic product",
+          "2.8",
+          "2.1",
+          "-0.6",
+          "3.8",
+          "4.4",
+          "0.5",
+          "2.1"
+        ],
+        [
+          "2",
+          "Personal consumption expenditures",
+          "2.9",
+          "2.6",
+          "0.6",
+          "2.5",
+          "3.5",
+          "1.9",
+          "0.5"
+        ],
+        [
+          "3",
+          "Goods",
+          "2.8",
+          "3.2",
+          "0.2",
+          "2.2",
+          "3.0",
+          "0.3",
+          "0.5"
+        ],
+        [
+          "4",
+          "Durable goods",
+          "3.9",
+          "3.6",
+          "-3.4",
+          "2.3",
+          "1.6",
+          "0.1",
+          "0.5"
+        ],
+        [
+          "5",
+          "Nondurable goods",
+          "2.3",
+          "3.0",
+          "2.2",
+          "2.2",
+          "3.9",
+          "0.4",
+          "0.6"
+        ],
+        [
+          "6",
+          "Services",
+          "3.0",
+          "2.3",
+          "0.8",
+          "2.6",
+          "3.6",
+          "2.7",
+          "0.5"
+        ],
+        [
+          "7",
+          "Gross private domestic investment",
+          "3.0",
+          "1.9",
+          "23.3",
+          "-13.8",
+          "0.0",
+          "2.3",
+          "7.9"
+        ],
+        [
+          "8",
+          "Fixed investment",
+          "3.0",
+          "2.7",
+          "7.1",
+          "4.4",
+          "0.8",
+          "1.5",
+          "6.5"
+        ],
+        [
+          "9",
+          "Nonresidential",
+          "2.9",
+          "4.1",
+          "9.5",
+          "7.3",
+          "3.2",
+          "2.4",
+          "10.6"
+        ],
+        [
+          "10",
+          "Structures",
+          "1.1",
+          "-5.3",
+          "-3.1",
+          "-7.5",
+          "-5.0",
+          "-6.5",
+          "-4.7"
+        ],
+        [
+          "11",
+          "Equipment",
+          "3.5",
+          "8.3",
+          "21.4",
+          "8.5",
+          "5.2",
+          "4.3",
+          "15.8"
+        ],
+        [
+          "12",
+          "Intellectual property products",
+          "3.5",
+          "5.6",
+          "6.5",
+          "15.0",
+          "5.6",
+          "5.4",
+          "13.8"
+        ],
+        [
+          "13",
+          "Residential",
+          "3.2",
+          "-2.2",
+          "-1.0",
+          "-5.1",
+          "-7.1",
+          "-1.7",
+          "-7.8"
+        ],
+        [
+          "14",
+          "Change in private inventories",
+          "---",
+          "---",
+          "---",
+          "---",
+          "---",
+          "---",
+          "---"
+        ],
+        [
+          "15",
+          "Net exports of goods and services",
+          "---",
+          "---",
+          "---",
+          "---",
+          "---",
+          "---",
+          "---"
+        ],
+        [
+          "16",
+          "Exports",
+          "3.6",
+          "1.6",
+          "0.2",
+          "-1.8",
+          "9.6",
+          "-3.2",
+          "10.9"
+        ],
+        [
+          "17",
+          "Goods",
+          "2.0",
+          "1.8",
+          "6.3",
+          "-4.7",
+          "8.5",
+          "-1.7",
+          "18.8"
+        ],
+        [
+          "18",
+          "Services",
+          "6.7",
+          "1.2",
+          "-9.7",
+          "3.5",
+          "11.5",
+          "-5.7",
+          "-1.8"
+        ],
+        [
+          "19",
+          "Imports",
+          "5.8",
+          "2.7",
+          "38.0",
+          "-29.3",
+          "-4.4",
+          "-1.0",
+          "11.8"
+        ],
+        [
+          "20",
+          "Goods",
+          "5.2",
+          "2.5",
+          "52.0",
+          "-35.0",
+          "-7.1",
+          "-2.4",
+          "16.6"
+        ],
+        [
+          "21",
+          "Services",
+          "8.2",
+          "3.5",
+          "-5.8",
+          "-1.2",
+          "6.4",
+          "4.2",
+          "-4.1"
+        ],
+        [
+          "22",
+          "Government consumption expenditures and\ngross investment",
+          "3.8",
+          "1.1",
+          "-1.0",
+          "-0.1",
+          "2.2",
+          "-5.6",
+          "4.4"
+        ],
+        [
+          "23",
+          "Federal",
+          "3.8",
+          "-1.2",
+          "-5.6",
+          "-5.3",
+          "2.7",
+          "-16.6",
+          "9.4"
+        ],
+        [
+          "24",
+          "National defense",
+          "4.0",
+          "1.2",
+          "-6.9",
+          "0.9",
+          "5.7",
+          "-10.7",
+          "2.1"
+        ],
+        [
+          "25",
+          "Nondefense",
+          "3.6",
+          "-4.2",
+          "-3.8",
+          "-13.0",
+          "-1.4",
+          "-24.3",
+          "20.7"
+        ],
+        [
+          "26",
+          "State and local",
+          "3.8",
+          "2.5",
+          "1.9",
+          "3.1",
+          "2.0",
+          "1.5",
+          "1.6"
+        ],
+        [
+          "",
+          "Addendum:",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "27",
+          "Gross domestic product, current dollars",
+          "5.3",
+          "5.0",
+          "2.9",
+          "6.0",
+          "8.3",
+          "4.2",
+          "5.8"
+        ]
+      ],
+      "primary_source": "vision_header+pdfplumber_body"
+    }
+  ],
+  "quality": {
+    "doc": "R003_bea_gdp_sample",
+    "rows": 30,
+    "cols": 9,
+    "vision_spotcheck_hits": 29,
+    "vision_spotcheck_total": 29,
+    "vision_spotcheck_rate": 1.0,
+    "grade": "HIGH",
+    "peer_primary": "pdfplumber+vision_header",
+    "peer_accuracy": null,
+    "mismatches": []
+  },
+  "reviewed_at": "2026-07-12T08:38:18.611499+00:00"
+}

@@ -7,15 +7,18 @@ against the scenarios `pdfparser` intends to support.
 
 | Suite | Purpose | Contents |
 |-------|---------|----------|
-| **`regression`** (default) | Day-to-day accuracy, algorithm improvement, no competitive bias | **Synthetic only:** basic (01–12) + stress (20–27) + **hard (50–62)** |
-| **`regression_hard`** | Structure/quality stress for lattice multi-region, spans, noise | Hard tier only |
-| **`regression_precision`** | OVER_DETECT / phantom lines / stream FPs (ICDAR-like *modes*, original PDFs) | `hard_precision` 70–82 |
-| **`regression_grid_gold`** | Full cell-grid gold only | Synthetic docs with `expected_tables` |
-| **`competitive_icdar`** | Head-to-head vs Camelot/peers | **External only** — ICDAR PDFs are **never** stored under `benchmark/corpus/` |
+| **`real_detect_smoke`** (primary direction) | Real public PDFs — detection smoke | `real_track/manifests/real_detect_smoke_v0.json` |
+| **`real_structure`** (phased) | Real structure quality (Gate G1 at ≥15 cell grids) | `real_track/` — gold ramp 5→15→25 |
+| **`regression`** (default multi-lib) | Synthetic regression | basic + stress + hard |
+| **`regression_hard` / precision / compete** | Geometric unit & struggle modes | Synthetic only |
+| **`competitive_icdar`** | Head-to-head vs peers | **External only** — never in corpus/CI |
 
-**Hard rule:** ICDAR-2013 documents and gold XML are **not** part of the regression corpus.  
-Use them only for competitive analysis (see `docs/camelot-comparison-replication.md`).  
-Hard / precision fixtures **synthesize** failure modes with original content so we improve without overfitting to ICDAR files.
+**Hard rules:**
+1. ICDAR-2013 PDFs/gold are **never** under `benchmark/corpus/`, `real_track/`, or `ground_truth` used for CI. Enforced by `scripts/assert_no_icdar.py`.
+2. Primary product quality signal is moving to **real_track** (see `docs/design-table-engine-v2.md`). Synthetic multi-lib #1 is **not** a market SOTA claim.
+3. No file-oriented or accuracy special-cases for named documents.
+
+Details: [`real_track/README.md`](real_track/README.md).
 
 Suite definitions: `corpus/suites.json`.
 
@@ -25,6 +28,22 @@ python benchmark/scripts/generate_precision_corpus.py
 python benchmark/scripts/run_accuracy_benchmark.py --suite regression_precision \
   --libs pdfparser,pdfplumber,camelot_lattice,camelot_auto
 ```
+
+## Real track (primary quality signal)
+
+| Item | Path |
+|------|------|
+| Detect smoke manifest | `real_track/manifests/real_detect_smoke_v0.json` |
+| Sources / licenses | `real_track/SOURCES.md` |
+| Demotion list (C0) | `real_track/manifests/demotion_list.json` |
+| Coverage matrix | `real_track/manifests/coverage_matrix.json` |
+| IoU unit tests | `python3 benchmark/scripts/test_iou_metrics.py` |
+| Detect smoke runner | `python3 benchmark/scripts/run_real_detect_smoke.py [--dry-run]` |
+| ICDAR refuse | `python3 benchmark/scripts/assert_no_icdar.py` |
+
+**Stitch:** structure eval must use `stitch_multipage=false` when the CLI supports it; see `real_track/README.md`.
+
+Synthetic multi-lib scoreboards remain **regression only** — not market SOTA.
 
 ## Quick start
 

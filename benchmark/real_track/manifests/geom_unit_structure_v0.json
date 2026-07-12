@@ -1,0 +1,14 @@
+{
+  "suite": "geom_unit_structure",
+  "version": 1,
+  "policy": "Practice T3 golds on synthetic geom_unit only. Not G1.",
+  "n_docs": 1,
+  "documents": [
+    {
+      "id": "06_table_lattice",
+      "pdf": "corpus/06_table_lattice.pdf",
+      "gold": "real_track/gold/06_table_lattice.practice.json",
+      "track": "geom_unit_structure"
+    }
+  ]
+}
