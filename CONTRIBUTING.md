@@ -18,8 +18,9 @@ cargo test --workspace
 
 - **Library-first**: public API lives in `crates/pdfparser`. Prefer embedding-friendly APIs over CLI-only features.
 - **No fixture hardcoding**: fixes for PDF behavior must be generic (spec/encodings/layout), not special cases for a single corpus file.
+- **No ICDAR in regression**: never copy ICDAR-2013 competition PDFs or gold into `benchmark/corpus`, `benchmark/real_track`, or `benchmark/ground_truth`. Do not tune thresholds on ICDAR docs. Optional external competitive scripts only. Enforced by `benchmark/scripts/assert_no_icdar.py`.
 - **Security**: do not weaken the resource governor or encryption gate without an explicit design decision and tests.
-- **Phases**: table work belongs in `pdfparser-tables` and follows the redesign doc gates.
+- **Table engine**: product Auto/Full use **Engine V2 exclusive AutoRouter** (`docs/design-table-engine-v2.md`). Rollback: `TableOptions.legacy_router = true`. Do not tune thresholds on ICDAR.
 
 ## Code style
 
