@@ -1,0 +1,75 @@
+{
+  "suite": "real_fp_smoke",
+  "version": 0,
+  "policy": "False-positive smoke: expect 0 or low table counts on forms/prose/chrome. Not structure core. No ICDAR.",
+  "n_docs": 6,
+  "documents": [
+    {
+      "id": "38_real_irs_f1040",
+      "pdf": "corpus/real/38_real_irs_f1040.pdf",
+      "track": "real_fp_smoke",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 2,
+      "failure_classes": [
+        "form_not_table"
+      ],
+      "notes": "IRS form chrome \u2014 expect ~0 tables"
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "pdf": "corpus/real/39_real_fed_beigebook.pdf",
+      "track": "real_fp_smoke",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 3,
+      "failure_classes": [
+        "over_detect",
+        "chrome_rules_fp"
+      ],
+      "notes": "Narrative report \u2014 low table count"
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "pdf": "corpus/real/40_real_arxiv_tensorflow.pdf",
+      "track": "real_fp_smoke",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 2,
+      "failure_classes": [
+        "borderless_prose_fp"
+      ],
+      "notes": "2-col paper \u2014 prose not table"
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "pdf": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "track": "real_fp_smoke",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 1,
+      "failure_classes": [
+        "over_detect"
+      ],
+      "notes": "Notice page \u2014 few/no tables"
+    },
+    {
+      "id": "R001_irs_f1040_schedule_c",
+      "pdf": "corpus/compete_real/R001_irs_f1040_schedule_c.pdf",
+      "track": "real_fp_smoke",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 4,
+      "failure_classes": [
+        "form_not_table"
+      ],
+      "notes": "Schedule C form"
+    },
+    {
+      "id": "R007_nist_fips197",
+      "pdf": "corpus/compete_real/R007_nist_fips197.pdf",
+      "track": "real_fp_smoke",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 2,
+      "failure_classes": [
+        "borderless_prose_fp"
+      ],
+      "notes": "NIST FIPS prose"
+    }
+  ]
+}

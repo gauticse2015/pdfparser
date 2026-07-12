@@ -1,0 +1,1076 @@
+{
+  "suite": "real_detect_smoke",
+  "version": 1,
+  "generated_at": "2026-07-12T10:07:52.988099+00:00",
+  "binary": "/Users/gautamkumar/Desktop/pdfParser/target/release/pdfparser",
+  "status": "ran",
+  "stitch_multipage": "unknown_or_default",
+  "stitch_multipage_note": "Structure eval (real_structure) MUST set stitch_multipage=false so page-local tables are scored independently (design K27). Product Auto may keep stitch on by default. CLI flag may not exist yet \u2014 this smoke runner records stitch_multipage=unknown_or_default, prefers document-level tables when present else sum of page tables, and does NOT claim structure F1.",
+  "structure_eval_needs_stitch_false": true,
+  "method_mix_placeholder": true,
+  "method_mix_note": "CLI may not yet emit per-table method; entries use method/flavor/detector when present, else 'unknown'. EngineV2 shadow will fill real method_mix.",
+  "det_proxy_note": "Count-based detection proxy only: TP=min(n_pred,n_exp), FP=max(0,n_pred-n_exp), FN=max(0,n_exp-n_pred). Not IoU/bbox matching.",
+  "summary": {
+    "n_docs": 21,
+    "n_ok": 14,
+    "n_not_ok": 7,
+    "n_extract_ok": 21,
+    "n_fail": 0,
+    "n_count_scored": 12,
+    "n_count_match": 5,
+    "n_count_mismatch": 7,
+    "n_count_unscored": 9,
+    "count_match_rate": 0.4166666666666667,
+    "det_proxy": {
+      "n_docs_scored": 12,
+      "tp": 10,
+      "fp": 23,
+      "fn": 0,
+      "precision": 0.303,
+      "recall": 1.0,
+      "f1": 0.4651,
+      "note": "count-based micro proxy (not IoU/bbox); soft gold only"
+    }
+  },
+  "documents": [
+    {
+      "id": "30_real_ca_warn_report",
+      "pdf": "corpus/real/30_real_ca_warn_report.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/30_real_ca_warn_report.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "wide_tables",
+        "multi_page",
+        "many_rows",
+        "government_layout"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 634,
+          "cols": 7
+        },
+        {
+          "page": 14,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 9
+        },
+        {
+          "page": 15,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 9
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 3,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 85.14,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "31_real_background_checks",
+      "pdf": "corpus/real/31_real_background_checks.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/31_real_background_checks.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "multi_line_headers",
+        "dense_columns",
+        "abbreviations",
+        "single_page_wide"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 58,
+          "cols": 25
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 1,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": true,
+      "ok": true,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "wall_ms": 23.7,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "32_real_census_table324",
+      "pdf": "corpus/real/32_real_census_table324.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/32_real_census_table324.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "statistical_table",
+        "footnotes_likely",
+        "numeric_columns",
+        "title_above_table"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 29,
+          "cols": 6
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 34,
+          "cols": 8
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 2,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": false,
+      "ok": false,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6667
+      },
+      "wall_ms": 16.04,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "pdf": "corpus/real/33_real_argentina_votes.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/33_real_argentina_votes.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "irregular_grid",
+        "political_layout",
+        "sectioned_tables",
+        "spanish"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 33,
+          "cols": 4
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 1,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": true,
+      "ok": true,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "wall_ms": 6.99,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "pdf": "corpus/real/34_real_schools_contributions.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/34_real_schools_contributions.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "multi_page",
+        "stream_like",
+        "name_address_money",
+        "period_headers"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 136,
+          "cols": 10
+        },
+        {
+          "page": 3,
+          "method": "lattice",
+          "rows": 45,
+          "cols": 3
+        },
+        {
+          "page": 3,
+          "method": "lattice",
+          "rows": 46,
+          "cols": 6
+        },
+        {
+          "page": 4,
+          "method": "lattice",
+          "rows": 42,
+          "cols": 10
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 4,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 42.59,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "pdf": "corpus/real/35_real_camelot_fuel.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/35_real_camelot_fuel.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "multiple_tables",
+        "scientific_layout",
+        "figure_plus_table"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 7,
+          "cols": 5
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 7
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 2,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": false,
+      "ok": false,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6667
+      },
+      "wall_ms": 6.09,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "36_real_two_tables",
+      "pdf": "corpus/real/36_real_two_tables.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/36_real_two_tables.pdf",
+      "n_exp": 2,
+      "expected_table_count": 2,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "two_tables",
+        "district_disease_counts",
+        "government_health"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 23,
+          "cols": 10
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 9
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 2,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": true,
+      "ok": true,
+      "det_proxy": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "wall_ms": 8.03,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "pdf": "corpus/real/37_real_liabilities_superscript.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/37_real_liabilities_superscript.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "superscripts",
+        "continued_table",
+        "financial_columns",
+        "contd_marker"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 30,
+          "cols": 10
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 1,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": true,
+      "ok": true,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "wall_ms": 5.52,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "38_real_irs_f1040",
+      "pdf": "corpus/real/38_real_irs_f1040.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/38_real_irs_f1040.pdf",
+      "n_exp": 0,
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "acroform_like_lines",
+        "tax_form_layout",
+        "label_value_pairs",
+        "multi_column_form"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 4,
+          "cols": 11
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 48,
+          "cols": 22
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 6,
+          "cols": 9
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 3,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": false,
+      "ok": false,
+      "det_proxy": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "wall_ms": 23.74,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "pdf": "corpus/real/39_real_fed_beigebook.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/39_real_fed_beigebook.pdf",
+      "n_exp": 0,
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "long_document",
+        "section_headers",
+        "narrative_heavy",
+        "mixed_layout"
+      ],
+      "method_mix": [
+        {
+          "page": 19,
+          "method": "stream",
+          "rows": 4,
+          "cols": 5
+        },
+        {
+          "page": 6,
+          "method": "stream",
+          "rows": 3,
+          "cols": 5
+        },
+        {
+          "page": 23,
+          "method": "stream",
+          "rows": 4,
+          "cols": 4
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 14,
+          "cols": 4
+        },
+        {
+          "page": 47,
+          "method": "stream",
+          "rows": 4,
+          "cols": 3
+        },
+        {
+          "page": 7,
+          "method": "stream",
+          "rows": 4,
+          "cols": 4
+        },
+        {
+          "page": 46,
+          "method": "stream",
+          "rows": 3,
+          "cols": 3
+        },
+        {
+          "page": 15,
+          "method": "stream",
+          "rows": 4,
+          "cols": 3
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 8,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": false,
+      "ok": false,
+      "det_proxy": {
+        "tp": 0,
+        "fp": 8,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "wall_ms": 79.93,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "pdf": "corpus/real/40_real_arxiv_tensorflow.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/40_real_arxiv_tensorflow.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "multi_column",
+        "scientific",
+        "figures",
+        "references",
+        "equations_possible"
+      ],
+      "method_mix": [
+        {
+          "page": 10,
+          "method": "stream",
+          "rows": 3,
+          "cols": 3
+        },
+        {
+          "page": 2,
+          "method": "lattice",
+          "rows": 9,
+          "cols": 2
+        },
+        {
+          "page": 6,
+          "method": "stream",
+          "rows": 4,
+          "cols": 4
+        },
+        {
+          "page": 5,
+          "method": "stream",
+          "rows": 23,
+          "cols": 3
+        },
+        {
+          "page": 5,
+          "method": "stream",
+          "rows": 4,
+          "cols": 3
+        },
+        {
+          "page": 6,
+          "method": "stream",
+          "rows": 5,
+          "cols": 2
+        },
+        {
+          "page": 4,
+          "method": "stream",
+          "rows": 8,
+          "cols": 5
+        },
+        {
+          "page": 10,
+          "method": "stream",
+          "rows": 17,
+          "cols": 2
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 8,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 230.74,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "pdf": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "n_exp": 0,
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "long_document",
+        "formal_publication",
+        "headers_footers"
+      ],
+      "method_mix": [
+        {
+          "page": 23,
+          "method": "stream",
+          "rows": 4,
+          "cols": 6
+        },
+        {
+          "page": 17,
+          "method": "stream",
+          "rows": 8,
+          "cols": 3
+        },
+        {
+          "page": 17,
+          "method": "stream",
+          "rows": 5,
+          "cols": 3
+        },
+        {
+          "page": 2,
+          "method": "stream",
+          "rows": 18,
+          "cols": 3
+        },
+        {
+          "page": 24,
+          "method": "stream",
+          "rows": 4,
+          "cols": 2
+        },
+        {
+          "page": 26,
+          "method": "stream",
+          "rows": 3,
+          "cols": 5
+        },
+        {
+          "page": 18,
+          "method": "stream",
+          "rows": 5,
+          "cols": 4
+        },
+        {
+          "page": 18,
+          "method": "stream",
+          "rows": 5,
+          "cols": 3
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 8,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": false,
+      "ok": false,
+      "det_proxy": {
+        "tp": 0,
+        "fp": 8,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "wall_ms": 103.49,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "pdf": "corpus/real/42_real_insurance_italian.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/real/42_real_insurance_italian.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "non_english",
+        "prose_plus_tables",
+        "multi_region",
+        "complex_layout"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 2
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 1,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 5.59,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R016_tabula_12s0324",
+      "pdf": "corpus/compete_real/R016_tabula_12s0324.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R016_tabula_12s0324.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "statistical_table"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 29,
+          "cols": 6
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 34,
+          "cols": 8
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 2,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": false,
+      "ok": false,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6667
+      },
+      "wall_ms": 17.35,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R017_tabula_argentina",
+      "pdf": "corpus/compete_real/R017_tabula_argentina.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R017_tabula_argentina.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "spanish",
+        "irregular_grid"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 33,
+          "cols": 4
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 1,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": true,
+      "ok": true,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "wall_ms": 7.35,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R018_camelot_health",
+      "pdf": "corpus/compete_real/R018_camelot_health.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R018_camelot_health.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "multi_table",
+        "government_health"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 8
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 1,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 7.07,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R019_camelot_foo",
+      "pdf": "corpus/compete_real/R019_camelot_foo.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R019_camelot_foo.pdf",
+      "n_exp": 1,
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "visible_rules"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 7,
+          "cols": 5
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 7
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 2,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": false,
+      "ok": false,
+      "det_proxy": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6667
+      },
+      "wall_ms": 6.04,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R001_irs_f1040_schedule_c",
+      "pdf": "corpus/compete_real/R001_irs_f1040_schedule_c.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R001_irs_f1040_schedule_c.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "form_not_table"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 3,
+          "cols": 5
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 11,
+          "cols": 10
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 2
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 19,
+          "cols": 28
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 4,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 13.47,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R006_fed_beigebook",
+      "pdf": "corpus/compete_real/R006_fed_beigebook.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R006_fed_beigebook.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "over_detect",
+        "narrative"
+      ],
+      "method_mix": [
+        {
+          "page": 12,
+          "method": "stream",
+          "rows": 3,
+          "cols": 4
+        },
+        {
+          "page": 45,
+          "method": "stream",
+          "rows": 5,
+          "cols": 4
+        },
+        {
+          "page": 15,
+          "method": "stream",
+          "rows": 3,
+          "cols": 3
+        },
+        {
+          "page": 39,
+          "method": "stream",
+          "rows": 8,
+          "cols": 4
+        },
+        {
+          "page": 11,
+          "method": "stream",
+          "rows": 4,
+          "cols": 5
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 14,
+          "cols": 4
+        },
+        {
+          "page": 32,
+          "method": "stream",
+          "rows": 6,
+          "cols": 4
+        },
+        {
+          "page": 24,
+          "method": "stream",
+          "rows": 4,
+          "cols": 5
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 8,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 81.89,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R007_nist_fips197",
+      "pdf": "corpus/compete_real/R007_nist_fips197.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R007_nist_fips197.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "borderless_prose_fp"
+      ],
+      "method_mix": [
+        {
+          "page": 24,
+          "method": "stream",
+          "rows": 4,
+          "cols": 6
+        },
+        {
+          "page": 18,
+          "method": "stream",
+          "rows": 8,
+          "cols": 3
+        },
+        {
+          "page": 18,
+          "method": "stream",
+          "rows": 5,
+          "cols": 3
+        },
+        {
+          "page": 3,
+          "method": "stream",
+          "rows": 18,
+          "cols": 3
+        },
+        {
+          "page": 25,
+          "method": "stream",
+          "rows": 4,
+          "cols": 2
+        },
+        {
+          "page": 27,
+          "method": "stream",
+          "rows": 3,
+          "cols": 5
+        },
+        {
+          "page": 19,
+          "method": "stream",
+          "rows": 5,
+          "cols": 4
+        },
+        {
+          "page": 19,
+          "method": "stream",
+          "rows": 5,
+          "cols": 3
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 8,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 113.28,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "id": "R020_irs_schedule_d",
+      "pdf": "corpus/compete_real/R020_irs_schedule_d.pdf",
+      "pdf_resolved": "/Users/gautamkumar/Desktop/pdfParser/benchmark/corpus/compete_real/R020_irs_schedule_d.pdf",
+      "n_exp": null,
+      "expected_table_count": null,
+      "expected_table_count_tol": 0,
+      "failure_classes": [
+        "form_not_table"
+      ],
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 5,
+          "cols": 2
+        },
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 22,
+          "cols": 12
+        }
+      ],
+      "method_mix_placeholder": true,
+      "n_pred": 2,
+      "n_pred_source": "document_tables_root",
+      "per_page_table_counts": [],
+      "count_match": null,
+      "ok": true,
+      "det_proxy": null,
+      "wall_ms": 13.49,
+      "status": "ok",
+      "error": null
+    }
+  ]
+}

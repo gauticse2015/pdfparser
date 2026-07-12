@@ -1,0 +1,295 @@
+{
+  "id": "43_real_row_span_gmc",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "Camelot test fixture (row_span_1.pdf)",
+  "source_url": "https://github.com/camelot-dev/camelot/raw/master/tests/files/row_span_1.pdf",
+  "source": "benchmark/corpus/real/43_real_row_span_gmc.pdf",
+  "failure_classes": [
+    "row_span",
+    "merged_cells",
+    "government_health",
+    "multi_level_structure"
+  ],
+  "struggle_tags": [
+    "row_span",
+    "merged_cells"
+  ],
+  "builder": "vision_layout + camelot_lattice_validate",
+  "peer_primary": "camelot_lattice",
+  "vision_page_png": "benchmark/real_track/gold/drafts/vision_h2/43_real_row_span_gmc_p1.png",
+  "review_notes": "Vision confirms GMC/COHS/PCCM enrollment with row-span Plan Type/County/Plan Name. Lattice grid uses empty cells for spans (standard). Spot-check GMC Sacramento Anthem + totals. Quality-gate HIGH 13/13; promoted for G1 2026-07-12.",
+  "built_at": "2026-07-12T08:48:08.477951+00:00",
+  "policy": "Human-process: vision+peer+quality HIGH. Not pdfparser. stitch_multipage=false.",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "bbox": {
+        "x0": 35.51998206060606,
+        "y0": 66.23997835294116,
+        "x1": 627.1196832727272,
+        "y1": 576.2398116862745
+      },
+      "rows": 40,
+      "cols": 4,
+      "cells": [
+        [
+          "Plan Type",
+          "County",
+          "Plan Name",
+          "Totals"
+        ],
+        [
+          "GMC",
+          "Sacramento",
+          "Anthem Blue Cross",
+          "164,380"
+        ],
+        [
+          "",
+          "",
+          "Health Net",
+          "126,547"
+        ],
+        [
+          "",
+          "",
+          "Kaiser Foundation",
+          "74,620"
+        ],
+        [
+          "",
+          "",
+          "Molina Healthcare",
+          "59,989"
+        ],
+        [
+          "",
+          "San Diego",
+          "Care 1st Health Plan",
+          "71,831"
+        ],
+        [
+          "",
+          "",
+          "Community Health Group",
+          "264,639"
+        ],
+        [
+          "",
+          "",
+          "Health Net",
+          "72,404"
+        ],
+        [
+          "",
+          "",
+          "Kaiser",
+          "50,415"
+        ],
+        [
+          "",
+          "",
+          "Molina Healthcare",
+          "206,430"
+        ],
+        [
+          "",
+          "Total GMC Enrollment",
+          "",
+          "1,091,255"
+        ],
+        [
+          "COHS",
+          "Marin",
+          "Partnership Health Plan of CA",
+          "36,006"
+        ],
+        [
+          "",
+          "Mendocino",
+          "",
+          "37,243"
+        ],
+        [
+          "",
+          "Napa",
+          "",
+          "28,398"
+        ],
+        [
+          "",
+          "Solano",
+          "",
+          "113,220"
+        ],
+        [
+          "",
+          "Sonoma",
+          "",
+          "112,271"
+        ],
+        [
+          "",
+          "Yolo",
+          "",
+          "52,674"
+        ],
+        [
+          "",
+          "Del Norte",
+          "",
+          "11,242"
+        ],
+        [
+          "",
+          "Humboldt",
+          "",
+          "49,911"
+        ],
+        [
+          "",
+          "Lake",
+          "",
+          "29,149"
+        ],
+        [
+          "",
+          "Lassen",
+          "",
+          "7,360"
+        ],
+        [
+          "",
+          "Modoc",
+          "",
+          "2,940"
+        ],
+        [
+          "",
+          "Shasta",
+          "",
+          "61,763"
+        ],
+        [
+          "",
+          "Siskiyou",
+          "",
+          "16,715"
+        ],
+        [
+          "",
+          "Trinity",
+          "",
+          "4,542"
+        ],
+        [
+          "",
+          "Merced",
+          "Central California Alliance for Health",
+          "123,907"
+        ],
+        [
+          "",
+          "Monterey",
+          "",
+          "147,397"
+        ],
+        [
+          "",
+          "Santa Cruz",
+          "",
+          "69,458"
+        ],
+        [
+          "",
+          "Santa Barbara",
+          "CenCal",
+          "117,609"
+        ],
+        [
+          "",
+          "San Luis Obispo",
+          "",
+          "55,761"
+        ],
+        [
+          "",
+          "Orange",
+          "CalOptima",
+          "783,079"
+        ],
+        [
+          "",
+          "San Mateo",
+          "Health Plan of San Mateo",
+          "113,202"
+        ],
+        [
+          "",
+          "Ventura",
+          "Gold Coast Health Plan",
+          "202,217"
+        ],
+        [
+          "",
+          "Total COHS Enrollment",
+          "",
+          "2,176,064"
+        ],
+        [
+          "Subtotal for Two-Plan, Regional Model, GMC and COHS",
+          "",
+          "",
+          "10,132,022"
+        ],
+        [
+          "PCCM",
+          "Los Angeles",
+          "AIDS Healthcare Foundation",
+          "828"
+        ],
+        [
+          "",
+          "San Francisco",
+          "Family Mosaic",
+          "25"
+        ],
+        [
+          "",
+          "Total PHP Enrollment",
+          "",
+          "853"
+        ],
+        [
+          "All Models Total Enrollments",
+          "",
+          "",
+          "10,132,875"
+        ],
+        [
+          "Source: Data Warehouse \n12/14/15",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "primary_source": "camelot_lattice_vision_validated"
+    }
+  ],
+  "quality": {
+    "doc": "43",
+    "vision_spotcheck_hits": 13,
+    "vision_spotcheck_total": 13,
+    "vision_spotcheck_rate": 1.0,
+    "grade": "HIGH",
+    "peer_primary": "camelot_lattice",
+    "peer_accuracy": 99.44833114680125,
+    "mismatches": []
+  },
+  "struggle": true,
+  "reviewed_at": "2026-07-12T08:48:08.477951+00:00"
+}
