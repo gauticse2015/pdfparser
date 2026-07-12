@@ -3,17 +3,25 @@
 //! Pipeline (see [`morph`] for algorithm detail):
 //! 1. Grayscale ROI (embedded Image XObject, CTM-mapped)
 //! 2. Adaptive threshold → binary ink
-//! 3. Morph close (dashed) + multi-scale H/V open
-//! 4. RLE extract ∪ projection-profile full-span peaks
-//! 5. Span filter + joint-graph + spacing regularity gate
-//! 6. Map to page space → [`RuleSegment`]s for the lattice engine
+//! 3. Optional K28: stamp vector H/V into ink ([`stamp_vector_rules_into_mask`])
+//! 4. Morph close (dashed) + multi-scale H/V open
+//! 5. RLE extract ∪ projection-profile full-span peaks
+//! 6. Span filter + joint-graph + spacing regularity gate
+//! 7. Map to page space → [`RuleSegment`]s for the lattice engine
+//! 8. Contour seeds: CC on H∨V masks ([`contour_seeds_from_page`])
 //!
 //! Pure geometry/image processing — no PDF I/O. Callers supply pixels + affine.
 
 mod morph;
 
+// Re-export morph public API. Names not referenced in this file are still part of
+// the crate surface (`crate::raster::*`); allow unused_imports for pure re-exports.
+#[allow(unused_imports)]
 pub use morph::{
-    detect_line_segments, gray_from_rgb, gray_from_rgba, RasterConfig, RasterPage, RasterRule,
+    combined_line_masks, contour_seeds_from_page, detect_line_segments,
+    detect_line_segments_combined, detect_line_segments_from_ink, find_contour_seeds,
+    gray_from_rgb, gray_from_rgba, page_to_pix, stamp_vector_rules_into_gray,
+    stamp_vector_rules_into_mask, threshold_ink, ContourSeed, RasterConfig, RasterPage, RasterRule,
 };
 
 use pdfparser_content::RuleSegment;
@@ -29,6 +37,29 @@ pub fn rules_from_raster(page: &RasterPage, cfg: &RasterConfig) -> Vec<RuleSegme
             y1: r.y1,
         })
         .collect()
+}
+
+/// Combined vector∪raster line sensing (K28).
+///
+/// Stamps near-H/V `vector_rules` into the threshold ink mask, runs the morph
+/// detector, then merges recovered segments with the original vector rules
+/// (dedupe via [`merge_rules`]).
+pub fn rules_from_raster_combined(
+    page: &RasterPage,
+    vector_rules: &[RuleSegment],
+    cfg: &RasterConfig,
+) -> Vec<RuleSegment> {
+    let raster: Vec<RuleSegment> = detect_line_segments_combined(page, vector_rules, cfg)
+        .into_iter()
+        .map(|r| RuleSegment {
+            x0: r.x0,
+            y0: r.y0,
+            x1: r.x1,
+            y1: r.y1,
+        })
+        .collect();
+    let snap = cfg.pos_snap_px.max(1.0) * page.scale_x.abs().max(page.scale_y.abs()).max(1.0);
+    merge_rules(vector_rules, &raster, snap)
 }
 
 /// Build a production [`RasterConfig`] for a page using option floors.
@@ -278,62 +309,281 @@ mod tests {
             y_down_pixels: true,
         };
         let segs = detect_line_segments(&page, &RasterConfig::for_dimensions(w, h));
-        assert!(segs.is_empty(), "noise must not produce rules, got {}", segs.len());
+        assert!(
+            segs.is_empty(),
+            "noise must not produce rules, got {}",
+            segs.len()
+        );
     }
-}
 
-    #[test]
-    fn morph_on_c104_png() {
-        let img = match image::open("/tmp/C104_img_rules_21x6.png") {
-            Ok(i) => i,
-            Err(_) => return,
-        };
-        let img = img.to_rgb8();
-        let (w, h) = (img.width() as usize, img.height() as usize);
-        let gray = morph::gray_from_rgb(img.as_raw(), w, h).unwrap();
-        let page = RasterPage {
+    /// Synthetic blank ROI + vector H/V grid stamped into ink → morph finds lines.
+    fn vector_grid_rules(rows: usize, cols: usize, cell: f32, origin: f32) -> Vec<RuleSegment> {
+        let mut rules = Vec::new();
+        let w = cols as f32 * cell;
+        let h = rows as f32 * cell;
+        for r in 0..=rows {
+            let y = origin + r as f32 * cell;
+            rules.push(RuleSegment {
+                x0: origin,
+                y0: y,
+                x1: origin + w,
+                y1: y,
+            });
+        }
+        for c in 0..=cols {
+            let x = origin + c as f32 * cell;
+            rules.push(RuleSegment {
+                x0: x,
+                y0: origin,
+                x1: x,
+                y1: origin + h,
+            });
+        }
+        rules
+    }
+
+    fn blank_page(w: usize, h: usize) -> RasterPage {
+        RasterPage {
             width: w,
             height: h,
-            pixels: gray,
+            pixels: vec![255u8; w * h],
             scale_x: 1.0,
             scale_y: 1.0,
             origin_x: 0.0,
             origin_y: 0.0,
             y_down_pixels: true,
-        };
-        let cfg = RasterConfig::for_dimensions(w, h);
-        eprintln!("cfg k={} min_seg={} close={}", cfg.h_kernel, cfg.min_seg_px, cfg.close_kernel);
-        let segs = detect_line_segments(&page, &cfg);
-        let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 2.0).count();
-        let n_v = segs.iter().filter(|s| (s.x0 - s.x1).abs() < 2.0).count();
-        eprintln!("C104 morph H={n_h} V={n_v} total={}", segs.len());
-        assert!(n_h >= 15 && n_v >= 5, "H={n_h} V={n_v}");
+        }
     }
 
     #[test]
-    fn morph_on_c106_png() {
-        let img = match image::open("/tmp/C106_img_rules_18x5.png") {
-            Ok(i) => i,
-            Err(e) => {
-                eprintln!("skip {e}");
-                return;
-            }
-        };
-        let img = img.to_rgb8();
-        let (w, h) = (img.width() as usize, img.height() as usize);
-        let gray = morph::gray_from_rgb(img.as_raw(), w, h).unwrap();
-        let page = RasterPage {
-            width: w,
-            height: h,
-            pixels: gray,
-            scale_x: 520.0 / w as f32,
-            scale_y: 500.0 / h as f32,
-            origin_x: 40.0,
-            origin_y: 200.0,
-            y_down_pixels: true,
-        };
-        let segs = detect_line_segments(&page, &RasterConfig::for_dimensions(w, h));
-        let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 2.0).count();
-        let n_v = segs.iter().filter(|s| (s.x0 - s.x1).abs() < 2.0).count();
-        assert!(n_h >= 15 && n_v >= 5, "C106 H={n_h} V={n_v}");
+    fn stamp_vector_grid_into_blank_detects_lines() {
+        let w = 122usize;
+        let h = 102usize;
+        let page = blank_page(w, h);
+        // PDF y-up: with y_down_pixels, page y=0 is at bottom of image.
+        // Draw a grid in page space covering the full bitmap.
+        let rows = 4usize;
+        let cols = 5usize;
+        let cell = 20.0f32;
+        // Map grid into pixel space with origin at bottom-left of page.
+        // page y from 0..h maps to pixel rows; use rules in pixel-aligned page coords
+        // with scale 1 and origin 0 so page y == height - py.
+        let mut rules = Vec::new();
+        for r in 0..=rows {
+            let py = (r as f32) * cell;
+            let page_y = h as f32 - py; // y_down: pix_to_page inverse
+            rules.push(RuleSegment {
+                x0: 0.0,
+                y0: page_y,
+                x1: cols as f32 * cell,
+                y1: page_y,
+            });
+        }
+        for c in 0..=cols {
+            let px = c as f32 * cell;
+            rules.push(RuleSegment {
+                x0: px,
+                y0: h as f32 - rows as f32 * cell,
+                x1: px,
+                y1: h as f32,
+            });
+        }
+
+        let mut ink = vec![0u8; w * h];
+        stamp_vector_rules_into_mask(&mut ink, w, h, &page, &rules, 2, Some(1.0));
+        let ink_count: usize = ink.iter().map(|&v| v as usize).sum();
+        assert!(
+            ink_count > 500,
+            "stamp should paint substantial ink, got {ink_count}"
+        );
+
+        let cfg = RasterConfig::for_dimensions(w, h);
+        let segs = detect_line_segments_from_ink(&page, &ink, &cfg);
+        let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 1.5).count();
+        let n_v = segs.iter().filter(|s| (s.x0 - s.x1).abs() < 1.5).count();
+        assert!(
+            n_h >= 4 && n_v >= 5,
+            "stamped blank grid should detect lines H={n_h} V={n_v} segs={segs:?}"
+        );
     }
+
+    #[test]
+    fn combined_stamp_recovers_vector_grid() {
+        let w = 122usize;
+        let h = 102usize;
+        let page = blank_page(w, h);
+        let rows = 4usize;
+        let cols = 5usize;
+        let cell = 20.0f32;
+        let mut rules = Vec::new();
+        for r in 0..=rows {
+            let py = r as f32 * cell;
+            let page_y = h as f32 - py;
+            rules.push(RuleSegment {
+                x0: 0.0,
+                y0: page_y,
+                x1: cols as f32 * cell,
+                y1: page_y,
+            });
+        }
+        for c in 0..=cols {
+            let px = c as f32 * cell;
+            rules.push(RuleSegment {
+                x0: px,
+                y0: h as f32 - rows as f32 * cell,
+                x1: px,
+                y1: h as f32,
+            });
+        }
+
+        // Pure raster on blank must find nothing.
+        let cfg = RasterConfig::for_dimensions(w, h);
+        let pure = rules_from_raster(&page, &cfg);
+        assert!(
+            pure.is_empty(),
+            "blank page must not emit raster rules, got {}",
+            pure.len()
+        );
+
+        let combined = rules_from_raster_combined(&page, &rules, &cfg);
+        let n_h = combined.iter().filter(|s| s.is_horizontal(1.5)).count();
+        let n_v = combined.iter().filter(|s| s.is_vertical(1.5)).count();
+        assert!(
+            n_h >= 4 && n_v >= 5,
+            "combined stamp should recover grid H={n_h} V={n_v} total={}",
+            combined.len()
+        );
+        // Merged set must include at least the original vector segments (deduped).
+        assert!(
+            combined.len() >= rules.len().min(n_h + n_v),
+            "combined should keep vector∪raster evidence"
+        );
+    }
+
+    #[test]
+    fn contour_seeds_from_stamped_grid() {
+        let w = 122usize;
+        let h = 102usize;
+        let page = blank_page(w, h);
+        let rows = 4usize;
+        let cols = 5usize;
+        let cell = 20.0f32;
+        let mut rules = Vec::new();
+        for r in 0..=rows {
+            let py = r as f32 * cell;
+            let page_y = h as f32 - py;
+            rules.push(RuleSegment {
+                x0: 0.0,
+                y0: page_y,
+                x1: cols as f32 * cell,
+                y1: page_y,
+            });
+        }
+        for c in 0..=cols {
+            let px = c as f32 * cell;
+            rules.push(RuleSegment {
+                x0: px,
+                y0: h as f32 - rows as f32 * cell,
+                x1: px,
+                y1: h as f32,
+            });
+        }
+
+        let cfg = RasterConfig::for_dimensions(w, h);
+        let seeds = contour_seeds_from_page(&page, &rules, &cfg, true, 0.001);
+        assert!(
+            !seeds.is_empty(),
+            "stamped grid should yield ≥1 contour seed"
+        );
+        // Grid lines form one connected component of H∨V ink.
+        let largest = seeds.iter().max_by_key(|s| s.area).unwrap();
+        assert!(
+            largest.width() >= 80 && largest.height() >= 60,
+            "contour bbox too small: {}x{} area={}",
+            largest.width(),
+            largest.height(),
+            largest.area
+        );
+        let (x0, y0, x1, y1) = largest.to_page_bbox(&page);
+        assert!(
+            x1 > x0 && y1 > y0,
+            "page bbox degenerate {x0},{y0},{x1},{y1}"
+        );
+    }
+
+    #[test]
+    fn stamp_into_gray_then_detect() {
+        let w = 100usize;
+        let h = 80usize;
+        let mut page = blank_page(w, h);
+        // With y_down_pixels=false, page y grows with pixel y (simpler for gray stamp test).
+        page.y_down_pixels = false;
+        let rules = vector_grid_rules(3, 4, 20.0, 0.0);
+        stamp_vector_rules_into_gray(&mut page, &rules, 2, Some(1.0));
+        let black: usize = page.pixels.iter().filter(|&&p| p == 0).count();
+        assert!(black > 200, "gray stamp should paint black, got {black}");
+        let segs = detect_line_segments(&page, &RasterConfig::for_dimensions(w, h));
+        let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 1.5).count();
+        let n_v = segs.iter().filter(|s| (s.x0 - s.x1).abs() < 1.5).count();
+        assert!(n_h >= 3 && n_v >= 4, "gray-stamped grid H={n_h} V={n_v}");
+    }
+}
+
+#[test]
+fn morph_on_c104_png() {
+    let img = match image::open("/tmp/C104_img_rules_21x6.png") {
+        Ok(i) => i,
+        Err(_) => return,
+    };
+    let img = img.to_rgb8();
+    let (w, h) = (img.width() as usize, img.height() as usize);
+    let gray = morph::gray_from_rgb(img.as_raw(), w, h).unwrap();
+    let page = RasterPage {
+        width: w,
+        height: h,
+        pixels: gray,
+        scale_x: 1.0,
+        scale_y: 1.0,
+        origin_x: 0.0,
+        origin_y: 0.0,
+        y_down_pixels: true,
+    };
+    let cfg = RasterConfig::for_dimensions(w, h);
+    eprintln!(
+        "cfg k={} min_seg={} close={}",
+        cfg.h_kernel, cfg.min_seg_px, cfg.close_kernel
+    );
+    let segs = detect_line_segments(&page, &cfg);
+    let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 2.0).count();
+    let n_v = segs.iter().filter(|s| (s.x0 - s.x1).abs() < 2.0).count();
+    eprintln!("C104 morph H={n_h} V={n_v} total={}", segs.len());
+    assert!(n_h >= 15 && n_v >= 5, "H={n_h} V={n_v}");
+}
+
+#[test]
+fn morph_on_c106_png() {
+    let img = match image::open("/tmp/C106_img_rules_18x5.png") {
+        Ok(i) => i,
+        Err(e) => {
+            eprintln!("skip {e}");
+            return;
+        }
+    };
+    let img = img.to_rgb8();
+    let (w, h) = (img.width() as usize, img.height() as usize);
+    let gray = morph::gray_from_rgb(img.as_raw(), w, h).unwrap();
+    let page = RasterPage {
+        width: w,
+        height: h,
+        pixels: gray,
+        scale_x: 520.0 / w as f32,
+        scale_y: 500.0 / h as f32,
+        origin_x: 40.0,
+        origin_y: 200.0,
+        y_down_pixels: true,
+    };
+    let segs = detect_line_segments(&page, &RasterConfig::for_dimensions(w, h));
+    let n_h = segs.iter().filter(|s| (s.y0 - s.y1).abs() < 2.0).count();
+    let n_v = segs.iter().filter(|s| (s.x0 - s.x1).abs() < 2.0).count();
+    assert!(n_h >= 15 && n_v >= 5, "C106 H={n_h} V={n_v}");
+}

@@ -27,10 +27,7 @@ fn c100_image_rules_detects_table() {
         (tabs[0].rows, tabs[0].cols)
     );
     assert!(
-        tabs[0]
-            .notes
-            .iter()
-            .any(|n| n.contains("raster_lines"))
+        tabs[0].notes.iter().any(|n| n.contains("raster_lines"))
             || format!("{:?}", tabs[0].strategy_provenance).contains("Raster"),
         "expected raster provenance notes={:?}",
         tabs[0].notes
@@ -75,7 +72,10 @@ fn raster_off_misses_image_only_grid() {
         .iter()
         .filter(|t| matches!(t.method, pdfparser::TableMethod::Lattice))
         .count();
-    assert_eq!(lattice, 0, "raster off should not form lattice from image rules");
+    assert_eq!(
+        lattice, 0,
+        "raster off should not form lattice from image rules"
+    );
 }
 
 #[test]

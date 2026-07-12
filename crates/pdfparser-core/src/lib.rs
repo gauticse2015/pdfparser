@@ -8,6 +8,7 @@ mod objects;
 mod page_tree;
 
 pub use error::{Error, Result};
+pub use filters::decode_stream_data;
 pub use limits::{hard_max, LimitKind, ResourceGovernor, ResourceLimits};
 pub use objects::{extract_objects, DocumentObjects, FormField, ImageObject, LinkAnnotation};
 pub use page_tree::{PageInfo, PageTree};
@@ -195,7 +196,9 @@ impl PdfDocument {
             .inner
             .lock()
             .map_err(|_| Error::Internal("lock".into()))?;
-        decode_object_stream(&doc, id, &self.governor)
+        let mut out = Vec::new();
+        append_content_object(&doc, Object::Reference(id), &mut out, &self.governor)?;
+        Ok(out)
     }
 }
 
@@ -218,17 +221,11 @@ fn collect_contents(
         .map_err(|e| Error::Syntax(e.to_string()))?;
     match page.get(b"Contents") {
         Ok(Object::Reference(id)) => {
-            let bytes = decode_object_stream(doc, *id, gov)?;
-            out.extend_from_slice(&bytes);
-            out.push(b'\n');
+            append_content_object(doc, Object::Reference(*id), out, gov)?;
         }
         Ok(Object::Array(arr)) => {
             for obj in arr {
-                if let Object::Reference(id) = obj {
-                    let bytes = decode_object_stream(doc, *id, gov)?;
-                    out.extend_from_slice(&bytes);
-                    out.push(b'\n');
-                }
+                append_content_object(doc, obj.clone(), out, gov)?;
             }
         }
         Ok(Object::Stream(stream)) => {
@@ -240,17 +237,61 @@ fn collect_contents(
     Ok(())
 }
 
-fn decode_object_stream(
+/// Decode a Contents entry (stream, ref→stream, ref→array of streams, or array).
+fn append_content_object(
     doc: &LopdfDocument,
-    id: LopdfId,
+    obj: Object,
+    out: &mut Vec<u8>,
     gov: &ResourceGovernor,
-) -> Result<Vec<u8>> {
-    let obj = doc
-        .get_object(id)
-        .map_err(|e| Error::Syntax(e.to_string()))?;
+) -> Result<()> {
     match obj {
-        Object::Stream(stream) => filters::decode_stream_data(&stream.dict, &stream.content, gov),
-        _ => Err(Error::Syntax("expected stream".into())),
+        Object::Stream(stream) => {
+            let bytes = filters::decode_stream_data(&stream.dict, &stream.content, gov)?;
+            out.extend_from_slice(&bytes);
+            out.push(b'\n');
+        }
+        Object::Reference(id) => {
+            let resolved = doc
+                .get_object(id)
+                .map_err(|e| Error::Syntax(e.to_string()))?
+                .clone();
+            // Contents may be an indirect array of content streams.
+            match resolved {
+                Object::Array(arr) => {
+                    for item in arr {
+                        append_content_object(doc, item, out, gov)?;
+                    }
+                }
+                other => append_content_object(doc, other, out, gov)?,
+            }
+        }
+        Object::Array(arr) => {
+            for item in arr {
+                append_content_object(doc, item, out, gov)?;
+            }
+        }
+        other => {
+            return Err(Error::Syntax(format!(
+                "expected stream, got {}",
+                object_kind(&other)
+            )));
+        }
+    }
+    Ok(())
+}
+
+fn object_kind(obj: &Object) -> &'static str {
+    match obj {
+        Object::Null => "null",
+        Object::Boolean(_) => "bool",
+        Object::Integer(_) => "int",
+        Object::Real(_) => "real",
+        Object::Name(_) => "name",
+        Object::String(_, _) => "string",
+        Object::Array(_) => "array",
+        Object::Dictionary(_) => "dictionary",
+        Object::Stream(_) => "stream",
+        Object::Reference(_) => "reference",
     }
 }
 

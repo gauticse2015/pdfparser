@@ -5,13 +5,15 @@ use crate::options::{OpenOptions, TextOptions};
 use pdfparser_core::{Error, PdfDocument, Result};
 use pdfparser_ir::{Element, ExtractWarning, TextRun};
 use pdfparser_tables::{Table, TableOptions};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 /// Opened document (cheap to clone via Arc).
 #[derive(Clone)]
 pub struct Document {
     inner: Arc<PdfDocument>,
+    /// Source path when opened from disk (needed for external full-page render).
+    source_path: Option<PathBuf>,
 }
 
 impl Document {
@@ -22,9 +24,11 @@ impl Document {
 
     /// Open with options.
     pub fn open_with(path: impl AsRef<Path>, opts: OpenOptions) -> Result<Self> {
+        let path = path.as_ref();
         let pdf = PdfDocument::open(path, opts.limits)?;
         Ok(Self {
             inner: Arc::new(pdf),
+            source_path: Some(path.to_path_buf()),
         })
     }
 
@@ -33,7 +37,13 @@ impl Document {
         let pdf = PdfDocument::from_bytes(data, opts.limits)?;
         Ok(Self {
             inner: Arc::new(pdf),
+            source_path: None,
         })
+    }
+
+    /// Filesystem path if opened via [`Document::open`].
+    pub fn source_path(&self) -> Option<&Path> {
+        self.source_path.as_deref()
     }
 
     /// Page count.
@@ -59,6 +69,7 @@ impl Document {
         Ok(Page {
             doc: self.inner.clone(),
             index,
+            source_path: self.source_path.clone(),
         })
     }
 
@@ -72,7 +83,12 @@ impl Document {
         text_opts: &TextOptions,
         table_opts: &TableOptions,
     ) -> Result<(Vec<Vec<Table>>, Vec<Table>)> {
-        document_tables(&self.inner, text_opts, table_opts)
+        document_tables(
+            &self.inner,
+            text_opts,
+            table_opts,
+            self.source_path.as_deref(),
+        )
     }
 
     /// Stitched logical tables only (Phase V D1).
@@ -95,6 +111,8 @@ impl Document {
 pub struct Page {
     doc: Arc<PdfDocument>,
     index: u32,
+    /// Path when parent [`Document`] was opened from disk (full-page render).
+    source_path: Option<PathBuf>,
 }
 
 impl Page {
@@ -145,8 +163,18 @@ impl Page {
     }
 
     /// Detect tables on this page (page-local fragments; no cross-page stitch).
+    ///
+    /// When the parent document was opened from a path and
+    /// `table_opts.enable_full_page_render` is set, may fail-soft to an external
+    /// CLI gray render (pdftoppm / mutool / gs) for line sensing.
     pub fn tables(&self, text_opts: &TextOptions, table_opts: &TableOptions) -> Result<Vec<Table>> {
-        page_tables(&self.doc, self.index as usize, text_opts, table_opts)
+        page_tables(
+            &self.doc,
+            self.index as usize,
+            text_opts,
+            table_opts,
+            self.source_path.as_deref(),
+        )
     }
 
     /// Load fonts for this page (testing/debug).
