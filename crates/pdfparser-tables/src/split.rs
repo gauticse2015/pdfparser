@@ -5,14 +5,28 @@ use crate::types::{PipelineId, Table, TableCell, TableMethod};
 use pdfparser_ir::TextRun;
 
 /// Split tables that fuse two side-by-side grids via an empty gutter column.
-pub fn split_side_by_side(
-    tables: Vec<Table>,
-    runs: &[TextRun],
-    opts: &TableOptions,
-) -> Vec<Table> {
+pub fn split_side_by_side(tables: Vec<Table>, runs: &[TextRun], opts: &TableOptions) -> Vec<Table> {
     let mut out = Vec::new();
     for t in tables {
         if let Some((left, right)) = try_split_gutter(&t, runs, opts) {
+            // Phase 14: carving a 2-col strip off a wide multi-col lattice is
+            // almost always a false gutter (sparse/empty interior columns).
+            // Prefer the larger multi-col piece; if both are strips, keep original.
+            if t.cols >= 6 && (left.cols <= 2 || right.cols <= 2) {
+                let larger = if right.cols > left.cols
+                    || (right.cols == left.cols && right.rows >= left.rows)
+                {
+                    right
+                } else {
+                    left
+                };
+                if larger.cols >= 3 && larger.rows >= 2 {
+                    out.push(larger);
+                } else {
+                    out.push(t);
+                }
+                continue;
+            }
             out.push(left);
             out.push(right);
         } else {
@@ -22,11 +36,7 @@ pub fn split_side_by_side(
     out
 }
 
-fn try_split_gutter(
-    t: &Table,
-    _runs: &[TextRun],
-    opts: &TableOptions,
-) -> Option<(Table, Table)> {
+fn try_split_gutter(t: &Table, _runs: &[TextRun], opts: &TableOptions) -> Option<(Table, Table)> {
     // Only split ruled lattices (stream/hybrid over-width handled by NMS).
     if t.cols < 4 || t.rows < 2 {
         return None;
@@ -44,6 +54,24 @@ fn try_split_gutter(
                 col_fill[c.col as usize] += 1;
             }
         }
+    }
+
+    // Wide multi-col data tables often have 1–2 sparse interior columns
+    // (optional fields). That is not a dual-table gutter. Only consider split
+    // when sparse interior columns are a large share of the grid (true fuse).
+    let ncols = t.cols as usize;
+    let sparse_interior = (1..ncols.saturating_sub(1))
+        .filter(|&col| {
+            let fill = if col_total[col] == 0 {
+                0.0
+            } else {
+                col_fill[col] as f32 / col_total[col] as f32
+            };
+            fill <= 0.15
+        })
+        .count();
+    if ncols >= 6 && sparse_interior <= 2 {
+        return None;
     }
 
     let mut gutter: Option<usize> = None;
@@ -189,6 +217,7 @@ fn extract_col_range(t: &Table, col0: usize, col1: usize) -> Option<Table> {
         edge_score: t.edge_score,
         fill_rate: t.fill_rate,
         weak_edges: t.weak_edges,
+        joint_count: t.joint_count,
     })
 }
 
@@ -254,6 +283,7 @@ mod tests {
             edge_score: 0.9,
             fill_rate: 0.8,
             weak_edges: false,
+        joint_count: 0,
         }
     }
 
@@ -268,9 +298,16 @@ mod tests {
             ..TableOptions::default()
         };
         let out = split_side_by_side(vec![t], &[], &opts);
-        assert_eq!(out.len(), 2, "shapes {:?}", out.iter().map(|x| (x.rows, x.cols)).collect::<Vec<_>>());
+        assert_eq!(
+            out.len(),
+            2,
+            "shapes {:?}",
+            out.iter().map(|x| (x.rows, x.cols)).collect::<Vec<_>>()
+        );
         assert!(out.iter().all(|x| x.cols == 2));
-        assert!(out.iter().all(|x| x.strategy_provenance.contains(&PipelineId::P4SideBySide)));
+        assert!(out
+            .iter()
+            .all(|x| x.strategy_provenance.contains(&PipelineId::P4SideBySide)));
     }
 
     #[test]
@@ -306,8 +343,72 @@ mod tests {
             edge_score: 0.9,
             fill_rate: 1.0,
             weak_edges: false,
+        joint_count: 0,
         };
         let out = split_side_by_side(vec![t], &[], &TableOptions::default());
         assert_eq!(out.len(), 1);
+    }
+}
+
+
+#[cfg(test)]
+mod phase14_gutter {
+    use super::*;
+    use pdfparser_ir::Rect;
+
+    fn lattice_grid(rows: u32, cols: u32) -> Table {
+        let mut cells = Vec::new();
+        for r in 0..rows {
+            for c in 0..cols {
+                let empty = c == 2 && r > 0; // sparse col 2 as fake gutter
+                cells.push(TableCell {
+                    row: r,
+                    col: c,
+                    rowspan: 1,
+                    colspan: 1,
+                    text: if empty { String::new() } else { format!("{r},{c}") },
+                    bbox: Rect {
+                        x0: c as f32 * 40.0,
+                        y0: r as f32 * 12.0,
+                        x1: c as f32 * 40.0 + 35.0,
+                        y1: r as f32 * 12.0 + 10.0,
+                    },
+                    is_header: false,
+                    confidence: 0.9,
+                });
+            }
+        }
+        Table {
+            bbox: Rect { x0: 0.0, y0: 0.0, x1: cols as f32 * 40.0, y1: rows as f32 * 12.0 },
+            page: 0,
+            method: TableMethod::Lattice,
+            confidence: 0.9,
+            rows,
+            cols,
+            cells,
+            header_rows: 0,
+            continued_from_previous_page: false,
+            continued_to_next_page: false,
+            logical_table_id: None,
+            strategy_provenance: vec![],
+            notes: vec![],
+            edge_score: 0.9,
+            fill_rate: 0.7,
+            weak_edges: false,
+        joint_count: 0,
+        }
+    }
+
+    #[test]
+    fn refuse_split_wide_into_two_col_strip() {
+        let opts = TableOptions::default();
+        let t = lattice_grid(5, 10);
+        // May or may not propose gutter; if it does, our guard must refuse leaving 2-col strip
+        if let Some((l, r)) = try_split_gutter(&t, &[], &opts) {
+            assert!(
+                !(t.cols >= 6 && (l.cols <= 2 || r.cols <= 2)),
+                "must not emit 2-col strip from wide grid"
+            );
+        }
     }
 }

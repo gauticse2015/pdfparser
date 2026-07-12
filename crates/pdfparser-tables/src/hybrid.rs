@@ -1,7 +1,7 @@
 //! S4 hybrid detector: partial borders + text-derived columns/rows.
 use crate::geom::{
     band_runs, cells_from_grid, cluster_coords, column_separation_score, grid_regularity_score,
-    median_font_size, median_f32, runs_in_rect,
+    median_f32, median_font_size, runs_in_rect,
 };
 use crate::options::TableOptions;
 use crate::types::{PipelineId, Table, TableMethod};
@@ -26,17 +26,14 @@ pub fn detect_hybrid_tables(
             out.push(t);
         }
     }
-    // If no closed frame, try union bbox of all rules as incomplete frame
-    if out.is_empty() {
-        if let Some(frame) = union_rules_frame(rules) {
-            if let Some(t) = hybrid_grid(page_index, runs, rules, frame, opts) {
-                out.push(t);
-            }
-        }
-    }
+    // K34: free page-union frame fallback removed (was hybrid union_rules_frame).
+    // Partial tables must come from real outer-frame proposals only — page-wide
+    // chrome soup is no longer a hybrid candidate.
     out
 }
 
+/// Page-union of all rules (legacy helper). Not used by detect path (K34).
+#[allow(dead_code)] // kept for unit tests of geometry only
 fn union_rules_frame(rules: &[RuleSegment]) -> Option<Rect> {
     if rules.is_empty() {
         return None;
@@ -194,7 +191,10 @@ fn hybrid_grid(
         x1: frame.x1 - inset,
         y1: frame.y1 - inset,
     };
-    let inside: Vec<TextRun> = runs_in_rect(runs, frame, 2.0).into_iter().cloned().collect();
+    let inside: Vec<TextRun> = runs_in_rect(runs, frame, 2.0)
+        .into_iter()
+        .cloned()
+        .collect();
     if inside.len() < 6 {
         return None;
     }
@@ -224,11 +224,7 @@ fn hybrid_grid(
         .collect();
     // Snap peaks to V rules
     for p in &mut col_peaks {
-        if let Some(v) = v_rules
-            .iter()
-            .copied()
-            .find(|v| (*v - *p).abs() <= 3.0)
-        {
+        if let Some(v) = v_rules.iter().copied().find(|v| (*v - *p).abs() <= 3.0) {
             *p = v;
         }
     }
@@ -240,12 +236,7 @@ fn hybrid_grid(
     } else if let Some(f) = col_edges.first_mut() {
         *f = frame.x0;
     }
-    if col_edges
-        .last()
-        .map(|&x| frame.x1 - x)
-        .unwrap_or(100.0)
-        > 5.0
-    {
+    if col_edges.last().map(|&x| frame.x1 - x).unwrap_or(100.0) > 5.0 {
         col_edges.push(frame.x1);
     } else if let Some(f) = col_edges.last_mut() {
         *f = frame.x1;
@@ -328,9 +319,7 @@ fn hybrid_grid(
             );
             let est = ((frame.height() / med_h).round() as i32).clamp(3, 12) as usize;
             let step = frame.height() / est as f32;
-            row_edges = (0..=est)
-                .map(|i| frame.y1 - step * i as f32)
-                .collect();
+            row_edges = (0..=est).map(|i| frame.y1 - step * i as f32).collect();
         } else {
             row_edges = Vec::new();
             row_edges.push(frame.y1);
@@ -344,8 +333,7 @@ fn hybrid_grid(
                 // insert if not already near an edge
                 if !row_edges.iter().any(|&y| (y - hy).abs() < tol * 2.0) {
                     row_edges.push(hy);
-                    row_edges
-                        .sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
+                    row_edges.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
                 }
             }
         }
@@ -381,8 +369,7 @@ fn hybrid_grid(
         return None;
     }
 
-    let (cells, filled) =
-        cells_from_grid(&inside, &col_edges, &row_edges, opts.min_cell_size);
+    let (cells, filled) = cells_from_grid(&inside, &col_edges, &row_edges, opts.min_cell_size);
     if filled < 4 {
         return None;
     }
@@ -453,6 +440,7 @@ fn hybrid_grid(
         edge_score: 0.0,
         fill_rate,
         weak_edges: false,
+    joint_count: 0,
     })
 }
 
@@ -527,7 +515,9 @@ mod tests {
         // Hybrid may or may not fully recover depending on thresholds — exercise path.
         eprintln!(
             "hybrid tabs: {:?}",
-            tabs.iter().map(|t| (t.rows, t.cols, t.method, t.confidence)).collect::<Vec<_>>()
+            tabs.iter()
+                .map(|t| (t.rows, t.cols, t.method, t.confidence))
+                .collect::<Vec<_>>()
         );
         // At minimum no panic; if found, must be hybrid
         for t in &tabs {
@@ -551,6 +541,7 @@ mod tests {
 
     #[test]
     fn union_rules_frame_ok() {
+        // Helper retained for unit tests only — detect path no longer uses free page-union.
         let rules = [
             rule(0.0, 0.0, 100.0, 0.0),
             rule(0.0, 100.0, 100.0, 100.0),
@@ -559,6 +550,41 @@ mod tests {
         ];
         let f = union_rules_frame(&rules).unwrap();
         assert!(f.width() >= 100.0);
+    }
+
+    #[test]
+    fn hybrid_no_free_page_union_without_frame() {
+        use crate::options::{TableOptions, TablePreset};
+        // Scattered H rules only — not a 3-sided outer frame.
+        let rules = [
+            rule(0.0, 0.0, 200.0, 0.0),
+            rule(0.0, 400.0, 200.0, 400.0),
+            rule(50.0, 100.0, 50.0, 200.0),
+        ];
+        let mut runs = Vec::new();
+        for i in 0..8 {
+            runs.push(tr(
+                &format!("x{i}"),
+                20.0 + (i as f32) * 18.0,
+                150.0,
+                30.0 + (i as f32) * 18.0,
+                160.0,
+            ));
+            runs.push(tr(
+                &format!("y{i}"),
+                20.0 + (i as f32) * 18.0,
+                120.0,
+                30.0 + (i as f32) * 18.0,
+                130.0,
+            ));
+        }
+        let opts = TableOptions::from_preset(TablePreset::Full);
+        let tabs = detect_hybrid_tables(0, &runs, &rules, &opts);
+        assert!(
+            tabs.is_empty(),
+            "K34: no free page-union hybrid without outer frame, got {}",
+            tabs.len()
+        );
     }
 
     #[test]
@@ -584,16 +610,23 @@ mod tests {
         for r in 0..5 {
             let y = 400.0 - r as f32 * 40.0;
             for c in 0..3 {
-                runs.push(tr(&format!("v{r}{c}"), col_x[c], y, col_x[c] + 25.0, y + 12.0));
+                runs.push(tr(
+                    &format!("v{r}{c}"),
+                    col_x[c],
+                    y,
+                    col_x[c] + 25.0,
+                    y + 12.0,
+                ));
             }
         }
         let opts = TableOptions::from_preset(crate::options::TablePreset::Full);
         let tabs = detect_hybrid_tables(0, &runs, &rules, &opts);
+        assert!(!tabs.is_empty(), "expected hybrid table from closed frame");
         assert!(
-            !tabs.is_empty(),
-            "expected hybrid table from closed frame"
+            tabs[0].cols >= 2 && tabs[0].rows >= 3,
+            "{:?}",
+            (tabs[0].rows, tabs[0].cols)
         );
-        assert!(tabs[0].cols >= 2 && tabs[0].rows >= 3, "{:?}", (tabs[0].rows, tabs[0].cols));
     }
 
     #[test]
@@ -610,10 +643,7 @@ mod tests {
         ];
         let c = cover_h(&hs, 10.0, 0.0, 100.0, 2.0);
         assert!(c > 90.0, "merged cover {c}");
-        let vs = [
-            rule(5.0, 0.0, 5.0, 40.0),
-            rule(5.0, 38.0, 5.0, 100.0),
-        ];
+        let vs = [rule(5.0, 0.0, 5.0, 40.0), rule(5.0, 38.0, 5.0, 100.0)];
         let c2 = cover_v(&vs, 5.0, 0.0, 100.0, 2.0);
         assert!(c2 > 90.0, "merged v cover {c2}");
         assert_eq!(cover_h(&[], 0.0, 0.0, 10.0, 1.0), 0.0);
@@ -626,25 +656,156 @@ mod tests {
         use pdfparser_content::RuleSegment;
         use pdfparser_ir::{Rect, TextRun};
         // Three-sided frame + multi-col text inside
-        let mut rules = vec![
-            RuleSegment { x0: 10.0, y0: 10.0, x1: 200.0, y1: 10.0 }, // bottom
-            RuleSegment { x0: 10.0, y0: 10.0, x1: 10.0, y1: 200.0 }, // left
-            RuleSegment { x0: 200.0, y0: 10.0, x1: 200.0, y1: 200.0 }, // right
+        let rules = vec![
+            RuleSegment {
+                x0: 10.0,
+                y0: 10.0,
+                x1: 200.0,
+                y1: 10.0,
+            }, // bottom
+            RuleSegment {
+                x0: 10.0,
+                y0: 10.0,
+                x1: 10.0,
+                y1: 200.0,
+            }, // left
+            RuleSegment {
+                x0: 200.0,
+                y0: 10.0,
+                x1: 200.0,
+                y1: 200.0,
+            }, // right
             // partial top
-            RuleSegment { x0: 10.0, y0: 200.0, x1: 80.0, y1: 200.0 },
-            RuleSegment { x0: 120.0, y0: 200.0, x1: 200.0, y1: 200.0 },
+            RuleSegment {
+                x0: 10.0,
+                y0: 200.0,
+                x1: 80.0,
+                y1: 200.0,
+            },
+            RuleSegment {
+                x0: 120.0,
+                y0: 200.0,
+                x1: 200.0,
+                y1: 200.0,
+            },
             // mid H
-            RuleSegment { x0: 10.0, y0: 100.0, x1: 200.0, y1: 100.0 },
+            RuleSegment {
+                x0: 10.0,
+                y0: 100.0,
+                x1: 200.0,
+                y1: 100.0,
+            },
             // mid V
-            RuleSegment { x0: 100.0, y0: 10.0, x1: 100.0, y1: 200.0 },
+            RuleSegment {
+                x0: 100.0,
+                y0: 10.0,
+                x1: 100.0,
+                y1: 200.0,
+            },
         ];
         let runs = vec![
-            TextRun { text: "H1".into(), bbox: Rect{x0:20.,y0:150.,x1:40.,y1:160.}, transform: pdfparser_ir::Matrix3x2::identity(), font_name: None, font_size: 10., mapping_confidence: 1., metrics_confidence: 1., mcid: None, invisible: false, from_actual_text: false },
-            TextRun { text: "H2".into(), bbox: Rect{x0:120.,y0:150.,x1:140.,y1:160.}, transform: pdfparser_ir::Matrix3x2::identity(), font_name: None, font_size: 10., mapping_confidence: 1., metrics_confidence: 1., mcid: None, invisible: false, from_actual_text: false },
-            TextRun { text: "A".into(), bbox: Rect{x0:20.,y0:50.,x1:30.,y1:60.}, transform: pdfparser_ir::Matrix3x2::identity(), font_name: None, font_size: 10., mapping_confidence: 1., metrics_confidence: 1., mcid: None, invisible: false, from_actual_text: false },
-            TextRun { text: "B".into(), bbox: Rect{x0:120.,y0:50.,x1:130.,y1:60.}, transform: pdfparser_ir::Matrix3x2::identity(), font_name: None, font_size: 10., mapping_confidence: 1., metrics_confidence: 1., mcid: None, invisible: false, from_actual_text: false },
-            TextRun { text: "C".into(), bbox: Rect{x0:20.,y0:120.,x1:30.,y1:130.}, transform: pdfparser_ir::Matrix3x2::identity(), font_name: None, font_size: 10., mapping_confidence: 1., metrics_confidence: 1., mcid: None, invisible: false, from_actual_text: false },
-            TextRun { text: "D".into(), bbox: Rect{x0:120.,y0:120.,x1:130.,y1:130.}, transform: pdfparser_ir::Matrix3x2::identity(), font_name: None, font_size: 10., mapping_confidence: 1., metrics_confidence: 1., mcid: None, invisible: false, from_actual_text: false },
+            TextRun {
+                text: "H1".into(),
+                bbox: Rect {
+                    x0: 20.,
+                    y0: 150.,
+                    x1: 40.,
+                    y1: 160.,
+                },
+                transform: pdfparser_ir::Matrix3x2::identity(),
+                font_name: None,
+                font_size: 10.,
+                mapping_confidence: 1.,
+                metrics_confidence: 1.,
+                mcid: None,
+                invisible: false,
+                from_actual_text: false,
+            },
+            TextRun {
+                text: "H2".into(),
+                bbox: Rect {
+                    x0: 120.,
+                    y0: 150.,
+                    x1: 140.,
+                    y1: 160.,
+                },
+                transform: pdfparser_ir::Matrix3x2::identity(),
+                font_name: None,
+                font_size: 10.,
+                mapping_confidence: 1.,
+                metrics_confidence: 1.,
+                mcid: None,
+                invisible: false,
+                from_actual_text: false,
+            },
+            TextRun {
+                text: "A".into(),
+                bbox: Rect {
+                    x0: 20.,
+                    y0: 50.,
+                    x1: 30.,
+                    y1: 60.,
+                },
+                transform: pdfparser_ir::Matrix3x2::identity(),
+                font_name: None,
+                font_size: 10.,
+                mapping_confidence: 1.,
+                metrics_confidence: 1.,
+                mcid: None,
+                invisible: false,
+                from_actual_text: false,
+            },
+            TextRun {
+                text: "B".into(),
+                bbox: Rect {
+                    x0: 120.,
+                    y0: 50.,
+                    x1: 130.,
+                    y1: 60.,
+                },
+                transform: pdfparser_ir::Matrix3x2::identity(),
+                font_name: None,
+                font_size: 10.,
+                mapping_confidence: 1.,
+                metrics_confidence: 1.,
+                mcid: None,
+                invisible: false,
+                from_actual_text: false,
+            },
+            TextRun {
+                text: "C".into(),
+                bbox: Rect {
+                    x0: 20.,
+                    y0: 120.,
+                    x1: 30.,
+                    y1: 130.,
+                },
+                transform: pdfparser_ir::Matrix3x2::identity(),
+                font_name: None,
+                font_size: 10.,
+                mapping_confidence: 1.,
+                metrics_confidence: 1.,
+                mcid: None,
+                invisible: false,
+                from_actual_text: false,
+            },
+            TextRun {
+                text: "D".into(),
+                bbox: Rect {
+                    x0: 120.,
+                    y0: 120.,
+                    x1: 130.,
+                    y1: 130.,
+                },
+                transform: pdfparser_ir::Matrix3x2::identity(),
+                font_name: None,
+                font_size: 10.,
+                mapping_confidence: 1.,
+                metrics_confidence: 1.,
+                mcid: None,
+                invisible: false,
+                from_actual_text: false,
+            },
         ];
         let opts = TableOptions::from_preset(TablePreset::Full);
         let _ = detect_hybrid_tables(0, &runs, &rules, &opts);
@@ -652,5 +813,4 @@ mod tests {
         assert!(detect_hybrid_tables(0, &[], &rules, &opts).is_empty() || true);
         let _ = detect_hybrid_tables(0, &runs, &[], &opts);
     }
-
 }

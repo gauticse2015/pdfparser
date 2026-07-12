@@ -510,6 +510,7 @@ pub fn detect_stream_region(
         edge_score: 0.0,
         fill_rate,
         weak_edges: false,
+    joint_count: 0,
     }]
 }
 
@@ -668,8 +669,6 @@ fn two_col_word_list_ratio(cells: &[crate::types::TableCell], rows: u32) -> f32 
     }
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -691,7 +690,13 @@ mod tests {
     }
 
     /// Build a regular grid of short tokens: rows top→bottom (decreasing y).
-    fn grid_runs(nrows: usize, ncols: usize, col_xs: &[f32], y_top: f32, row_h: f32) -> Vec<TextRun> {
+    fn grid_runs(
+        nrows: usize,
+        ncols: usize,
+        col_xs: &[f32],
+        y_top: f32,
+        row_h: f32,
+    ) -> Vec<TextRun> {
         let mut runs = Vec::new();
         for r in 0..nrows {
             let y1 = y_top - r as f32 * row_h;
@@ -780,7 +785,11 @@ mod tests {
             .collect();
         let raw = vec![(0, 5), (5, 10)];
         let merged = merge_aligned_band_groups(&body, &centers, &raw, 10.0, 5.5);
-        assert_eq!(merged.len(), 2, "different col counts stay split: {merged:?}");
+        assert_eq!(
+            merged.len(),
+            2,
+            "different col counts stay split: {merged:?}"
+        );
     }
 
     #[test]
@@ -906,9 +915,19 @@ mod tests {
         for r in 0..5u32 {
             for (col, text) in [(0, format!("L{r} word")), (1, format!("R{r} term"))] {
                 cells.push(TableCell {
-                    row: r, col, rowspan: 1, colspan: 1,
-                    bbox: Rect { x0: 0.0, y0: 0.0, x1: 10.0, y1: 10.0 },
-                    text, is_header: false, confidence: 1.0,
+                    row: r,
+                    col,
+                    rowspan: 1,
+                    colspan: 1,
+                    bbox: Rect {
+                        x0: 0.0,
+                        y0: 0.0,
+                        x1: 10.0,
+                        y1: 10.0,
+                    },
+                    text,
+                    is_header: false,
+                    confidence: 1.0,
                 });
             }
         }
@@ -922,17 +941,36 @@ mod tests {
         let mut cells = Vec::new();
         for r in 0..4u32 {
             cells.push(TableCell {
-                row: r, col: 0, rowspan: 1, colspan: 1,
-                bbox: Rect { x0: 0.0, y0: 0.0, x1: 10.0, y1: 10.0 },
-                text: format!("City{r}"), is_header: false, confidence: 1.0,
+                row: r,
+                col: 0,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect {
+                    x0: 0.0,
+                    y0: 0.0,
+                    x1: 10.0,
+                    y1: 10.0,
+                },
+                text: format!("City{r}"),
+                is_header: false,
+                confidence: 1.0,
             });
             cells.push(TableCell {
-                row: r, col: 1, rowspan: 1, colspan: 1,
-                bbox: Rect { x0: 0.0, y0: 0.0, x1: 10.0, y1: 10.0 },
-                text: format!("{}", 1000 + r), is_header: false, confidence: 1.0,
+                row: r,
+                col: 1,
+                rowspan: 1,
+                colspan: 1,
+                bbox: Rect {
+                    x0: 0.0,
+                    y0: 0.0,
+                    x1: 10.0,
+                    y1: 10.0,
+                },
+                text: format!("{}", 1000 + r),
+                is_header: false,
+                confidence: 1.0,
             });
         }
         assert!(two_col_word_list_ratio(&cells, 4) < 0.3);
     }
-
 }
