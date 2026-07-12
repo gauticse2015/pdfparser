@@ -28,7 +28,18 @@ pub use pdfparser_ir::{
     ObjectId, Point, Rect, TextRun, WarningCode, SCHEMA_VERSION,
 };
 pub use pdfparser_tables::{
-    Table, TableCell, TableMethod, TableModeSet, TableOptions, TablePreset,
+    detect_tables_page_with_diagnostics,
+    page_evidence_from_inputs,
+    // Engine V2 foundation (diagnostics / evidence); product Auto uses V2 router.
+    EvidenceDiagnostics,
+    MethodMix,
+    PageEvidence,
+    Table,
+    TableCell,
+    TableMethod,
+    TableModeSet,
+    TableOptions,
+    TablePreset,
 };
 
 /// Crate version.
