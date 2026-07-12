@@ -30,10 +30,7 @@ pub fn cluster_coords(vals: &[f32], tol: f32) -> Vec<f32> {
 
 /// Group text runs into horizontal bands (top-to-bottom).
 pub fn band_runs(runs: &[TextRun], y_tol: f32) -> Vec<Vec<&TextRun>> {
-    let mut items: Vec<&TextRun> = runs
-        .iter()
-        .filter(|r| !r.text.trim().is_empty())
-        .collect();
+    let mut items: Vec<&TextRun> = runs.iter().filter(|r| !r.text.trim().is_empty()).collect();
     items.sort_by(|a, b| {
         b.bbox
             .y_center()
@@ -109,10 +106,7 @@ pub fn assign_text(runs: &[TextRun], cell: Rect) -> String {
         }
         let cx = (r.bbox.x0 + r.bbox.x1) * 0.5;
         let cy = (r.bbox.y0 + r.bbox.y1) * 0.5;
-        if cx >= cell.x0 - pad
-            && cx <= cell.x1 + pad
-            && cy >= cell.y0 - pad
-            && cy <= cell.y1 + pad
+        if cx >= cell.x0 - pad && cx <= cell.x1 + pad && cy >= cell.y0 - pad && cy <= cell.y1 + pad
         {
             parts.push((cy, cx, r.text.as_str()));
         }
@@ -131,10 +125,29 @@ pub fn assign_text(runs: &[TextRun], cell: Rect) -> String {
 /// *both* cells via independent `assign_text` calls, which blocked colspan
 /// merge (non-empty|non-empty) and left duplicate header tokens in span
 /// partners. Exclusive assignment keeps the left/top cell on ties.
+///
+/// **Wide multi-column runs:** when a run's bbox substantially overlaps ≥2
+/// cells in the same row band and the text has whitespace tokens, split tokens
+/// left-to-right across those cells. PDF writers often emit a whole numeric
+/// row as one TJ string; center-only assignment would dump the entire line into
+/// a single cell.
 pub fn assign_runs_exclusive(runs: &[TextRun], cells: &[Rect]) -> Vec<String> {
     let n = cells.len();
     let mut parts: Vec<Vec<(f32, f32, &str)>> = vec![Vec::new(); n];
     let pad = 1.0f32;
+
+    // Median cell width — used to detect "wide" runs.
+    let mut widths: Vec<f32> = cells
+        .iter()
+        .map(|c| (c.x1 - c.x0).abs())
+        .filter(|w| *w > 1.0)
+        .collect();
+    widths.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    let med_w = if widths.is_empty() {
+        20.0
+    } else {
+        widths[widths.len() / 2]
+    };
 
     for r in runs {
         if r.text.trim().is_empty() {
@@ -142,8 +155,64 @@ pub fn assign_runs_exclusive(runs: &[TextRun], cells: &[Rect]) -> Vec<String> {
         }
         let cx = (r.bbox.x0 + r.bbox.x1) * 0.5;
         let cy = (r.bbox.y0 + r.bbox.y1) * 0.5;
+        let run_w = (r.bbox.x1 - r.bbox.x0).abs();
 
-        let mut best: Option<(usize, f32, f32)> = None; // (idx, interior_score, -x0 for left bias)
+        // Candidates: cells whose vertical center band matches the run and whose
+        // x-range intersects the run bbox (not just the center).
+        let mut x_hits: Vec<usize> = Vec::new();
+        for (i, cell) in cells.iter().enumerate() {
+            let in_y = cy >= cell.y0 - pad && cy <= cell.y1 + pad;
+            if !in_y {
+                continue;
+            }
+            let overlap_x0 = r.bbox.x0.max(cell.x0);
+            let overlap_x1 = r.bbox.x1.min(cell.x1);
+            if overlap_x1 - overlap_x0 > 0.5 {
+                x_hits.push(i);
+            }
+        }
+
+        // Multi-column wide run → split whitespace tokens across hit cells.
+        // Only for dense tabular dumps (many short tokens, often numeric). Skip
+        // short header labels so colspan merge can still span empty neighbors.
+        if x_hits.len() >= 2 && run_w >= med_w * 1.5 {
+            x_hits.sort_by(|&a, &b| {
+                cells[a]
+                    .x0
+                    .partial_cmp(&cells[b].x0)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            });
+            let tokens: Vec<&str> = r
+                .text
+                .split_whitespace()
+                .filter(|t| !t.is_empty())
+                .collect();
+            let nc = x_hits.len();
+            let nt = tokens.len();
+            let data_like = tokens
+                .iter()
+                .filter(|t| t.chars().any(|c| c.is_ascii_digit()))
+                .count();
+            // Tabular dump: ≥3 tokens, token count ≥ spanned cols, majority data-like.
+            let tabular = nt >= 3 && nt >= nc && data_like * 2 >= nt;
+            if tabular {
+                for (ti, tok) in tokens.iter().enumerate() {
+                    let ci = if nt == nc {
+                        ti.min(nc - 1)
+                    } else {
+                        ((ti as f32 + 0.5) * nc as f32 / nt as f32).floor() as usize
+                    }
+                    .min(nc - 1);
+                    let cell_i = x_hits[ci];
+                    let cell = cells[cell_i];
+                    let tcx = (cell.x0 + cell.x1) * 0.5;
+                    parts[cell_i].push((cy, tcx, tok));
+                }
+                continue;
+            }
+        }
+
+        let mut best: Option<(usize, f32, f32)> = None; // (idx, interior_score, x0)
         for (i, cell) in cells.iter().enumerate() {
             let in_x = cx >= cell.x0 - pad && cx <= cell.x1 + pad;
             let in_y = cy >= cell.y0 - pad && cy <= cell.y1 + pad;
@@ -485,6 +554,38 @@ mod tests {
         };
         let s = assign_text(&runs, cell);
         assert_eq!(s, "foobar");
+    }
+
+    #[test]
+    fn multi_run_cell_merge_exclusive() {
+        // PR5c: multiple runs in one cell join with space; exclusive keeps one owner.
+        let runs = vec![
+            tr("Hello", 2.0, 12.0, 18.0, 18.0, 10.0),
+            tr("World", 2.0, 2.0, 18.0, 8.0, 10.0),
+            tr("X", 22.0, 5.0, 28.0, 15.0, 10.0),
+        ];
+        let left = Rect {
+            x0: 0.0,
+            y0: 0.0,
+            x1: 20.0,
+            y1: 20.0,
+        };
+        let right = Rect {
+            x0: 20.0,
+            y0: 0.0,
+            x1: 40.0,
+            y1: 20.0,
+        };
+        let texts = assign_runs_exclusive(&runs, &[left, right]);
+        assert_eq!(texts.len(), 2);
+        assert!(
+            texts[0].contains("Hello") && texts[0].contains("World"),
+            "multi-run merge: {:?}",
+            texts[0]
+        );
+        assert_eq!(texts[1], "X");
+        // No duplicate assignment
+        assert!(!texts[1].contains("Hello"));
     }
 
     #[test]

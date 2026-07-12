@@ -5,11 +5,7 @@ use crate::types::{PipelineId, Table, TableCell};
 /// Stitch multi-page table fragments in-place (flags + logical_table_id).
 ///
 /// `page_heights[i]` is the page height in user units (typically media-box height).
-pub fn stitch_document(
-    page_tables: &mut [Vec<Table>],
-    page_heights: &[f32],
-    opts: &TableOptions,
-) {
+pub fn stitch_document(page_tables: &mut [Vec<Table>], page_heights: &[f32], opts: &TableOptions) {
     if page_tables.len() < 2 {
         return;
     }
@@ -94,8 +90,7 @@ pub fn stitch_document(
 
 /// Build logical (stitched) tables from page fragments sharing `logical_table_id`.
 pub fn materialize_stitched(page_tables: &[Vec<Table>]) -> Vec<Table> {
-    let mut by_id: std::collections::BTreeMap<u32, Vec<&Table>> =
-        std::collections::BTreeMap::new();
+    let mut by_id: std::collections::BTreeMap<u32, Vec<&Table>> = std::collections::BTreeMap::new();
     let mut singles: Vec<Table> = Vec::new();
 
     for page in page_tables {
@@ -205,15 +200,13 @@ fn merge_fragments(frags: &[&Table]) -> Option<Table> {
         edge_score: first.edge_score,
         fill_rate,
         weak_edges: first.weak_edges,
+        joint_count: first.joint_count,
     })
 }
 
 /// Infer page height from table bboxes when media box is unavailable.
 fn infer_page_height(tables: &[Table]) -> f32 {
-    let top = tables
-        .iter()
-        .map(|t| t.bbox.y1)
-        .fold(0.0f32, f32::max);
+    let top = tables.iter().map(|t| t.bbox.y1).fold(0.0f32, f32::max);
     if top > 1.0 {
         top * 1.05
     } else {
@@ -253,11 +246,9 @@ fn stitch_score(a: &Table, b: &Table, opts: &TableOptions) -> Option<f32> {
         return None;
     }
     let hs = header_sim(a, b);
-    let header_ok =
-        hs >= opts.stitch_min_header_sim || headers_subset(a, b) || b.header_rows == 0;
+    let header_ok = hs >= opts.stitch_min_header_sim || headers_subset(a, b) || b.header_rows == 0;
     // Same-shape multi-row grids with aligned columns can continue without header copy
-    let continuation_ok =
-        a.cols >= 3 && a.rows >= 4 && b.rows >= 2 && col_dx <= max_dx * 0.7;
+    let continuation_ok = a.cols >= 3 && a.rows >= 4 && b.rows >= 2 && col_dx <= max_dx * 0.7;
     if !header_ok && !continuation_ok {
         return None;
     }
@@ -312,8 +303,7 @@ fn header_sim(a: &Table, b: &Table) -> f32 {
     for i in 0..n {
         let na = normalize(&ha[i]);
         let nb = normalize(&hb[i]);
-        if na == nb
-            || (!na.is_empty() && !nb.is_empty() && (na.contains(&nb) || nb.contains(&na)))
+        if na == nb || (!na.is_empty() && !nb.is_empty() && (na.contains(&nb) || nb.contains(&na)))
         {
             hits += 1;
         }
@@ -420,6 +410,7 @@ mod tests {
             edge_score: 0.9,
             fill_rate: 1.0,
             weak_edges: false,
+            joint_count: 0,
         }
     }
 
@@ -479,7 +470,12 @@ mod tests {
             )
         );
         let logical = materialize_stitched(&pages);
-        assert_eq!(logical.len(), 1, "expected 1 stitched table, got {}", logical.len());
+        assert_eq!(
+            logical.len(),
+            1,
+            "expected 1 stitched table, got {}",
+            logical.len()
+        );
         assert!(logical[0].rows >= 4, "rows {}", logical[0].rows);
         assert_eq!(logical[0].cols, 4);
     }
@@ -502,10 +498,12 @@ mod tests {
     #[test]
     fn normalize_header_sim() {
         assert_eq!(normalize("  Hello "), "hello");
-        assert!(header_sim(
-            &mk_table(0, 0.0, 50.0, &["Date", "Amt"], &[&["1", "2"]]),
-            &mk_table(1, 700.0, 750.0, &["Date", "Amt"], &[&["3", "4"]]),
-        ) > 0.9);
+        assert!(
+            header_sim(
+                &mk_table(0, 0.0, 50.0, &["Date", "Amt"], &[&["1", "2"]]),
+                &mk_table(1, 700.0, 750.0, &["Date", "Amt"], &[&["3", "4"]]),
+            ) > 0.9
+        );
     }
 
     #[test]
@@ -548,7 +546,13 @@ mod tests {
 
     #[test]
     fn materialize_merge_skips_header_on_second() {
-        let a = mk_table(0, 0.0, 100.0, &["H1", "H2", "H3"], &[&["a", "b", "c"], &["d", "e", "f"]]);
+        let a = mk_table(
+            0,
+            0.0,
+            100.0,
+            &["H1", "H2", "H3"],
+            &[&["a", "b", "c"], &["d", "e", "f"]],
+        );
         let mut b = mk_table(1, 700.0, 800.0, &["H1", "H2", "H3"], &[&["g", "h", "i"]]);
         b.logical_table_id = Some(1);
         let mut a2 = a.clone();
@@ -561,14 +565,29 @@ mod tests {
     #[test]
     fn stitch_with_zero_heights_uses_infer() {
         let header = ["A", "B", "C"];
-        let mut bottom = mk_table(0, 5.0, 60.0, &header, &[&["1", "2", "3"], &["4", "5", "6"], &["7", "8", "9"]]);
-        bottom.bbox = Rect { x0: 0.0, y0: 5.0, x1: 150.0, y1: 60.0 };
+        let mut bottom = mk_table(
+            0,
+            5.0,
+            60.0,
+            &header,
+            &[&["1", "2", "3"], &["4", "5", "6"], &["7", "8", "9"]],
+        );
+        bottom.bbox = Rect {
+            x0: 0.0,
+            y0: 5.0,
+            x1: 150.0,
+            y1: 60.0,
+        };
         let mut top = mk_table(1, 200.0, 260.0, &header, &[&["10", "11", "12"]]);
-        top.bbox = Rect { x0: 0.0, y0: 200.0, x1: 150.0, y1: 260.0 };
+        top.bbox = Rect {
+            x0: 0.0,
+            y0: 200.0,
+            x1: 150.0,
+            y1: 260.0,
+        };
         let mut pages = vec![vec![bottom], vec![top]];
         stitch_document(&mut pages, &[0.0, 0.0], &TableOptions::default());
         // may or may not stitch depending on inferred bands; exercise path
         let _ = materialize_stitched(&pages);
     }
-
 }

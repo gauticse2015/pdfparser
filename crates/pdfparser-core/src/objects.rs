@@ -358,7 +358,11 @@ fn walk_field_dict(
 
     // Kids = non-terminal field
     if let Ok(kids) = d.get(b"Kids") {
-        let parent = if name.is_empty() { parent_name } else { name.as_str() };
+        let parent = if name.is_empty() {
+            parent_name
+        } else {
+            name.as_str()
+        };
         walk_fields(doc, kids, parent, out, seen, depth + 1);
         // Some terminals also have Kids (widget annots) — still emit if /FT or /V present
     }
@@ -468,4 +472,3 @@ fn pdf_string_to_utf8(bytes: &[u8]) -> String {
     // PDFDocEncoding ≈ Latin-1 for common cases
     String::from_utf8_lossy(bytes).into_owned()
 }
-

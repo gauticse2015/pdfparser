@@ -133,13 +133,14 @@ fn data_table_score(t: &Table) -> f32 {
     s += 0.30 * header;
     s += 0.20 * fill;
     s += 0.15 * (1.0 - (mean_chars - 12.0).abs() / 40.0).clamp(0.0, 1.0);
-    s += 0.15 * if (0.15..=0.85).contains(&num) {
-        1.0
-    } else if num > 0.85 {
-        0.35
-    } else {
-        0.2
-    };
+    s += 0.15
+        * if (0.15..=0.85).contains(&num) {
+            1.0
+        } else if num > 0.85 {
+            0.35
+        } else {
+            0.2
+        };
     s += 0.10 * if (3..=12).contains(&t.cols) { 1.0 } else { 0.3 };
     s += 0.10 * if (3..=80).contains(&t.rows) { 1.0 } else { 0.2 };
     // Penalize formula / hex-matrix style cells
@@ -219,6 +220,17 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                 && t.rows >= 3
                 && !t.weak_edges;
 
+            // Wide high-edge lattices with sparse/empty cells (rowspans, comment
+            // columns) are real multi-col data tables — not form chrome.
+            // Disease-outbreak / multi-table pages (Phase 14) hit fill < 0.5.
+            let wide_ruled_data = t.method == TableMethod::Lattice
+                && t.cols >= 6
+                && t.rows >= 3
+                && !t.weak_edges
+                && t.edge_score >= 0.80
+                && fill >= 0.18
+                && (num >= 0.08 || mean_chars < 80.0);
+
             // Raster-recovered ruled grids may have zero text (ink is in the image).
             let is_raster = t.strategy_provenance.contains(&PipelineId::S6RasterLines)
                 || t.notes.iter().any(|n| n.contains("raster_lines"));
@@ -234,17 +246,12 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                 && t.rows >= 2
                 && mean_chars < 40.0)
                 || (num >= 0.35 && t.cols >= 3 && mean_chars < 35.0)
-                || (t.method == TableMethod::Lattice
-                    && fill >= 0.5
-                    && t.cols >= 2
-                    && num >= 0.1)
+                || (t.method == TableMethod::Lattice && fill >= 0.5 && t.cols >= 2 && num >= 0.1)
                 || strong_lattice
+                || wide_ruled_data
                 || raster_lattice;
 
-            if !looks_like_data
-                && form >= 0.75
-                && num < 0.15
-                && t.method != TableMethod::Structure
+            if !looks_like_data && form >= 0.75 && num < 0.15 && t.method != TableMethod::Structure
             {
                 return None;
             }
@@ -439,6 +446,7 @@ mod tests {
             edge_score: 0.9,
             fill_rate: 0.9,
             weak_edges: false,
+            joint_count: 0,
         }
     }
 
@@ -466,16 +474,7 @@ mod tests {
             TableMethod::Stream,
             4,
             2,
-            &[
-                "Name:",
-                "",
-                "Address:",
-                "",
-                "Phone:",
-                "",
-                "Email:",
-                "",
-            ],
+            &["Name:", "", "Address:", "", "Phone:", "", "Email:", ""],
         );
         t.confidence = 0.7;
         t.fill_rate = 0.3;
@@ -501,7 +500,8 @@ mod tests {
 
     #[test]
     fn form_disc_drops_long_prose_stream() {
-        let long = "This is a long paragraph of prose that should not look like a data table cell at all.";
+        let long =
+            "This is a long paragraph of prose that should not look like a data table cell at all.";
         let mut t = grid(
             TableMethod::Stream,
             3,
@@ -552,12 +552,7 @@ mod tests {
         );
         let mut junks = Vec::new();
         for i in 0..10 {
-            let mut j = grid(
-                TableMethod::Stream,
-                2,
-                2,
-                &["ab", "cd", "ef", "gh"],
-            );
+            let mut j = grid(TableMethod::Stream, 2, 2, &["ab", "cd", "ef", "gh"]);
             j.confidence = 0.5;
             j.fill_rate = 0.2;
             j.notes.push(format!("junk{i}"));
@@ -581,7 +576,10 @@ mod tests {
             .flat_map(|t| t.cells.iter().map(|c| c.text.clone()))
             .collect::<Vec<_>>()
             .join(" ");
-        assert!(blob.contains("Metric") || blob.contains("Rev"), "data lost: {blob}");
+        assert!(
+            blob.contains("Metric") || blob.contains("Rev"),
+            "data lost: {blob}"
+        );
     }
 
     #[test]
@@ -608,7 +606,12 @@ mod tests {
 
     #[test]
     fn scrub_drops_captionish_under_pressure() {
-        let mut cap = grid(TableMethod::Stream, 2, 2, &["Figure 1 Overview", "x", "y", "z"]);
+        let mut cap = grid(
+            TableMethod::Stream,
+            2,
+            2,
+            &["Figure 1 Overview", "x", "y", "z"],
+        );
         cap.cells[0].text = "Figure 1 Overview of results".into();
         let mut good = grid(
             TableMethod::Lattice,
@@ -660,7 +663,9 @@ mod tests {
             TableMethod::Stream,
             3,
             3,
-            &["0xAB", "0xCD", "0xEF", "0x12", "0x34", "0x56", "0x78", "0x9A", "0xBC"],
+            &[
+                "0xAB", "0xCD", "0xEF", "0x12", "0x34", "0x56", "0x78", "0x9A", "0xBC",
+            ],
         );
         t.fill_rate = 1.0;
         let opts = TableOptions {
@@ -670,11 +675,13 @@ mod tests {
         };
         let _ = apply_form_discriminator(vec![t], &opts);
         // Code-like
-        let mut code = grid(
+        let code = grid(
             TableMethod::Stream,
             3,
             3,
-            &["a=1", "b->c", "fn()", "x[i]", "{y}", "z;", "a|b", "c`d", "e\\f"],
+            &[
+                "a=1", "b->c", "fn()", "x[i]", "{y}", "z;", "a|b", "c`d", "e\\f",
+            ],
         );
         let _ = apply_form_discriminator(vec![code], &opts);
     }

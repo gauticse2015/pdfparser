@@ -60,7 +60,11 @@ fn page_xobject_map(doc: &PdfDocument, page_index: usize) -> Result<HashMap<Stri
     })
 }
 
-fn collect_xobjects(doc: &lopdf::Document, page_dict: &Dictionary, map: &mut HashMap<String, ObjectId>) {
+fn collect_xobjects(
+    doc: &lopdf::Document,
+    page_dict: &Dictionary,
+    map: &mut HashMap<String, ObjectId>,
+) {
     match page_dict.get(b"Resources") {
         Ok(Object::Dictionary(res)) => collect_xobjects_from_res(doc, res, map),
         Ok(Object::Reference(id)) => {
@@ -184,7 +188,12 @@ fn decode_via_image_crate(bytes: &[u8], ctm: &Matrix3x2) -> Result<Option<Raster
     Ok(Some(raster_page_from_gray(w, h, gray, ctm)))
 }
 
-fn raster_page_from_gray(width: usize, height: usize, gray: Vec<u8>, ctm: &Matrix3x2) -> RasterPage {
+fn raster_page_from_gray(
+    width: usize,
+    height: usize,
+    gray: Vec<u8>,
+    ctm: &Matrix3x2,
+) -> RasterPage {
     let p00 = ctm.apply(0.0, 0.0);
     let p10 = ctm.apply(1.0, 0.0);
     let p01 = ctm.apply(0.0, 1.0);

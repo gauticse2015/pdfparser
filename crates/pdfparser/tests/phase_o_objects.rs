@@ -22,7 +22,8 @@ fn special_objects_links_forms_outline() {
 
     let uris = objs.link_uris();
     assert!(
-        uris.iter().any(|u| u.contains("example.com/pdfparser-bench")),
+        uris.iter()
+            .any(|u| u.contains("example.com/pdfparser-bench")),
         "links={uris:?}"
     );
 
@@ -37,16 +38,12 @@ fn special_objects_links_forms_outline() {
     );
 
     assert!(
-        objs.outline_titles
-            .iter()
-            .any(|t| t.contains("Section 1")),
+        objs.outline_titles.iter().any(|t| t.contains("Section 1")),
         "outline={:?}",
         objs.outline_titles
     );
     assert!(
-        objs.outline_titles
-            .iter()
-            .any(|t| t.contains("Section 2")),
+        objs.outline_titles.iter().any(|t| t.contains("Section 2")),
         "outline={:?}",
         objs.outline_titles
     );
