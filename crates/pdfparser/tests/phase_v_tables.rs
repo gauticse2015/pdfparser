@@ -34,8 +34,20 @@ fn stream_table_07() {
     let t = &tabs[0];
     assert_eq!((t.rows, t.cols), (6, 4), "shape {:?}", (t.rows, t.cols));
     assert_eq!(t.method, TableMethod::Stream);
-    let blob: String = t.cells.iter().map(|c| c.text.as_str()).collect::<Vec<_>>().join(" ");
-    for need in ["Name", "Alice", "Eve", "130000", "Salary", "STREAM_TABLE_TOKEN"] {
+    let blob: String = t
+        .cells
+        .iter()
+        .map(|c| c.text.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    for need in [
+        "Name",
+        "Alice",
+        "Eve",
+        "130000",
+        "Salary",
+        "STREAM_TABLE_TOKEN",
+    ] {
         // STREAM token may be outside table body — core cells must hit
         if need == "STREAM_TABLE_TOKEN" {
             continue;
@@ -52,11 +64,24 @@ fn hybrid_table_08() {
         .unwrap()
         .tables(&text_opts(), &table_opts())
         .unwrap();
-    assert_eq!(tabs.len(), 1, "got {} {:?}", tabs.len(), tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>());
+    assert_eq!(
+        tabs.len(),
+        1,
+        "got {} {:?}",
+        tabs.len(),
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
+    );
     let t = &tabs[0];
     assert_eq!((t.rows, t.cols), (5, 5));
     assert_eq!(t.method, TableMethod::Hybrid);
-    let blob: String = t.cells.iter().map(|c| c.text.as_str()).collect::<Vec<_>>().join(" ");
+    let blob: String = t
+        .cells
+        .iter()
+        .map(|c| c.text.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
     for need in ["Region", "North", "West", "18", "Q4"] {
         assert!(blob.contains(need), "missing {need} in {blob}");
     }
@@ -70,7 +95,13 @@ fn side_by_side_23() {
         .unwrap()
         .tables(&text_opts(), &table_opts())
         .unwrap();
-    assert_eq!(tabs.len(), 2, "got {} shapes {:?}", tabs.len(), tabs.iter().map(|t| (t.rows, t.cols)).collect::<Vec<_>>());
+    assert_eq!(
+        tabs.len(),
+        2,
+        "got {} shapes {:?}",
+        tabs.len(),
+        tabs.iter().map(|t| (t.rows, t.cols)).collect::<Vec<_>>()
+    );
     let blob: String = tabs
         .iter()
         .flat_map(|t| t.cells.iter().map(|c| c.text.clone()))
@@ -98,7 +129,12 @@ fn bank_stitch_20() {
     let t = &logical[0];
     assert!(t.cols >= 4, "cols {}", t.cols);
     assert!(t.rows >= 20, "rows {}", t.rows);
-    let blob: String = t.cells.iter().map(|c| c.text.as_str()).collect::<Vec<_>>().join(" ");
+    let blob: String = t
+        .cells
+        .iter()
+        .map(|c| c.text.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
     assert!(blob.contains("Date") || blob.contains("Balance"));
 }
 
@@ -132,7 +168,9 @@ fn multi_table_stacked_50() {
         3,
         "expected 3 lattice tables, got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
     let mut shapes: Vec<(u32, u32)> = tabs.iter().map(|t| (t.rows, t.cols)).collect();
     shapes.sort();
@@ -183,7 +221,10 @@ fn hard_sensing(name: &str) -> PathBuf {
 fn precision_prose_not_stream_75() {
     let path = hard_precision("75_prose_not_stream.pdf");
     if !path.is_file() {
-        eprintln!("skip precision_prose_not_stream_75: missing {}", path.display());
+        eprintln!(
+            "skip precision_prose_not_stream_75: missing {}",
+            path.display()
+        );
         return;
     }
     let doc = Document::open(&path).unwrap();
@@ -196,7 +237,9 @@ fn precision_prose_not_stream_75() {
         tabs.is_empty(),
         "prose list must not yield stream tables, got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
 }
 
@@ -204,7 +247,10 @@ fn precision_prose_not_stream_75() {
 fn precision_caption_not_extra_table_76() {
     let path = hard_precision("76_caption_not_table.pdf");
     if !path.is_file() {
-        eprintln!("skip precision_caption_not_extra_table_76: missing {}", path.display());
+        eprintln!(
+            "skip precision_caption_not_extra_table_76: missing {}",
+            path.display()
+        );
         return;
     }
     let doc = Document::open(&path).unwrap();
@@ -222,7 +268,12 @@ fn precision_caption_not_extra_table_76() {
     );
     let t = &tabs[0];
     assert_eq!((t.rows, t.cols), (4, 2));
-    let blob: String = t.cells.iter().map(|c| c.text.as_str()).collect::<Vec<_>>().join(" ");
+    let blob: String = t
+        .cells
+        .iter()
+        .map(|c| c.text.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
     assert!(blob.contains("TOKEN_P76_R") || blob.contains("Revenue"));
 }
 
@@ -230,7 +281,10 @@ fn precision_caption_not_extra_table_76() {
 fn precision_phantom_verticals_81() {
     let path = hard_precision("81_phantom_verticals.pdf");
     if !path.is_file() {
-        eprintln!("skip precision_phantom_verticals_81: missing {}", path.display());
+        eprintln!(
+            "skip precision_phantom_verticals_81: missing {}",
+            path.display()
+        );
         return;
     }
     let doc = Document::open(&path).unwrap();
@@ -304,7 +358,12 @@ fn precision_span_header_79() {
         blank.map(|c| c.text.trim().is_empty()).unwrap_or(false),
         "colspan partner at (0,2) must be empty placeholder"
     );
-    let blob: String = t.cells.iter().map(|c| c.text.as_str()).collect::<Vec<_>>().join(" ");
+    let blob: String = t
+        .cells
+        .iter()
+        .map(|c| c.text.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
     for tok in ["Act", "Bud", "TOKEN_P79_REV", "TOKEN_P79_NI"] {
         assert!(blob.contains(tok), "missing {tok} in {blob}");
     }
@@ -338,9 +397,10 @@ fn hard_row_span_54() {
         fruit.text
     );
     // TOKEN must not sit alone in a lower category column cell
-    let orphan = t.cells.iter().any(|c| {
-        c.col == 0 && c.text.trim() == "TOKEN_H54_FRUIT" && c.rowspan == 1
-    });
+    let orphan = t
+        .cells
+        .iter()
+        .any(|c| c.col == 0 && c.text.trim() == "TOKEN_H54_FRUIT" && c.rowspan == 1);
     assert!(!orphan, "TOKEN_H54_FRUIT must not be an orphan 1-row cell");
 }
 
@@ -408,7 +468,12 @@ fn sensing_painted_rules_90() {
     assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let text = doc.page(0).unwrap().text(&text_opts()).unwrap();
-    for tok in ["TOKEN_S90_DOC", "TOKEN_S90_REV", "TOKEN_S90_GP", "TOKEN_S90_NI"] {
+    for tok in [
+        "TOKEN_S90_DOC",
+        "TOKEN_S90_REV",
+        "TOKEN_S90_GP",
+        "TOKEN_S90_NI",
+    ] {
         assert!(text.contains(tok), "missing {tok}");
     }
     let tabs = doc
@@ -421,13 +486,22 @@ fn sensing_painted_rules_90() {
         1,
         "painted thin-rect rules: expect 1 lattice 6×5, got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
     let t = &tabs[0];
     assert_eq!((t.rows, t.cols), (6, 5), "shape {:?}", (t.rows, t.cols));
     assert_eq!(t.method, TableMethod::Lattice);
     let blob = cell_blob(&tabs);
-    for need in ["Metric", "TOKEN_S90_REV", "TOKEN_S90_GP", "TOKEN_S90_NI", "120", "57"] {
+    for need in [
+        "Metric",
+        "TOKEN_S90_REV",
+        "TOKEN_S90_GP",
+        "TOKEN_S90_NI",
+        "120",
+        "57",
+    ] {
         assert!(blob.contains(need), "missing {need} in {blob}");
     }
 }
@@ -451,7 +525,9 @@ fn sensing_two_large_grids_91() {
         2,
         "two large stacked grids: expect 2×12×5 lattice, got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
     for t in &tabs {
         assert_eq!(
@@ -463,7 +539,14 @@ fn sensing_two_large_grids_91() {
         assert_eq!(t.method, TableMethod::Lattice);
     }
     let blob = cell_blob(&tabs);
-    for need in ["TOKEN_S91_A", "TOKEN_S91_B", "A01", "B01", "A_LAST", "B_LAST"] {
+    for need in [
+        "TOKEN_S91_A",
+        "TOKEN_S91_B",
+        "A01",
+        "B01",
+        "A_LAST",
+        "B_LAST",
+    ] {
         assert!(blob.contains(need), "missing {need} in {blob}");
     }
 }
@@ -474,8 +557,13 @@ fn sensing_borderless_prose_gap_92() {
     assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let text = doc.page(0).unwrap().text(&text_opts()).unwrap();
-    for tok in ["TOKEN_S92_DOC", "TOKEN_S92_R1", "TOKEN_S92_MID", "TOKEN_S92_LAST", "TOKEN_S92_GAP"]
-    {
+    for tok in [
+        "TOKEN_S92_DOC",
+        "TOKEN_S92_R1",
+        "TOKEN_S92_MID",
+        "TOKEN_S92_LAST",
+        "TOKEN_S92_GAP",
+    ] {
         assert!(text.contains(tok), "missing {tok}");
     }
     let tabs = doc
@@ -488,7 +576,9 @@ fn sensing_borderless_prose_gap_92() {
         1,
         "borderless prose-gap: expect 1 stream ~28×8, got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
     let t = &tabs[0];
     assert_eq!(t.method, TableMethod::Stream);
@@ -520,7 +610,12 @@ fn sensing_partial_body_hlines_93() {
     assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let text = doc.page(0).unwrap().text(&text_opts()).unwrap();
-    for tok in ["TOKEN_S93_DOC", "TOKEN_S93_R1", "TOKEN_S93_MID", "TOKEN_S93_LAST"] {
+    for tok in [
+        "TOKEN_S93_DOC",
+        "TOKEN_S93_R1",
+        "TOKEN_S93_MID",
+        "TOKEN_S93_LAST",
+    ] {
         assert!(text.contains(tok), "missing {tok}");
     }
     let tabs = doc
@@ -533,7 +628,9 @@ fn sensing_partial_body_hlines_93() {
         1,
         "partial body H-lines: expect n=1, got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
     let t = &tabs[0];
     assert_eq!(t.cols, 5, "cols should be 5, got {}", t.cols);
@@ -566,8 +663,13 @@ fn sensing_invoice_totals_under_grid_94() {
     assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let text = doc.page(0).unwrap().text(&text_opts()).unwrap();
-    for tok in ["TOKEN_S94_DOC", "TOKEN_S94_A", "TOKEN_S94_B", "TOKEN_S94_SUB", "TOKEN_S94_TOT"]
-    {
+    for tok in [
+        "TOKEN_S94_DOC",
+        "TOKEN_S94_A",
+        "TOKEN_S94_B",
+        "TOKEN_S94_SUB",
+        "TOKEN_S94_TOT",
+    ] {
         assert!(text.contains(tok), "missing {tok}");
     }
     let tabs = doc
@@ -580,7 +682,9 @@ fn sensing_invoice_totals_under_grid_94() {
         1,
         "invoice totals: target n=1, got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
     let t = &tabs[0];
     assert_eq!(t.cols, 5, "cols should be 5, got {}", t.cols);
@@ -612,7 +716,12 @@ fn sensing_multicolumn_prose_not_table_95() {
     assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let text = doc.page(0).unwrap().text(&text_opts()).unwrap();
-    for tok in ["TOKEN_S95_DOC", "TOKEN_S95_L1", "TOKEN_S95_R1", "TOKEN_S95_T"] {
+    for tok in [
+        "TOKEN_S95_DOC",
+        "TOKEN_S95_L1",
+        "TOKEN_S95_R1",
+        "TOKEN_S95_T",
+    ] {
         assert!(text.contains(tok), "missing {tok}");
     }
     let tabs = doc
@@ -628,7 +737,9 @@ fn sensing_multicolumn_prose_not_table_95() {
         lattice_32.len(),
         1,
         "expect exactly one 3×2 lattice, got {:?}",
-        tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.method))
+            .collect::<Vec<_>>()
     );
     let blob = cell_blob(&tabs);
     for need in ["Key", "TOKEN_S95_T", "beta", "1", "2"] {
@@ -647,7 +758,9 @@ fn sensing_multicolumn_prose_not_table_95() {
         assert!(
             tabs.len() <= 2,
             "over-detect: too many tables {:?}",
-            tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
+            tabs.iter()
+                .map(|t| (t.rows, t.cols, t.method))
+                .collect::<Vec<_>>()
         );
     }
 }
@@ -718,6 +831,8 @@ fn two_close_grids_62() {
         3,
         "got {} {:?}",
         tabs.len(),
-        tabs.iter().map(|t| (t.rows, t.cols, t.bbox.x0, t.notes.clone())).collect::<Vec<_>>()
+        tabs.iter()
+            .map(|t| (t.rows, t.cols, t.bbox.x0, t.notes.clone()))
+            .collect::<Vec<_>>()
     );
 }
