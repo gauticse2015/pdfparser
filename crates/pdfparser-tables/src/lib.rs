@@ -1,9 +1,14 @@
 //! PDF table extraction: lattice (ruled) + hybrid (partial) + network (borderless).
 //!
-//! Production path (Auto/Full):
-//! 1. Lattice on vector rules (incl. thin-fill painted rules)
+//! # Production path ([`TablePreset::Auto`] / [`TablePreset::Full`])
+//!
+//! 1. Lattice on vector rules (incl. thin-fill painted rules) + optional raster lines
 //! 2. Hybrid only outside strong lattice
-//! 3. Network borderless only outside strong lattice (no dual soup)
+//! 3. Network borderless (with classic stream fallback/supplement)
+//! 4. **Engine V2 exclusive AutoRouter** (K26 merge + ownership partition + nested keep)
+//!
+//! Rollback to soup NMS: `TableOptions.legacy_router = true`.
+//! See `docs/design-table-engine-v2.md`.
 #![deny(missing_docs)]
 
 mod form;
@@ -19,6 +24,17 @@ mod stitch;
 mod stream;
 mod types;
 
+pub mod evidence;
+pub mod orchestrator;
+pub mod policy;
+pub mod router;
+pub mod providers;
+
+/// Historical name for [`orchestrator`] (pre-G1 module path). Prefer `orchestrator`.
+pub mod legacy {
+    pub use crate::orchestrator::*;
+}
+
 pub use form::scrub_document_table_fps;
 pub use lattice::detect_lattice_tables;
 pub use network::detect_network_tables;
@@ -28,297 +44,87 @@ pub use raster::{
     RasterConfig, RasterPage, RasterRule,
 };
 pub use stitch::{materialize_stitched, stitch_document};
+pub use providers::{
+    ExternalCliPageRenderer, NullPageRenderer, PageRenderer, ProviderError, RenderSafety,
+};
+/// Classic whitespace stream detector.
+///
+/// **Deprecated for product use:** production Auto/Full uses
+/// [`detect_network_tables`] when `modes.stream` is set. Prefer network.
+/// This export remains for experiments and will be feature-gated later.
+#[doc(alias = "experimental_stream")]
 pub use stream::detect_stream_tables;
 pub use types::{PipelineId, Table, TableCell, TableMethod};
 
-use form::apply_form_discriminator;
-use hybrid::detect_hybrid_tables;
-use pdfparser_content::RuleSegment;
-use pdfparser_ir::TextRun;
-use split::split_side_by_side;
+pub use evidence::{
+    page_evidence_from_inputs, EvidenceDiagnostics, LineEvidence, LineSourceKind, MethodMix,
+    OrientedSeg, PageEvidence, ProposalOrigin, RegionKind, RegionProposal,
+};
+pub use orchestrator::{
+    detect_tables_document, detect_tables_document_with_raster, detect_tables_page,
+    detect_tables_page_with_raster,
+};
+pub use policy::{
+    intersection_area, is_hard_owner, is_nested_table_pair, ownership_blocks, overlaps_owned,
+    pad_rect, rect_area, rect_iou, ProposalPolicy,
+};
+pub use router::{
+    cmp_emit_order, emit_order_key, kind_priority, kinds_mergeable, partition, passes_gate,
+    route_proposals, sort_rects_by_emit_order, sort_tables_by_emit_order, structure_prior,
+    vertical_merge, x_iou, y_gap, DEFAULT_X_IOU_MIN, Y_GAP_MEDIAN_MULT,
+};
 
 /// Whether the table engine is available.
 pub fn tables_available() -> bool {
     true
 }
 
-/// Detect tables on a single page from text runs + rule segments.
-pub fn detect_tables_page(
-    page_index: u32,
-    runs: &[TextRun],
-    rules: &[RuleSegment],
-    opts: &TableOptions,
-) -> Vec<Table> {
-    detect_tables_page_with_raster(page_index, runs, rules, opts, &[])
-}
-
-/// Detect tables with optional raster page bitmaps (embedded images / renders).
+/// Detect tables with optional shadow diagnostics (method mix / rule counts).
 ///
-/// When `opts.raster_line_detect` is true and `raster_pages` is non-empty, line
-/// segments are recovered via morphology and merged into the lattice rule set.
-pub fn detect_tables_page_with_raster(
+/// Runs the product page orchestrator (Engine V2 exclusive router when
+/// `use_engine_v2 && !legacy_router`). Pass real media-box width/height so
+/// area gates use the correct page area.
+pub fn detect_tables_page_with_diagnostics(
     page_index: u32,
-    runs: &[TextRun],
-    rules: &[RuleSegment],
+    runs: &[pdfparser_ir::TextRun],
+    rules: &[pdfparser_content::RuleSegment],
     opts: &TableOptions,
     raster_pages: &[RasterPage],
-) -> Vec<Table> {
-    if !opts.detect_tables {
-        return Vec::new();
-    }
-
-    let mut cands = Vec::new();
-
-    if opts.modes.lattice {
-        cands.extend(detect_lattice_tables(
-            page_index,
-            runs,
-            rules,
-            opts,
-            raster_pages,
-        ));
-    }
-
-    let strong_lattice_bboxes: Vec<pdfparser_ir::Rect> = cands
-        .iter()
-        .filter(|t| is_strong_lattice(t, opts))
-        .map(|t| t.bbox)
-        .collect();
-    let has_strong_lattice = !strong_lattice_bboxes.is_empty();
-
-    if opts.modes.hybrid {
-        let hybrid = detect_hybrid_tables(page_index, runs, rules, opts);
-        if !has_strong_lattice {
-            cands.extend(hybrid);
-        } else {
-            for h in hybrid {
-                if !overlaps_any(h.bbox, &strong_lattice_bboxes) {
-                    cands.push(h);
-                }
-            }
-        }
-    }
-
-    if opts.modes.stream {
-        // Production borderless path = network (textline + alignments), not classic stream soup.
-        let borderless = detect_network_tables(page_index, runs, opts);
-        for mut s in borderless {
-            if opts.exclusive_under_strong_lattice && has_strong_lattice {
-                if overlaps_any(s.bbox, &strong_lattice_bboxes) {
-                    continue;
-                }
-            } else if has_strong_lattice && overlaps_any(s.bbox, &strong_lattice_bboxes) {
-                s.confidence *= 0.50;
-                s.notes.push("demoted_under_lattice".into());
-            }
-            // Weak 2-col alpha lists next to a real grid are stream FPs.
-            if has_strong_lattice && s.cols == 2 && stream_numeric_density(&s) < 0.10 {
-                s.confidence *= 0.40;
-                s.notes.push("demoted_weak_2col".into());
-            }
-            cands.push(s);
-        }
-    }
-
-    if opts.side_by_side_split {
-        cands = split_side_by_side(cands, runs, opts);
-    }
-    if opts.form_discriminator {
-        cands = apply_form_discriminator(cands, opts);
-    }
-
-    let min_conf = opts.min_confidence_stream.min(opts.min_table_confidence);
-    let mut kept = nms(cands, min_conf, opts.nms_containment_frac);
-    kept.retain(|t| match t.method {
-        TableMethod::Stream => t.confidence >= opts.min_confidence_stream,
-        _ => t.confidence >= opts.min_table_confidence,
-    });
-    kept.truncate(opts.max_tables_per_page as usize);
-    kept
-}
-
-fn is_strong_lattice(t: &Table, opts: &TableOptions) -> bool {
-    t.method == TableMethod::Lattice
-        && t.cols >= 2
-        && t.rows >= 2
-        && t.confidence >= opts.strong_lattice_min_conf
-        && !t.weak_edges
-}
-
-fn overlaps_any(bbox: pdfparser_ir::Rect, regions: &[pdfparser_ir::Rect]) -> bool {
-    regions
-        .iter()
-        .any(|&kb| region_overlap(kb, bbox) >= 0.40 || geom::iou(kb, bbox) >= 0.35)
-}
-
-/// Detect tables for all pages; optional stitch and over-seg scrub.
-///
-/// This entry point has no raster bitmaps (runs + rules only). Image-line
-/// sensing is a no-op here — use [`detect_tables_document_with_raster`] or the
-/// `pdfparser` façade `document_tables` for embedded-image grids.
-pub fn detect_tables_document(
-    pages: &[(u32, &[TextRun], &[RuleSegment])],
-    page_heights: &[f32],
-    opts: &TableOptions,
-) -> (Vec<Vec<Table>>, Vec<Table>) {
-    let mut page_tables: Vec<Vec<Table>> = pages
-        .iter()
-        .map(|(idx, runs, rules)| detect_tables_page_with_raster(*idx, runs, rules, opts, &[]))
-        .collect();
-
-    if opts.stitch_multipage {
-        stitch_document(&mut page_tables, page_heights, opts);
-    }
-
-    let mut logical = if opts.stitch_multipage {
-        materialize_stitched(&page_tables)
+    page_width: f32,
+    page_height: f32,
+) -> (Vec<Table>, EvidenceDiagnostics) {
+    let mut evidence = page_evidence_from_inputs(
+        page_index,
+        page_width,
+        page_height,
+        runs,
+        rules,
+        raster_pages,
+    );
+    let page_size = if page_width > 1.0 && page_height > 1.0 {
+        Some((page_width, page_height))
     } else {
-        page_tables.iter().flatten().cloned().collect()
+        None
     };
-    if opts.form_discriminator {
-        logical = scrub_document_table_fps(logical, opts);
-    }
-    (page_tables, logical)
-}
-
-/// Document-level detect with per-page raster bitmaps for line sensing.
-pub fn detect_tables_document_with_raster(
-    pages: &[(u32, &[TextRun], &[RuleSegment], &[RasterPage])],
-    page_heights: &[f32],
-    opts: &TableOptions,
-) -> (Vec<Vec<Table>>, Vec<Table>) {
-    let mut page_tables: Vec<Vec<Table>> = pages
-        .iter()
-        .map(|(idx, runs, rules, rasters)| {
-            detect_tables_page_with_raster(*idx, runs, rules, opts, rasters)
-        })
-        .collect();
-
-    if opts.stitch_multipage {
-        stitch_document(&mut page_tables, page_heights, opts);
-    }
-
-    let mut logical = if opts.stitch_multipage {
-        materialize_stitched(&page_tables)
-    } else {
-        page_tables.iter().flatten().cloned().collect()
-    };
-    if opts.form_discriminator {
-        logical = scrub_document_table_fps(logical, opts);
-    }
-    (page_tables, logical)
-}
-
-fn nms(mut cands: Vec<Table>, min_conf: f32, containment_frac: f32) -> Vec<Table> {
-    // Align with final retain: do not admit candidates below product min conf.
-    cands.retain(|t| t.confidence >= min_conf);
-    cands.sort_by(|a, b| {
-        method_rank(b.method)
-            .cmp(&method_rank(a.method))
-            .then_with(|| {
-                quality_score(b)
-                    .partial_cmp(&quality_score(a))
-                    .unwrap_or(std::cmp::Ordering::Equal)
-            })
+    let tables =
+        detect_tables_page_with_raster(page_index, runs, rules, opts, raster_pages, page_size);
+    evidence.diagnostics.method_mix = MethodMix::from_tables(&tables);
+    evidence.diagnostics.strong_lattice_fired = tables.iter().any(|t| {
+        t.method == TableMethod::Lattice
+            && t.cols >= 2
+            && t.rows >= 2
+            && t.confidence >= opts.strong_lattice_min_conf
+            && !t.weak_edges
     });
-    let mut out: Vec<Table> = Vec::new();
-    for c in cands {
-        if out
-            .iter()
-            .any(|k| containment_ratio(c.bbox, k.bbox) >= containment_frac)
-        {
-            continue;
-        }
-        let c_rank = method_rank(c.method);
-        out.retain(|k| {
-            if method_rank(k.method) > c_rank {
-                return true;
-            }
-            containment_ratio(k.bbox, c.bbox) < containment_frac
-        });
-        let overlaps = out.iter().any(|k| {
-            let ov = region_overlap(k.bbox, c.bbox);
-            ov >= 0.28 || geom::iou(k.bbox, c.bbox) >= 0.35
-        });
-        if !overlaps {
-            out.push(c);
-        }
-    }
-    out
-}
-
-fn containment_ratio(inner: pdfparser_ir::Rect, outer: pdfparser_ir::Rect) -> f32 {
-    let x0 = inner.x0.max(outer.x0);
-    let y0 = inner.y0.max(outer.y0);
-    let x1 = inner.x1.min(outer.x1);
-    let y1 = inner.y1.min(outer.y1);
-    let w = (x1 - x0).max(0.0);
-    let h = (y1 - y0).max(0.0);
-    let inter = w * h;
-    let area = (inner.width() * inner.height()).max(1.0);
-    inter / area
-}
-
-fn quality_score(t: &Table) -> f32 {
-    let edge = if t.edge_score > 0.0 { t.edge_score } else { 0.5 };
-    let fill = if t.fill_rate > 0.0 { t.fill_rate } else { 0.5 };
-    let weak_pen = if t.weak_edges { 0.85 } else { 1.0 };
-    (0.55 * t.confidence + 0.25 * fill + 0.20 * edge) * weak_pen
-}
-
-fn region_overlap(a: pdfparser_ir::Rect, b: pdfparser_ir::Rect) -> f32 {
-    let x0 = a.x0.max(b.x0);
-    let y0 = a.y0.max(b.y0);
-    let x1 = a.x1.min(b.x1);
-    let y1 = a.y1.min(b.y1);
-    let w = (x1 - x0).max(0.0);
-    let h = (y1 - y0).max(0.0);
-    let inter = w * h;
-    if inter <= 0.0 {
-        return 0.0;
-    }
-    let aa = (a.width() * a.height()).max(1.0);
-    let ba = (b.width() * b.height()).max(1.0);
-    inter / aa.min(ba)
-}
-
-fn method_rank(m: TableMethod) -> u8 {
-    match m {
-        TableMethod::Structure => 5,
-        TableMethod::Lattice => 4,
-        TableMethod::Hybrid => 3,
-        TableMethod::Stream => 1,
-        TableMethod::DenseNumeric => 2,
-        _ => 0,
-    }
-}
-
-fn stream_numeric_density(t: &Table) -> f32 {
-    let mut ne = 0u32;
-    let mut num = 0u32;
-    for c in &t.cells {
-        let s = c.text.trim();
-        if s.is_empty() {
-            continue;
-        }
-        ne += 1;
-        let t = s.trim_matches(|ch: char| {
-            ch == '$' || ch == '%' || ch == '(' || ch == ')' || ch == ','
-        });
-        if t.is_empty() {
-            continue;
-        }
-        let digits = t.chars().filter(|ch| ch.is_ascii_digit()).count();
-        let alpha = t.chars().filter(|ch| ch.is_alphabetic()).count();
-        if digits >= 1 && digits >= alpha {
-            num += 1;
-        }
-    }
-    if ne == 0 {
-        0.0
+    evidence.diagnostics.engine_path = if opts.use_engine_v2 && !opts.legacy_router {
+        "engine_v2".into()
     } else {
-        num as f32 / ne as f32
+        "legacy".into()
+    };
+    if opts.shadow_diagnostics {
+        evidence.diagnostics.notes.push("shadow_diagnostics".into());
     }
+    (tables, evidence.diagnostics)
 }
 
 #[cfg(test)]
@@ -371,13 +177,7 @@ mod tests {
                 let cx0 = x0 + c as f32 * cell_w + 4.0;
                 let top_y0 = y1 - (r as f32 + 1.0) * cell_h + 4.0;
                 let top_y1 = top_y0 + 10.0;
-                runs.push(tr(
-                    &format!("r{r}c{c}"),
-                    cx0,
-                    top_y0,
-                    cx0 + 20.0,
-                    top_y1,
-                ));
+                runs.push(tr(&format!("r{r}c{c}"), cx0, top_y0, cx0 + 20.0, top_y1));
             }
         }
         (runs, rules)
@@ -400,7 +200,10 @@ mod tests {
         let opts = TableOptions::from_preset(TablePreset::Full);
         let tabs = detect_tables_page(0, &runs, &rules, &opts);
         assert!(!tabs.is_empty());
-        assert!(matches!(tabs[0].method, TableMethod::Lattice | TableMethod::Hybrid));
+        assert!(matches!(
+            tabs[0].method,
+            TableMethod::Lattice | TableMethod::Hybrid
+        ));
         assert!(tabs[0].rows >= 3 && tabs[0].cols >= 3);
     }
 
@@ -413,15 +216,148 @@ mod tests {
         assert!(tabs.iter().any(|t| t.method == TableMethod::Lattice));
     }
 
+    /// Engine V2 path: same lattice_grid fixture as [`auto_finds_ruled_grid`].
+    #[test]
+    fn engine_v2_finds_lattice_grid() {
+        let (runs, rules) = lattice_grid(50.0, 200.0, 5, 4, 70.0, 22.0);
+        let opts = TableOptions::from_preset(TablePreset::EngineV2);
+        assert!(opts.use_engine_v2);
+        assert!(!opts.legacy_router);
+        let tabs = detect_tables_page(0, &runs, &rules, &opts);
+        assert!(!tabs.is_empty(), "EngineV2 should find lattice grid");
+        assert!(
+            tabs.iter().any(|t| t.method == TableMethod::Lattice),
+            "expected Lattice method, got {:?}",
+            tabs.iter().map(|t| t.method).collect::<Vec<_>>()
+        );
+        assert!(
+            tabs.iter()
+                .any(|t| t.notes.iter().any(|n| n == "engine_v2_router")),
+            "EngineV2 tables should carry engine_v2_router note"
+        );
+    }
+
+    /// Auto/Full post-flip use Engine V2 router (same path as EngineV2 preset).
+    #[test]
+    fn auto_full_use_engine_v2_router() {
+        let (runs, rules) = lattice_grid(50.0, 200.0, 5, 4, 70.0, 22.0);
+        for preset in [TablePreset::Auto, TablePreset::Full] {
+            let opts = TableOptions::from_preset(preset);
+            assert!(opts.use_engine_v2, "{preset:?}");
+            assert!(!opts.legacy_router, "{preset:?}");
+            let tabs = detect_tables_page(0, &runs, &rules, &opts);
+            assert!(!tabs.is_empty(), "{preset:?} should find grid");
+            assert!(
+                tabs.iter().any(|t| t.method == TableMethod::Lattice),
+                "{preset:?} expected Lattice"
+            );
+            assert!(
+                tabs.iter()
+                    .any(|t| t.notes.iter().any(|n| n == "engine_v2_router")),
+                "{preset:?} must tag engine_v2_router"
+            );
+        }
+    }
+
+    #[test]
+    fn engine_v2_diagnostics_engine_path() {
+        let (runs, rules) = lattice_grid(50.0, 200.0, 5, 4, 70.0, 22.0);
+        let opts = TableOptions::from_preset(TablePreset::EngineV2);
+        let (tabs, diag) =
+            detect_tables_page_with_diagnostics(0, &runs, &rules, &opts, &[], 612.0, 792.0);
+        assert!(!tabs.is_empty());
+        assert_eq!(diag.engine_path, "engine_v2");
+    }
+
     #[test]
     fn presets() {
         assert!(!TableOptions::from_preset(TablePreset::Off).detect_tables);
-        assert!(TableOptions::from_preset(TablePreset::LatticeOnly).modes.lattice);
+        assert!(
+            TableOptions::from_preset(TablePreset::LatticeOnly)
+                .modes
+                .lattice
+        );
         assert!(TableOptions::from_preset(TablePreset::Full).modes.hybrid);
         assert!(TableOptions::from_preset(TablePreset::Auto).exclusive_under_strong_lattice);
         assert_eq!(
             TableOptions::from_preset(TablePreset::Auto).modes.lattice,
             TableOptions::from_preset(TablePreset::Full).modes.lattice
+        );
+        // EngineV2 / Auto share exclusive router; EngineV2 enables shadow diagnostics.
+        let v2 = TableOptions::from_preset(TablePreset::EngineV2);
+        assert!(v2.detect_tables);
+        assert!(v2.use_engine_v2);
+        assert!(!v2.legacy_router);
+        assert!(v2.shadow_diagnostics);
+        assert!(v2.allow_auto_render);
+        assert!(!v2.enable_full_page_render);
+        let auto = TableOptions::from_preset(TablePreset::Auto);
+        assert!(auto.use_engine_v2);
+        assert!(!auto.legacy_router);
+        // HighQuality = EngineV2 + full-page render request.
+        let hq = TableOptions::from_preset(TablePreset::HighQuality);
+        assert!(hq.use_engine_v2);
+        assert!(hq.shadow_diagnostics);
+        assert!(hq.allow_auto_render);
+        assert!(hq.enable_full_page_render);
+        assert!(TableOptions::default().allow_auto_render);
+    }
+
+    #[test]
+    fn page_evidence_and_shadow_diagnostics() {
+        let (runs, rules) = lattice_grid(50.0, 200.0, 5, 4, 70.0, 22.0);
+        let mut opts = TableOptions::from_preset(TablePreset::Auto);
+        opts.shadow_diagnostics = true;
+        let (tabs, diag) =
+            detect_tables_page_with_diagnostics(0, &runs, &rules, &opts, &[], 612.0, 792.0);
+        assert!(!tabs.is_empty());
+        assert!(diag.vector_rule_count >= 2);
+        assert_eq!(diag.engine_path, "engine_v2");
+        assert!(diag.method_mix.total() >= 1);
+    }
+
+    #[test]
+    fn line_evidence_from_rules() {
+        let rules = [rule(0.0, 0.0, 100.0, 0.0), rule(0.0, 0.0, 0.0, 50.0)];
+        let le = LineEvidence::from_rules(&rules);
+        assert_eq!(le.count_h(1.5), 1);
+        assert_eq!(le.count_v(1.5), 1);
+    }
+
+    /// Product Auto/Full flipped to Engine V2 router (nested multi-table parity).
+    #[test]
+    fn auto_preset_uses_engine_v2_router() {
+        let auto = TableOptions::from_preset(TablePreset::Auto);
+        assert!(auto.use_engine_v2, "Auto uses Engine V2 router post-flip");
+        assert!(
+            !auto.legacy_router,
+            "Auto legacy_router=false post-flip (set true to rollback)"
+        );
+        let full = TableOptions::from_preset(TablePreset::Full);
+        assert!(full.use_engine_v2);
+        assert!(!full.legacy_router);
+    }
+
+    /// Phase 16: rollback switch forces legacy path even when EngineV2 flags set.
+    #[test]
+    fn phase16_legacy_router_rollback() {
+        let (runs, rules) = lattice_grid(50.0, 200.0, 5, 4, 70.0, 22.0);
+        let mut opts = TableOptions::from_preset(TablePreset::EngineV2);
+        assert!(opts.use_engine_v2);
+        assert!(!opts.legacy_router);
+        // Rollback: force legacy orchestrator
+        opts.legacy_router = true;
+        let (tabs, diag) =
+            detect_tables_page_with_diagnostics(0, &runs, &rules, &opts, &[], 612.0, 792.0);
+        assert!(!tabs.is_empty());
+        assert_eq!(
+            diag.engine_path, "legacy",
+            "legacy_router=true must force engine_path=legacy"
+        );
+        assert!(
+            tabs.iter()
+                .all(|t| !t.notes.iter().any(|n| n == "engine_v2_router")),
+            "rollback must not emit engine_v2_router notes"
         );
     }
 }
