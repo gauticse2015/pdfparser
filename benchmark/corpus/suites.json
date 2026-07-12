@@ -292,6 +292,52 @@
         "hard_precision"
       ],
       "icdar_derived": false
+    },
+    "real_detect_smoke": {
+      "description": "Primary direction: real public PDFs — detection smoke (count + optional bbox IoU). Not synthetic multi-lib SOTA.",
+      "primary_quality_signal": true,
+      "icdar_derived": false,
+      "manifest": "benchmark/real_track/manifests/real_detect_smoke_v0.json",
+      "runner": "benchmark/scripts/run_real_detect_smoke.py",
+      "sources": "benchmark/real_track/SOURCES.md",
+      "coverage_matrix": "benchmark/real_track/manifests/coverage_matrix.json",
+      "results": [
+        "benchmark/real_track/results/real_detect_smoke_latest.json"
+      ],
+      "notes": "Soft expected_table_count for v0; promote to T1 bbox IoU as gold lands. No ICDAR. stitch_multipage unknown on CLI until flag exists — structure eval must force stitch off (see real_track README)."
+    },
+    "geom_unit": {
+      "description": "≤20 synthetic geometry unit fixtures for algorithm unit tests. Not a market scoreboard.",
+      "primary_quality_signal": false,
+      "not_market_scoreboard": true,
+      "max_docs": 20,
+      "icdar_derived": false,
+      "document_ids": [
+        "06_table_lattice",
+        "07_table_stream",
+        "08_table_partial_border",
+        "53_column_span_header",
+        "62_two_close_grids",
+        "73_false_row_underlines",
+        "90_painted_thin_rect_rules"
+      ],
+      "demotion_list": "benchmark/real_track/manifests/demotion_list.json",
+      "notes": "C2 may slim/rename further. PDFs remain under corpus/; bulk compete_synthetic demoted via demotion_list (C0), archived in C1."
+    },
+    "legacy_synthetic_full": {
+      "description": "Historical multi-lib synthetic board (compete + hard + precision). Demoted from primary claims — regression insurance only.",
+      "primary_quality_signal": false,
+      "default_scoreboard": false,
+      "icdar_derived": false,
+      "demotion_list": "benchmark/real_track/manifests/demotion_list.json",
+      "tiers": [
+        "compete",
+        "compete_hard",
+        "hard",
+        "hard_precision",
+        "hard_sensing"
+      ],
+      "notes": "C0 signed demotion; C1 moves bulk to corpus/archive/. Do not publish as product SOTA."
     }
   },
   "hard_failure_mode_coverage": {

@@ -1,0 +1,132 @@
+{
+  "suite": "real_fp_smoke",
+  "generated_at": "2026-07-12T10:39:45.040732+00:00",
+  "policy": "False-positive smoke: expect 0 or low table counts on forms/prose/chrome. Not structure core. No ICDAR.",
+  "summary": {
+    "n_docs": 6,
+    "n_pass": 6,
+    "n_fail": 0,
+    "pass_rate": 1.0
+  },
+  "documents": [
+    {
+      "id": "38_real_irs_f1040",
+      "pdf": "corpus/real/38_real_irs_f1040.pdf",
+      "n_exp": 0,
+      "tol": 2,
+      "n_pred": 1,
+      "source": "document_tables_root",
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 4,
+          "cols": 11
+        }
+      ],
+      "status": "ok",
+      "pass": true
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "pdf": "corpus/real/39_real_fed_beigebook.pdf",
+      "n_exp": 0,
+      "tol": 3,
+      "n_pred": 0,
+      "source": "table_count_field",
+      "method_mix": [],
+      "status": "ok",
+      "pass": true
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "pdf": "corpus/real/40_real_arxiv_tensorflow.pdf",
+      "n_exp": 0,
+      "tol": 2,
+      "n_pred": 1,
+      "source": "document_tables_root",
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 34,
+          "cols": 3
+        }
+      ],
+      "status": "ok",
+      "pass": true
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "pdf": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "n_exp": 0,
+      "tol": 1,
+      "n_pred": 1,
+      "source": "document_tables_root",
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 19,
+          "cols": 2
+        }
+      ],
+      "status": "ok",
+      "pass": true
+    },
+    {
+      "id": "R001_irs_f1040_schedule_c",
+      "pdf": "corpus/compete_real/R001_irs_f1040_schedule_c.pdf",
+      "n_exp": 0,
+      "tol": 4,
+      "n_pred": 4,
+      "source": "document_tables_root",
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 3,
+          "cols": 5
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 2
+        },
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 38,
+          "cols": 9
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 11,
+          "cols": 8
+        }
+      ],
+      "status": "ok",
+      "pass": true
+    },
+    {
+      "id": "R007_nist_fips197",
+      "pdf": "corpus/compete_real/R007_nist_fips197.pdf",
+      "n_exp": 0,
+      "tol": 2,
+      "n_pred": 1,
+      "source": "document_tables_root",
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 19,
+          "cols": 2
+        }
+      ],
+      "status": "ok",
+      "pass": true
+    }
+  ]
+}

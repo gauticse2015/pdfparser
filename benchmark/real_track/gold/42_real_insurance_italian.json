@@ -1,0 +1,130 @@
+{
+  "id": "42_real_insurance_italian",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "Public insurance prospectus sample (Italian)",
+  "source_url": "existing corpus/real (Italian PIR unit-linked prospectus)",
+  "source": "benchmark/corpus/real/42_real_insurance_italian.pdf",
+  "failure_classes": [
+    "non_english",
+    "nested_table",
+    "form_like_outer",
+    "multi_table"
+  ],
+  "struggle_tags": [
+    "nested_table",
+    "non_english"
+  ],
+  "builder": "vision_layout + pdfplumber_validate",
+  "peer_primary": "pdfplumber",
+  "vision_page_png": "benchmark/real_track/gold/drafts/vision_h2/42_real_insurance_italian_p1.png",
+  "review_notes": "Outer 7×2 prospectus table + nested 4×2 age/% table inside row 5 (CASO MORTE). Nested table is a separate expected_tables[1] with nested_in.parent_row_1based=5. Not flattened into outer cell text. Quality HIGH; human clarified nesting 2026-07-12.",
+  "built_at": "2026-07-12T08:48:08.477951+00:00",
+  "policy": "Human-process: vision+peer+quality HIGH. Not pdfparser. stitch_multipage=false.",
+  "expected_table_count": 2,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "bbox": null,
+      "rows": 7,
+      "cols": 2,
+      "cells": [
+        [
+          "FINALITÀ",
+          "Vittoria In Azione Italia PIR è un contratto di assicurazione sulla vita di tipo unit-linked,\natto a soddisfare l’esigenza di investimento del risparmio dell’Investitore-Contraente,\nmediante l’acquisto di quote del Fondo Interno denominato Vittoria Crescita Italia\nPIR.\nIl contratto prevede anche, una prestazione in caso di morte, infatti in caso di\ndecesso dell’Assicurato, in qualsiasi epoca esso avvenga, è previsto il pagamento\nai Beneficiari designati di un importo pari al controvalore delle quote attribuite\nal contratto maggiorato di una percentuale variabile in funzione dell’età raggiunta\ndall’Assicurato, come meglio specificato nella sezione relativa alle coperture\nassicurative per rischi demografici."
+        ],
+        [
+          "OPZIONI\nCONTRATTUALI",
+          "Non previste."
+        ],
+        [
+          "DURATA",
+          "Il presente contratto è a vita intera, pertanto la durata contrattuale coincide con la\nvita dell’Assicurato."
+        ],
+        [
+          "LE COPERTURE ASSICURATIVE PER RISCHI DEMOGRAFICI",
+          ""
+        ],
+        [
+          "CASO MORTE",
+          "In caso di decesso dell’Assicurato, la Compagnia si impegna a versare ai\nbeneficiari designati dall’Investitore-Contraente, un capitale pari al numero delle\nquote sottoscritte e non riscattate alla data del decesso moltiplicato per\nil valore delle stesse rilevato il giovedì della settimana successiva alla data\ndi ricevimento da parte della Società della denuncia di sinistro corredata di tutta la\ndocumentazione contrattuale prevista all’Art. 12 del Condizioni contrattuali.\nInoltre la Società maggiorerà tale prestazione, nella misura indicata nella seguente\ntabella:\n\n[nested table → expected_tables[1]]\n\nSi precisa che la Compagnia non offre alcuna garanzia finanziaria. Pertanto,\nl’importo complessivamente liquidato in caso di decesso, potrebbe risultare\ninferiore alla somma dei premi corrisposti tenuto conto anche degli eventuali\nriscatti parziali."
+        ],
+        [
+          "ALTRI EVENTI\nASSICURATI",
+          "Non previsti."
+        ],
+        [
+          "ALTRE OPZIONI\nCONTRATTUALI",
+          "Non previste."
+        ]
+      ],
+      "primary_source": "pdfplumber_vision",
+      "role": "parent_form_table",
+      "notes": "Outer prospectus key-value layout. Row 5 (1-based) / row 4 (0-based) CASO MORTE embeds a nested age/% table.",
+      "cell_annotations": [
+        {
+          "row": 4,
+          "row_1based": 5,
+          "col": 1,
+          "kind": "contains_nested_table",
+          "nested_table_index": 1,
+          "note": "Age/% maggiorazione grid drawn inside this cell"
+        }
+      ]
+    },
+    {
+      "page": 0,
+      "bbox": null,
+      "rows": 4,
+      "cols": 2,
+      "cells": [
+        [
+          "Età dell’Assicurato\nall’epoca del decesso",
+          "Misura % di\nmaggiorazione"
+        ],
+        [
+          "18-75",
+          "1,00%"
+        ],
+        [
+          "76-80",
+          "0,50%"
+        ],
+        [
+          "81 in poi",
+          "0,10%"
+        ]
+      ],
+      "primary_source": "pdfplumber_vision",
+      "role": "nested_table",
+      "nested_in": {
+        "parent_table_index": 0,
+        "parent_row": 4,
+        "parent_row_1based": 5,
+        "parent_col": 1,
+        "parent_label": "CASO MORTE",
+        "relationship": "drawn_inside_cell"
+      },
+      "notes": "Physically nested inside outer table row 5 (CASO MORTE value cell). Represented as a separate expected_tables entry because extractors typically emit nested grids as sibling tables; cell F1 should still match this grid. True nested JSON (cells[r][c].nested_table) is optional future schema — pdfparser is not required to return nested structure."
+    }
+  ],
+  "quality": {
+    "doc": "42",
+    "vision_spotcheck_hits": 7,
+    "vision_spotcheck_total": 7,
+    "vision_spotcheck_rate": 1.0,
+    "grade": "HIGH",
+    "peer_primary": "pdfplumber+vision",
+    "peer_accuracy": null,
+    "mismatches": []
+  },
+  "struggle": true,
+  "reviewed_at": "2026-07-12T08:56:11.445527+00:00",
+  "nesting_policy": {
+    "model": "separate_table_with_parent_ref",
+    "rationale": "Nested tables may be extracted as separate tables. Gold records the parent link via nested_in / cell_annotations so eval and humans know table 1 lives inside table 0 row 5. Full nested cell JSON not required.",
+    "parser_requirement": "Detecting two tables on the page is sufficient. Nested-in-cell extraction is optional; if only separate tables are returned, match both grids."
+  }
+}

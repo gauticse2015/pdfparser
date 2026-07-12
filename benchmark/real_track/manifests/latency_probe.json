@@ -1,0 +1,15 @@
+{
+  "suite": "latency_probe",
+  "version": 1,
+  "notes": "Informative p50/p95 only; not pass/fail until rebaseline (K20).",
+  "documents": [
+    "30_real_ca_warn_report",
+    "31_real_background_checks",
+    "32_real_census_table324",
+    "33_real_argentina_votes",
+    "34_real_schools_contributions",
+    "35_real_camelot_fuel",
+    "36_real_two_tables",
+    "37_real_liabilities_superscript"
+  ]
+}
