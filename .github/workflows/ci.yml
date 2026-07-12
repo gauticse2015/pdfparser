@@ -43,6 +43,16 @@ jobs:
       - name: Build release CLI
         run: cargo build --release -p pdfparser-cli
 
+
+  # Policy: never allow ICDAR competition PDFs/gold under benchmark data trees
+  assert-no-icdar:
+    name: Assert no ICDAR in corpus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run assert_no_icdar
+        run: python3 benchmark/scripts/assert_no_icdar.py
+
   # Optional lightweight smoke: ensure CLI runs on a committed fixture
   cli-smoke:
     name: CLI smoke

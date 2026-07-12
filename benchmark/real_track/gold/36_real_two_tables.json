@@ -1,0 +1,160 @@
+{
+  "id": "36_real_two_tables",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "Camelot test fixture",
+  "source_url": "camelot twotables_1.pdf",
+  "source": "benchmark/corpus/real/36_real_two_tables.pdf",
+  "soft_gold_id": "36_real_two_tables",
+  "failure_classes": [
+    "multi_table",
+    "government_health"
+  ],
+  "struggle_tags": [
+    "multi_table",
+    "government_health"
+  ],
+  "builder": "peer_camelot_pdfplumber + human_review",
+  "peer_primary": "camelot_lattice",
+  "review_notes": "Human OK: two outbreak tables look good.",
+  "reviewed_at": "2026-07-12T07:27:09.424643+00:00",
+  "policy": "Human confirmed peer/vision draft. Not from pdfparser extract. stitch_multipage=false for eval.",
+  "expected_table_count": 2,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "rows": 3,
+      "cols": 10,
+      "cells": [
+        [
+          "Sl.  No.",
+          "Name of  State/UT",
+          "Name of District",
+          "Disease/ Illness",
+          "No.  of  Cases",
+          "No. of  Deaths",
+          "Date of  start of  outbreak",
+          "Date of  reporting",
+          "Current  Status",
+          "Comments/ Action taken"
+        ],
+        [
+          "",
+          "West Bengal",
+          "Bankura",
+          "xix. Acute  Diarrhoeal  Disease",
+          "46",
+          "0",
+          "10/11/13",
+          "15/11/13",
+          "Under  Control",
+          "Cases of  loose motion and vomiting  reported  from Village  Daldali, SC Binodnagar, Block Onda, District Bankura. District  RRT and Block health team investigated the outbreak. Active  search for cases done. Cases treated at local health centre. 2 stool  samples collected were negative for cholera culture. Out of 3  water samples collected 1 sample was non potable. Chlorination  of water sources done. Health education given regarding safe  drinking water and sanitation."
+        ],
+        [
+          "",
+          "",
+          "",
+          "xx. Acute  Diarrhoeal  Disease",
+          "34",
+          "0",
+          "10/11/13",
+          "14/11/13",
+          "Under  Control",
+          "Cases of  loose motion and vomiting  reported  from Village  Icharia, SC Mankhamar, Block Onda, District Bankura. District  RRT and Block health team investigated the outbreak. House to  house survey done. All cases treated locally. 4 stool samples  collected were negative for cholera culture. Out of 34 water  samples collected, 8 samples were non potable. Chlorination of  water  sources done. Health education given  regarding  safe  drinking water and sanitation."
+        ]
+      ],
+      "primary_source": "camelot_lattice",
+      "primary_accuracy": 100.0,
+      "supporting_sources": [
+        "camelot_lattice",
+        "pdfplumber"
+      ],
+      "mean_cell_confidence": 1.0,
+      "bbox": {
+        "x0": 23.755485893416928,
+        "y0": 354.6008064516129,
+        "x1": 819.2043317184383,
+        "y1": 580.8447580645161
+      }
+    },
+    {
+      "page": 0,
+      "rows": 5,
+      "cols": 9,
+      "cells": [
+        [
+          "DISEASE OUTBREAKS OF PREVIOUS WEEKS REPORTED LATE",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Sl.  No",
+          "Name of  State/UT",
+          "Name of District",
+          "Disease/ Illness",
+          "Cases",
+          "Deaths",
+          "Date of  start of  outbreak",
+          "Current  Status",
+          "Comments/ Action taken"
+        ],
+        [
+          "1",
+          "Bihar",
+          "Madhubani",
+          "xxi. Acute  Diarrhoeal  Disease",
+          "69",
+          "0",
+          "30/09/13",
+          "Under  Control",
+          "Cases of diarrhoea and vomiting reported from Village Indra Mandal tola, SC  Sugapatti, PHC Phulparas, District Madhubani. District RRT investigated the  outbreak. House  to  house  survey  done. Medical  camp  organized.  Symptomatic treatement given to cases. ORS packets and halogen tablets  distributed in the community. Chlorination of water sources done. IEC done  regarding safe drinking water and sanitation."
+        ],
+        [
+          "",
+          "",
+          "Madhubani",
+          "xxii. Acute  Diarrhoeal  Disease",
+          "30",
+          "1",
+          "28/10/13",
+          "Under  Control",
+          "Cases of diarrhoea and vomiting reported from Village/SC Rupauli, PHC  Jhanjharpur, District Madhubani. District RRT and Block health  team  investigated  the outbreak. Active search  for cases done. Medical camp  organized. All cases treated. One death occurred in 14yr old female child.  ORS packets and halogen tablets distributed. Chlorination of water sources  done. IEC activity regarding safe drinking water done."
+        ],
+        [
+          "",
+          "",
+          "Katihar",
+          "xxiii. Acute  Diarrhoeal  Disease",
+          "13",
+          "3",
+          "24/10/13",
+          "Under  control",
+          "Cases of diarrhoea  reported  from Village Ahuta, Alipur, SC Lachhor,  PHC/Block Balrampur, District Katihar. District RRT  investigated  the  outbreak.   House  to house survey done. Cases occurred  in a Adiwasi  community. 3 deaths occurred in 45yr, 35yr and 5yr old male. Temporary  medical camps organized. All cases treated symptomatically. Chlorination of  water sources done. Health education given."
+        ]
+      ],
+      "primary_source": "camelot_lattice",
+      "primary_accuracy": 98.91,
+      "supporting_sources": [
+        "camelot_lattice"
+      ],
+      "mean_cell_confidence": 0.75,
+      "bbox": {
+        "x0": 23.51553149045312,
+        "y0": 65.49798387096774,
+        "x1": 819.2043317184383,
+        "y1": 321.491935483871
+      }
+    }
+  ],
+  "eval": {
+    "stitch_multipage": false
+  }
+}

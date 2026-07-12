@@ -1,0 +1,6209 @@
+{
+  "suite": "real_structure",
+  "version": 1,
+  "generated_at": "2026-07-12T11:28:23.662841+00:00",
+  "binary": "/Users/gautamkumar/Desktop/pdfParser/target/release/pdfparser",
+  "manifest": "benchmark/real_track/manifests/real_structure_v0.json",
+  "g1_ready": true,
+  "g1_min_docs": 15,
+  "policy": {
+    "stitch_multipage": false,
+    "stitch_note": "real_structure forces stitch_multipage=false via CLI --no-stitch (design K27). Root tables = page-local fragments (--page-tables).",
+    "no_auto_gold_promote": true,
+    "not_g1_claim": true
+  },
+  "runs": [
+    {
+      "preset": "auto",
+      "stitch_multipage": false,
+      "stitch_note": "real_structure forces stitch_multipage=false via CLI --no-stitch (design K27). Root tables = page-local fragments (--page-tables).",
+      "summary": {
+        "n_docs": 15,
+        "n_ok": 15,
+        "n_fail": 0,
+        "micro_cell_f1": 0.6372333167816467,
+        "micro_shape_exact_rate": 0.5333333333333333,
+        "micro_det_count_f1": 0.9644444444444444,
+        "micro_det_iou_f1": 0.9407407407407408,
+        "micro_score_0_100": 72.57822156015476,
+        "note": "soft progressive scores; G1 not claimed"
+      },
+      "documents": [
+        {
+          "id": "30_real_ca_warn_report",
+          "pdf": "benchmark/corpus/real/30_real_ca_warn_report.pdf",
+          "gold": "gold/30_real_ca_warn_report.json",
+          "struggle": false,
+          "failure_classes": [
+            "wide_tables",
+            "multi_page",
+            "government_layout"
+          ],
+          "elapsed_s": 0.685,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "pairs": [
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.9954914653750897
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.9946808510638298,
+              "recall": 0.7248062015503876,
+              "f1": 0.8385650224215245,
+              "tp": 187,
+              "fp": 1,
+              "fn": 71
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  37,
+                  7
+                ],
+                "pred_shape": [
+                  37,
+                  7
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 0.9946808510638298,
+                "cell_recall": 0.7248062015503876,
+                "cell_f1": 0.8385650224215245,
+                "cells_matched": 187,
+                "gold_nonzero_cells": 258,
+                "tp": 187,
+                "fp": 1,
+                "fn": 71
+              }
+            ],
+            "score_0_100": 93.54260089686099,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 16,
+              "n_pred_gold_pages": 1,
+              "filtered": true
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 37,
+              "cols": 7
+            },
+            {
+              "page": 1,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 2,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 3,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 4,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 5,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 6,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 7,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 8,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 9,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 10,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 11,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 12,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 13,
+              "method": "lattice",
+              "rows": 43,
+              "cols": 7
+            },
+            {
+              "page": 14,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 9
+            },
+            {
+              "page": 15,
+              "method": "lattice",
+              "rows": 7,
+              "cols": 9
+            }
+          ]
+        },
+        {
+          "id": "33_real_argentina_votes",
+          "pdf": "benchmark/corpus/real/33_real_argentina_votes.pdf",
+          "gold": "gold/33_real_argentina_votes.json",
+          "struggle": false,
+          "failure_classes": [
+            "spanish",
+            "irregular_grid",
+            "visible_rules"
+          ],
+          "elapsed_s": 0.007,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "pairs": [
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.9897553476226675
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 0.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 0.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 1.0,
+              "recall": 0.4251968503937008,
+              "f1": 0.5966850828729281,
+              "tp": 54,
+              "fp": 0,
+              "fn": 73
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  32,
+                  4
+                ],
+                "pred_shape": [
+                  33,
+                  4
+                ],
+                "row_exact": false,
+                "col_exact": true,
+                "shape_exact": false,
+                "cell_precision": 1.0,
+                "cell_recall": 0.4251968503937008,
+                "cell_f1": 0.5966850828729281,
+                "cells_matched": 54,
+                "gold_nonzero_cells": 127,
+                "tp": 54,
+                "fp": 0,
+                "fn": 73
+              }
+            ],
+            "score_0_100": 58.86740331491712,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 1,
+              "n_pred_gold_pages": 1,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 33,
+              "cols": 4
+            }
+          ]
+        },
+        {
+          "id": "34_real_schools_contributions",
+          "pdf": "benchmark/corpus/real/34_real_schools_contributions.pdf",
+          "gold": "gold/34_real_schools_contributions.json",
+          "struggle": true,
+          "failure_classes": [
+            "stream_like",
+            "name_address_money",
+            "col_merge"
+          ],
+          "elapsed_s": 0.047,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "pairs": [
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.9965177010253059
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.8525641025641025,
+              "recall": 0.31516587677725116,
+              "f1": 0.46020761245674735,
+              "tp": 133,
+              "fp": 23,
+              "fn": 289
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  46,
+                  10
+                ],
+                "pred_shape": [
+                  46,
+                  10
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 0.8525641025641025,
+                "cell_recall": 0.31516587677725116,
+                "cell_f1": 0.46020761245674735,
+                "cells_matched": 133,
+                "gold_nonzero_cells": 422,
+                "tp": 133,
+                "fp": 23,
+                "fn": 289
+              }
+            ],
+            "score_0_100": 78.4083044982699,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 6,
+              "n_pred_gold_pages": 1,
+              "filtered": true
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 46,
+              "cols": 10
+            },
+            {
+              "page": 1,
+              "method": "lattice",
+              "rows": 46,
+              "cols": 10
+            },
+            {
+              "page": 2,
+              "method": "lattice",
+              "rows": 46,
+              "cols": 10
+            },
+            {
+              "page": 3,
+              "method": "lattice",
+              "rows": 46,
+              "cols": 6
+            },
+            {
+              "page": 3,
+              "method": "lattice",
+              "rows": 45,
+              "cols": 3
+            },
+            {
+              "page": 4,
+              "method": "lattice",
+              "rows": 42,
+              "cols": 10
+            }
+          ]
+        },
+        {
+          "id": "35_real_camelot_fuel",
+          "pdf": "benchmark/corpus/real/35_real_camelot_fuel.pdf",
+          "gold": "gold/35_real_camelot_fuel.json",
+          "struggle": false,
+          "failure_classes": [
+            "visible_rules",
+            "scientific_layout"
+          ],
+          "elapsed_s": 0.007,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 2,
+              "tp": 1,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "exact": false,
+              "within_tolerance": false,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 1,
+              "predicted": 2,
+              "tp": 1,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "pairs": [
+                {
+                  "pred_i": 1,
+                  "gold_i": 0,
+                  "iou": 0.989037068836021
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 2
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 1.0,
+              "recall": 0.5581395348837209,
+              "f1": 0.7164179104477612,
+              "tp": 24,
+              "fp": 0,
+              "fn": 19
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 1,
+                "gold_shape": [
+                  7,
+                  7
+                ],
+                "pred_shape": [
+                  7,
+                  7
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 1.0,
+                "cell_recall": 0.5581395348837209,
+                "cell_f1": 0.7164179104477612,
+                "cells_matched": 24,
+                "gold_nonzero_cells": 43,
+                "tp": 24,
+                "fp": 0,
+                "fn": 19
+              }
+            ],
+            "score_0_100": 76.99004975124379,
+            "n_pred": 2,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 2,
+              "n_pred_gold_pages": 2,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 7,
+              "cols": 5
+            },
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 7,
+              "cols": 7
+            }
+          ]
+        },
+        {
+          "id": "36_real_two_tables",
+          "pdf": "benchmark/corpus/real/36_real_two_tables.pdf",
+          "gold": "gold/36_real_two_tables.json",
+          "struggle": true,
+          "failure_classes": [
+            "multi_table",
+            "government_health"
+          ],
+          "elapsed_s": 0.009,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 2,
+              "predicted": 2,
+              "tp": 2,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 2,
+              "predicted": 2,
+              "tp": 2,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "pairs": [
+                {
+                  "pred_i": 1,
+                  "gold_i": 1,
+                  "iou": 0.9964719393465131
+                },
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.994283840176876
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 0.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 0.0,
+              "n_gold_tables": 2,
+              "n_pred_tables": 2
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.9411764705882353,
+              "recall": 0.2711864406779661,
+              "f1": 0.42105263157894735,
+              "tp": 16,
+              "fp": 1,
+              "fn": 43
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  3,
+                  10
+                ],
+                "pred_shape": [
+                  23,
+                  10
+                ],
+                "row_exact": false,
+                "col_exact": true,
+                "shape_exact": false,
+                "cell_precision": 0.8888888888888888,
+                "cell_recall": 0.3076923076923077,
+                "cell_f1": 0.4571428571428572,
+                "cells_matched": 8,
+                "gold_nonzero_cells": 26,
+                "tp": 8,
+                "fp": 1,
+                "fn": 18
+              },
+              {
+                "gold_index": 1,
+                "pred_index": 1,
+                "gold_shape": [
+                  5,
+                  9
+                ],
+                "pred_shape": [
+                  31,
+                  9
+                ],
+                "row_exact": false,
+                "col_exact": true,
+                "shape_exact": false,
+                "cell_precision": 1.0,
+                "cell_recall": 0.24242424242424243,
+                "cell_f1": 0.3902439024390244,
+                "cells_matched": 8,
+                "gold_nonzero_cells": 33,
+                "tp": 8,
+                "fp": 0,
+                "fn": 25
+              }
+            ],
+            "score_0_100": 51.84210526315789,
+            "n_pred": 2,
+            "n_exp": 2,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 2,
+              "n_pred_gold_pages": 2,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 23,
+              "cols": 10
+            },
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 9
+            }
+          ]
+        },
+        {
+          "id": "37_real_liabilities_superscript",
+          "pdf": "benchmark/corpus/real/37_real_liabilities_superscript.pdf",
+          "gold": "gold/37_real_liabilities_superscript.json",
+          "struggle": false,
+          "failure_classes": [
+            "superscripts",
+            "financial_columns",
+            "continued_table"
+          ],
+          "elapsed_s": 0.006,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "pairs": [
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.90951764108891
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 0.0,
+              "col_accuracy": 0.0,
+              "shape_exact_rate": 0.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.7534246575342466,
+              "recall": 0.14745308310991956,
+              "f1": 0.24663677130044842,
+              "tp": 55,
+              "fp": 18,
+              "fn": 318
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  36,
+                  11
+                ],
+                "pred_shape": [
+                  30,
+                  10
+                ],
+                "row_exact": false,
+                "col_exact": false,
+                "shape_exact": false,
+                "cell_precision": 0.7534246575342466,
+                "cell_recall": 0.14745308310991956,
+                "cell_f1": 0.24663677130044842,
+                "cells_matched": 55,
+                "gold_nonzero_cells": 373,
+                "tp": 55,
+                "fp": 18,
+                "fn": 318
+              }
+            ],
+            "score_0_100": 44.865470852017935,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 1,
+              "n_pred_gold_pages": 1,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 30,
+              "cols": 10
+            }
+          ]
+        },
+        {
+          "id": "31_real_background_checks",
+          "pdf": "benchmark/corpus/real/31_real_background_checks.pdf",
+          "gold": "gold/31_real_background_checks.json",
+          "struggle": true,
+          "failure_classes": [
+            "wide_tables",
+            "multi_line_headers",
+            "dense_columns"
+          ],
+          "elapsed_s": 0.024,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": null,
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 0.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 0.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.9990224828934506,
+              "recall": 0.6971350613915416,
+              "f1": 0.821213338690237,
+              "tp": 1022,
+              "fp": 1,
+              "fn": 444
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  59,
+                  25
+                ],
+                "pred_shape": [
+                  58,
+                  25
+                ],
+                "row_exact": false,
+                "col_exact": true,
+                "shape_exact": false,
+                "cell_precision": 0.9990224828934506,
+                "cell_recall": 0.6971350613915416,
+                "cell_f1": 0.821213338690237,
+                "cells_matched": 1022,
+                "gold_nonzero_cells": 1466,
+                "tp": 1022,
+                "fp": 1,
+                "fn": 444
+              }
+            ],
+            "score_0_100": 67.84853354760948,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 1,
+              "n_pred_gold_pages": 1,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 58,
+              "cols": 25
+            }
+          ]
+        },
+        {
+          "id": "32_real_census_table324",
+          "pdf": "benchmark/corpus/real/32_real_census_table324.pdf",
+          "gold": "gold/32_real_census_table324.json",
+          "struggle": true,
+          "failure_classes": [
+            "statistical_table",
+            "col_collapse",
+            "multi_level_header"
+          ],
+          "elapsed_s": 0.017,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 2,
+              "predicted": 2,
+              "tp": 2,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": null,
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 0.5,
+              "col_accuracy": 0.5,
+              "shape_exact_rate": 0.0,
+              "n_gold_tables": 2,
+              "n_pred_tables": 2
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 3,
+              "fn": 531
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  34,
+                  10
+                ],
+                "pred_shape": [
+                  34,
+                  7
+                ],
+                "row_exact": true,
+                "col_exact": false,
+                "shape_exact": false,
+                "cell_precision": 0.0,
+                "cell_recall": 0.0,
+                "cell_f1": 0.0,
+                "cells_matched": 0,
+                "gold_nonzero_cells": 333,
+                "tp": 0,
+                "fp": 3,
+                "fn": 333
+              },
+              {
+                "gold_index": 1,
+                "pred_index": 1,
+                "gold_shape": [
+                  33,
+                  6
+                ],
+                "pred_shape": [
+                  29,
+                  6
+                ],
+                "row_exact": false,
+                "col_exact": true,
+                "shape_exact": false,
+                "cell_precision": 0.0,
+                "cell_recall": 0.0,
+                "cell_f1": 0.0,
+                "cells_matched": 0,
+                "gold_nonzero_cells": 198,
+                "tp": 0,
+                "fp": 0,
+                "fn": 198
+              }
+            ],
+            "score_0_100": 35.0,
+            "n_pred": 2,
+            "n_exp": 2,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 2,
+              "n_pred_gold_pages": 2,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 34,
+              "cols": 7
+            },
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 29,
+              "cols": 6
+            }
+          ]
+        },
+        {
+          "id": "R018_camelot_health",
+          "pdf": "benchmark/corpus/real/R018_camelot_health.pdf",
+          "gold": "gold/R018_camelot_health.json",
+          "struggle": false,
+          "failure_classes": [
+            "visible_rules",
+            "multi_level_header"
+          ],
+          "elapsed_s": 0.008,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "pairs": [
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.9931976258335525
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 1.0,
+              "recall": 0.9898477157360406,
+              "f1": 0.9948979591836734,
+              "tp": 390,
+              "fp": 0,
+              "fn": 4
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  50,
+                  8
+                ],
+                "pred_shape": [
+                  50,
+                  8
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 1.0,
+                "cell_recall": 0.9898477157360406,
+                "cell_f1": 0.9948979591836734,
+                "cells_matched": 390,
+                "gold_nonzero_cells": 394,
+                "tp": 390,
+                "fp": 0,
+                "fn": 4
+              }
+            ],
+            "score_0_100": 99.79591836734694,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 1,
+              "n_pred_gold_pages": 1,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 50,
+              "cols": 8
+            }
+          ]
+        },
+        {
+          "id": "R003_bea_gdp_sample",
+          "pdf": "benchmark/corpus/real/R003_bea_gdp_sample.pdf",
+          "gold": "gold/R003_bea_gdp_sample.json",
+          "struggle": true,
+          "failure_classes": [
+            "multi_level_header",
+            "government_layout",
+            "wide_tables"
+          ],
+          "elapsed_s": 1.156,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": null,
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 0.0,
+              "col_accuracy": 0.0,
+              "shape_exact_rate": 0.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.9617224880382775,
+              "recall": 0.7913385826771654,
+              "f1": 0.8682505399568035,
+              "tp": 201,
+              "fp": 8,
+              "fn": 53
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  30,
+                  9
+                ],
+                "pred_shape": [
+                  32,
+                  10
+                ],
+                "row_exact": false,
+                "col_exact": false,
+                "shape_exact": false,
+                "cell_precision": 0.9617224880382775,
+                "cell_recall": 0.7913385826771654,
+                "cell_f1": 0.8682505399568035,
+                "cells_matched": 201,
+                "gold_nonzero_cells": 254,
+                "tp": 201,
+                "fp": 8,
+                "fn": 53
+              }
+            ],
+            "score_0_100": 69.73002159827215,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 187,
+              "n_pred_gold_pages": 1,
+              "filtered": true
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 32,
+              "cols": 10
+            },
+            {
+              "page": 1,
+              "method": "lattice",
+              "rows": 32,
+              "cols": 10
+            },
+            {
+              "page": 2,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 10
+            },
+            {
+              "page": 3,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 10
+            },
+            {
+              "page": 4,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 10
+            },
+            {
+              "page": 5,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 10
+            },
+            {
+              "page": 6,
+              "method": "lattice",
+              "rows": 35,
+              "cols": 10
+            },
+            {
+              "page": 7,
+              "method": "lattice",
+              "rows": 32,
+              "cols": 10
+            },
+            {
+              "page": 8,
+              "method": "lattice",
+              "rows": 32,
+              "cols": 10
+            },
+            {
+              "page": 9,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 10
+            },
+            {
+              "page": 10,
+              "method": "lattice",
+              "rows": 56,
+              "cols": 8
+            },
+            {
+              "page": 11,
+              "method": "lattice",
+              "rows": 35,
+              "cols": 10
+            },
+            {
+              "page": 12,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 10
+            },
+            {
+              "page": 13,
+              "method": "lattice",
+              "rows": 32,
+              "cols": 10
+            },
+            {
+              "page": 14,
+              "method": "lattice",
+              "rows": 32,
+              "cols": 10
+            },
+            {
+              "page": 15,
+              "method": "lattice",
+              "rows": 29,
+              "cols": 9
+            },
+            {
+              "page": 16,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 9
+            },
+            {
+              "page": 17,
+              "method": "lattice",
+              "rows": 14,
+              "cols": 10
+            },
+            {
+              "page": 18,
+              "method": "lattice",
+              "rows": 14,
+              "cols": 10
+            },
+            {
+              "page": 19,
+              "method": "lattice",
+              "rows": 14,
+              "cols": 10
+            },
+            {
+              "page": 20,
+              "method": "lattice",
+              "rows": 14,
+              "cols": 10
+            },
+            {
+              "page": 21,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 10
+            },
+            {
+              "page": 22,
+              "method": "lattice",
+              "rows": 18,
+              "cols": 10
+            },
+            {
+              "page": 23,
+              "method": "lattice",
+              "rows": 11,
+              "cols": 10
+            },
+            {
+              "page": 24,
+              "method": "lattice",
+              "rows": 14,
+              "cols": 10
+            },
+            {
+              "page": 25,
+              "method": "lattice",
+              "rows": 11,
+              "cols": 9
+            },
+            {
+              "page": 26,
+              "method": "lattice",
+              "rows": 11,
+              "cols": 9
+            },
+            {
+              "page": 27,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 10
+            },
+            {
+              "page": 28,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 10
+            },
+            {
+              "page": 29,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 10
+            },
+            {
+              "page": 30,
+              "method": "lattice",
+              "rows": 17,
+              "cols": 10
+            },
+            {
+              "page": 31,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 9
+            },
+            {
+              "page": 32,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 9
+            },
+            {
+              "page": 33,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 9
+            },
+            {
+              "page": 34,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 9
+            },
+            {
+              "page": 35,
+              "method": "lattice",
+              "rows": 67,
+              "cols": 10
+            },
+            {
+              "page": 36,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 10
+            },
+            {
+              "page": 37,
+              "method": "lattice",
+              "rows": 67,
+              "cols": 10
+            },
+            {
+              "page": 38,
+              "method": "lattice",
+              "rows": 16,
+              "cols": 10
+            },
+            {
+              "page": 39,
+              "method": "lattice",
+              "rows": 67,
+              "cols": 9
+            },
+            {
+              "page": 40,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 9
+            },
+            {
+              "page": 41,
+              "method": "lattice",
+              "rows": 67,
+              "cols": 10
+            },
+            {
+              "page": 42,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 10
+            },
+            {
+              "page": 43,
+              "method": "lattice",
+              "rows": 67,
+              "cols": 10
+            },
+            {
+              "page": 44,
+              "method": "lattice",
+              "rows": 18,
+              "cols": 10
+            },
+            {
+              "page": 45,
+              "method": "lattice",
+              "rows": 22,
+              "cols": 10
+            },
+            {
+              "page": 46,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 10
+            },
+            {
+              "page": 47,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 10
+            },
+            {
+              "page": 48,
+              "method": "lattice",
+              "rows": 44,
+              "cols": 8
+            },
+            {
+              "page": 49,
+              "method": "lattice",
+              "rows": 19,
+              "cols": 9
+            },
+            {
+              "page": 50,
+              "method": "lattice",
+              "rows": 35,
+              "cols": 10
+            },
+            {
+              "page": 51,
+              "method": "lattice",
+              "rows": 36,
+              "cols": 10
+            },
+            {
+              "page": 52,
+              "method": "lattice",
+              "rows": 39,
+              "cols": 8
+            },
+            {
+              "page": 53,
+              "method": "lattice",
+              "rows": 65,
+              "cols": 9
+            },
+            {
+              "page": 54,
+              "method": "lattice",
+              "rows": 63,
+              "cols": 9
+            },
+            {
+              "page": 55,
+              "method": "lattice",
+              "rows": 19,
+              "cols": 10
+            },
+            {
+              "page": 56,
+              "method": "lattice",
+              "rows": 27,
+              "cols": 10
+            },
+            {
+              "page": 57,
+              "method": "lattice",
+              "rows": 23,
+              "cols": 10
+            },
+            {
+              "page": 58,
+              "method": "lattice",
+              "rows": 27,
+              "cols": 10
+            },
+            {
+              "page": 59,
+              "method": "lattice",
+              "rows": 69,
+              "cols": 8
+            },
+            {
+              "page": 60,
+              "method": "lattice",
+              "rows": 10,
+              "cols": 10
+            },
+            {
+              "page": 61,
+              "method": "lattice",
+              "rows": 48,
+              "cols": 10
+            },
+            {
+              "page": 62,
+              "method": "lattice",
+              "rows": 50,
+              "cols": 10
+            },
+            {
+              "page": 63,
+              "method": "lattice",
+              "rows": 48,
+              "cols": 10
+            },
+            {
+              "page": 63,
+              "method": "stream",
+              "rows": 10,
+              "cols": 5
+            },
+            {
+              "page": 64,
+              "method": "lattice",
+              "rows": 48,
+              "cols": 10
+            },
+            {
+              "page": 64,
+              "method": "stream",
+              "rows": 10,
+              "cols": 5
+            },
+            {
+              "page": 65,
+              "method": "lattice",
+              "rows": 48,
+              "cols": 10
+            },
+            {
+              "page": 65,
+              "method": "stream",
+              "rows": 10,
+              "cols": 5
+            },
+            {
+              "page": 66,
+              "method": "lattice",
+              "rows": 47,
+              "cols": 9
+            },
+            {
+              "page": 67,
+              "method": "lattice",
+              "rows": 48,
+              "cols": 10
+            },
+            {
+              "page": 68,
+              "method": "lattice",
+              "rows": 50,
+              "cols": 10
+            },
+            {
+              "page": 69,
+              "method": "lattice",
+              "rows": 63,
+              "cols": 8
+            },
+            {
+              "page": 70,
+              "method": "lattice",
+              "rows": 2,
+              "cols": 7
+            },
+            {
+              "page": 70,
+              "method": "stream",
+              "rows": 50,
+              "cols": 9
+            },
+            {
+              "page": 71,
+              "method": "stream",
+              "rows": 6,
+              "cols": 9
+            },
+            {
+              "page": 72,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 10
+            },
+            {
+              "page": 73,
+              "method": "lattice",
+              "rows": 21,
+              "cols": 10
+            },
+            {
+              "page": 74,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 11
+            },
+            {
+              "page": 76,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 10
+            },
+            {
+              "page": 77,
+              "method": "lattice",
+              "rows": 25,
+              "cols": 10
+            },
+            {
+              "page": 78,
+              "method": "stream",
+              "rows": 46,
+              "cols": 9
+            },
+            {
+              "page": 79,
+              "method": "stream",
+              "rows": 5,
+              "cols": 8
+            },
+            {
+              "page": 80,
+              "method": "lattice",
+              "rows": 77,
+              "cols": 9
+            },
+            {
+              "page": 81,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 9
+            },
+            {
+              "page": 82,
+              "method": "stream",
+              "rows": 46,
+              "cols": 9
+            },
+            {
+              "page": 83,
+              "method": "stream",
+              "rows": 5,
+              "cols": 8
+            },
+            {
+              "page": 84,
+              "method": "lattice",
+              "rows": 77,
+              "cols": 9
+            },
+            {
+              "page": 85,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 9
+            },
+            {
+              "page": 86,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 8
+            },
+            {
+              "page": 87,
+              "method": "lattice",
+              "rows": 75,
+              "cols": 10
+            },
+            {
+              "page": 88,
+              "method": "lattice",
+              "rows": 29,
+              "cols": 8
+            },
+            {
+              "page": 89,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 8
+            },
+            {
+              "page": 90,
+              "method": "lattice",
+              "rows": 75,
+              "cols": 10
+            },
+            {
+              "page": 91,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 8
+            },
+            {
+              "page": 92,
+              "method": "lattice",
+              "rows": 2,
+              "cols": 7
+            },
+            {
+              "page": 92,
+              "method": "stream",
+              "rows": 50,
+              "cols": 9
+            },
+            {
+              "page": 93,
+              "method": "stream",
+              "rows": 6,
+              "cols": 9
+            },
+            {
+              "page": 94,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 10
+            },
+            {
+              "page": 95,
+              "method": "lattice",
+              "rows": 21,
+              "cols": 10
+            },
+            {
+              "page": 96,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 11
+            },
+            {
+              "page": 98,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 10
+            },
+            {
+              "page": 99,
+              "method": "lattice",
+              "rows": 25,
+              "cols": 10
+            },
+            {
+              "page": 100,
+              "method": "lattice",
+              "rows": 48,
+              "cols": 9
+            },
+            {
+              "page": 101,
+              "method": "lattice",
+              "rows": 54,
+              "cols": 9
+            },
+            {
+              "page": 101,
+              "method": "stream",
+              "rows": 11,
+              "cols": 5
+            },
+            {
+              "page": 103,
+              "method": "lattice",
+              "rows": 53,
+              "cols": 10
+            },
+            {
+              "page": 104,
+              "method": "lattice",
+              "rows": 44,
+              "cols": 10
+            },
+            {
+              "page": 105,
+              "method": "lattice",
+              "rows": 46,
+              "cols": 10
+            },
+            {
+              "page": 106,
+              "method": "lattice",
+              "rows": 44,
+              "cols": 9
+            },
+            {
+              "page": 107,
+              "method": "lattice",
+              "rows": 44,
+              "cols": 9
+            },
+            {
+              "page": 108,
+              "method": "lattice",
+              "rows": 44,
+              "cols": 10
+            },
+            {
+              "page": 109,
+              "method": "lattice",
+              "rows": 45,
+              "cols": 10
+            },
+            {
+              "page": 110,
+              "method": "stream",
+              "rows": 24,
+              "cols": 9
+            },
+            {
+              "page": 112,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 10
+            },
+            {
+              "page": 113,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 10
+            },
+            {
+              "page": 115,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 9
+            },
+            {
+              "page": 116,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 10
+            },
+            {
+              "page": 118,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 9
+            },
+            {
+              "page": 119,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 11
+            },
+            {
+              "page": 121,
+              "method": "lattice",
+              "rows": 15,
+              "cols": 10
+            },
+            {
+              "page": 122,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 11
+            },
+            {
+              "page": 124,
+              "method": "lattice",
+              "rows": 16,
+              "cols": 10
+            },
+            {
+              "page": 125,
+              "method": "lattice",
+              "rows": 50,
+              "cols": 10
+            },
+            {
+              "page": 126,
+              "method": "lattice",
+              "rows": 52,
+              "cols": 10
+            },
+            {
+              "page": 127,
+              "method": "lattice",
+              "rows": 50,
+              "cols": 9
+            },
+            {
+              "page": 128,
+              "method": "lattice",
+              "rows": 50,
+              "cols": 9
+            },
+            {
+              "page": 129,
+              "method": "lattice",
+              "rows": 50,
+              "cols": 10
+            },
+            {
+              "page": 130,
+              "method": "lattice",
+              "rows": 51,
+              "cols": 10
+            },
+            {
+              "page": 131,
+              "method": "lattice",
+              "rows": 71,
+              "cols": 8
+            },
+            {
+              "page": 132,
+              "method": "lattice",
+              "rows": 12,
+              "cols": 8
+            },
+            {
+              "page": 133,
+              "method": "lattice",
+              "rows": 51,
+              "cols": 9
+            },
+            {
+              "page": 134,
+              "method": "lattice",
+              "rows": 65,
+              "cols": 10
+            },
+            {
+              "page": 135,
+              "method": "lattice",
+              "rows": 7,
+              "cols": 10
+            },
+            {
+              "page": 136,
+              "method": "lattice",
+              "rows": 66,
+              "cols": 10
+            },
+            {
+              "page": 137,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 10
+            },
+            {
+              "page": 138,
+              "method": "lattice",
+              "rows": 75,
+              "cols": 9
+            },
+            {
+              "page": 139,
+              "method": "lattice",
+              "rows": 79,
+              "cols": 9
+            },
+            {
+              "page": 140,
+              "method": "lattice",
+              "rows": 53,
+              "cols": 9
+            },
+            {
+              "page": 141,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 10
+            },
+            {
+              "page": 142,
+              "method": "lattice",
+              "rows": 75,
+              "cols": 9
+            },
+            {
+              "page": 143,
+              "method": "lattice",
+              "rows": 79,
+              "cols": 9
+            },
+            {
+              "page": 144,
+              "method": "lattice",
+              "rows": 53,
+              "cols": 9
+            },
+            {
+              "page": 145,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 11
+            },
+            {
+              "page": 146,
+              "method": "lattice",
+              "rows": 75,
+              "cols": 10
+            },
+            {
+              "page": 147,
+              "method": "lattice",
+              "rows": 79,
+              "cols": 10
+            },
+            {
+              "page": 148,
+              "method": "lattice",
+              "rows": 53,
+              "cols": 8
+            },
+            {
+              "page": 149,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 11
+            },
+            {
+              "page": 150,
+              "method": "lattice",
+              "rows": 75,
+              "cols": 10
+            },
+            {
+              "page": 151,
+              "method": "lattice",
+              "rows": 79,
+              "cols": 10
+            },
+            {
+              "page": 152,
+              "method": "lattice",
+              "rows": 55,
+              "cols": 8
+            },
+            {
+              "page": 153,
+              "method": "lattice",
+              "rows": 3,
+              "cols": 9
+            },
+            {
+              "page": 155,
+              "method": "lattice",
+              "rows": 13,
+              "cols": 10
+            },
+            {
+              "page": 156,
+              "method": "lattice",
+              "rows": 59,
+              "cols": 9
+            },
+            {
+              "page": 157,
+              "method": "lattice",
+              "rows": 20,
+              "cols": 10
+            },
+            {
+              "page": 158,
+              "method": "lattice",
+              "rows": 38,
+              "cols": 10
+            },
+            {
+              "page": 158,
+              "method": "stream",
+              "rows": 9,
+              "cols": 5
+            },
+            {
+              "page": 159,
+              "method": "lattice",
+              "rows": 40,
+              "cols": 10
+            },
+            {
+              "page": 160,
+              "method": "lattice",
+              "rows": 40,
+              "cols": 10
+            },
+            {
+              "page": 160,
+              "method": "stream",
+              "rows": 5,
+              "cols": 5
+            },
+            {
+              "page": 162,
+              "method": "lattice",
+              "rows": 38,
+              "cols": 10
+            },
+            {
+              "page": 162,
+              "method": "stream",
+              "rows": 9,
+              "cols": 5
+            },
+            {
+              "page": 163,
+              "method": "lattice",
+              "rows": 38,
+              "cols": 10
+            },
+            {
+              "page": 163,
+              "method": "stream",
+              "rows": 9,
+              "cols": 5
+            },
+            {
+              "page": 164,
+              "method": "lattice",
+              "rows": 41,
+              "cols": 10
+            },
+            {
+              "page": 165,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 10
+            },
+            {
+              "page": 166,
+              "method": "lattice",
+              "rows": 28,
+              "cols": 10
+            },
+            {
+              "page": 167,
+              "method": "lattice",
+              "rows": 38,
+              "cols": 8
+            },
+            {
+              "page": 168,
+              "method": "lattice",
+              "rows": 39,
+              "cols": 8
+            },
+            {
+              "page": 169,
+              "method": "lattice",
+              "rows": 27,
+              "cols": 8
+            },
+            {
+              "page": 170,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 10
+            },
+            {
+              "page": 171,
+              "method": "lattice",
+              "rows": 45,
+              "cols": 10
+            },
+            {
+              "page": 172,
+              "method": "lattice",
+              "rows": 22,
+              "cols": 10
+            },
+            {
+              "page": 172,
+              "method": "stream",
+              "rows": 3,
+              "cols": 3
+            },
+            {
+              "page": 173,
+              "method": "lattice",
+              "rows": 64,
+              "cols": 10
+            },
+            {
+              "page": 174,
+              "method": "lattice",
+              "rows": 64,
+              "cols": 9
+            },
+            {
+              "page": 175,
+              "method": "lattice",
+              "rows": 64,
+              "cols": 9
+            },
+            {
+              "page": 176,
+              "method": "lattice",
+              "rows": 64,
+              "cols": 10
+            },
+            {
+              "page": 177,
+              "method": "lattice",
+              "rows": 65,
+              "cols": 10
+            },
+            {
+              "page": 178,
+              "method": "lattice",
+              "rows": 37,
+              "cols": 10
+            },
+            {
+              "page": 179,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 8
+            },
+            {
+              "page": 180,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 8
+            },
+            {
+              "page": 181,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 8
+            },
+            {
+              "page": 182,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 8
+            },
+            {
+              "page": 183,
+              "method": "lattice",
+              "rows": 30,
+              "cols": 8
+            },
+            {
+              "page": 184,
+              "method": "lattice",
+              "rows": 31,
+              "cols": 8
+            },
+            {
+              "page": 185,
+              "method": "lattice",
+              "rows": 34,
+              "cols": 8
+            }
+          ]
+        },
+        {
+          "id": "R010_bea_nipa_highlights",
+          "pdf": "benchmark/corpus/real/R010_bea_nipa_highlights.pdf",
+          "gold": "gold/R010_bea_nipa_highlights.json",
+          "struggle": true,
+          "failure_classes": [
+            "wide_tables",
+            "multi_level_header",
+            "government_layout",
+            "col_collapse"
+          ],
+          "elapsed_s": 0.616,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": null,
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 0.0,
+              "col_accuracy": 0.0,
+              "shape_exact_rate": 0.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 8,
+              "fn": 964
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  51,
+                  22
+                ],
+                "pred_shape": [
+                  38,
+                  3
+                ],
+                "row_exact": false,
+                "col_exact": false,
+                "shape_exact": false,
+                "cell_precision": 0.0,
+                "cell_recall": 0.0,
+                "cell_f1": 0.0,
+                "cells_matched": 0,
+                "gold_nonzero_cells": 964,
+                "tp": 0,
+                "fp": 8,
+                "fn": 964
+              }
+            ],
+            "score_0_100": 35.0,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                7
+              ],
+              "n_pred_all_pages": 24,
+              "n_pred_gold_pages": 1,
+              "filtered": true
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 3,
+              "cols": 5
+            },
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 3,
+              "cols": 6
+            },
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 3,
+              "cols": 6
+            },
+            {
+              "page": 1,
+              "method": "stream",
+              "rows": 4,
+              "cols": 4
+            },
+            {
+              "page": 1,
+              "method": "stream",
+              "rows": 3,
+              "cols": 2
+            },
+            {
+              "page": 1,
+              "method": "stream",
+              "rows": 4,
+              "cols": 5
+            },
+            {
+              "page": 1,
+              "method": "stream",
+              "rows": 3,
+              "cols": 4
+            },
+            {
+              "page": 1,
+              "method": "stream",
+              "rows": 5,
+              "cols": 8
+            },
+            {
+              "page": 2,
+              "method": "stream",
+              "rows": 6,
+              "cols": 3
+            },
+            {
+              "page": 2,
+              "method": "stream",
+              "rows": 4,
+              "cols": 4
+            },
+            {
+              "page": 2,
+              "method": "stream",
+              "rows": 3,
+              "cols": 6
+            },
+            {
+              "page": 2,
+              "method": "stream",
+              "rows": 3,
+              "cols": 6
+            },
+            {
+              "page": 3,
+              "method": "stream",
+              "rows": 4,
+              "cols": 5
+            },
+            {
+              "page": 4,
+              "method": "stream",
+              "rows": 3,
+              "cols": 6
+            },
+            {
+              "page": 5,
+              "method": "lattice",
+              "rows": 5,
+              "cols": 2
+            },
+            {
+              "page": 6,
+              "method": "stream",
+              "rows": 3,
+              "cols": 3
+            },
+            {
+              "page": 7,
+              "method": "stream",
+              "rows": 38,
+              "cols": 3
+            },
+            {
+              "page": 8,
+              "method": "lattice",
+              "rows": 67,
+              "cols": 8
+            },
+            {
+              "page": 8,
+              "method": "lattice",
+              "rows": 52,
+              "cols": 23
+            },
+            {
+              "page": 9,
+              "method": "stream",
+              "rows": 12,
+              "cols": 3
+            },
+            {
+              "page": 10,
+              "method": "lattice",
+              "rows": 39,
+              "cols": 8
+            },
+            {
+              "page": 11,
+              "method": "lattice",
+              "rows": 49,
+              "cols": 4
+            },
+            {
+              "page": 12,
+              "method": "lattice",
+              "rows": 48,
+              "cols": 4
+            },
+            {
+              "page": 13,
+              "method": "stream",
+              "rows": 41,
+              "cols": 3
+            }
+          ]
+        },
+        {
+          "id": "42_real_insurance_italian",
+          "pdf": "benchmark/corpus/real/42_real_insurance_italian.pdf",
+          "gold": "gold/42_real_insurance_italian.json",
+          "struggle": true,
+          "failure_classes": [
+            "non_english",
+            "nested_table",
+            "form_like_outer",
+            "multi_table"
+          ],
+          "elapsed_s": 0.007,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 2,
+              "predicted": 2,
+              "tp": 2,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": null,
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 2,
+              "n_pred_tables": 2
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 1.0,
+              "recall": 0.9047619047619048,
+              "f1": 0.9500000000000001,
+              "tp": 19,
+              "fp": 0,
+              "fn": 2
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  7,
+                  2
+                ],
+                "pred_shape": [
+                  7,
+                  2
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 1.0,
+                "cell_recall": 0.8461538461538461,
+                "cell_f1": 0.9166666666666666,
+                "cells_matched": 11,
+                "gold_nonzero_cells": 13,
+                "tp": 11,
+                "fp": 0,
+                "fn": 2
+              },
+              {
+                "gold_index": 1,
+                "pred_index": 1,
+                "gold_shape": [
+                  4,
+                  2
+                ],
+                "pred_shape": [
+                  4,
+                  2
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 1.0,
+                "cell_recall": 1.0,
+                "cell_f1": 1.0,
+                "cells_matched": 8,
+                "gold_nonzero_cells": 8,
+                "tp": 8,
+                "fp": 0,
+                "fn": 0
+              }
+            ],
+            "score_0_100": 98.0,
+            "n_pred": 2,
+            "n_exp": 2,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 2,
+              "n_pred_gold_pages": 2,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 7,
+              "cols": 2
+            },
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 4,
+              "cols": 2
+            }
+          ]
+        },
+        {
+          "id": "43_real_row_span_gmc",
+          "pdf": "benchmark/corpus/real/43_real_row_span_gmc.pdf",
+          "gold": "gold/43_real_row_span_gmc.json",
+          "struggle": true,
+          "failure_classes": [
+            "row_span",
+            "merged_cells",
+            "government_health",
+            "multi_level_structure"
+          ],
+          "elapsed_s": 0.006,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "pairs": [
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.9164009058435908
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.9894736842105263,
+              "recall": 1.0,
+              "f1": 0.9947089947089947,
+              "tp": 94,
+              "fp": 1,
+              "fn": 0
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  40,
+                  4
+                ],
+                "pred_shape": [
+                  40,
+                  4
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 0.9894736842105263,
+                "cell_recall": 1.0,
+                "cell_f1": 0.9947089947089947,
+                "cells_matched": 94,
+                "gold_nonzero_cells": 94,
+                "tp": 94,
+                "fp": 1,
+                "fn": 0
+              }
+            ],
+            "score_0_100": 99.78835978835978,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 1,
+              "n_pred_gold_pages": 1,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 40,
+              "cols": 4
+            }
+          ]
+        },
+        {
+          "id": "44_real_spanning_cells",
+          "pdf": "benchmark/corpus/real/44_real_spanning_cells.pdf",
+          "gold": "gold/44_real_spanning_cells.json",
+          "struggle": true,
+          "failure_classes": [
+            "col_span",
+            "multi_table",
+            "section_headers",
+            "numeric_grid"
+          ],
+          "elapsed_s": 0.006,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 2,
+              "predicted": 3,
+              "tp": 2,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.6666666666666666,
+              "recall": 1.0,
+              "f1": 0.8,
+              "exact": false,
+              "within_tolerance": false,
+              "tolerance": 0
+            },
+            "detection_iou": {
+              "skipped": false,
+              "match_mode": "iou",
+              "expected": 2,
+              "predicted": 3,
+              "tp": 2,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.6666666666666666,
+              "recall": 1.0,
+              "f1": 0.8,
+              "pairs": [
+                {
+                  "pred_i": 0,
+                  "gold_i": 0,
+                  "iou": 0.9944003790700465
+                },
+                {
+                  "pred_i": 2,
+                  "gold_i": 1,
+                  "iou": 0.9770942017838904
+                }
+              ],
+              "iou_thresh": 0.5
+            },
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 2,
+              "n_pred_tables": 3
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 1.0,
+              "recall": 0.5461538461538461,
+              "f1": 0.7064676616915423,
+              "tp": 71,
+              "fp": 0,
+              "fn": 59
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  21,
+                  6
+                ],
+                "pred_shape": [
+                  21,
+                  6
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 1.0,
+                "cell_recall": 0.4864864864864865,
+                "cell_f1": 0.6545454545454547,
+                "cells_matched": 54,
+                "gold_nonzero_cells": 111,
+                "tp": 54,
+                "fp": 0,
+                "fn": 57
+              },
+              {
+                "gold_index": 1,
+                "pred_index": 2,
+                "gold_shape": [
+                  4,
+                  6
+                ],
+                "pred_shape": [
+                  4,
+                  6
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 1.0,
+                "cell_recall": 0.8947368421052632,
+                "cell_f1": 0.9444444444444444,
+                "cells_matched": 17,
+                "gold_nonzero_cells": 19,
+                "tp": 17,
+                "fp": 0,
+                "fn": 2
+              }
+            ],
+            "score_0_100": 81.2587064676617,
+            "n_pred": 3,
+            "n_exp": 2,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 3,
+              "n_pred_gold_pages": 3,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 21,
+              "cols": 6
+            },
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 3,
+              "cols": 4
+            },
+            {
+              "page": 0,
+              "method": "lattice",
+              "rows": 4,
+              "cols": 6
+            }
+          ]
+        },
+        {
+          "id": "45_real_campaign_donors",
+          "pdf": "benchmark/corpus/real/45_real_campaign_donors.pdf",
+          "gold": "gold/45_real_campaign_donors.json",
+          "struggle": true,
+          "failure_classes": [
+            "stream_like",
+            "spanish",
+            "dense_rows",
+            "borderless_like"
+          ],
+          "elapsed_s": 0.521,
+          "cli_preset": "Auto",
+          "cli_stitch_multipage": false,
+          "status": "ok",
+          "metrics": {
+            "detection_count": {
+              "skipped": false,
+              "expected": 1,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "exact": true,
+              "within_tolerance": true,
+              "tolerance": 0
+            },
+            "detection_iou": null,
+            "structure": {
+              "skipped": false,
+              "row_accuracy": 1.0,
+              "col_accuracy": 1.0,
+              "shape_exact_rate": 1.0,
+              "n_gold_tables": 1,
+              "n_pred_tables": 1
+            },
+            "cell": {
+              "skipped": false,
+              "precision": 0.9971509971509972,
+              "recall": 0.8951406649616368,
+              "f1": 0.9433962264150944,
+              "tp": 350,
+              "fp": 1,
+              "fn": 41
+            },
+            "per_table": [
+              {
+                "gold_index": 0,
+                "pred_index": 0,
+                "gold_shape": [
+                  56,
+                  7
+                ],
+                "pred_shape": [
+                  56,
+                  7
+                ],
+                "row_exact": true,
+                "col_exact": true,
+                "shape_exact": true,
+                "cell_precision": 0.9971509971509972,
+                "cell_recall": 0.8951406649616368,
+                "cell_f1": 0.9433962264150944,
+                "cells_matched": 350,
+                "gold_nonzero_cells": 391,
+                "tp": 350,
+                "fp": 1,
+                "fn": 41
+              }
+            ],
+            "score_0_100": 97.73584905660377,
+            "n_pred": 1,
+            "n_exp": 1,
+            "page_filter": {
+              "gold_pages": [
+                0
+              ],
+              "n_pred_all_pages": 1,
+              "n_pred_gold_pages": 1,
+              "filtered": false
+            }
+          },
+          "method_mix": [
+            {
+              "page": 0,
+              "method": "stream",
+              "rows": 56,
+              "cols": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "primary_preset": "auto",
+  "summary": {
+    "n_docs": 15,
+    "n_ok": 15,
+    "n_fail": 0,
+    "micro_cell_f1": 0.6372333167816467,
+    "micro_shape_exact_rate": 0.5333333333333333,
+    "micro_det_count_f1": 0.9644444444444444,
+    "micro_det_iou_f1": 0.9407407407407408,
+    "micro_score_0_100": 72.57822156015476,
+    "note": "soft progressive scores; G1 not claimed"
+  },
+  "documents": [
+    {
+      "id": "30_real_ca_warn_report",
+      "pdf": "benchmark/corpus/real/30_real_ca_warn_report.pdf",
+      "gold": "gold/30_real_ca_warn_report.json",
+      "struggle": false,
+      "failure_classes": [
+        "wide_tables",
+        "multi_page",
+        "government_layout"
+      ],
+      "elapsed_s": 0.685,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "pairs": [
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.9954914653750897
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.9946808510638298,
+          "recall": 0.7248062015503876,
+          "f1": 0.8385650224215245,
+          "tp": 187,
+          "fp": 1,
+          "fn": 71
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              37,
+              7
+            ],
+            "pred_shape": [
+              37,
+              7
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 0.9946808510638298,
+            "cell_recall": 0.7248062015503876,
+            "cell_f1": 0.8385650224215245,
+            "cells_matched": 187,
+            "gold_nonzero_cells": 258,
+            "tp": 187,
+            "fp": 1,
+            "fn": 71
+          }
+        ],
+        "score_0_100": 93.54260089686099,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 16,
+          "n_pred_gold_pages": 1,
+          "filtered": true
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 37,
+          "cols": 7
+        },
+        {
+          "page": 1,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 2,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 3,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 4,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 5,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 6,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 7,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 8,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 9,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 10,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 11,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 12,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 13,
+          "method": "lattice",
+          "rows": 43,
+          "cols": 7
+        },
+        {
+          "page": 14,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 9
+        },
+        {
+          "page": 15,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 9
+        }
+      ]
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "pdf": "benchmark/corpus/real/33_real_argentina_votes.pdf",
+      "gold": "gold/33_real_argentina_votes.json",
+      "struggle": false,
+      "failure_classes": [
+        "spanish",
+        "irregular_grid",
+        "visible_rules"
+      ],
+      "elapsed_s": 0.007,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "pairs": [
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.9897553476226675
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 0.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 0.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 1.0,
+          "recall": 0.4251968503937008,
+          "f1": 0.5966850828729281,
+          "tp": 54,
+          "fp": 0,
+          "fn": 73
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              32,
+              4
+            ],
+            "pred_shape": [
+              33,
+              4
+            ],
+            "row_exact": false,
+            "col_exact": true,
+            "shape_exact": false,
+            "cell_precision": 1.0,
+            "cell_recall": 0.4251968503937008,
+            "cell_f1": 0.5966850828729281,
+            "cells_matched": 54,
+            "gold_nonzero_cells": 127,
+            "tp": 54,
+            "fp": 0,
+            "fn": 73
+          }
+        ],
+        "score_0_100": 58.86740331491712,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 1,
+          "n_pred_gold_pages": 1,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 33,
+          "cols": 4
+        }
+      ]
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "pdf": "benchmark/corpus/real/34_real_schools_contributions.pdf",
+      "gold": "gold/34_real_schools_contributions.json",
+      "struggle": true,
+      "failure_classes": [
+        "stream_like",
+        "name_address_money",
+        "col_merge"
+      ],
+      "elapsed_s": 0.047,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "pairs": [
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.9965177010253059
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.8525641025641025,
+          "recall": 0.31516587677725116,
+          "f1": 0.46020761245674735,
+          "tp": 133,
+          "fp": 23,
+          "fn": 289
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              46,
+              10
+            ],
+            "pred_shape": [
+              46,
+              10
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 0.8525641025641025,
+            "cell_recall": 0.31516587677725116,
+            "cell_f1": 0.46020761245674735,
+            "cells_matched": 133,
+            "gold_nonzero_cells": 422,
+            "tp": 133,
+            "fp": 23,
+            "fn": 289
+          }
+        ],
+        "score_0_100": 78.4083044982699,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 6,
+          "n_pred_gold_pages": 1,
+          "filtered": true
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 46,
+          "cols": 10
+        },
+        {
+          "page": 1,
+          "method": "lattice",
+          "rows": 46,
+          "cols": 10
+        },
+        {
+          "page": 2,
+          "method": "lattice",
+          "rows": 46,
+          "cols": 10
+        },
+        {
+          "page": 3,
+          "method": "lattice",
+          "rows": 46,
+          "cols": 6
+        },
+        {
+          "page": 3,
+          "method": "lattice",
+          "rows": 45,
+          "cols": 3
+        },
+        {
+          "page": 4,
+          "method": "lattice",
+          "rows": 42,
+          "cols": 10
+        }
+      ]
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "pdf": "benchmark/corpus/real/35_real_camelot_fuel.pdf",
+      "gold": "gold/35_real_camelot_fuel.json",
+      "struggle": false,
+      "failure_classes": [
+        "visible_rules",
+        "scientific_layout"
+      ],
+      "elapsed_s": 0.007,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 2,
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "exact": false,
+          "within_tolerance": false,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 1,
+          "predicted": 2,
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "pairs": [
+            {
+              "pred_i": 1,
+              "gold_i": 0,
+              "iou": 0.989037068836021
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 2
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 1.0,
+          "recall": 0.5581395348837209,
+          "f1": 0.7164179104477612,
+          "tp": 24,
+          "fp": 0,
+          "fn": 19
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 1,
+            "gold_shape": [
+              7,
+              7
+            ],
+            "pred_shape": [
+              7,
+              7
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 1.0,
+            "cell_recall": 0.5581395348837209,
+            "cell_f1": 0.7164179104477612,
+            "cells_matched": 24,
+            "gold_nonzero_cells": 43,
+            "tp": 24,
+            "fp": 0,
+            "fn": 19
+          }
+        ],
+        "score_0_100": 76.99004975124379,
+        "n_pred": 2,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 2,
+          "n_pred_gold_pages": 2,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 7,
+          "cols": 5
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 7
+        }
+      ]
+    },
+    {
+      "id": "36_real_two_tables",
+      "pdf": "benchmark/corpus/real/36_real_two_tables.pdf",
+      "gold": "gold/36_real_two_tables.json",
+      "struggle": true,
+      "failure_classes": [
+        "multi_table",
+        "government_health"
+      ],
+      "elapsed_s": 0.009,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 2,
+          "predicted": 2,
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 2,
+          "predicted": 2,
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "pairs": [
+            {
+              "pred_i": 1,
+              "gold_i": 1,
+              "iou": 0.9964719393465131
+            },
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.994283840176876
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 0.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 0.0,
+          "n_gold_tables": 2,
+          "n_pred_tables": 2
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.9411764705882353,
+          "recall": 0.2711864406779661,
+          "f1": 0.42105263157894735,
+          "tp": 16,
+          "fp": 1,
+          "fn": 43
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              3,
+              10
+            ],
+            "pred_shape": [
+              23,
+              10
+            ],
+            "row_exact": false,
+            "col_exact": true,
+            "shape_exact": false,
+            "cell_precision": 0.8888888888888888,
+            "cell_recall": 0.3076923076923077,
+            "cell_f1": 0.4571428571428572,
+            "cells_matched": 8,
+            "gold_nonzero_cells": 26,
+            "tp": 8,
+            "fp": 1,
+            "fn": 18
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "gold_shape": [
+              5,
+              9
+            ],
+            "pred_shape": [
+              31,
+              9
+            ],
+            "row_exact": false,
+            "col_exact": true,
+            "shape_exact": false,
+            "cell_precision": 1.0,
+            "cell_recall": 0.24242424242424243,
+            "cell_f1": 0.3902439024390244,
+            "cells_matched": 8,
+            "gold_nonzero_cells": 33,
+            "tp": 8,
+            "fp": 0,
+            "fn": 25
+          }
+        ],
+        "score_0_100": 51.84210526315789,
+        "n_pred": 2,
+        "n_exp": 2,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 2,
+          "n_pred_gold_pages": 2,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 23,
+          "cols": 10
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 9
+        }
+      ]
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "pdf": "benchmark/corpus/real/37_real_liabilities_superscript.pdf",
+      "gold": "gold/37_real_liabilities_superscript.json",
+      "struggle": false,
+      "failure_classes": [
+        "superscripts",
+        "financial_columns",
+        "continued_table"
+      ],
+      "elapsed_s": 0.006,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "pairs": [
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.90951764108891
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 0.0,
+          "col_accuracy": 0.0,
+          "shape_exact_rate": 0.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.7534246575342466,
+          "recall": 0.14745308310991956,
+          "f1": 0.24663677130044842,
+          "tp": 55,
+          "fp": 18,
+          "fn": 318
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              36,
+              11
+            ],
+            "pred_shape": [
+              30,
+              10
+            ],
+            "row_exact": false,
+            "col_exact": false,
+            "shape_exact": false,
+            "cell_precision": 0.7534246575342466,
+            "cell_recall": 0.14745308310991956,
+            "cell_f1": 0.24663677130044842,
+            "cells_matched": 55,
+            "gold_nonzero_cells": 373,
+            "tp": 55,
+            "fp": 18,
+            "fn": 318
+          }
+        ],
+        "score_0_100": 44.865470852017935,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 1,
+          "n_pred_gold_pages": 1,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 30,
+          "cols": 10
+        }
+      ]
+    },
+    {
+      "id": "31_real_background_checks",
+      "pdf": "benchmark/corpus/real/31_real_background_checks.pdf",
+      "gold": "gold/31_real_background_checks.json",
+      "struggle": true,
+      "failure_classes": [
+        "wide_tables",
+        "multi_line_headers",
+        "dense_columns"
+      ],
+      "elapsed_s": 0.024,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": null,
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 0.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 0.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.9990224828934506,
+          "recall": 0.6971350613915416,
+          "f1": 0.821213338690237,
+          "tp": 1022,
+          "fp": 1,
+          "fn": 444
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              59,
+              25
+            ],
+            "pred_shape": [
+              58,
+              25
+            ],
+            "row_exact": false,
+            "col_exact": true,
+            "shape_exact": false,
+            "cell_precision": 0.9990224828934506,
+            "cell_recall": 0.6971350613915416,
+            "cell_f1": 0.821213338690237,
+            "cells_matched": 1022,
+            "gold_nonzero_cells": 1466,
+            "tp": 1022,
+            "fp": 1,
+            "fn": 444
+          }
+        ],
+        "score_0_100": 67.84853354760948,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 1,
+          "n_pred_gold_pages": 1,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 58,
+          "cols": 25
+        }
+      ]
+    },
+    {
+      "id": "32_real_census_table324",
+      "pdf": "benchmark/corpus/real/32_real_census_table324.pdf",
+      "gold": "gold/32_real_census_table324.json",
+      "struggle": true,
+      "failure_classes": [
+        "statistical_table",
+        "col_collapse",
+        "multi_level_header"
+      ],
+      "elapsed_s": 0.017,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 2,
+          "predicted": 2,
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": null,
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 0.5,
+          "col_accuracy": 0.5,
+          "shape_exact_rate": 0.0,
+          "n_gold_tables": 2,
+          "n_pred_tables": 2
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 3,
+          "fn": 531
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              34,
+              10
+            ],
+            "pred_shape": [
+              34,
+              7
+            ],
+            "row_exact": true,
+            "col_exact": false,
+            "shape_exact": false,
+            "cell_precision": 0.0,
+            "cell_recall": 0.0,
+            "cell_f1": 0.0,
+            "cells_matched": 0,
+            "gold_nonzero_cells": 333,
+            "tp": 0,
+            "fp": 3,
+            "fn": 333
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "gold_shape": [
+              33,
+              6
+            ],
+            "pred_shape": [
+              29,
+              6
+            ],
+            "row_exact": false,
+            "col_exact": true,
+            "shape_exact": false,
+            "cell_precision": 0.0,
+            "cell_recall": 0.0,
+            "cell_f1": 0.0,
+            "cells_matched": 0,
+            "gold_nonzero_cells": 198,
+            "tp": 0,
+            "fp": 0,
+            "fn": 198
+          }
+        ],
+        "score_0_100": 35.0,
+        "n_pred": 2,
+        "n_exp": 2,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 2,
+          "n_pred_gold_pages": 2,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 34,
+          "cols": 7
+        },
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 29,
+          "cols": 6
+        }
+      ]
+    },
+    {
+      "id": "R018_camelot_health",
+      "pdf": "benchmark/corpus/real/R018_camelot_health.pdf",
+      "gold": "gold/R018_camelot_health.json",
+      "struggle": false,
+      "failure_classes": [
+        "visible_rules",
+        "multi_level_header"
+      ],
+      "elapsed_s": 0.008,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "pairs": [
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.9931976258335525
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 1.0,
+          "recall": 0.9898477157360406,
+          "f1": 0.9948979591836734,
+          "tp": 390,
+          "fp": 0,
+          "fn": 4
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              50,
+              8
+            ],
+            "pred_shape": [
+              50,
+              8
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 1.0,
+            "cell_recall": 0.9898477157360406,
+            "cell_f1": 0.9948979591836734,
+            "cells_matched": 390,
+            "gold_nonzero_cells": 394,
+            "tp": 390,
+            "fp": 0,
+            "fn": 4
+          }
+        ],
+        "score_0_100": 99.79591836734694,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 1,
+          "n_pred_gold_pages": 1,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 8
+        }
+      ]
+    },
+    {
+      "id": "R003_bea_gdp_sample",
+      "pdf": "benchmark/corpus/real/R003_bea_gdp_sample.pdf",
+      "gold": "gold/R003_bea_gdp_sample.json",
+      "struggle": true,
+      "failure_classes": [
+        "multi_level_header",
+        "government_layout",
+        "wide_tables"
+      ],
+      "elapsed_s": 1.156,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": null,
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 0.0,
+          "col_accuracy": 0.0,
+          "shape_exact_rate": 0.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.9617224880382775,
+          "recall": 0.7913385826771654,
+          "f1": 0.8682505399568035,
+          "tp": 201,
+          "fp": 8,
+          "fn": 53
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              30,
+              9
+            ],
+            "pred_shape": [
+              32,
+              10
+            ],
+            "row_exact": false,
+            "col_exact": false,
+            "shape_exact": false,
+            "cell_precision": 0.9617224880382775,
+            "cell_recall": 0.7913385826771654,
+            "cell_f1": 0.8682505399568035,
+            "cells_matched": 201,
+            "gold_nonzero_cells": 254,
+            "tp": 201,
+            "fp": 8,
+            "fn": 53
+          }
+        ],
+        "score_0_100": 69.73002159827215,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 187,
+          "n_pred_gold_pages": 1,
+          "filtered": true
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 32,
+          "cols": 10
+        },
+        {
+          "page": 1,
+          "method": "lattice",
+          "rows": 32,
+          "cols": 10
+        },
+        {
+          "page": 2,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 10
+        },
+        {
+          "page": 3,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 10
+        },
+        {
+          "page": 4,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 10
+        },
+        {
+          "page": 5,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 10
+        },
+        {
+          "page": 6,
+          "method": "lattice",
+          "rows": 35,
+          "cols": 10
+        },
+        {
+          "page": 7,
+          "method": "lattice",
+          "rows": 32,
+          "cols": 10
+        },
+        {
+          "page": 8,
+          "method": "lattice",
+          "rows": 32,
+          "cols": 10
+        },
+        {
+          "page": 9,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 10
+        },
+        {
+          "page": 10,
+          "method": "lattice",
+          "rows": 56,
+          "cols": 8
+        },
+        {
+          "page": 11,
+          "method": "lattice",
+          "rows": 35,
+          "cols": 10
+        },
+        {
+          "page": 12,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 10
+        },
+        {
+          "page": 13,
+          "method": "lattice",
+          "rows": 32,
+          "cols": 10
+        },
+        {
+          "page": 14,
+          "method": "lattice",
+          "rows": 32,
+          "cols": 10
+        },
+        {
+          "page": 15,
+          "method": "lattice",
+          "rows": 29,
+          "cols": 9
+        },
+        {
+          "page": 16,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 9
+        },
+        {
+          "page": 17,
+          "method": "lattice",
+          "rows": 14,
+          "cols": 10
+        },
+        {
+          "page": 18,
+          "method": "lattice",
+          "rows": 14,
+          "cols": 10
+        },
+        {
+          "page": 19,
+          "method": "lattice",
+          "rows": 14,
+          "cols": 10
+        },
+        {
+          "page": 20,
+          "method": "lattice",
+          "rows": 14,
+          "cols": 10
+        },
+        {
+          "page": 21,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 10
+        },
+        {
+          "page": 22,
+          "method": "lattice",
+          "rows": 18,
+          "cols": 10
+        },
+        {
+          "page": 23,
+          "method": "lattice",
+          "rows": 11,
+          "cols": 10
+        },
+        {
+          "page": 24,
+          "method": "lattice",
+          "rows": 14,
+          "cols": 10
+        },
+        {
+          "page": 25,
+          "method": "lattice",
+          "rows": 11,
+          "cols": 9
+        },
+        {
+          "page": 26,
+          "method": "lattice",
+          "rows": 11,
+          "cols": 9
+        },
+        {
+          "page": 27,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 10
+        },
+        {
+          "page": 28,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 10
+        },
+        {
+          "page": 29,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 10
+        },
+        {
+          "page": 30,
+          "method": "lattice",
+          "rows": 17,
+          "cols": 10
+        },
+        {
+          "page": 31,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 9
+        },
+        {
+          "page": 32,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 9
+        },
+        {
+          "page": 33,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 9
+        },
+        {
+          "page": 34,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 9
+        },
+        {
+          "page": 35,
+          "method": "lattice",
+          "rows": 67,
+          "cols": 10
+        },
+        {
+          "page": 36,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 10
+        },
+        {
+          "page": 37,
+          "method": "lattice",
+          "rows": 67,
+          "cols": 10
+        },
+        {
+          "page": 38,
+          "method": "lattice",
+          "rows": 16,
+          "cols": 10
+        },
+        {
+          "page": 39,
+          "method": "lattice",
+          "rows": 67,
+          "cols": 9
+        },
+        {
+          "page": 40,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 9
+        },
+        {
+          "page": 41,
+          "method": "lattice",
+          "rows": 67,
+          "cols": 10
+        },
+        {
+          "page": 42,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 10
+        },
+        {
+          "page": 43,
+          "method": "lattice",
+          "rows": 67,
+          "cols": 10
+        },
+        {
+          "page": 44,
+          "method": "lattice",
+          "rows": 18,
+          "cols": 10
+        },
+        {
+          "page": 45,
+          "method": "lattice",
+          "rows": 22,
+          "cols": 10
+        },
+        {
+          "page": 46,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 10
+        },
+        {
+          "page": 47,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 10
+        },
+        {
+          "page": 48,
+          "method": "lattice",
+          "rows": 44,
+          "cols": 8
+        },
+        {
+          "page": 49,
+          "method": "lattice",
+          "rows": 19,
+          "cols": 9
+        },
+        {
+          "page": 50,
+          "method": "lattice",
+          "rows": 35,
+          "cols": 10
+        },
+        {
+          "page": 51,
+          "method": "lattice",
+          "rows": 36,
+          "cols": 10
+        },
+        {
+          "page": 52,
+          "method": "lattice",
+          "rows": 39,
+          "cols": 8
+        },
+        {
+          "page": 53,
+          "method": "lattice",
+          "rows": 65,
+          "cols": 9
+        },
+        {
+          "page": 54,
+          "method": "lattice",
+          "rows": 63,
+          "cols": 9
+        },
+        {
+          "page": 55,
+          "method": "lattice",
+          "rows": 19,
+          "cols": 10
+        },
+        {
+          "page": 56,
+          "method": "lattice",
+          "rows": 27,
+          "cols": 10
+        },
+        {
+          "page": 57,
+          "method": "lattice",
+          "rows": 23,
+          "cols": 10
+        },
+        {
+          "page": 58,
+          "method": "lattice",
+          "rows": 27,
+          "cols": 10
+        },
+        {
+          "page": 59,
+          "method": "lattice",
+          "rows": 69,
+          "cols": 8
+        },
+        {
+          "page": 60,
+          "method": "lattice",
+          "rows": 10,
+          "cols": 10
+        },
+        {
+          "page": 61,
+          "method": "lattice",
+          "rows": 48,
+          "cols": 10
+        },
+        {
+          "page": 62,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 10
+        },
+        {
+          "page": 63,
+          "method": "lattice",
+          "rows": 48,
+          "cols": 10
+        },
+        {
+          "page": 63,
+          "method": "stream",
+          "rows": 10,
+          "cols": 5
+        },
+        {
+          "page": 64,
+          "method": "lattice",
+          "rows": 48,
+          "cols": 10
+        },
+        {
+          "page": 64,
+          "method": "stream",
+          "rows": 10,
+          "cols": 5
+        },
+        {
+          "page": 65,
+          "method": "lattice",
+          "rows": 48,
+          "cols": 10
+        },
+        {
+          "page": 65,
+          "method": "stream",
+          "rows": 10,
+          "cols": 5
+        },
+        {
+          "page": 66,
+          "method": "lattice",
+          "rows": 47,
+          "cols": 9
+        },
+        {
+          "page": 67,
+          "method": "lattice",
+          "rows": 48,
+          "cols": 10
+        },
+        {
+          "page": 68,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 10
+        },
+        {
+          "page": 69,
+          "method": "lattice",
+          "rows": 63,
+          "cols": 8
+        },
+        {
+          "page": 70,
+          "method": "lattice",
+          "rows": 2,
+          "cols": 7
+        },
+        {
+          "page": 70,
+          "method": "stream",
+          "rows": 50,
+          "cols": 9
+        },
+        {
+          "page": 71,
+          "method": "stream",
+          "rows": 6,
+          "cols": 9
+        },
+        {
+          "page": 72,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 10
+        },
+        {
+          "page": 73,
+          "method": "lattice",
+          "rows": 21,
+          "cols": 10
+        },
+        {
+          "page": 74,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 11
+        },
+        {
+          "page": 76,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 10
+        },
+        {
+          "page": 77,
+          "method": "lattice",
+          "rows": 25,
+          "cols": 10
+        },
+        {
+          "page": 78,
+          "method": "stream",
+          "rows": 46,
+          "cols": 9
+        },
+        {
+          "page": 79,
+          "method": "stream",
+          "rows": 5,
+          "cols": 8
+        },
+        {
+          "page": 80,
+          "method": "lattice",
+          "rows": 77,
+          "cols": 9
+        },
+        {
+          "page": 81,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 9
+        },
+        {
+          "page": 82,
+          "method": "stream",
+          "rows": 46,
+          "cols": 9
+        },
+        {
+          "page": 83,
+          "method": "stream",
+          "rows": 5,
+          "cols": 8
+        },
+        {
+          "page": 84,
+          "method": "lattice",
+          "rows": 77,
+          "cols": 9
+        },
+        {
+          "page": 85,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 9
+        },
+        {
+          "page": 86,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 8
+        },
+        {
+          "page": 87,
+          "method": "lattice",
+          "rows": 75,
+          "cols": 10
+        },
+        {
+          "page": 88,
+          "method": "lattice",
+          "rows": 29,
+          "cols": 8
+        },
+        {
+          "page": 89,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 8
+        },
+        {
+          "page": 90,
+          "method": "lattice",
+          "rows": 75,
+          "cols": 10
+        },
+        {
+          "page": 91,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 8
+        },
+        {
+          "page": 92,
+          "method": "lattice",
+          "rows": 2,
+          "cols": 7
+        },
+        {
+          "page": 92,
+          "method": "stream",
+          "rows": 50,
+          "cols": 9
+        },
+        {
+          "page": 93,
+          "method": "stream",
+          "rows": 6,
+          "cols": 9
+        },
+        {
+          "page": 94,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 10
+        },
+        {
+          "page": 95,
+          "method": "lattice",
+          "rows": 21,
+          "cols": 10
+        },
+        {
+          "page": 96,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 11
+        },
+        {
+          "page": 98,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 10
+        },
+        {
+          "page": 99,
+          "method": "lattice",
+          "rows": 25,
+          "cols": 10
+        },
+        {
+          "page": 100,
+          "method": "lattice",
+          "rows": 48,
+          "cols": 9
+        },
+        {
+          "page": 101,
+          "method": "lattice",
+          "rows": 54,
+          "cols": 9
+        },
+        {
+          "page": 101,
+          "method": "stream",
+          "rows": 11,
+          "cols": 5
+        },
+        {
+          "page": 103,
+          "method": "lattice",
+          "rows": 53,
+          "cols": 10
+        },
+        {
+          "page": 104,
+          "method": "lattice",
+          "rows": 44,
+          "cols": 10
+        },
+        {
+          "page": 105,
+          "method": "lattice",
+          "rows": 46,
+          "cols": 10
+        },
+        {
+          "page": 106,
+          "method": "lattice",
+          "rows": 44,
+          "cols": 9
+        },
+        {
+          "page": 107,
+          "method": "lattice",
+          "rows": 44,
+          "cols": 9
+        },
+        {
+          "page": 108,
+          "method": "lattice",
+          "rows": 44,
+          "cols": 10
+        },
+        {
+          "page": 109,
+          "method": "lattice",
+          "rows": 45,
+          "cols": 10
+        },
+        {
+          "page": 110,
+          "method": "stream",
+          "rows": 24,
+          "cols": 9
+        },
+        {
+          "page": 112,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 10
+        },
+        {
+          "page": 113,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 10
+        },
+        {
+          "page": 115,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 9
+        },
+        {
+          "page": 116,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 10
+        },
+        {
+          "page": 118,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 9
+        },
+        {
+          "page": 119,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 11
+        },
+        {
+          "page": 121,
+          "method": "lattice",
+          "rows": 15,
+          "cols": 10
+        },
+        {
+          "page": 122,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 11
+        },
+        {
+          "page": 124,
+          "method": "lattice",
+          "rows": 16,
+          "cols": 10
+        },
+        {
+          "page": 125,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 10
+        },
+        {
+          "page": 126,
+          "method": "lattice",
+          "rows": 52,
+          "cols": 10
+        },
+        {
+          "page": 127,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 9
+        },
+        {
+          "page": 128,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 9
+        },
+        {
+          "page": 129,
+          "method": "lattice",
+          "rows": 50,
+          "cols": 10
+        },
+        {
+          "page": 130,
+          "method": "lattice",
+          "rows": 51,
+          "cols": 10
+        },
+        {
+          "page": 131,
+          "method": "lattice",
+          "rows": 71,
+          "cols": 8
+        },
+        {
+          "page": 132,
+          "method": "lattice",
+          "rows": 12,
+          "cols": 8
+        },
+        {
+          "page": 133,
+          "method": "lattice",
+          "rows": 51,
+          "cols": 9
+        },
+        {
+          "page": 134,
+          "method": "lattice",
+          "rows": 65,
+          "cols": 10
+        },
+        {
+          "page": 135,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 10
+        },
+        {
+          "page": 136,
+          "method": "lattice",
+          "rows": 66,
+          "cols": 10
+        },
+        {
+          "page": 137,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 10
+        },
+        {
+          "page": 138,
+          "method": "lattice",
+          "rows": 75,
+          "cols": 9
+        },
+        {
+          "page": 139,
+          "method": "lattice",
+          "rows": 79,
+          "cols": 9
+        },
+        {
+          "page": 140,
+          "method": "lattice",
+          "rows": 53,
+          "cols": 9
+        },
+        {
+          "page": 141,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 10
+        },
+        {
+          "page": 142,
+          "method": "lattice",
+          "rows": 75,
+          "cols": 9
+        },
+        {
+          "page": 143,
+          "method": "lattice",
+          "rows": 79,
+          "cols": 9
+        },
+        {
+          "page": 144,
+          "method": "lattice",
+          "rows": 53,
+          "cols": 9
+        },
+        {
+          "page": 145,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 11
+        },
+        {
+          "page": 146,
+          "method": "lattice",
+          "rows": 75,
+          "cols": 10
+        },
+        {
+          "page": 147,
+          "method": "lattice",
+          "rows": 79,
+          "cols": 10
+        },
+        {
+          "page": 148,
+          "method": "lattice",
+          "rows": 53,
+          "cols": 8
+        },
+        {
+          "page": 149,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 11
+        },
+        {
+          "page": 150,
+          "method": "lattice",
+          "rows": 75,
+          "cols": 10
+        },
+        {
+          "page": 151,
+          "method": "lattice",
+          "rows": 79,
+          "cols": 10
+        },
+        {
+          "page": 152,
+          "method": "lattice",
+          "rows": 55,
+          "cols": 8
+        },
+        {
+          "page": 153,
+          "method": "lattice",
+          "rows": 3,
+          "cols": 9
+        },
+        {
+          "page": 155,
+          "method": "lattice",
+          "rows": 13,
+          "cols": 10
+        },
+        {
+          "page": 156,
+          "method": "lattice",
+          "rows": 59,
+          "cols": 9
+        },
+        {
+          "page": 157,
+          "method": "lattice",
+          "rows": 20,
+          "cols": 10
+        },
+        {
+          "page": 158,
+          "method": "lattice",
+          "rows": 38,
+          "cols": 10
+        },
+        {
+          "page": 158,
+          "method": "stream",
+          "rows": 9,
+          "cols": 5
+        },
+        {
+          "page": 159,
+          "method": "lattice",
+          "rows": 40,
+          "cols": 10
+        },
+        {
+          "page": 160,
+          "method": "lattice",
+          "rows": 40,
+          "cols": 10
+        },
+        {
+          "page": 160,
+          "method": "stream",
+          "rows": 5,
+          "cols": 5
+        },
+        {
+          "page": 162,
+          "method": "lattice",
+          "rows": 38,
+          "cols": 10
+        },
+        {
+          "page": 162,
+          "method": "stream",
+          "rows": 9,
+          "cols": 5
+        },
+        {
+          "page": 163,
+          "method": "lattice",
+          "rows": 38,
+          "cols": 10
+        },
+        {
+          "page": 163,
+          "method": "stream",
+          "rows": 9,
+          "cols": 5
+        },
+        {
+          "page": 164,
+          "method": "lattice",
+          "rows": 41,
+          "cols": 10
+        },
+        {
+          "page": 165,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 10
+        },
+        {
+          "page": 166,
+          "method": "lattice",
+          "rows": 28,
+          "cols": 10
+        },
+        {
+          "page": 167,
+          "method": "lattice",
+          "rows": 38,
+          "cols": 8
+        },
+        {
+          "page": 168,
+          "method": "lattice",
+          "rows": 39,
+          "cols": 8
+        },
+        {
+          "page": 169,
+          "method": "lattice",
+          "rows": 27,
+          "cols": 8
+        },
+        {
+          "page": 170,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 10
+        },
+        {
+          "page": 171,
+          "method": "lattice",
+          "rows": 45,
+          "cols": 10
+        },
+        {
+          "page": 172,
+          "method": "lattice",
+          "rows": 22,
+          "cols": 10
+        },
+        {
+          "page": 172,
+          "method": "stream",
+          "rows": 3,
+          "cols": 3
+        },
+        {
+          "page": 173,
+          "method": "lattice",
+          "rows": 64,
+          "cols": 10
+        },
+        {
+          "page": 174,
+          "method": "lattice",
+          "rows": 64,
+          "cols": 9
+        },
+        {
+          "page": 175,
+          "method": "lattice",
+          "rows": 64,
+          "cols": 9
+        },
+        {
+          "page": 176,
+          "method": "lattice",
+          "rows": 64,
+          "cols": 10
+        },
+        {
+          "page": 177,
+          "method": "lattice",
+          "rows": 65,
+          "cols": 10
+        },
+        {
+          "page": 178,
+          "method": "lattice",
+          "rows": 37,
+          "cols": 10
+        },
+        {
+          "page": 179,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 8
+        },
+        {
+          "page": 180,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 8
+        },
+        {
+          "page": 181,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 8
+        },
+        {
+          "page": 182,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 8
+        },
+        {
+          "page": 183,
+          "method": "lattice",
+          "rows": 30,
+          "cols": 8
+        },
+        {
+          "page": 184,
+          "method": "lattice",
+          "rows": 31,
+          "cols": 8
+        },
+        {
+          "page": 185,
+          "method": "lattice",
+          "rows": 34,
+          "cols": 8
+        }
+      ]
+    },
+    {
+      "id": "R010_bea_nipa_highlights",
+      "pdf": "benchmark/corpus/real/R010_bea_nipa_highlights.pdf",
+      "gold": "gold/R010_bea_nipa_highlights.json",
+      "struggle": true,
+      "failure_classes": [
+        "wide_tables",
+        "multi_level_header",
+        "government_layout",
+        "col_collapse"
+      ],
+      "elapsed_s": 0.616,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": null,
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 0.0,
+          "col_accuracy": 0.0,
+          "shape_exact_rate": 0.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 8,
+          "fn": 964
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              51,
+              22
+            ],
+            "pred_shape": [
+              38,
+              3
+            ],
+            "row_exact": false,
+            "col_exact": false,
+            "shape_exact": false,
+            "cell_precision": 0.0,
+            "cell_recall": 0.0,
+            "cell_f1": 0.0,
+            "cells_matched": 0,
+            "gold_nonzero_cells": 964,
+            "tp": 0,
+            "fp": 8,
+            "fn": 964
+          }
+        ],
+        "score_0_100": 35.0,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            7
+          ],
+          "n_pred_all_pages": 24,
+          "n_pred_gold_pages": 1,
+          "filtered": true
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 3,
+          "cols": 5
+        },
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 3,
+          "cols": 6
+        },
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 3,
+          "cols": 6
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 4,
+          "cols": 4
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 3,
+          "cols": 2
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 4,
+          "cols": 5
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 3,
+          "cols": 4
+        },
+        {
+          "page": 1,
+          "method": "stream",
+          "rows": 5,
+          "cols": 8
+        },
+        {
+          "page": 2,
+          "method": "stream",
+          "rows": 6,
+          "cols": 3
+        },
+        {
+          "page": 2,
+          "method": "stream",
+          "rows": 4,
+          "cols": 4
+        },
+        {
+          "page": 2,
+          "method": "stream",
+          "rows": 3,
+          "cols": 6
+        },
+        {
+          "page": 2,
+          "method": "stream",
+          "rows": 3,
+          "cols": 6
+        },
+        {
+          "page": 3,
+          "method": "stream",
+          "rows": 4,
+          "cols": 5
+        },
+        {
+          "page": 4,
+          "method": "stream",
+          "rows": 3,
+          "cols": 6
+        },
+        {
+          "page": 5,
+          "method": "lattice",
+          "rows": 5,
+          "cols": 2
+        },
+        {
+          "page": 6,
+          "method": "stream",
+          "rows": 3,
+          "cols": 3
+        },
+        {
+          "page": 7,
+          "method": "stream",
+          "rows": 38,
+          "cols": 3
+        },
+        {
+          "page": 8,
+          "method": "lattice",
+          "rows": 67,
+          "cols": 8
+        },
+        {
+          "page": 8,
+          "method": "lattice",
+          "rows": 52,
+          "cols": 23
+        },
+        {
+          "page": 9,
+          "method": "stream",
+          "rows": 12,
+          "cols": 3
+        },
+        {
+          "page": 10,
+          "method": "lattice",
+          "rows": 39,
+          "cols": 8
+        },
+        {
+          "page": 11,
+          "method": "lattice",
+          "rows": 49,
+          "cols": 4
+        },
+        {
+          "page": 12,
+          "method": "lattice",
+          "rows": 48,
+          "cols": 4
+        },
+        {
+          "page": 13,
+          "method": "stream",
+          "rows": 41,
+          "cols": 3
+        }
+      ]
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "pdf": "benchmark/corpus/real/42_real_insurance_italian.pdf",
+      "gold": "gold/42_real_insurance_italian.json",
+      "struggle": true,
+      "failure_classes": [
+        "non_english",
+        "nested_table",
+        "form_like_outer",
+        "multi_table"
+      ],
+      "elapsed_s": 0.007,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 2,
+          "predicted": 2,
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": null,
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 2,
+          "n_pred_tables": 2
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 1.0,
+          "recall": 0.9047619047619048,
+          "f1": 0.9500000000000001,
+          "tp": 19,
+          "fp": 0,
+          "fn": 2
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              7,
+              2
+            ],
+            "pred_shape": [
+              7,
+              2
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 1.0,
+            "cell_recall": 0.8461538461538461,
+            "cell_f1": 0.9166666666666666,
+            "cells_matched": 11,
+            "gold_nonzero_cells": 13,
+            "tp": 11,
+            "fp": 0,
+            "fn": 2
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "gold_shape": [
+              4,
+              2
+            ],
+            "pred_shape": [
+              4,
+              2
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 1.0,
+            "cell_recall": 1.0,
+            "cell_f1": 1.0,
+            "cells_matched": 8,
+            "gold_nonzero_cells": 8,
+            "tp": 8,
+            "fp": 0,
+            "fn": 0
+          }
+        ],
+        "score_0_100": 98.0,
+        "n_pred": 2,
+        "n_exp": 2,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 2,
+          "n_pred_gold_pages": 2,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 7,
+          "cols": 2
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 4,
+          "cols": 2
+        }
+      ]
+    },
+    {
+      "id": "43_real_row_span_gmc",
+      "pdf": "benchmark/corpus/real/43_real_row_span_gmc.pdf",
+      "gold": "gold/43_real_row_span_gmc.json",
+      "struggle": true,
+      "failure_classes": [
+        "row_span",
+        "merged_cells",
+        "government_health",
+        "multi_level_structure"
+      ],
+      "elapsed_s": 0.006,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "pairs": [
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.9164009058435908
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.9894736842105263,
+          "recall": 1.0,
+          "f1": 0.9947089947089947,
+          "tp": 94,
+          "fp": 1,
+          "fn": 0
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              40,
+              4
+            ],
+            "pred_shape": [
+              40,
+              4
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 0.9894736842105263,
+            "cell_recall": 1.0,
+            "cell_f1": 0.9947089947089947,
+            "cells_matched": 94,
+            "gold_nonzero_cells": 94,
+            "tp": 94,
+            "fp": 1,
+            "fn": 0
+          }
+        ],
+        "score_0_100": 99.78835978835978,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 1,
+          "n_pred_gold_pages": 1,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 40,
+          "cols": 4
+        }
+      ]
+    },
+    {
+      "id": "44_real_spanning_cells",
+      "pdf": "benchmark/corpus/real/44_real_spanning_cells.pdf",
+      "gold": "gold/44_real_spanning_cells.json",
+      "struggle": true,
+      "failure_classes": [
+        "col_span",
+        "multi_table",
+        "section_headers",
+        "numeric_grid"
+      ],
+      "elapsed_s": 0.006,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 2,
+          "predicted": 3,
+          "tp": 2,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8,
+          "exact": false,
+          "within_tolerance": false,
+          "tolerance": 0
+        },
+        "detection_iou": {
+          "skipped": false,
+          "match_mode": "iou",
+          "expected": 2,
+          "predicted": 3,
+          "tp": 2,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8,
+          "pairs": [
+            {
+              "pred_i": 0,
+              "gold_i": 0,
+              "iou": 0.9944003790700465
+            },
+            {
+              "pred_i": 2,
+              "gold_i": 1,
+              "iou": 0.9770942017838904
+            }
+          ],
+          "iou_thresh": 0.5
+        },
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 2,
+          "n_pred_tables": 3
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 1.0,
+          "recall": 0.5461538461538461,
+          "f1": 0.7064676616915423,
+          "tp": 71,
+          "fp": 0,
+          "fn": 59
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              21,
+              6
+            ],
+            "pred_shape": [
+              21,
+              6
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 1.0,
+            "cell_recall": 0.4864864864864865,
+            "cell_f1": 0.6545454545454547,
+            "cells_matched": 54,
+            "gold_nonzero_cells": 111,
+            "tp": 54,
+            "fp": 0,
+            "fn": 57
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 2,
+            "gold_shape": [
+              4,
+              6
+            ],
+            "pred_shape": [
+              4,
+              6
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 1.0,
+            "cell_recall": 0.8947368421052632,
+            "cell_f1": 0.9444444444444444,
+            "cells_matched": 17,
+            "gold_nonzero_cells": 19,
+            "tp": 17,
+            "fp": 0,
+            "fn": 2
+          }
+        ],
+        "score_0_100": 81.2587064676617,
+        "n_pred": 3,
+        "n_exp": 2,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 3,
+          "n_pred_gold_pages": 3,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 21,
+          "cols": 6
+        },
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 3,
+          "cols": 4
+        },
+        {
+          "page": 0,
+          "method": "lattice",
+          "rows": 4,
+          "cols": 6
+        }
+      ]
+    },
+    {
+      "id": "45_real_campaign_donors",
+      "pdf": "benchmark/corpus/real/45_real_campaign_donors.pdf",
+      "gold": "gold/45_real_campaign_donors.json",
+      "struggle": true,
+      "failure_classes": [
+        "stream_like",
+        "spanish",
+        "dense_rows",
+        "borderless_like"
+      ],
+      "elapsed_s": 0.521,
+      "cli_preset": "Auto",
+      "cli_stitch_multipage": false,
+      "status": "ok",
+      "metrics": {
+        "detection_count": {
+          "skipped": false,
+          "expected": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact": true,
+          "within_tolerance": true,
+          "tolerance": 0
+        },
+        "detection_iou": null,
+        "structure": {
+          "skipped": false,
+          "row_accuracy": 1.0,
+          "col_accuracy": 1.0,
+          "shape_exact_rate": 1.0,
+          "n_gold_tables": 1,
+          "n_pred_tables": 1
+        },
+        "cell": {
+          "skipped": false,
+          "precision": 0.9971509971509972,
+          "recall": 0.8951406649616368,
+          "f1": 0.9433962264150944,
+          "tp": 350,
+          "fp": 1,
+          "fn": 41
+        },
+        "per_table": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "gold_shape": [
+              56,
+              7
+            ],
+            "pred_shape": [
+              56,
+              7
+            ],
+            "row_exact": true,
+            "col_exact": true,
+            "shape_exact": true,
+            "cell_precision": 0.9971509971509972,
+            "cell_recall": 0.8951406649616368,
+            "cell_f1": 0.9433962264150944,
+            "cells_matched": 350,
+            "gold_nonzero_cells": 391,
+            "tp": 350,
+            "fp": 1,
+            "fn": 41
+          }
+        ],
+        "score_0_100": 97.73584905660377,
+        "n_pred": 1,
+        "n_exp": 1,
+        "page_filter": {
+          "gold_pages": [
+            0
+          ],
+          "n_pred_all_pages": 1,
+          "n_pred_gold_pages": 1,
+          "filtered": false
+        }
+      },
+      "method_mix": [
+        {
+          "page": 0,
+          "method": "stream",
+          "rows": 56,
+          "cols": 7
+        }
+      ]
+    }
+  ]
+}

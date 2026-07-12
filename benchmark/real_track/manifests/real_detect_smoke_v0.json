@@ -1,0 +1,280 @@
+{
+  "suite": "real_detect_smoke",
+  "version": 1,
+  "policy": "No ICDAR. Soft count gold for smoke; IoU when bboxes exist.",
+  "n_docs": 21,
+  "documents": [
+    {
+      "id": "30_real_ca_warn_report",
+      "pdf": "corpus/real/30_real_ca_warn_report.pdf",
+      "gold": "ground_truth/30_real_ca_warn_report.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "wide_tables",
+        "multi_page",
+        "many_rows",
+        "government_layout"
+      ],
+      "expected_table_count": null,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "31_real_background_checks",
+      "pdf": "corpus/real/31_real_background_checks.pdf",
+      "gold": "ground_truth/31_real_background_checks.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "multi_line_headers",
+        "dense_columns",
+        "abbreviations",
+        "single_page_wide"
+      ],
+      "expected_table_count": 1,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "32_real_census_table324",
+      "pdf": "corpus/real/32_real_census_table324.pdf",
+      "gold": "ground_truth/32_real_census_table324.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "statistical_table",
+        "footnotes_likely",
+        "numeric_columns",
+        "title_above_table"
+      ],
+      "expected_table_count": 1,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "pdf": "corpus/real/33_real_argentina_votes.pdf",
+      "gold": "ground_truth/33_real_argentina_votes.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "irregular_grid",
+        "political_layout",
+        "sectioned_tables",
+        "spanish"
+      ],
+      "expected_table_count": 1,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "pdf": "corpus/real/34_real_schools_contributions.pdf",
+      "gold": "ground_truth/34_real_schools_contributions.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "multi_page",
+        "stream_like",
+        "name_address_money",
+        "period_headers"
+      ],
+      "expected_table_count": null,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "pdf": "corpus/real/35_real_camelot_fuel.pdf",
+      "gold": "ground_truth/35_real_camelot_fuel.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "multiple_tables",
+        "scientific_layout",
+        "figure_plus_table"
+      ],
+      "expected_table_count": 1,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "36_real_two_tables",
+      "pdf": "corpus/real/36_real_two_tables.pdf",
+      "gold": "ground_truth/36_real_two_tables.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "two_tables",
+        "district_disease_counts",
+        "government_health"
+      ],
+      "expected_table_count": 2,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "pdf": "corpus/real/37_real_liabilities_superscript.pdf",
+      "gold": "ground_truth/37_real_liabilities_superscript.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "superscripts",
+        "continued_table",
+        "financial_columns",
+        "contd_marker"
+      ],
+      "expected_table_count": 1,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "38_real_irs_f1040",
+      "pdf": "corpus/real/38_real_irs_f1040.pdf",
+      "gold": "ground_truth/38_real_irs_f1040.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "acroform_like_lines",
+        "tax_form_layout",
+        "label_value_pairs",
+        "multi_column_form"
+      ],
+      "expected_table_count": 0,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "pdf": "corpus/real/39_real_fed_beigebook.pdf",
+      "gold": "ground_truth/39_real_fed_beigebook.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "long_document",
+        "section_headers",
+        "narrative_heavy",
+        "mixed_layout"
+      ],
+      "expected_table_count": 0,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "pdf": "corpus/real/40_real_arxiv_tensorflow.pdf",
+      "gold": "ground_truth/40_real_arxiv_tensorflow.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "multi_column",
+        "scientific",
+        "figures",
+        "references",
+        "equations_possible"
+      ],
+      "expected_table_count": null,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "pdf": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "gold": "ground_truth/41_real_nist_withdrawn_notice.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "long_document",
+        "formal_publication",
+        "headers_footers"
+      ],
+      "expected_table_count": 0,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "pdf": "corpus/real/42_real_insurance_italian.pdf",
+      "gold": "ground_truth/42_real_insurance_italian.json",
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "non_english",
+        "prose_plus_tables",
+        "multi_region",
+        "complex_layout"
+      ],
+      "expected_table_count": null,
+      "notes": "soft gold from existing real suite; structure core TBD"
+    },
+    {
+      "id": "R016_tabula_12s0324",
+      "pdf": "corpus/compete_real/R016_tabula_12s0324.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "statistical_table"
+      ],
+      "expected_table_count": 1,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    },
+    {
+      "id": "R017_tabula_argentina",
+      "pdf": "corpus/compete_real/R017_tabula_argentina.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "spanish",
+        "irregular_grid"
+      ],
+      "expected_table_count": 1,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    },
+    {
+      "id": "R018_camelot_health",
+      "pdf": "corpus/compete_real/R018_camelot_health.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "multi_table",
+        "government_health"
+      ],
+      "expected_table_count": null,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    },
+    {
+      "id": "R019_camelot_foo",
+      "pdf": "corpus/compete_real/R019_camelot_foo.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "visible_rules"
+      ],
+      "expected_table_count": 1,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    },
+    {
+      "id": "R001_irs_f1040_schedule_c",
+      "pdf": "corpus/compete_real/R001_irs_f1040_schedule_c.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "form_not_table"
+      ],
+      "expected_table_count": null,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    },
+    {
+      "id": "R006_fed_beigebook",
+      "pdf": "corpus/compete_real/R006_fed_beigebook.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "over_detect",
+        "narrative"
+      ],
+      "expected_table_count": null,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    },
+    {
+      "id": "R007_nist_fips197",
+      "pdf": "corpus/compete_real/R007_nist_fips197.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "borderless_prose_fp"
+      ],
+      "expected_table_count": null,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    },
+    {
+      "id": "R020_irs_schedule_d",
+      "pdf": "corpus/compete_real/R020_irs_schedule_d.pdf",
+      "gold": null,
+      "track": "real_detect_smoke",
+      "failure_classes": [
+        "form_not_table"
+      ],
+      "expected_table_count": null,
+      "notes": "in-repo compete_real / soft count for smoke expansion (Phase 11); not structure core"
+    }
+  ],
+  "updated": "2026-07-12"
+}
