@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "suite_id": "phase4_cells",
+  "generated_at": "2026-07-18T06:13:23.606796+00:00",
+  "status": {
+    "phase0": "PASS",
+    "phase1": "PASS",
+    "phase2": "PASS",
+    "phase3": "PASS",
+    "phase4": "INVALID \u2014 claimed PASS without live ICDAR G4.6/G4.7",
+    "phase5": "INVALID \u2014 claimed PASS without live ICDAR"
+  },
+  "detect_discipline": {
+    "summary": {
+      "n_docs": 34,
+      "n_scored": 34,
+      "exact_count_rate": 1.0,
+      "over_doc_rate": 0.0,
+      "under_doc_rate": 0.0,
+      "n_exact": 34,
+      "n_over": 0,
+      "n_under": 0,
+      "sum_pred": 29,
+      "sum_exp": 29,
+      "pred_gt_ratio": 1.0,
+      "n_severe_over": 0
+    }
+  },
+  "fp_strict": {
+    "summary": {
+      "n_docs": 12,
+      "n_pass": 12,
+      "n_fail": 0,
+      "fp_zero_rate": 1.0,
+      "pass_rate": 1.0
+    }
+  },
+  "real_structure_core": {
+    "n": 15,
+    "micro_cell_f1": 0.7871999363940801,
+    "micro_shape_exact": 0.8333333333333334,
+    "micro_row_acc": 0.8333333333333334,
+    "micro_col_acc": 0.9333333333333333,
+    "n_shape_zero": 2
+  },
+  "real_structure_full": {
+    "n_docs": 23,
+    "n_ok": 23,
+    "n_fail": 0,
+    "micro_cell_f1": 0.6718619259376777,
+    "micro_shape_exact_rate": 0.6884057971014493,
+    "micro_det_count_f1": 0.9565217391304348,
+    "micro_det_iou_f1": 0.8958333333333334,
+    "micro_score_0_100": 77.56288283460856,
+    "note": "soft progressive scores; G1 not claimed"
+  },
+  "code_changes": [
+    "try_densify_x_right_aligned_numeric (census 34x10)",
+    "merge_orphan_wrap_label_rows (gated)",
+    "NIPA glue: line# peel, signed 1-dec, multi-run join, placeholders, section headers, title pad",
+    "liabilities caption strip + MarketNSSFWMA unglue"
+  ],
+  "holdouts": {
+    "R010_cell_f1": 0.565,
+    "census_cell_f1": 0.699,
+    "R018": "50x8",
+    "R003": "30x9",
+    "R001": 0
+  },
+  "revoked_at": "2026-07-18T07:05:37.303749+00:00",
+  "revocation_reason": "Phase freezes must not claim PASS while ICDAR process gates were skipped. Re-freeze only after check_phase_gates.py --phase 4 exits 0 with live ICDAR board.",
+  "production_ready": false
+}

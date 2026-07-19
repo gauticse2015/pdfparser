@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "suite_id": "g3_industry",
+  "generated_at": "2026-07-18T06:32:27.449033+00:00",
+  "status": {
+    "phase0": "PASS",
+    "phase1": "PASS",
+    "phase2": "PASS",
+    "phase3": "PASS",
+    "phase4": "INVALID \u2014 claimed PASS without live ICDAR G4.6/G4.7",
+    "phase5": "INVALID \u2014 claimed PASS without live ICDAR"
+  },
+  "detect_discipline": {
+    "summary": {
+      "n_docs": 34,
+      "n_scored": 34,
+      "exact_count_rate": 1.0,
+      "over_doc_rate": 0.0,
+      "under_doc_rate": 0.0,
+      "n_exact": 34,
+      "n_over": 0,
+      "n_under": 0,
+      "sum_pred": 29,
+      "sum_exp": 29,
+      "pred_gt_ratio": 1.0,
+      "n_severe_over": 0
+    }
+  },
+  "fp_strict": {
+    "summary": {
+      "n_docs": 12,
+      "n_pass": 12,
+      "n_fail": 0,
+      "fp_zero_rate": 1.0,
+      "pass_rate": 1.0
+    }
+  },
+  "real_structure_core": {
+    "n": 15,
+    "micro_cell_f1": 0.7871999363940801,
+    "micro_shape_exact": 0.8333333333333334,
+    "micro_row_acc": 0.8333333333333334,
+    "micro_col_acc": 0.9333333333333333,
+    "n_shape_zero": 2
+  },
+  "real_structure_full": {
+    "n_docs": 23,
+    "n_ok": 23,
+    "micro_cell_f1": 0.6718619259376777,
+    "micro_shape_exact_rate": 0.6884057971014493,
+    "micro_det_count_f1": 0.9565217391304348
+  },
+  "hq_vs_auto": {
+    "auto_micro_cell_f1": 0.7871999363940801,
+    "hq_micro_cell_f1": 0.7871999363940801,
+    "n_docs": 15,
+    "hq_ge_auto": true,
+    "note": "Without external render tools HQ fail-softs to Auto-equivalent quality."
+  },
+  "latency_probe_fast": {
+    "preset": "fast",
+    "n_ok": 8,
+    "n_docs": 8,
+    "p50_ms": 10.880938018090092,
+    "p95_ms": 409.03888345346803,
+    "mean_ms": 89.67851063061971,
+    "max_ms": 604.4711249996908,
+    "budget_p95_ms": 30000.0,
+    "enable_full_page_render": false,
+    "allow_auto_render": false,
+    "note": "Fast preset hard-disables full-page render (G5.6)."
+  },
+  "gates": {
+    "G5.1": "G0-G4 hold on Auto",
+    "G5.2": "HQ >= Auto core cell",
+    "G5.3": "product TableOptions fields <= 12 (advanced nested)",
+    "G5.4": "classic stream off on product Auto",
+    "G5.5": "CI real-track-gates job",
+    "G5.6": "Fast preset no render; p95 within budget",
+    "G5.7": "T3 golds >= 25",
+    "G5.8": "README maturity labels honest"
+  },
+  "code_changes": [
+    "TableOptions slim surface (<=12) + TableAdvancedOptions Deref/serde flatten",
+    "TablePreset::Fast (never full-page render)",
+    "allow_classic_stream=false on Auto/Full/EngineV2/HQ/Fast (G5.4)",
+    "HQ skip full-page render when vector lattice already rich",
+    "CI real-track-gates job (discipline+fp+structure+phase 1-5)",
+    "run_latency_probe.py + run_hq_vs_auto.py",
+    "T3 golds expanded to 25 (hard_precision 70/71 tracking)",
+    "GATE-5 automation in check_phase_gates.py"
+  ],
+  "holdouts": {
+    "R010_cell_f1": 0.565,
+    "census_cell_f1": 0.699,
+    "R018": "50x8",
+    "R003": "30x9",
+    "R001": 0
+  },
+  "production_ready": false,
+  "notes": "Phase 5 industry polish complete. ICDAR external optional (not CI). Core cell ~0.787 holds.",
+  "revoked_at": "2026-07-18T07:05:37.304179+00:00",
+  "revocation_reason": "Phase freezes must not claim PASS while ICDAR process gates were skipped. Re-freeze only after check_phase_gates.py --phase 4 exits 0 with live ICDAR board."
+}
