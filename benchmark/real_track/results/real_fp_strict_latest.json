@@ -1,0 +1,109 @@
+{
+  "suite": "real_fp_smoke_strict",
+  "generated_at": "2026-07-18T10:56:53.340206+00:00",
+  "summary": {
+    "n_docs": 12,
+    "n_pass": 12,
+    "n_fail": 0,
+    "fp_zero_rate": 1.0,
+    "pass_rate": 1.0
+  },
+  "documents": [
+    {
+      "id": "38_real_irs_f1040",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "R001_irs_f1040_schedule_c",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "R002_irs_f1040",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "R006_fed_beigebook",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "R007_nist_fips197",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "R020_irs_schedule_d",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "arxiv_download",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "nist_fips_download",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "id": "fed_beigebook_download",
+      "n_exp": 0,
+      "tol": 0,
+      "n_pred": 0,
+      "pass": true,
+      "status": "ok"
+    }
+  ]
+}
