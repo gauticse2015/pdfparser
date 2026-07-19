@@ -416,9 +416,11 @@ def render_report(results: dict, analysis: dict, prev: dict | None) -> str:
         u, c = us.get(k), cl.get(k)
         a = ca.get(k)
         delta = (u - c) if u is not None and c is not None else None
+        u_s = f"{u:.3f}" if u is not None else "—"
+        c_s = f"{c:.3f}" if c is not None else "—"
         a_s = f"{a:.3f}" if a is not None else "—"
         d_s = f"{delta:+.3f}" if delta is not None else "—"
-        lines.append(f"| {k} | {u:.3f} | {c:.3f} | {a_s} | {d_s} |\n")
+        lines.append(f"| {k} | {u_s} | {c_s} | {a_s} | {d_s} |\n")
 
     if prev and "results" in prev and "pdfparser" in prev["results"]:
         p = prev["results"]["pdfparser"]
