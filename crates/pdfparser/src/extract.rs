@@ -175,21 +175,15 @@ pub fn page_tables(
 
 /// K25 / HQ: whether to request external full-page gray render for this page.
 ///
-/// - Explicit: `enable_full_page_render` (HighQuality preset).
-/// - Opportunistic (Auto post-G1): `allow_auto_render` and vector line probe is
-///   weak while multi-column text is strong.
+/// - Explicit HQ (`enable_full_page_render`): request render **unless** vector
+///   lattice is already rich. Blind full-page render on strong vector pages
+///   can inject decorative rules and regress cell F1 (e.g. schools contributions).
+/// - Opportunistic Auto (`allow_auto_render`): weak vector + multi-col text.
 fn want_full_page_render(
     table_opts: &TableOptions,
     rules: &[pdfparser_content::RuleSegment],
     runs: &[pdfparser_ir::TextRun],
 ) -> bool {
-    if table_opts.enable_full_page_render {
-        return true;
-    }
-    if !table_opts.allow_auto_render {
-        return false;
-    }
-    // Opportunistic: few axis-aligned rules but strong multi-col text bands.
     let h = rules
         .iter()
         .filter(|r| r.is_horizontal(1.5) && r.len() >= 8.0)
@@ -198,8 +192,18 @@ fn want_full_page_render(
         .iter()
         .filter(|r| r.is_vertical(1.5) && r.len() >= 8.0)
         .count();
-    if h >= 4 && v >= 3 {
-        return false; // vector lattice already rich
+    let vector_rich = h >= 4 && v >= 3;
+
+    if table_opts.enable_full_page_render {
+        // HighQuality: skip when vector lattice already owns the page.
+        return !vector_rich;
+    }
+    if !table_opts.allow_auto_render {
+        return false;
+    }
+    // Opportunistic: few axis-aligned rules but strong multi-col text bands.
+    if vector_rich {
+        return false;
     }
     let mut lefts: Vec<f32> = runs
         .iter()

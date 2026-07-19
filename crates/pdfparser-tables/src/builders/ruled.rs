@@ -166,6 +166,13 @@ pub fn detect_ruled_tables(
         if !used_raster || t.fill_rate > 0.05 {
             strip_trailing_footer_totals(t);
         }
+        // Drop fully empty leading/trailing rows and empty outer columns that
+        // are not part of the data span (decorative frame chrome).
+        // Never trim pure image lattices: all cells are text-empty, so border
+        // trim would collapse the schema to nothing.
+        if !(used_raster && t.fill_rate < 0.05) {
+            trim_empty_border_rows_cols(t);
+        }
     }
 
     tables.sort_by(|a, b| {
@@ -487,18 +494,22 @@ fn table_from_component(
     // Horizontal lines (rows): joint count only (or looser span) — multi-level headers often
     // have short H rules only under sub-columns (Act/Bud), which must be kept for structure.
     let min_jpl = opts.lattice_min_joints_per_line.max(1) as usize;
+    let tun = &opts.tuning;
     // Raster lines often have incomplete joint spans at image edges — use looser span.
     let (v_span, h_span) = if used_raster {
-        (0.15, 0.10)
+        (
+            tun.lattice_raster_v_span_frac,
+            tun.lattice_raster_h_span_frac,
+        )
     } else {
-        (0.40, 0.22)
+        (tun.lattice_v_span_frac, tun.lattice_h_span_frac)
     };
     xs = filter_joint_supported_coords(&xs, joints, tol, true, min_jpl, v_span);
     ys = filter_joint_supported_coords(&ys, joints, tol, false, min_jpl, h_span);
     // Recover long H rules that joint-span filter dropped (partial joints on
     // dashed/short-tick corners). Only when joint-filtered H is clearly
-    // under-dense vs physical long H segments (ratio ≥ 1.5×) — avoids
-    // re-introducing double-rules on already-dense grids.
+    // under-dense vs physical long H segments — avoids re-introducing
+    // double-rules on already-dense grids.
     {
         let x_lo = xs.iter().copied().fold(f32::INFINITY, f32::min);
         let x_hi = xs.iter().copied().fold(f32::NEG_INFINITY, f32::max);
@@ -506,11 +517,13 @@ fn table_from_component(
         let long_h: Vec<f32> = h_idx
             .iter()
             .map(|&i| h_segs[i])
-            .filter(|h| (h.x1 - h.x0).abs() >= width * 0.55)
+            .filter(|h| (h.x1 - h.x0).abs() >= width * tun.lattice_long_h_width_frac)
             .map(|h| h.y)
             .collect();
         let long_clustered = cluster_coords(&long_h, tol);
-        if long_clustered.len() as f32 >= ys.len() as f32 * 1.5 && long_clustered.len() > ys.len() {
+        if long_clustered.len() as f32 >= ys.len() as f32 * tun.lattice_long_h_recover_ratio
+            && long_clustered.len() > ys.len()
+        {
             let mut merged = ys.clone();
             merged.extend(long_clustered);
             ys = cluster_coords(&merged, tol);
@@ -540,15 +553,39 @@ fn table_from_component(
     if opts.lattice_text_densify {
         let y_hi = y_ttb.iter().copied().fold(f32::NEG_INFINITY, f32::max);
         let y_lo = y_ttb.iter().copied().fold(f32::INFINITY, f32::min);
-        // Stub/line-number columns often sit left of the ruled number grid
-        // (BEA NIPA/GDP tables). Expand frame X before densify.
-        let xs_exp = expand_xs_exterior_text_cols(&xs, runs, y_hi, y_lo, min_cell);
+        // Stub/line-number columns often sit just left of a ruled number grid.
+        // Expand frame X at most carefully before left-edge densify.
+        let dens_params = densify_params_from_tuning(&opts.tuning);
+        let xs_exp = expand_xs_exterior_text_cols(&xs, runs, y_hi, y_lo, min_cell, &dens_params);
         if xs_exp.len() > xs.len() {
-            xs = xs_exp;
-            text_col_recovery = true;
+            let before_c = xs.len().saturating_sub(1);
+            let after_c = xs_exp.len().saturating_sub(1);
+            // Narrow frames: allow at most +1 exterior stub column (avoids
+            // multi-word left-edge soup inventing several phantom cols).
+            let max_extra = opts.tuning.densify_x_narrow_max_extra as usize;
+            if !(before_c <= 3 && after_c > before_c + max_extra) {
+                xs = xs_exp;
+                text_col_recovery = true;
+            }
         }
-        let (x_densified, synth) = densify_x_from_text_cols(&xs, runs, y_hi, y_lo, min_cell);
-        if x_densified.len() as u32 <= opts.lattice_max_cols + 1 && x_densified.len() > xs.len() {
+        let (x_densified, synth) =
+            densify_x_from_text_cols(&xs, runs, y_hi, y_lo, min_cell, &dens_params);
+        // Reject densify explosions (left-edge soup → many phantom cols).
+        let dens_cols = x_densified.len().saturating_sub(1);
+        let base_cols = xs.len().saturating_sub(1).max(1);
+        let tun = &opts.tuning;
+        let exploded_x = dens_cols > tun.densify_x_explode_abs_cols as usize
+            && dens_cols as f32
+                > (base_cols as f32) * tun.densify_x_explode_growth_factor
+                    + tun.densify_x_explode_growth_add;
+        // Narrow grids: at most +N synthetic V (multi-word false densify).
+        let narrow_x_explode =
+            base_cols <= 3 && dens_cols > base_cols + tun.densify_x_narrow_max_extra as usize;
+        if !exploded_x
+            && !narrow_x_explode
+            && x_densified.len() as u32 <= opts.lattice_max_cols + 1
+            && x_densified.len() > xs.len()
+        {
             xs = x_densified;
             synthetic_v_xs = synth;
             text_col_recovery = true;
@@ -574,7 +611,38 @@ fn table_from_component(
 
         // Sparse intermediate H rules under-count rows vs text bands (multi-col or
         // regular single-run body). Always attempt densify when under-dense.
-        {
+        //
+        // Skip Y densify on multi-line prose grids: rich V skeleton + few H
+        // rules + low numeric density → H already marks true rows; densify
+        // would shred wrapped cell text into phantom rows. Statistical grids
+        // are digit-heavy and need densify. Thresholds: `opts.tuning`.
+        let v_cols_now = xs.len().saturating_sub(1);
+        let h_rows_now = y_ttb.len().saturating_sub(1);
+        let numeric_frac = {
+            let mut ne = 0u32;
+            let mut num = 0u32;
+            for r in runs {
+                let t = r.text.trim();
+                if t.is_empty() {
+                    continue;
+                }
+                ne += 1;
+                if t.chars().any(|c| c.is_ascii_digit()) {
+                    num += 1;
+                }
+            }
+            if ne == 0 {
+                0.0
+            } else {
+                num as f32 / ne as f32
+            }
+        };
+        let tun = &opts.tuning;
+        let skip_y_densify = v_cols_now >= tun.densify_y_skip_min_v_cols as usize
+            && h_rows_now <= tun.densify_y_skip_max_h_rows as usize
+            && h_rows_now >= tun.densify_y_skip_min_h_rows as usize
+            && numeric_frac < tun.densify_y_skip_numeric_frac;
+        if !skip_y_densify {
             let y_before = y_ttb.clone();
             let (y_densified, synth) = densify_y_from_text_bands(
                 &y_ttb,
@@ -582,15 +650,36 @@ fn table_from_component(
                 xs[0],
                 *xs.last().unwrap_or(&xs[0]),
                 min_cell,
+                &dens_params,
             );
             if y_densified.len() as u32 > opts.lattice_max_rows + 1 {
                 // Too many inferred rows — keep pre-densify anchors.
                 y_ttb = y_before;
             } else if y_densified.len() > y_before.len() {
-                y_ttb = y_densified;
-                // Prefer densify synth when it grew the grid (may replace overdense synth).
-                synthetic_h_ys = synth;
-                text_row_recovery = true;
+                let before_rows = y_before.len().saturating_sub(1);
+                let after_rows = y_densified.len().saturating_sub(1);
+                // Growth policy (thresholds from tuning; geometric, not corpus-specific):
+                // - Small +1/+2 row recovery on near-complete H grids: keep.
+                // - Mid-size grids that roughly double (wrap densify): reject.
+                // - Sparse-H statistical tables that grow by 3×+: keep.
+                //
+                // Note: "small recovery" and "wrap explode" ranges are disjoint
+                // by construction (growth ≤ lo vs growth > lo), so no dual-branch.
+                let growth = after_rows as f32 / (before_rows.max(1) as f32);
+                let wrap_explode = before_rows >= tun.densify_y_explode_min_before as usize
+                    && after_rows > before_rows + tun.densify_y_small_delta_max as usize
+                    && growth > tun.densify_y_explode_growth_lo
+                    && growth <= tun.densify_y_explode_growth_hi;
+                if wrap_explode {
+                    y_ttb = y_before;
+                } else {
+                    // Pitch gates inside densify_y already reject wrap-line explosions.
+                    // Sparse-H statistical tables legitimately grow 3 → 30+ body rows.
+                    y_ttb = y_densified;
+                    // Prefer densify synth when it grew the grid (may replace overdense synth).
+                    synthetic_h_ys = synth;
+                    text_row_recovery = true;
+                }
             }
         }
     }
@@ -677,6 +766,10 @@ fn table_from_component(
 
     // One run → one cell (avoids boundary double-counts that block colspan).
     // Wide multi-col runs are split in assign_runs_exclusive when bboxes span.
+    //
+    // Do **not** redistribute here: `merge_spans_dense` re-binds runs onto
+    // master cells and would wipe any pre-span spill. Redistribute once after
+    // the final exclusive assign (below).
     let texts = assign_runs_exclusive(runs, &flat_bboxes);
     let mut filled = 0usize;
     for (i, text) in texts.into_iter().enumerate() {
@@ -687,10 +780,6 @@ fn table_from_component(
         }
         grid[r][c].text = text;
     }
-    // When PDF stores a whole data line as one string with a narrow bbox,
-    // exclusive assign dumps all tokens into one cell. Redistribute
-    // multi-token cells across empty same-row neighbors (tabular pattern).
-    redistribute_row_tokens(&mut grid);
 
     let total = (nrows * ncols).max(1);
     let fill_rate = filled as f32 / total as f32;
@@ -739,14 +828,16 @@ fn table_from_component(
                 }
             }
         }
+        // Span re-assign can re-dump multi-token lines into one master; spill
+        // again so year/number grids keep per-column tokens.
+        redistribute_row_tokens(&mut grid);
     }
 
-    // Dense emission: masters carry colspan/rowspan; covered slots stay empty strings
-    // so structure matches ICDAR-style grids (text at top-left of span, blanks elsewhere).
+    // Dense emission: masters carry colspan/rowspan; covered slots stay empty
+    // under spans (text at top-left of span).
     let (cells, max_row, max_col) = emit_cells_dense(&grid);
-    // Drop nearly empty interior columns (BEA GDP exterior densify can invent gutters).
-    // Never collapse pure image lattices: all cells are text-empty so every interior
-    // column would look "empty" and shred the ruled schema to 2 columns.
+    // Drop completely empty interior columns after densify can invent gutters.
+    // Never collapse pure image lattices (all cells empty → would shred schema).
     let (cells, max_row, max_col) = if raster_primary && opts.raster_allow_empty_cells {
         (cells, max_row, max_col)
     } else {
@@ -860,7 +951,20 @@ fn table_from_component(
         fill_rate,
         weak_edges,
         joint_count: joints.len() as u32,
+        text_row_recovery,
+        text_col_recovery,
+        multitable_stream_recovery: false,
+        stream_vs_overwide_hybrid: false,
     })
+}
+
+/// Build densify params from caller-overridable tuning (shared defaults).
+fn densify_params_from_tuning(tun: &crate::TableTuning) -> super::densify::DensifyParams {
+    super::densify::DensifyParams {
+        pitch_cv_max: tun.densify_pitch_cv_max,
+        exterior_pad_frac: tun.densify_x_exterior_pad_frac,
+        short_token_chars: tun.densify_x_short_token_chars as usize,
+    }
 }
 
 /// Keep clustered line coordinates that:
@@ -925,6 +1029,9 @@ fn filter_joint_supported_coords(
 ///
 /// Fires when a row has exactly one (or few) non-empty cells whose whitespace
 /// token count matches the empty span width — classic TJ-string whole-row dump.
+///
+/// Phase-4: also spill a multi-numeric token cell rightward into empty neighbors
+/// (census body rows: "11,062.6 1,540.0 9,522.6" glued in col0).
 fn redistribute_row_tokens(grid: &mut [Vec<RawCell>]) {
     for row in grid.iter_mut() {
         let ncols = row.len();
@@ -937,60 +1044,454 @@ fn redistribute_row_tokens(grid: &mut [Vec<RawCell>]) {
             .filter(|(_, c)| c.active && !c.text.trim().is_empty())
             .map(|(i, _)| i)
             .collect();
-        // One multi-token cell + rest empty, or a dense block of empty cols.
-        if nonempty.len() != 1 {
-            continue;
-        }
-        let src = nonempty[0];
-        let tokens: Vec<String> = row[src]
-            .text
-            .split_whitespace()
-            .filter(|t| !t.is_empty())
-            .map(|s| s.to_string())
-            .collect();
-        // Full-row tabular dumps only: token count ≈ column count (not 2-token
-        // headers like "FY24 LABEL" that must stay in one cell for colspan).
-        if tokens.len() < ncols.saturating_sub(1) || tokens.len() > ncols {
-            continue;
-        }
-        // Only redistribute dense data rows (majority digit-bearing tokens).
-        let data_like = tokens
-            .iter()
-            .filter(|t| t.chars().any(|c| c.is_ascii_digit()))
-            .count();
-        if data_like * 2 < tokens.len() {
-            continue;
-        }
-        // Need enough empty slots (including src) for all tokens.
-        let empty_n = row.iter().filter(|c| c.text.trim().is_empty()).count();
-        if empty_n + 1 < tokens.len() {
-            continue;
-        }
-        // Align tokens to columns: if token count == ncols, 1:1 left-to-right.
-        // Else place tokens into the contiguous empty region centered on src.
-        let (start, end) = if tokens.len() == ncols {
-            (0, ncols)
-        } else {
-            // Expand from src to cover tokens.len() columns without leaving the row.
-            let need = tokens.len();
-            let mut s = src.saturating_sub(need.saturating_sub(1) / 2);
-            if s + need > ncols {
-                s = ncols - need;
+        // --- Path A: single multi-token cell dumps into full/empty row ---
+        if nonempty.len() == 1 {
+            let src = nonempty[0];
+            let tokens: Vec<String> = tokenize_cell(&row[src].text);
+            // Full-row tabular dumps only: token count ≈ column count (not 2-token
+            // headers like "FY24 LABEL" that must stay in one cell for colspan).
+            if tokens.len() >= ncols.saturating_sub(1)
+                && tokens.len() <= ncols
+                && token_majority_numeric(&tokens)
+            {
+                let empty_n = row.iter().filter(|c| c.text.trim().is_empty()).count();
+                if empty_n + 1 >= tokens.len() {
+                    let (start, end) = if tokens.len() == ncols {
+                        (0, ncols)
+                    } else {
+                        let need = tokens.len();
+                        let mut s = src.saturating_sub(need.saturating_sub(1) / 2);
+                        if s + need > ncols {
+                            s = ncols - need;
+                        }
+                        (s, s + need)
+                    };
+                    if (start..end).all(|c| c == src || row[c].text.trim().is_empty()) {
+                        row[src].text.clear();
+                        for (i, tok) in tokens.into_iter().enumerate() {
+                            let c = start + i;
+                            if c < ncols {
+                                row[c].text = tok;
+                            }
+                        }
+                        continue;
+                    }
+                }
             }
-            (s, s + need)
-        };
-        // Only redistribute if target columns (except src) are empty.
-        if !(start..end).all(|c| c == src || row[c].text.trim().is_empty()) {
-            continue;
         }
-        row[src].text.clear();
-        for (i, tok) in tokens.into_iter().enumerate() {
-            let c = start + i;
-            if c < ncols {
-                row[c].text = tok;
+
+        // --- Path A2: 2-col label|threshold rows with all text dumped in col0 ---
+        // "Low-income Less than 50" + empty col1 → split at first threshold phrase.
+        if ncols == 2
+            && nonempty.len() == 1
+            && nonempty[0] == 0
+            && row[1].active
+            && row[1].text.trim().is_empty()
+        {
+            let src = row[0].text.trim();
+            if let Some((left, right)) = split_label_threshold(src) {
+                row[0].text = left;
+                row[1].text = right;
+                continue;
+            }
+        }
+
+        // --- Path B: spill multi-numeric tokens right into empty neighbors ---
+        // Walk left→right so cascading spills fill a sparse body row.
+        for src in 0..ncols {
+            if !row[src].active || row[src].text.trim().is_empty() {
+                continue;
+            }
+            let tokens = tokenize_cell(&row[src].text);
+            if tokens.len() < 2 || !token_majority_numeric(&tokens) {
+                continue;
+            }
+            // Count contiguous empty active cells to the right.
+            let mut right_empty = 0usize;
+            for c in (src + 1)..ncols {
+                if !row[c].active {
+                    break;
+                }
+                if row[c].text.trim().is_empty() {
+                    right_empty += 1;
+                } else {
+                    break;
+                }
+            }
+            // Need room for tokens beyond the first (kept in src).
+            if right_empty + 1 >= tokens.len() {
+                // Place one token per column starting at src.
+                row[src].text = tokens[0].clone();
+                for (i, tok) in tokens.iter().skip(1).enumerate() {
+                    let c = src + 1 + i;
+                    if c < ncols && row[c].text.trim().is_empty() {
+                        row[c].text = tok.clone();
+                    }
+                }
+                continue;
+            }
+            // Path B2: glued year/number dump landed mid-row with empties on
+            // *both* sides (label | · | · | 19901992… | · | ·). Fill empty
+            // data columns left→right after the last non-empty label cell.
+            let empty_slots: Vec<usize> = (0..ncols)
+                .filter(|&c| c != src && row[c].active && row[c].text.trim().is_empty())
+                .collect();
+            if empty_slots.len() + 1 < tokens.len() {
+                continue;
+            }
+            // Prefer slots from first empty at/after a leading label block.
+            let mut label_end = 0usize;
+            while label_end < ncols
+                && row[label_end].active
+                && !row[label_end].text.trim().is_empty()
+                && label_end != src
+            {
+                label_end += 1;
+            }
+            let mut targets: Vec<usize> = empty_slots
+                .iter()
+                .copied()
+                .filter(|&c| c >= label_end)
+                .collect();
+            if !targets.contains(&src) {
+                targets.push(src);
+                targets.sort_unstable();
+            }
+            if targets.len() < tokens.len() {
+                // Include empties left of src if still short.
+                targets = empty_slots.clone();
+                if !targets.contains(&src) {
+                    targets.push(src);
+                    targets.sort_unstable();
+                }
+            }
+            if targets.len() < tokens.len() {
+                continue;
+            }
+            row[src].text.clear();
+            for (i, tok) in tokens.into_iter().enumerate() {
+                if i < targets.len() {
+                    row[targets[i]].text = tok;
+                }
             }
         }
     }
+}
+
+/// Split "Low-income Less than 50" / "Upper-income 120 or more" into label | rest.
+fn split_label_threshold(text: &str) -> Option<(String, String)> {
+    let t = text.trim();
+    if t.len() < 8 {
+        return None;
+    }
+    // Prefer known threshold phrase starts — earliest match wins so
+    // "At least 50 and less than 80" splits at "At least", not mid-phrase.
+    const MARKERS: &[&str] = &[
+        " Less than ",
+        " less than ",
+        " At least ",
+        " at least ",
+        " More than ",
+        " more than ",
+        " Greater than ",
+        " greater than ",
+        " or more",
+        " or less",
+    ];
+    let mut best: Option<(usize, &'static str)> = None;
+    for m in MARKERS {
+        if let Some(idx) = t.find(m) {
+            if idx >= 3 {
+                best = match best {
+                    Some((bi, _)) if bi <= idx => best,
+                    _ => Some((idx, m)),
+                };
+            }
+        }
+    }
+    if let Some((idx, m)) = best {
+        let left = t[..idx].trim();
+        let right = t[idx..].trim();
+        if !left.is_empty() && !right.is_empty() {
+            // For " 120 or more" style, marker is suffix — find number start
+            if m.trim_start().starts_with("or ") {
+                let bytes = t.as_bytes();
+                let mut i = idx;
+                while i > 0 && bytes[i - 1].is_ascii_whitespace() {
+                    i -= 1;
+                }
+                let end_num = i;
+                while i > 0
+                    && (bytes[i - 1].is_ascii_digit()
+                        || bytes[i - 1] == b','
+                        || bytes[i - 1] == b'.')
+                {
+                    i -= 1;
+                }
+                if i < end_num && i >= 3 {
+                    let left = t[..i].trim();
+                    let right = t[i..].trim();
+                    if !left.is_empty() && right.chars().any(|c| c.is_ascii_digit()) {
+                        return Some((left.to_string(), right.to_string()));
+                    }
+                }
+            } else {
+                return Some((left.to_string(), right.to_string()));
+            }
+        }
+    }
+    // Fallback: first multi-digit number starts the value half.
+    let bytes = t.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i].is_ascii_digit() {
+            // require ≥2 digits in a row
+            let start = i;
+            while i < bytes.len()
+                && (bytes[i].is_ascii_digit() || bytes[i] == b',' || bytes[i] == b'.')
+            {
+                i += 1;
+            }
+            if i - start >= 2 && start >= 4 {
+                let left = t[..start].trim();
+                let right = t[start..].trim();
+                if left.chars().any(|c| c.is_ascii_alphabetic()) && !right.is_empty() {
+                    return Some((left.to_string(), right.to_string()));
+                }
+            }
+        } else {
+            i += 1;
+        }
+    }
+    None
+}
+
+fn tokenize_cell(text: &str) -> Vec<String> {
+    let t = text.trim();
+    // Glued 4-digit years with no whitespace: "1990199219931994" → years.
+    // Geometric tabular pattern (ICDAR year-header rows), not corpus-specific.
+    if t.len() >= 8 && t.len() % 4 == 0 && t.chars().all(|c| c.is_ascii_digit()) {
+        let years: Vec<String> = t
+            .as_bytes()
+            .chunks(4)
+            .map(|c| String::from_utf8_lossy(c).into_owned())
+            .collect();
+        if years.iter().all(|y| {
+            y.parse::<u32>()
+                .ok()
+                .map(|n| (1900..=2100).contains(&n))
+                .unwrap_or(false)
+        }) {
+            return years;
+        }
+    }
+    // Glued decimals like "0.3230.2720.2650.290" (no spaces). Cap frac at 3
+    // digits when more digits follow (start of next number).
+    if t.contains('.')
+        && t.chars().all(|c| c.is_ascii_digit() || c == '.')
+        && t.matches('.').count() >= 2
+    {
+        let b = t.as_bytes();
+        let mut simple: Vec<String> = Vec::new();
+        let mut i = 0usize;
+        let mut ok = true;
+        while i < b.len() {
+            let start = i;
+            if !b[i].is_ascii_digit() {
+                ok = false;
+                break;
+            }
+            while i < b.len() && b[i].is_ascii_digit() {
+                i += 1;
+            }
+            if i >= b.len() || b[i] != b'.' {
+                ok = false;
+                break;
+            }
+            i += 1;
+            let frac_start = i;
+            while i < b.len() && b[i].is_ascii_digit() {
+                i += 1;
+                // After 3 frac digits, if another digit remains, it starts the
+                // next number ("0.3230.272" → 0.323 | 0.272).
+                if i - frac_start >= 3 && i < b.len() && b[i].is_ascii_digit() {
+                    break;
+                }
+            }
+            if i == frac_start {
+                ok = false;
+                break;
+            }
+            simple.push(t[start..i].to_string());
+        }
+        if ok && simple.len() >= 2 {
+            return simple;
+        }
+    }
+    // Join "11,062 . 6" / "11,062. 6" spaced decimals into one token.
+    let parts: Vec<&str> = text.split_whitespace().filter(|t| !t.is_empty()).collect();
+    let mut tokens: Vec<String> = Vec::new();
+    let mut i = 0;
+    while i < parts.len() {
+        // pattern: NUM . FRAC
+        if i + 2 < parts.len()
+            && parts[i].chars().any(|c| c.is_ascii_digit())
+            && parts[i + 1] == "."
+            && parts[i + 2].chars().all(|c| c.is_ascii_digit())
+        {
+            tokens.push(format!("{}.{}", parts[i], parts[i + 2]));
+            i += 3;
+            continue;
+        }
+        // pattern: NUM. FRAC (dot stuck to num already split wrong)
+        if i + 1 < parts.len()
+            && parts[i].ends_with('.')
+            && parts[i].chars().any(|c| c.is_ascii_digit())
+            && parts[i + 1].chars().all(|c| c.is_ascii_digit())
+        {
+            tokens.push(format!("{}{}", parts[i], parts[i + 1]));
+            i += 2;
+            continue;
+        }
+        // pattern: lone ". FRAC" after previous number token → append decimal
+        if i + 1 < parts.len()
+            && parts[i] == "."
+            && parts[i + 1].chars().all(|c| c.is_ascii_digit())
+            && !tokens.is_empty()
+            && tokens.last().unwrap().chars().any(|c| c.is_ascii_digit())
+            && !tokens.last().unwrap().contains('.')
+        {
+            let prev = tokens.pop().unwrap();
+            tokens.push(format!("{prev}.{}", parts[i + 1]));
+            i += 2;
+            continue;
+        }
+        // Phase-4: glued numbers without spaces ("804,006671,330636,903")
+        // split into comma-grouped numeric tokens.
+        let glued = split_glued_numeric(parts[i]);
+        if glued.len() > 1 {
+            tokens.extend(glued);
+        } else {
+            tokens.push(parts[i].to_string());
+        }
+        i += 1;
+    }
+    // Merge residual "N" + ".N" fragments left as separate tokens.
+    let mut merged = Vec::new();
+    let mut j = 0;
+    while j < tokens.len() {
+        if j + 1 < tokens.len()
+            && tokens[j].chars().any(|c| c.is_ascii_digit())
+            && !tokens[j].contains('.')
+            && tokens[j + 1].starts_with('.')
+            && tokens[j + 1].chars().skip(1).all(|c| c.is_ascii_digit())
+        {
+            merged.push(format!("{}{}", tokens[j], tokens[j + 1]));
+            j += 2;
+        } else {
+            merged.push(tokens[j].clone());
+            j += 1;
+        }
+    }
+    merged
+}
+
+/// Split runs of US-style numbers jammed together without whitespace.
+fn split_glued_numeric(s: &str) -> Vec<String> {
+    // Fast path: no digits → leave as-is.
+    if !s.bytes().any(|b| b.is_ascii_digit()) {
+        return vec![s.to_string()];
+    }
+    // Fast path: at most one thousands comma and no alphabetic junk — ordinary
+    // single number ("1,234.5") or plain digits; glued cases have ≥2 commas
+    // without separators ("804,006671,330") or multi-group digit runs.
+    let comma_n = s.chars().filter(|c| *c == ',').count();
+    if comma_n <= 1 && !s.chars().any(|c| c.is_ascii_alphabetic()) {
+        // Still may be glued without commas: "804006671330" is rare; comma-glued
+        // multi-numbers always have ≥2 commas. Single-comma / no-comma: one token.
+        return vec![s.to_string()];
+    }
+    // Match digit groups possibly with commas/decimals: 1,234.5 or 1234
+    let mut out = Vec::new();
+    let mut i = 0;
+    let chars: Vec<char> = s.chars().collect();
+    while i < chars.len() {
+        // skip junk
+        if !chars[i].is_ascii_digit() && chars[i] != '-' && chars[i] != '+' {
+            // keep non-number as own token if starts here
+            if out.is_empty() {
+                return vec![s.to_string()];
+            }
+            break;
+        }
+        let start = i;
+        if chars[i] == '-' || chars[i] == '+' {
+            i += 1;
+        }
+        if i >= chars.len() || !chars[i].is_ascii_digit() {
+            break;
+        }
+        // integer part with optional thousands commas
+        while i < chars.len() {
+            if chars[i].is_ascii_digit() {
+                i += 1;
+            } else if chars[i] == ','
+                && i + 3 < chars.len()
+                && chars[i + 1].is_ascii_digit()
+                && chars[i + 2].is_ascii_digit()
+                && chars[i + 3].is_ascii_digit()
+            {
+                // only consume comma when next is exactly 3 digits (thousands)
+                // but glued next number may start after 3 digits: 804,006671
+                // take comma+3digits as part of current number, then if more digits continue new number
+                i += 1; // comma
+                let mut digs = 0;
+                while i < chars.len() && chars[i].is_ascii_digit() && digs < 3 {
+                    i += 1;
+                    digs += 1;
+                }
+                if digs == 3 {
+                    // if more digits follow without comma, new number starts
+                    if i < chars.len() && chars[i].is_ascii_digit() {
+                        break; // current number ends; don't consume extra digits
+                    }
+                    continue;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        // optional decimal
+        if i < chars.len() && chars[i] == '.' {
+            i += 1;
+            while i < chars.len() && chars[i].is_ascii_digit() {
+                i += 1;
+            }
+        }
+        if i > start {
+            out.push(chars[start..i].iter().collect());
+        } else {
+            break;
+        }
+    }
+    if out.len() <= 1 {
+        vec![s.to_string()]
+    } else {
+        out
+    }
+}
+
+fn token_majority_numeric(tokens: &[String]) -> bool {
+    if tokens.is_empty() {
+        return false;
+    }
+    let data_like = tokens
+        .iter()
+        .filter(|t| t.chars().any(|c| c.is_ascii_digit()))
+        .count();
+    data_like * 2 >= tokens.len()
 }
 
 // ─── Invoice footer / totals row post-process ────────────────────────────────
@@ -1002,6 +1503,106 @@ fn redistribute_row_tokens(grid: &mut [Vec<RawCell>]) {
 /// (header + line items). Only runs when the table looks like line items and the
 /// trailing block has totals keywords — financial metric grids (Revenue/…) are
 /// left intact.
+/// Drop fully-empty leading/trailing rows and fully-empty outer columns.
+///
+/// Ruled grids often include blank frame rows (above header / below body) or
+/// gutter columns with no text. Never drops interior empty rows/cols (those may
+/// be structural blanks). A single empty outer column on wide grids (≥5 cols)
+/// is retained when it is the only edge empty (possible notes/placeholder col).
+pub fn trim_empty_border_rows_cols(table: &mut Table) {
+    let nrows = table.rows as usize;
+    let ncols = table.cols as usize;
+    if nrows < 2 || ncols < 2 || table.cells.is_empty() {
+        return;
+    }
+    let mut grid: Vec<Vec<bool>> = vec![vec![false; ncols]; nrows];
+    for c in &table.cells {
+        let r = c.row as usize;
+        let col = c.col as usize;
+        if r < nrows && col < ncols && !c.text.trim().is_empty() {
+            grid[r][col] = true;
+        }
+    }
+    let row_empty = |r: usize| -> bool { grid[r].iter().all(|&f| !f) };
+    let col_empty = |c: usize| -> bool { (0..nrows).all(|r| !grid[r][c]) };
+
+    let mut r0 = 0usize;
+    while r0 < nrows && row_empty(r0) {
+        r0 += 1;
+    }
+    let mut r1 = nrows;
+    while r1 > r0 && row_empty(r1 - 1) {
+        r1 -= 1;
+    }
+    let mut c0 = 0usize;
+    while c0 < ncols && col_empty(c0) {
+        c0 += 1;
+    }
+    let mut c1 = ncols;
+    while c1 > c0 && col_empty(c1 - 1) {
+        c1 -= 1;
+    }
+    // Keep a single empty outer column on multi-col grids only when the rest of
+    // the span still has content on both sides of that gutter (structural blank
+    // / notes column). Do not invent columns; only refuse to strip an existing
+    // empty edge that sits next to filled data.
+    if ncols >= 5 {
+        if c0 == 1 && c1 == ncols {
+            c0 = 0;
+        }
+        if c0 == 0 && c1 == ncols - 1 {
+            c1 = ncols;
+        }
+    }
+    // Keep ≥2×2 after trim; require some actual trim.
+    if r1 - r0 < 2 || c1 - c0 < 2 {
+        return;
+    }
+    if r0 == 0 && r1 == nrows && c0 == 0 && c1 == ncols {
+        return;
+    }
+
+    let mut new_cells = Vec::with_capacity(table.cells.len());
+    for mut cell in table.cells.drain(..) {
+        let r = cell.row as usize;
+        let c = cell.col as usize;
+        if r < r0 || r >= r1 || c < c0 || c >= c1 {
+            continue;
+        }
+        // Clamp span into surviving window.
+        let max_rowspan = (r1 - r) as u32;
+        let max_colspan = (c1 - c) as u32;
+        cell.row = (r - r0) as u32;
+        cell.col = (c - c0) as u32;
+        if cell.rowspan > max_rowspan {
+            cell.rowspan = max_rowspan.max(1);
+        }
+        if cell.colspan > max_colspan {
+            cell.colspan = max_colspan.max(1);
+        }
+        new_cells.push(cell);
+    }
+    if new_cells.is_empty() {
+        return;
+    }
+    let new_rows = (r1 - r0) as u32;
+    let new_cols = (c1 - c0) as u32;
+    table.cells = new_cells;
+    table.rows = new_rows;
+    table.cols = new_cols;
+    table.bbox = bbox_of_cells(&table.cells);
+    let filled = table
+        .cells
+        .iter()
+        .filter(|c| !c.text.trim().is_empty())
+        .count();
+    let total = (new_rows as usize).saturating_mul(new_cols as usize).max(1);
+    table.fill_rate = filled as f32 / total as f32;
+    table.notes.push(format!(
+        "trim_empty_border r0={r0} r1={r1} c0={c0} c1={c1} -> {new_rows}x{new_cols}"
+    ));
+}
+
 fn strip_trailing_footer_totals(table: &mut Table) {
     let nrows = table.rows as usize;
     let ncols = table.cols as usize;
@@ -1121,14 +1722,35 @@ fn looks_like_invoice_line_items(header: &[String], body: &[Vec<String>]) -> boo
             is_line_item_id(c0) || is_line_item_id(c1)
         })
         .count();
-    skuish * 2 >= body.len()
+    // Body-only path: need SKU-like IDs AND money-like amounts so statistical
+    // grids with numeric col-0 indices never look like invoices.
+    let moneyish = body
+        .iter()
+        .filter(|r| {
+            r.iter().any(|c| {
+                let t = c.trim();
+                t.contains('$')
+                    || t.contains('€')
+                    || t.contains('£')
+                    || (t.contains('.')
+                        && t.chars().filter(|ch| ch.is_ascii_digit()).count() >= 3
+                        && t.chars().all(|ch| {
+                            ch.is_ascii_digit() || ch == '.' || ch == ',' || ch == '-' || ch == ' '
+                        }))
+            })
+        })
+        .count();
+    skuish * 2 >= body.len() && moneyish * 2 >= body.len()
 }
 
 fn is_line_item_id(s: &str) -> bool {
     if s.is_empty() || cell_is_totals_label(s) {
         return false;
     }
-    if s.chars().all(|c| c.is_ascii_digit()) && s.len() <= 4 {
+    // Pure digits: product/line codes are typically 3–6 digits. Single-digit
+    // statistical row indices (0..N reclassification tables) must NOT look like
+    // invoice SKUs or footer-strip kills legitimate Total rows on ICDAR grids.
+    if s.chars().all(|c| c.is_ascii_digit()) && (3..=6).contains(&s.len()) {
         return true;
     }
     let upper = s.to_ascii_uppercase();
@@ -1164,7 +1786,13 @@ fn is_footer_totals_row(cells: &[String]) -> bool {
         .filter(|c| c.trim().is_empty())
         .count();
     let left_mostly_empty = left_empty as f32 / left_half.max(1) as f32 >= 0.5;
-    sparse || first_empty || first_totals || left_mostly_empty
+    // Dense "Total" summary rows (age-cohort / category totals with values in
+    // every column) must stay — only sparse / left-empty invoice footers strip.
+    // first_totals alone used to kill those statistical totals.
+    if first_totals {
+        return sparse || first_empty || left_mostly_empty;
+    }
+    sparse || first_empty || left_mostly_empty
 }
 
 fn row_has_totals_keyword(cells: &[String]) -> bool {
@@ -1506,7 +2134,32 @@ fn table_from_global_snap(
 
 #[cfg(test)]
 mod tests {
+    use super::super::densify::DensifyParams;
     use super::*;
+
+    #[test]
+    fn split_glued_numeric_fast_path_and_glued() {
+        // Ordinary single number: leave intact (fast path).
+        assert_eq!(split_glued_numeric("1,234.5"), vec!["1,234.5".to_string()]);
+        assert_eq!(split_glued_numeric("804"), vec!["804".to_string()]);
+        // Multi-comma glued US numbers: split into tokens.
+        let glued = split_glued_numeric("804,006671,330");
+        assert!(
+            glued.len() >= 2,
+            "expected multi-token split, got {glued:?}"
+        );
+        // Non-numeric: unchanged.
+        assert_eq!(split_glued_numeric("Total"), vec!["Total".to_string()]);
+    }
+
+    #[test]
+    fn tokenize_cell_splits_glued_numbers() {
+        let toks = tokenize_cell("804,006671,330636,903");
+        assert!(
+            toks.len() >= 2,
+            "glued census-style numbers should tokenize, got {toks:?}"
+        );
+    }
 
     #[test]
     fn two_disjoint_grids_two_components() {
@@ -1613,7 +2266,8 @@ mod tests {
                 runs.push(mk_run(*xi, y - 4.0, label));
             }
         }
-        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 30.0, 180.0, 3.0);
+        let (densified, synth) =
+            densify_y_from_text_bands(&y_h, &runs, 30.0, 180.0, 3.0, &DensifyParams::default());
         let nrows = densified.len().saturating_sub(1);
         assert_eq!(
             nrows, 12,
@@ -1635,7 +2289,8 @@ mod tests {
                 runs.push(mk_run(xi, y - 4.0, "x"));
             }
         }
-        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 0.0, 120.0, 3.0);
+        let (densified, synth) =
+            densify_y_from_text_bands(&y_h, &runs, 0.0, 120.0, 3.0, &DensifyParams::default());
         assert_eq!(densified.len(), y_h.len(), "ys={densified:?}");
         assert!(synth.is_empty());
     }
@@ -1654,7 +2309,14 @@ mod tests {
                 runs.push(mk_run(210.0 + 100.0 * k as f32, y - 4.0, "1.0"));
             }
         }
-        let expanded = expand_xs_exterior_text_cols(&xs_v, &runs, 410.0, 200.0, 3.0);
+        let expanded = expand_xs_exterior_text_cols(
+            &xs_v,
+            &runs,
+            410.0,
+            200.0,
+            3.0,
+            &DensifyParams::default(),
+        );
         assert!(
             expanded.len() > xs_v.len(),
             "expected left exterior expansion, got {expanded:?}"
@@ -1684,7 +2346,8 @@ mod tests {
                 runs.push(mk_run(x, y - 4.0, "c"));
             }
         }
-        let (densified, synth) = densify_x_from_text_cols(&xs_v, &runs, 210.0, 20.0, 3.0);
+        let (densified, synth) =
+            densify_x_from_text_cols(&xs_v, &runs, 210.0, 20.0, 3.0, &DensifyParams::default());
         let ncols = densified.len().saturating_sub(1);
         assert_eq!(
             ncols, 10,
@@ -1715,7 +2378,8 @@ mod tests {
                 }
             }
         }
-        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 30.0, 200.0, 3.0);
+        let (densified, synth) =
+            densify_y_from_text_bands(&y_h, &runs, 30.0, 200.0, 3.0, &DensifyParams::default());
         let nrows = densified.len().saturating_sub(1);
         assert_eq!(
             nrows, 10,
@@ -1742,7 +2406,8 @@ mod tests {
                 runs.push(mk_run(x + 14.0, y - 4.0, "desc"));
             }
         }
-        let (densified, synth) = densify_x_from_text_cols(&xs_v, &runs, 170.0, 20.0, 3.0);
+        let (densified, synth) =
+            densify_x_from_text_cols(&xs_v, &runs, 170.0, 20.0, 3.0, &DensifyParams::default());
         assert_eq!(
             densified.len(),
             xs_v.len(),
@@ -1762,7 +2427,8 @@ mod tests {
                 runs.push(mk_run(xi, y - 4.0, "x"));
             }
         }
-        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 0.0, 120.0, 3.0);
+        let (densified, synth) =
+            densify_y_from_text_bands(&y_h, &runs, 0.0, 120.0, 3.0, &DensifyParams::default());
         assert_eq!(
             densified.len(),
             y_h.len(),
@@ -1786,7 +2452,8 @@ mod tests {
             let y = 175.0 - 8.0 * i as f32;
             runs.push(mk_run(20.0, y, "prose"));
         }
-        let (densified, synth) = densify_y_from_text_bands(&y_h, &runs, 10.0, 180.0, 3.0);
+        let (densified, synth) =
+            densify_y_from_text_bands(&y_h, &runs, 10.0, 180.0, 3.0, &DensifyParams::default());
         assert_eq!(
             densified.len(),
             y_h.len(),
@@ -1848,6 +2515,10 @@ mod tests {
             fill_rate: 0.8,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         };
         strip_trailing_footer_totals(&mut table);
         assert_eq!(table.rows, 3, "stripped totals rows");

@@ -319,12 +319,10 @@ mod tests {
 
     #[test]
     fn from_options_aligns_joint_and_densify() {
-        let opts = crate::options::TableOptions {
-            lattice_min_joints: 6,
-            lattice_text_densify: false,
-            lattice_empty_frac_reject: 0.88,
-            ..crate::options::TableOptions::default()
-        };
+        let mut opts = crate::options::TableOptions::default();
+        opts.lattice_min_joints = 6;
+        opts.lattice_text_densify = false;
+        opts.lattice_empty_frac_reject = 0.88;
         let p = ProposalPolicy::from_options(&opts);
         assert_eq!(p.min_joints_ruled, 6);
         assert!(!p.allow_text_densify);

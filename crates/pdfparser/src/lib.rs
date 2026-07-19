@@ -40,6 +40,8 @@ pub use pdfparser_tables::{
     TableModeSet,
     TableOptions,
     TablePreset,
+    TableTuning,
+    TABLE_TUNING_KEYS,
 };
 
 /// Crate version.

@@ -201,6 +201,10 @@ fn merge_fragments(frags: &[&Table]) -> Option<Table> {
         fill_rate,
         weak_edges: first.weak_edges,
         joint_count: first.joint_count,
+        text_row_recovery: first.text_row_recovery,
+        text_col_recovery: first.text_col_recovery,
+        multitable_stream_recovery: first.multitable_stream_recovery,
+        stream_vs_overwide_hybrid: first.stream_vs_overwide_hybrid,
     })
 }
 
@@ -411,6 +415,10 @@ mod tests {
             fill_rate: 1.0,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         }
     }
 
@@ -451,13 +459,11 @@ mod tests {
         };
         let mut pages = vec![vec![bottom], vec![top]];
         let heights = [792.0f32, 792.0];
-        let opts = TableOptions {
-            stitch_multipage: true,
-            stitch_band_frac: 0.30,
-            stitch_max_col_dx: 12.0,
-            stitch_min_header_sim: 0.85,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.stitch_multipage = true;
+        opts.stitch_band_frac = 0.30;
+        opts.stitch_max_col_dx = 12.0;
+        opts.stitch_min_header_sim = 0.85;
         stitch_document(&mut pages, &heights, &opts);
         assert!(
             pages[0][0].continued_to_next_page && pages[1][0].continued_from_previous_page,

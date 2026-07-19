@@ -380,6 +380,10 @@ mod tests {
             fill_rate: 0.0,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         }
     }
 

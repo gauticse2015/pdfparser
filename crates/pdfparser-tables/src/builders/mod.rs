@@ -2,6 +2,7 @@
 //!
 //! - [`ruled`] — joint-CC lattice / ruled-grid extract
 //! - [`densify`] — text densify X/Y, thin-gap collapse, empty interior columns
+//! - [`ruled`] — lattice builder + topology trim helpers
 
 pub mod densify;
 pub mod ruled;

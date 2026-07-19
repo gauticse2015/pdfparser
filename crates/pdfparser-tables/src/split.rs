@@ -218,6 +218,10 @@ fn extract_col_range(t: &Table, col0: usize, col1: usize) -> Option<Table> {
         fill_rate: t.fill_rate,
         weak_edges: t.weak_edges,
         joint_count: t.joint_count,
+        text_row_recovery: t.text_row_recovery,
+        text_col_recovery: t.text_col_recovery,
+        multitable_stream_recovery: t.multitable_stream_recovery,
+        stream_vs_overwide_hybrid: t.stream_vs_overwide_hybrid,
     })
 }
 
@@ -284,19 +288,21 @@ mod tests {
             fill_rate: 0.8,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         }
     }
 
     #[test]
     fn split_side_by_side_gutter() {
         let t = fused_table();
-        let opts = TableOptions {
-            detect_tables: true,
-            side_by_side_split: true,
-            min_gutter_gap: 15.0,
-            min_gutter_vs_col: 0.6,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.side_by_side_split = true;
+        opts.min_gutter_gap = 15.0;
+        opts.min_gutter_vs_col = 0.6;
         let out = split_side_by_side(vec![t], &[], &opts);
         assert_eq!(
             out.len(),
@@ -344,6 +350,10 @@ mod tests {
             fill_rate: 1.0,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         };
         let out = split_side_by_side(vec![t], &[], &TableOptions::default());
         assert_eq!(out.len(), 1);
@@ -404,6 +414,10 @@ mod phase14_gutter {
             fill_rate: 0.7,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         }
     }
 
