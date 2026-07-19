@@ -1718,8 +1718,10 @@ fn build_table_from_lines(
         return None;
     }
     // Short-token multi-col prose: function words / punctuation shards with
-    // sparse numbers (prose mentions "Table 6.1" but is not a data grid).
-    if ncols >= 4 && nrows <= 10 && num_dens < 0.35 && mean_chars < 22.0 {
+    // almost no numbers (prose mentions "Table 6.1" but is not a data grid).
+    // Keep genuine small data tables (e.g. Name/Role/Office/Salary) that have
+    // short label cells but a real numeric column (num_dens typically ≥0.20).
+    if ncols >= 4 && nrows <= 10 && num_dens < 0.15 && mean_chars < 18.0 {
         let mut short_tokens = 0u32;
         let mut tokens = 0u32;
         for row in &grid {
@@ -1734,7 +1736,7 @@ fn build_table_from_lines(
                 }
             }
         }
-        if tokens >= 8 && short_tokens as f32 >= tokens as f32 * 0.50 {
+        if tokens >= 8 && short_tokens as f32 >= tokens as f32 * 0.55 {
             return None;
         }
     }
