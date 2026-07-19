@@ -8,97 +8,105 @@
 
 | Rank | Tool | F1 | TEDS | row | col | time (s) |
 |-----:|------|---:|-----:|----:|----:|---------:|
-| 1 | **camelot_auto** | 0.864 | 0.786 | 0.564 | 0.792 | 73.36 |
-| 2 | **pymupdf** | 0.776 | 0.674 | 0.578 | 0.642 | 10.73 |
-| 3 | **camelot_lattice_vector** | 0.766 | 0.784 | 0.748 | 0.806 | 3.57 |
-| 4 | **pdfplumber** | 0.662 | 0.650 | 0.571 | 0.533 | 8.54 |
-| 5 | **pdfparser** ← **ours** | 0.495 | 0.322 | 0.329 | 0.452 | 28.13 |
+| 1 | **camelot_auto** | 0.864 | 0.786 | 0.564 | 0.792 | 72.40 |
+| 2 | **pdfparser** ← **ours** | 0.825 | 0.475 | 0.489 | 0.547 | 25.43 |
+| 3 | **pymupdf** | 0.776 | 0.674 | 0.578 | 0.642 | 10.86 |
+| 4 | **camelot_lattice_vector** | 0.766 | 0.784 | 0.748 | 0.806 | 3.85 |
+| 5 | **pdfplumber** | 0.662 | 0.650 | 0.571 | 0.533 | 8.73 |
 
 ## pdfparser vs Camelot (headline)
 
 | Metric | pdfparser | camelot lattice/vector | camelot auto | Δ vs lattice |
 |--------|----------:|-----------------------:|-------------:|-------------:|
-| f1 | 0.495 | 0.766 | 0.864 | -0.271 |
-| teds | 0.322 | 0.784 | 0.786 | -0.462 |
-| row | 0.329 | 0.748 | 0.564 | -0.419 |
-| col | 0.452 | 0.806 | 0.792 | -0.354 |
+| f1 | 0.825 | 0.766 | 0.864 | +0.060 |
+| teds | 0.475 | 0.784 | 0.786 | -0.309 |
+| row | 0.489 | 0.748 | 0.564 | -0.259 |
+| col | 0.547 | 0.806 | 0.792 | -0.258 |
 
 ## Improvement vs previous ICDAR run
 
 | Metric | Previous | Now | Δ |
 |--------|---------:|----:|--:|
-| f1 | 0.495 | 0.495 | +0.000 |
-| teds | 0.321 | 0.322 | +0.000 |
-| row | 0.329 | 0.329 | +0.000 |
-| col | 0.452 | 0.452 | +0.000 |
+| f1 | 0.825 | 0.825 | +0.000 |
+| teds | 0.475 | 0.475 | +0.000 |
+| row | 0.489 | 0.489 | +0.000 |
+| col | 0.547 | 0.547 | +0.000 |
 
 ## Failure mode histogram (pdfparser)
 
 | Mode | Docs |
 |------|-----:|
-| WRONG_SHAPE | 56 |
-| ROW_MISCOUNT | 54 |
-| OVER_DETECT | 52 |
-| BAD_STRUCTURE | 51 |
-| COL_MISCOUNT | 42 |
+| WRONG_SHAPE | 47 |
+| ROW_MISCOUNT | 42 |
+| BAD_STRUCTURE | 37 |
+| COL_MISCOUNT | 30 |
 | MULTI_PAGE_DOC | 28 |
 | MULTI_TABLE_PAGE | 17 |
-| UNDER_DETECT | 3 |
+| OVER_DETECT | 17 |
+| UNDER_DETECT | 11 |
+| MISS_ALL | 4 |
 
 ### Buckets
 
-- **miss_all:** 0
-- **under:** 3
-- **over:** 52
-- **bad_struct_ok_count:** 9
-- **good:** 2
+- **miss_all:** 4
+- **under:** 7
+- **over:** 17
+- **bad_struct_ok_count:** 14
+- **good:** 21
 
 ## Multi-table vs single-table
 
-- Multi-table docs (n=33): mean F1 us=0.618, camelot=0.631; TEDS us=0.266, camelot=0.476
-- Single-table docs (n=34): mean F1 us=0.466, camelot=0.775; TEDS us=0.368, camelot=0.519
+- Multi-table docs (n=33): mean F1 us=0.772, camelot=0.631; TEDS us=0.390, camelot=0.476
+- Single-table docs (n=34): mean F1 us=0.858, camelot=0.775; TEDS us=0.557, camelot=0.519
 
 ## Worst TEDS gap vs Camelot lattice (top 15)
 
 | Doc | ΔTEDS | F1 us/c | TEDS us/c | n_gt/us/c | modes |
 |------|------:|--------:|----------:|----------:|-------|
-| `eu-014.pdf` | -0.897 | 0.09/1.00 | 0.103/1.000 | 1/21/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
+| `eu-014.pdf` | -1.000 | 0.00/1.00 | 0.000/1.000 | 1/0/1 | MISS_ALL, UNDER_DETECT |
+| `us-016.pdf` | -0.875 | 0.00/1.00 | 0.000/0.875 | 1/0/1 | MISS_ALL, UNDER_DETECT |
 | `us-012.pdf` | -0.811 | 1.00/1.00 | 0.095/0.906 | 1/1/1 | ROW_MISCOUNT, WRONG_SHAPE, BAD_STRUCTURE |
-| `us-005.pdf` | -0.800 | 0.40/1.00 | 0.000/0.800 | 1/4/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
-| `us-016.pdf` | -0.795 | 0.22/1.00 | 0.080/0.875 | 1/8/1 | OVER_DETECT, ROW_MISCOUNT, WRONG_SHAPE, BAD_STRUCTURE |
-| `us-014.pdf` | -0.776 | 0.44/1.00 | 0.000/0.776 | 2/7/2 | OVER_DETECT, MULTI_PAGE_DOC, ROW_MISCOUNT, COL_MISCOUNT |
-| `eu-015.pdf` | -0.762 | 1.00/1.00 | 0.183/0.945 | 5/5/5 | MULTI_TABLE_PAGE, MULTI_PAGE_DOC, ROW_MISCOUNT, COL_MISCOUNT |
-| `us-004.pdf` | -0.754 | 0.33/1.00 | 0.008/0.762 | 1/5/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
-| `us-029.pdf` | -0.715 | 0.22/1.00 | 0.053/0.769 | 1/8/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
-| `eu-013.pdf` | -0.710 | 0.17/0.80 | 0.045/0.755 | 4/44/6 | OVER_DETECT, MULTI_PAGE_DOC, ROW_MISCOUNT, COL_MISCOUNT |
-| `us-027.pdf` | -0.690 | 0.20/1.00 | 0.082/0.772 | 2/18/2 | OVER_DETECT, MULTI_PAGE_DOC, ROW_MISCOUNT, COL_MISCOUNT |
-| `us-013.pdf` | -0.677 | 0.25/1.00 | 0.047/0.724 | 1/7/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
-| `us-030.pdf` | -0.672 | 0.29/1.00 | 0.139/0.811 | 1/6/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
-| `eu-009a.pdf` | -0.661 | 0.67/1.00 | 0.117/0.778 | 1/2/1 | OVER_DETECT, ROW_MISCOUNT, WRONG_SHAPE, BAD_STRUCTURE |
-| `eu-012.pdf` | -0.660 | 0.42/1.00 | 0.340/1.000 | 5/19/5 | OVER_DETECT, MULTI_TABLE_PAGE, MULTI_PAGE_DOC, ROW_MISCOUNT |
-| `us-015.pdf` | -0.650 | 0.29/1.00 | 0.000/0.650 | 2/5/2 | OVER_DETECT, MULTI_PAGE_DOC, COL_MISCOUNT, WRONG_SHAPE |
+| `us-013.pdf` | -0.650 | 1.00/1.00 | 0.074/0.724 | 1/1/1 | ROW_MISCOUNT, WRONG_SHAPE, BAD_STRUCTURE |
+| `eu-012.pdf` | -0.635 | 0.83/1.00 | 0.365/1.000 | 5/7/5 | OVER_DETECT, MULTI_TABLE_PAGE, MULTI_PAGE_DOC, COL_MISCOUNT |
+| `eu-013.pdf` | -0.624 | 0.67/0.80 | 0.130/0.755 | 4/5/6 | OVER_DETECT, MULTI_PAGE_DOC, ROW_MISCOUNT, COL_MISCOUNT |
+| `us-015.pdf` | -0.595 | 0.67/1.00 | 0.055/0.650 | 2/1/2 | UNDER_DETECT, MULTI_PAGE_DOC, ROW_MISCOUNT, WRONG_SHAPE |
+| `us-031a.pdf` | -0.572 | 0.67/1.00 | 0.215/0.787 | 1/2/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
+| `us-004.pdf` | -0.524 | 1.00/1.00 | 0.238/0.762 | 1/1/1 | BAD_STRUCTURE |
+| `eu-015.pdf` | -0.521 | 0.57/1.00 | 0.424/0.945 | 5/2/5 | UNDER_DETECT, MULTI_TABLE_PAGE, MULTI_PAGE_DOC, ROW_MISCOUNT |
+| `us-038.pdf` | -0.467 | 1.00/1.00 | 0.212/0.679 | 1/1/1 | ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE, BAD_STRUCTURE |
+| `us-014.pdf` | -0.431 | 1.00/1.00 | 0.345/0.776 | 2/2/2 | MULTI_PAGE_DOC, ROW_MISCOUNT, WRONG_SHAPE, BAD_STRUCTURE |
+| `us-040.pdf` | -0.430 | 0.33/1.00 | 0.215/0.645 | 1/5/1 | OVER_DETECT, ROW_MISCOUNT, COL_MISCOUNT, WRONG_SHAPE |
+| `eu-007.pdf` | -0.427 | 1.00/1.00 | 0.573/1.000 | 6/6/6 | MULTI_TABLE_PAGE, MULTI_PAGE_DOC, COL_MISCOUNT, WRONG_SHAPE |
+| `eu-004.pdf` | -0.323 | 1.00/1.00 | 0.662/0.985 | 12/12/12 | MULTI_TABLE_PAGE, MULTI_PAGE_DOC, COL_MISCOUNT, WRONG_SHAPE |
 
-## Detect OK, structure bad (F1≥0.9, TEDS&lt;0.35) — n=7
+## Detect OK, structure bad (F1≥0.9, TEDS&lt;0.35) — n=10
 
-- `eu-003.pdf`: shapes us=[[[6, 3], [6, 5], [26, 6]]] gt=[[[3, 3], [7, 5], [4, 6]]] TEDS=0.238
-- `eu-015.pdf`: shapes us=[[[16, 14], [7, 2]], [[11, 7], [4, 2], [6, 4]]] gt=[[[12, 2], [7, 2]], [[32, 2], [33, 2], [33, 2]]] TEDS=0.183
-- `eu-026.pdf`: shapes us=[[[11, 16]], [[8, 11]], [[3, 5]]] gt=[[[5, 5]], [[5, 4]], [[5, 4]]] TEDS=0.100
-- `us-011a.pdf`: shapes us=[[[3, 2]], [[3, 2]]] gt=[[[13, 2]], [[7, 2]]] TEDS=0.016
+- `us-003.pdf`: shapes us=[[[9, 4]]] gt=[[[5, 4]]] TEDS=0.030
+- `us-004.pdf`: shapes us=[[[15, 7]]] gt=[[[15, 7]]] TEDS=0.238
 - `us-012.pdf`: shapes us=[[[23, 6]]] gt=[[[21, 6]]] TEDS=0.095
-- `us-017.pdf`: shapes us=[[[9, 2]], [[3, 2]], [[3, 5]], [[3, 5]], [[3, 5]]] gt=[[[31, 10]], [[31, 10]], [[31, 9]], [[31, 8]], [[31, 8]], [[31, 8]]] TEDS=0.008
+- `us-013.pdf`: shapes us=[[[16, 5]]] gt=[[[4, 5]]] TEDS=0.074
+- `us-014.pdf`: shapes us=[[[8, 3]], [[8, 3]]] gt=[[[6, 3]], [[6, 3]]] TEDS=0.345
+- `us-018.pdf`: shapes us=[[[48, 17]], [[48, 19]], [[32, 2]], [[4, 2]], [[7, 2]], [[32, 10]], [[13, 10], [14, 8]]] gt=[[[58, 11]], [[58, 10]], [[59, 5]], [[32, 7]], [[29, 4]], [[32, 6]], [[32, 6]]] TEDS=0.066
+- `us-025.pdf`: shapes us=[[[6, 9], [13, 24]], [[10, 24], [14, 20], [10, 18]]] gt=[[[14, 7], [17, 13]], [[9, 13], [17, 13], [9, 13]], [[53, 7]]] TEDS=0.070
+- `us-026.pdf`: shapes us=[[[16, 10]]] gt=[[[18, 6]]] TEDS=0.138
 - `us-032.pdf`: shapes us=[[[18, 3]]] gt=[[[8, 4]]] TEDS=0.252
+- `us-038.pdf`: shapes us=[[[8, 2]]] gt=[[[9, 3]]] TEDS=0.212
 
-## MISS_ALL (n=0)
+## MISS_ALL (n=4)
 
+- `eu-014.pdf`: gt=1 camelot=1 camelot TEDS=1.000
+- `us-011a.pdf`: gt=2 camelot=2 camelot TEDS=0.025
+- `us-016.pdf`: gt=1 camelot=1 camelot TEDS=0.875
+- `us-021.pdf`: gt=2 camelot=0 camelot TEDS=0.000
 
 ## Gap analysis (where we still lack)
 
-pdfparser F1=0.495 TEDS=0.322 row=0.329 col=0.452 vs camelot lattice F1=0.766 TEDS=0.784.
+pdfparser F1=0.825 TEDS=0.475 row=0.489 col=0.547 vs camelot lattice F1=0.766 TEDS=0.784.
 
 ### Primary remaining gaps
 
-1. **Structure quality (TEDS / row / col)** — Detection has improved more than content alignment. ROW_MISCOUNT=54, COL_MISCOUNT=42, WRONG_SHAPE=56, BAD_STRUCTURE=51.
-2. **MISS_ALL / UNDER_DETECT** — MISS_ALL=0, UNDER_DETECT=3. Often stream-only or faint/incomplete rules where lattice CC has too few joints; Camelot raster/auto recovers some of these.
+1. **Structure quality (TEDS / row / col)** — Detection has improved more than content alignment. ROW_MISCOUNT=42, COL_MISCOUNT=30, WRONG_SHAPE=47, BAD_STRUCTURE=37.
+2. **MISS_ALL / UNDER_DETECT** — MISS_ALL=4, UNDER_DETECT=11. Often stream-only or faint/incomplete rules where lattice CC has too few joints; Camelot raster/auto recovers some of these.
 3. **MULTI_TABLE_PAGE** — 17 docs. Multi-region CC helps; residual fusion or order-mismatch vs gold still hurts F1/TEDS (order-based matching).
 4. **Spans & partial rules** — High F1 / low TEDS cases usually have wrong row/col counts from extra decorative lines or missing span merge on real competition layouts.
 5. **Metric sensitivity** — ICDAR matching is **page order**, not IoU. Correct tables in wrong order look like structure failures. TEDS is a difflib proxy, not tree-edit TEDS.

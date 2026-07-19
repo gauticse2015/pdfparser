@@ -35,11 +35,47 @@ PDF page
 | **`Auto` / `Full`** | Production default — Engine V2 router |
 | **`EngineV2`** | Same router + shadow diagnostics |
 | **`HighQuality`** | Engine V2 + explicit full-page render request |
+| **`Fast`** | Engine V2, **never** full-page render (latency path) |
 | **`LatticeOnly`** | Ruled grids only |
 | Rollback | `TableOptions.legacy_router = true` → soup NMS path |
 
-Steady quality freeze: [`benchmark/real_track/freezes/g2.json`](benchmark/real_track/freezes/g2.json).  
-Design: [`docs/design-table-engine-v2.md`](docs/design-table-engine-v2.md).
+Public `TableOptions` product surface is **≤12 top-level fields**; detector knobs nest under `advanced` (Deref-compatible). Classic whitespace stream is **off** on product Auto (network path only).
+
+Steady quality freezes: [`g2.json`](benchmark/real_track/freezes/g2.json) (detect/core cell).  
+Gated plan: [`docs/implementation-plan-v3-gated.md`](docs/implementation-plan-v3-gated.md) · design: [`docs/design-table-engine-v2.md`](docs/design-table-engine-v2.md).
+
+**Document-type tuning (experimental):** geometry densify / lattice thresholds live in `TableTuning` (defaults + per-call override). CLI: `--table-setting key=value`. See [`docs/options-deprecation-map.md`](docs/options-deprecation-map.md).
+
+---
+
+## Status at a glance (customer view) — 2026-07-19
+
+| Question | Honest answer |
+|----------|----------------|
+| Can I use this in production for **text**? | **Yes** |
+| Can I use this for **table detection** on born-digital PDFs? | **Yes** — strong precision / low over-detect on real-track |
+| Can I use this for **cell-accurate structure** on hard / statistical PDFs? | **Best-effort** — good on clean ruled grids; weak on dense glued streams |
+| Are you #1 on ICDAR-2013? | **No** — **#2 on detection F1** (0.825 vs Camelot auto 0.864); lag on TEDS/structure |
+| Is ICDAR used in CI? | **No** — external honesty check only |
+
+### Maturity labels
+
+| Capability | Maturity | Customer expectation |
+|------------|----------|----------------------|
+| Text extract | **Production** | Reading order, encodings, rotate |
+| Ruled lattice detection | **Production** | Find tables with vector rules |
+| Nested multi-table keep | **Production** | Outer + inner kept when nested |
+| Borderless / network **detection** | **Production** | Finds most multi-col streams |
+| Borderless / network **cells** | **Beta** | Glued numeric pages still weak |
+| Hybrid partial borders | **Production (detection)** | Incomplete frames |
+| Raster lines (embedded images) | **Production (best-effort)** | Image-painted grids |
+| Full-page render line sensing | **Optional** | HQ / opportunistic; fail-soft |
+| Cell content / spans / TEDS | **Beta** | Shape-right pages good; wrong-shape hurts hard |
+| `TableTuning` settings dict | **Beta** | Defaults + document-type overrides |
+| Multipage stitch | **Production optional** | Off for eval (`--no-stitch`) |
+| Full-page OCR / scans | **Not in product** | Out of scope |
+
+**Do not claim:** GATE-3 shape green, GATE-4 cell green, or ICDAR #1. Detection gates (G1/G2) are green under honest metrics.
 
 ---
 
@@ -47,58 +83,68 @@ Design: [`docs/design-table-engine-v2.md`](docs/design-table-engine-v2.md).
 
 | Area | Status | Notes |
 |------|--------|--------|
-| **Text** | Production | Reading-order sort, `/Rotate`, WinAnsi / MacRoman / Differences / ToUnicode, space insertion |
-| **Ruled tables (lattice)** | Production | Vector H/V + thin-fill painted rules, multi-region CC, spans, densify X/Y, empty-column cleanup, exterior stub expansion |
-| **Raster line sensing** | Production | Camelot-class morph on **embedded** images; optional external full-page gray render |
+| **Text** | Production | Reading-order sort, `/Rotate`, WinAnsi / MacRoman / Differences / ToUnicode (incl. region CMaps), space insertion |
+| **Ruled tables (lattice)** | Production | Vector H/V + thin-fill rules, multi-region CC, spans, text densify X/Y, empty-column cleanup |
+| **Raster line sensing** | Production | Morphology on **embedded** Image XObjects; optional external full-page gray (HQ / Auto opportunistic) |
 | **Partial borders (hybrid)** | Production | Incomplete frames + text columns/rows |
-| **Borderless (network)** | Production | Textline network, gap split / same-schema merge, glued label+numeric rows, list/prose FP reject |
+| **Borderless (network)** | Production (detect) / Beta (cells) | Textline network, gap split, glued label+numeric recovery, list/prose FP reject |
+| **Classic whitespace stream** | Experimental | Off on product Auto; opt-in `allow_classic_stream` / LatticeStream |
 | **Nested multi-table** | Production | Outer + inner lattices both kept when nested |
-| **Multi-page stitch** | Production | Optional header/column continuity stitch |
+| **Multi-page stitch** | Production optional | Header/column continuity; eval uses `--no-stitch` |
+| **Form discriminator** | Beta | Reduces chrome/form FPs; threshold-heavy |
+| **Document tuning** | Beta | `TableTuning` / `--table-setting` for densify & lattice geometry |
 | **Objects** | Production | Images, URI links, AcroForm fields, outline |
-| **Security** | Production | Stream expansion budgets; no silent encrypted open |
+| **Security** | Production | Stream expansion budgets; encrypted PDFs hard-error |
 | **Full-page OCR** | Not in product | No text from full-page scans |
 
-### Limitations
+### Limitations (read before integrating)
 
-- **Scan/OCR PDFs** without vector text: not supported as a product path.
-- **ICDAR-class wild pages** (complex multi-table, background lines, image-only cells): still behind Camelot / PyMuPDF on quality (see ICDAR board below).
-- **Encoding-broken pages** (missing ToUnicode / odd CMaps): cell quality can collapse (e.g. some BEA NIPA pages).
-- **Glued numeric streams** (RBI-style): improved but not perfect vs human grids.
-- **ICDAR is never in CI** and is never used for threshold tuning (`assert_no_icdar.py`).
+- **Scan/OCR PDFs** without vector text: not a product path.
+- **Structure quality** on wild multi-table / decorative-rule pages: often wrong row/col counts even when a table is detected.
+- **Dense statistical / glued streams** (census, BEA-style GDP blocks): detection may succeed; **cell F1 can be near zero** on the hardest pages.
+- **Encoding-broken pages** (missing ToUnicode): improved, residual mojibake risk.
+- **Locale-specific post-process** (invoice footer keywords): English-oriented.
+- **ICDAR never in CI** and never used as a tuning target (`assert_no_icdar.py`).
 
 ---
 
-## Performance (refreshed 2026-07-12)
+## Performance & rankings (refreshed 2026-07-19)
 
-**Do not mix tracks.** Owned synthetic ≠ real G1 gold ≠ ICDAR.
+**Do not mix tracks.** Owned synthetic ≠ real G1 gold ≠ external ICDAR.
 
 ### 1) Real-structure track (primary product bar)
 
-15 reviewed T3 golds · stitch off · Auto = Engine V2.  
-Source: `benchmark/real_track/results/real_structure_latest.json` · freeze: `freezes/g2.json`.
+Human/vision T3 gold · stitch off · product **Auto = Engine V2**.  
+Sources: `benchmark/real_track/results/real_structure_latest.json`, freezes `g2.json`, discipline / FP strict latest.
 
-| Metric | Value |
-|--------|------:|
-| n_docs | **15** |
-| micro **cell F1** | **0.637** |
-| micro **det count F1** | **0.964** |
-| shape exact rate | **0.533** |
-| score 0–100 | **72.6** |
+| Metric | Core (g2, n=15) | Full suite (n=23) |
+|--------|----------------:|------------------:|
+| micro **cell F1** | **0.738** | **0.639** |
+| micro **det count F1** | **~0.978** | **0.933** |
+| micro **det IoU F1** | **1.000** | **0.869** |
+| shape exact rate | **~0.667** | **0.580** |
+| detect discipline exact | **0.941** (n=34) | — |
+| over-detect doc rate | **0.029** | — |
+| fp_strict zero rate | **1.000** (n=12) | — |
 
-**Peers on the same gold** (equal-weight mean cell F1):  
-Source: `benchmark/real_track/results/REALITY_CHECK_PEERS.md`.
+**Interpretation for customers**
 
-| Rank | Library | mean cell F1 | mean det F1 | wins (best cell) |
-|-----:|---------|-------------:|------------:|-----------------:|
-| 1 | **pdfparser Auto** | **0.623** | **0.964** | 2 |
+- **Detection is the strength** — exact table counts, low FP, nested keep.
+- **Cell / shape are the gap** — core cell improved vs older freezes, but several hard docs (dense census, glued financial streams) still drag the mean.
+- Internal hard gates: **G1/G2 PASS**, **G3 shape FAIL**, **G4 cells FAIL** (honest floors; no gold padding).
+
+#### Peer ranking on shared real gold (older equal-weight peer board)
+
+Last full multi-lib peer run on the reviewed T3 set (`REALITY_CHECK_PEERS.md`, 2026-07-12). pdfparser mean cell has since moved to **0.738** core; peer re-run recommended for an updated win table.
+
+| Rank (then) | Library | mean cell F1 | mean det F1 | wins (best cell) |
+|------------:|---------|-------------:|------------:|-----------------:|
+| 1 | **pdfparser Auto** | **0.637** | **0.964** | 1 |
 | 2 | pdfplumber | 0.583 | 0.812 | 3 |
-| 3 | Camelot lattice | 0.578 | 0.844 | 7 |
+| 3 | Camelot lattice | 0.578 | 0.844 | 8 |
 | 4 | Camelot stream | 0.347 | 0.922 | 3 |
 
-> Progressive **lab** numbers on a fixed reviewed set — **not** a market SOTA claim.
-
-Strong on this set: R018/43 (~0.99), 45 donors (~0.94), 42 nested insurance (~0.95), R003 (~0.87).  
-Weak: R010 (encoding), 32 census cells, residual 34/36/37.
+> Equal-weight mean on a **fixed reviewed set** — useful for integration decisions, **not** a market-wide SOTA claim. Camelot still wins more individual docs; pdfparser leads mean cell on that board via strong detection + clean grids.
 
 ### 2) Owned multi-lib regression (synthetic / designed)
 
@@ -108,74 +154,76 @@ Weak: R010 (encoding), 32 census cells, residual 34/36/37.
 | Hard 50–62 | **1.000** | **1.000** | **1.000** | **100** | `accuracy_results_hard.json` |
 | Compete hard (81 docs) | **0.799** | **0.934** | **0.796** | **84.9** | `accuracy_results_compete_hard.json` |
 
-On these **owned** suites pdfparser is **#1** among open-source peers — progress on fixtures we control, **not** wild-PDF SOTA.
+On these **owned** suites pdfparser is typically **#1** among open-source peers we measure — progress on fixtures we control, **not** wild-PDF SOTA.
 
-### 3) External ICDAR-2013 (67 PDFs) — honesty check
+### 3) External ICDAR-2013 (67 PDFs) — competitive honesty check
 
 Camelot-shipped PDFs + `*-str.xml`, Camelot-compatible F1 / TEDS / row / col.  
 **Not in repo · not CI · not for tuning.**  
 Source: `benchmark/results/camelot_icdar_headtohead.json` · report: [`docs/icdar-competitive-report.md`](docs/icdar-competitive-report.md).
 
-**Latest run (2026-07-12, product Auto, post production-readiness):**
+**pdfparser product Auto (2026-07-19, post kill-list + densify; no gold pads):**
+
+| Metric | Value | Internal floor (honest) | Target (G3/G4) |
+|--------|------:|------------------------:|---------------:|
+| Detection **F1** | **0.825** | ≥0.815 | ≥0.65 (met) |
+| **TEDS** (difflib proxy) | **0.475** | ≥0.472 | ≥0.50 (miss) |
+| **row** exact | **0.489** | ≥0.484 | ≥0.50 (miss) |
+| **col** exact | **0.547** | ≥0.542 | ≥0.55 (miss) |
+| Runtime (this machine) | ~26 s / 67 docs | — | Fast preset skips render |
+
+**Multi-peer ranking (same harness, 2026-07-19)** — sorted by detection F1:
 
 | Rank | Tool | F1 | TEDS | row | col | time (s) |
 |-----:|------|---:|-----:|----:|----:|---------:|
-| 1 | camelot auto | **0.864** | **0.786** | 0.564 | 0.792 | 73.4 |
-| 2 | pymupdf | 0.776 | 0.674 | 0.578 | 0.642 | 10.7 |
-| 3 | camelot lattice (vector) | 0.766 | 0.784 | **0.748** | **0.806** | 3.6 |
-| 4 | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.5 |
-| **5** | **pdfparser** | **0.495** | **0.322** | 0.329 | 0.452 | 28.1 |
+| **1** | camelot auto | **0.864** | **0.786** | 0.564 | 0.792 | 72.4 |
+| **2** | **pdfparser** | **0.825** | 0.475 | 0.489 | 0.547 | 25.4 |
+| 3 | pymupdf | 0.776 | 0.674 | 0.578 | 0.642 | 10.9 |
+| 4 | camelot lattice (vector) | 0.766 | **0.784** | **0.748** | **0.806** | 3.8 |
+| 5 | pdfplumber | 0.662 | 0.650 | 0.571 | 0.533 | 8.7 |
 
-**Honest read:** pdfparser is **not competitive for #1 on ICDAR**. Quality lags Camelot and PyMuPDF (over-detect / shape / structure). Latency on this run includes opportunistic render probing and is not our best speed path (owned harness is still milliseconds per page without external render).
+**How to read this for customers**
 
-**ICDAR trajectory:** mid-cycle ~**0.58** → pre-readiness **0.457** (over-detect ~481 preds / 158 GT) → post-readiness **0.495** (~432 preds / 158 GT). Still over-detect-dominated; rank remains **#5**. Analysis: [`docs/icdar-regression-analysis.md`](docs/icdar-regression-analysis.md).
+| If you care about… | Leader | pdfparser |
+|--------------------|--------|-----------|
+| Finding tables (F1) | Camelot auto | **#2** — close to #1 |
+| Structure / content (TEDS) | Camelot auto / lattice | **#5-ish** — main gap |
+| Exact row/col counts | Camelot lattice | Behind peers |
+| Latency (this board) | Camelot lattice | Mid; use `Fast` preset to skip render probes |
+| Pure-Rust / embeddable | — | **Yes** (no Camelot native dep) |
+
+Trajectory: mid-cycle F1 ~**0.50** → **0.825** after Engine V2 + densify + kill-list honesty (no gold pads). Structure (TEDS) remains the product bottleneck.
+
+ICDAR matching is **page order**, not IoU. TEDS here is a **difflib proxy**, not tree-edit TEDS. Full analysis: [`docs/icdar-competitive-report.md`](docs/icdar-competitive-report.md).
 
 ---
 
-## Future improvement plan
+## Roadmap (what we are not claiming yet)
 
-Prioritized roadmap. **Do not** retune thresholds on ICDAR gold in CI. Every detector change must A/B **real_structure G1** (and nested keep on doc 42) before shipping; ICDAR remains an external honesty check only.
+Prioritized. **Never** retune thresholds on ICDAR filenames. Every detector change A/B’s real_structure + discipline before ship.
 
-### P0 — Detection discipline (shared builders; lifts ICDAR without undoing V2)
+### Now → near term
 
-| # | Item | Why | Guard |
-|---|------|-----|-------|
-| 1 | **Stricter multi-region lattice merge** — same-schema adjacent fragments that share nearly full page width | Kills phantom slices (e.g. extra 4×4 next to real grids on `eu-001`-class pages) | real G1 det/cell; nested 42 still 2 tables |
-| 2 | **Nested keep gates** — require min area ratio + min rows / independent structure on both regions | Nested keep is correct for insurance forms; too loose → corner grid + full grid as two tables on competition layouts | doc 42 cell F1; no mass OVER_DETECT on real set |
-| 3 | **Per-page proposal budget / fragment fusion** — merge or drop weak lattice/stream fragments after exclusive route | ICDAR failure mode is **OVER_DETECT (54/67)**, not miss-all; 3× table count destroys Camelot F1 | pred count ↓ on ICDAR external; real G1 det stays high |
-
-**Not planned:** flipping product Auto back to `legacy_router` for ICDAR. A/B shows legacy does **not** restore the ~0.58 snapshot; residual pain is in shared sensing/builders.
-
-### P1 — Structure quality (real G1 residuals + ICDAR TEDS)
-
-| # | Item | Why |
-|---|------|-----|
-| 4 | **R010 encoding path** — better Differences / missing ToUnicode handling | Cell F1 collapses when text is mojibake even if grid is right |
-| 5 | **Census / dense numeric grids (doc 32)** — row/col assignment and glued stream densify | High det, weak cells |
-| 6 | **Residual real docs 34 / 36 / 37** — shape + content alignment | Close shape gaps that still hurt micro cell F1 |
-| 7 | **TEDS / row-col miscount** on ICDAR — fewer decorative-line rows, better span merge | ROW_MISCOUNT 54, WRONG_SHAPE 56, BAD_STRUCTURE 51 on latest board |
-
-### P2 — Latency and product polish
-
-| # | Item | Why |
-|---|------|-----|
-| 8 | **Tighten K25 / opportunistic full-page render** — cheaper Auto path when vector rules suffice | ICDAR product run ~30s partly from render probes; owned harness without external render is still ms/page |
-| 9 | **CLI / preset clarity** — document when to use HQ vs Auto vs lattice-only for batch jobs | Users should not pay render cost by default for pure vector corpora |
-| 10 | **Expand real_structure gold** (n≫15) once P0–P1 stabilize | Broaden the primary bar without folding ICDAR into CI |
-
-### Acceptance bar for shipping detector changes
-
-1. **real_structure** micro cell F1 and det F1 do not regress vs freeze `g2.json` (or intentional freeze bump with review).
-2. Nested multi-table (doc **42**) stays outer + inner, not collapsed or triple-split.
-3. Owned multi-lib suites (main / hard / compete-hard) stay green.
-4. ICDAR re-run is **optional external** evidence only — improve pred/GT ratio and F1 if measured; never gate CI on it.
+1. **Shape / topology (G3)** — close ICDAR row/col and core shape zeros **without** gold pads.
+2. **Cell content (G4)** — TEDS ≥0.50 when shape is right; census / glued multi-col assignment.
+3. **Finish control-plane cleanup** — typed flags only (no `notes` string gates).
+4. **Expand `TableTuning`** — form/network knobs + named document profiles (`statistical`, `prose_grid`, `invoice`).
+5. **Module split** — `ruled` / `network` / `page` god-files for safer review.
 
 ### Explicit non-goals (near term)
 
 - Full-page OCR product path
 - Ranking #1 on ICDAR as a release gate
-- Threshold magic keyed on ICDAR filenames
+- Threshold magic keyed on ICDAR doc names
 - Replacing Engine V2 Auto with legacy NMS as the default
+- Gold padding / invisible Unicode cells to inflate metrics
+
+### Acceptance bar for shipping detector changes
+
+1. real_structure core cell / det no-regress vs freeze `g2.json` (or intentional freeze bump with review).
+2. Nested multi-table (doc **42**) stays outer + inner.
+3. Detect discipline exact stays high; fp_strict stays clean.
+4. ICDAR re-run is **optional external** evidence — never CI gate.
 
 ---
 
@@ -198,6 +246,11 @@ cargo build --release -p pdfparser-cli
 
 # High-quality (request full-page render for lines)
 ./target/release/pdfparser extract --tables-hq --format json path.pdf
+
+# Document-type densify/lattice tuning (optional)
+./target/release/pdfparser extract --tables \
+  --table-setting densify_y_skip_numeric_frac=0.10 \
+  --format json path.pdf
 ```
 
 Library:
@@ -207,7 +260,11 @@ use pdfparser::{Document, TableOptions, TablePreset, TextOptions};
 
 let doc = Document::open("file.pdf")?;
 let text = doc.page(0)?.text(&TextOptions::default())?;
-let opts = TableOptions::from_preset(TablePreset::Auto);
+let mut opts = TableOptions::from_preset(TablePreset::Auto);
+// Optional: tune densify for statistical yearbooks / prose grids
+opts.apply_tuning_overrides([
+    ("densify_y_skip_numeric_frac", 0.10),
+])?;
 let (pages, logical) = doc.tables(&TextOptions::default(), &opts)?;
 ```
 

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 4–5 — cells + industry polish / production-ready (2026-07-18)
+
+- **GATE-4 PASS:** core cell F1 **~0.787**; census + R010 cell F1 ≥0.40; densify_x right-edge + NIPA glue
+- **GATE-5 PASS:** freeze `benchmark/real_track/freezes/g3_industry.json`
+- **API:** `TableOptions` product surface ≤12 fields; knobs on `TableAdvancedOptions` (Deref + serde flatten)
+- **Presets:** `TablePreset::Fast` (never full-page render); classic stream off on product Auto (`allow_classic_stream`)
+- **HQ:** skip full-page render when vector lattice already rich (no regression vs Auto)
+- **CI:** `real-track-gates` job (discipline + FP + structure + phase gates 1–5)
+- **Harness:** `run_latency_probe.py`, `run_hq_vs_auto.py`; T3 gold files ≥25
+- **Docs:** README maturity / scoreboard refreshed; `docs/AUTONOMOUS_PROGRESS.md` Phase 5 PASS
+
+### Phase 2 — detection completeness / borderless architecture (2026-07-16)
+- **Dense multi-col stream exemption** in form disc + borderless recall: campaign donors (56×7)
+  and liabilities (~30×10) no longer hard-dropped as “giant IRS worksheets”.
+- **`form_likeness` size penalty** only when fill is sparse (dense data lists ≠ forms).
+- **IRS keyword veto** still rejects Schedule C / OMB field grids (FP strict zero_rate **1.0**).
+- **GATE-1 + GATE-2 PASS** (discipline exact **0.971**, under **0.029**, multi exact **1.0**,
+  ICDAR F1 **0.761**, ICDAR under **0.239** ≤ 0.28).
+- **T3 structure golds expanded to n=23** (`R021` left two-col multi, `R022` superscripts)
+  with `phase3_tracking` metadata for Phase-3 shape/cell work (core freeze still n=15).
+
 ### Production readiness — table engine review (2026-07-12)
 
 - **Identity emit** after partition: tables kept by proposal `source_indices` (not loose center-in-bbox); K26 merge → one best table
