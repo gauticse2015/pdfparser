@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "suite_id": "baseline_pre_v3",
+  "mode": "baseline",
+  "generated_at": "2026-07-15T13:07:25.652237+00:00",
+  "policy": "Pre-V3 Phase 0 baseline. Over-detect suite must be red before Phase 1.",
+  "detect_discipline": {
+    "summary": {
+      "n_docs": 34,
+      "n_scored": 34,
+      "exact_count_rate": 0.5588235294117647,
+      "over_doc_rate": 0.4411764705882353,
+      "under_doc_rate": 0.0,
+      "n_exact": 19,
+      "n_over": 15,
+      "n_under": 0,
+      "sum_pred": 47,
+      "sum_exp": 25,
+      "pred_gt_ratio": 1.88,
+      "n_severe_over": 2
+    },
+    "n_docs": 34
+  },
+  "fp_strict": {
+    "n_docs": 13,
+    "n_pass": 3,
+    "n_fail": 10,
+    "fp_zero_rate": 0.23076923076923078,
+    "pass_rate": 0.23076923076923078
+  },
+  "summaries": {
+    "auto": {
+      "n_docs": 15,
+      "n_ok": 15,
+      "n_fail": 0,
+      "micro_cell_f1": 0.6372333167816467,
+      "micro_shape_exact_rate": 0.5333333333333333,
+      "micro_det_count_f1": 0.9644444444444444,
+      "micro_det_iou_f1": 0.9407407407407408,
+      "micro_score_0_100": 72.57822156015476,
+      "note": "soft progressive scores; G1 not claimed"
+    },
+    "engine_v2": {
+      "n_docs": 15,
+      "n_ok": 15,
+      "n_fail": 0,
+      "micro_cell_f1": 0.6372333167816467,
+      "micro_shape_exact_rate": 0.5333333333333333,
+      "micro_det_count_f1": 0.9644444444444444,
+      "micro_det_iou_f1": 0.9407407407407408,
+      "micro_score_0_100": 72.57822156015476,
+      "note": "soft progressive scores; G1 not claimed"
+    }
+  },
+  "documents_auto": [
+    {
+      "id": "30_real_ca_warn_report",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.8385650224215245,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 93.54260089686099,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.5966850828729281,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 58.86740331491712,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.46020761245674735,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 78.4083044982699,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.7164179104477612,
+      "det_f1": 0.6666666666666666,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 76.99004975124379,
+      "n_pred": 2,
+      "n_exp": 1
+    },
+    {
+      "id": "36_real_two_tables",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.42105263157894735,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 51.84210526315789,
+      "n_pred": 2,
+      "n_exp": 2
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.24663677130044842,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 44.865470852017935,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "31_real_background_checks",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.821213338690237,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 67.84853354760948,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "32_real_census_table324",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.0,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 35.0,
+      "n_pred": 2,
+      "n_exp": 2
+    },
+    {
+      "id": "R018_camelot_health",
+      "struggle": false,
+      "status": "ok",
+      "cell_f1": 0.9948979591836734,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 99.79591836734694,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "R003_bea_gdp_sample",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.8682505399568035,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 69.73002159827215,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "R010_bea_nipa_highlights",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.0,
+      "det_f1": 1.0,
+      "shape_exact_rate": 0.0,
+      "score_0_100": 35.0,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.9500000000000001,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 98.0,
+      "n_pred": 2,
+      "n_exp": 2
+    },
+    {
+      "id": "43_real_row_span_gmc",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.9947089947089947,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 99.78835978835978,
+      "n_pred": 1,
+      "n_exp": 1
+    },
+    {
+      "id": "44_real_spanning_cells",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.7064676616915423,
+      "det_f1": 0.8,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 81.2587064676617,
+      "n_pred": 3,
+      "n_exp": 2
+    },
+    {
+      "id": "45_real_campaign_donors",
+      "struggle": true,
+      "status": "ok",
+      "cell_f1": 0.9433962264150944,
+      "det_f1": 1.0,
+      "shape_exact_rate": 1.0,
+      "score_0_100": 97.73584905660377,
+      "n_pred": 1,
+      "n_exp": 1
+    }
+  ]
+}

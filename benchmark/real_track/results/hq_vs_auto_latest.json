@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-07-18T06:27:40.672440+00:00",
+  "summary": {
+    "auto_micro_cell_f1": 0.7871999363940801,
+    "hq_micro_cell_f1": 0.7871999363940801,
+    "n_docs": 15,
+    "hq_ge_auto": true,
+    "note": "Without external render tools HQ fail-softs to Auto-equivalent quality."
+  }
+}

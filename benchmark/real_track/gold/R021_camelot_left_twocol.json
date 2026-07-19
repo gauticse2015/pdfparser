@@ -1,0 +1,161 @@
+{
+  "id": "R021_camelot_left_twocol",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "public sample (camelot demo)",
+  "source_url": "",
+  "source": "corpus/compete_real/R021_camelot_left_twocol.pdf",
+  "failure_classes": [
+    "multi_table",
+    "side_by_side",
+    "ruled",
+    "phase3_topology"
+  ],
+  "struggle_tags": [
+    "multi_table",
+    "phase3_shape",
+    "side_by_side"
+  ],
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
+  "peer_primary": "camelot_lattice",
+  "review_notes": "Promoted from peer draft mean_conf=0.88; peer consensus for Phase3 tracking. Spot-check recommended (disputes=0).",
+  "reviewed_at": "2026-07-16T16:11:12.882630+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
+  "expected_table_count": 2,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "bbox": {
+        "x0": 23.755485893416928,
+        "y0": 354.6008064516129,
+        "x1": 819.2043317184383,
+        "y1": 580.8447580645161
+      },
+      "rows": 3,
+      "cols": 10,
+      "cells": [
+        [
+          "Sl. \nNo.",
+          "Name of \nState/UT",
+          "Name of District",
+          "Disease/ Illness",
+          "No. \nof \nCases",
+          "No. of \nDeaths",
+          "Date of \nstart of \noutbreak",
+          "Date of \nreporting",
+          "Current \nStatus",
+          "Comments/ Action taken"
+        ],
+        [
+          "",
+          "West Bengal",
+          "Bankura",
+          "xix. Acute \nDiarrhoeal \nDisease",
+          "46",
+          "0",
+          "10/11/13",
+          "15/11/13",
+          "Under \nControl",
+          "Cases of \nloose motion and vomiting \nreported \nfrom Village \nDaldali, SC Binodnagar, Block Onda, District Bankura. District \nRRT and Block health team investigated the outbreak. Active \nsearch for cases done. Cases treated at local health centre. 2 stool \nsamples collected were negative for cholera culture. Out of 3 \nwater samples collected 1 sample was non potable. Chlorination \nof water sources done. Health education given regarding safe \ndrinking water and sanitation."
+        ],
+        [
+          "",
+          "",
+          "",
+          "xx. Acute \nDiarrhoeal \nDisease",
+          "34",
+          "0",
+          "10/11/13",
+          "14/11/13",
+          "Under \nControl",
+          "Cases of \nloose motion and vomiting \nreported \nfrom Village \nIcharia, SC Mankhamar, Block Onda, District Bankura. District \nRRT and Block health team investigated the outbreak. House to \nhouse survey done. All cases treated locally. 4 stool samples \ncollected were negative for cholera culture. Out of 34 water \nsamples collected, 8 samples were non potable. Chlorination of \nwater \nsources done. Health education given \nregarding \nsafe \ndrinking water and sanitation."
+        ]
+      ]
+    },
+    {
+      "page": 0,
+      "bbox": {
+        "x0": 23.51553149045312,
+        "y0": 65.49798387096774,
+        "x1": 819.2043317184383,
+        "y1": 321.491935483871
+      },
+      "rows": 5,
+      "cols": 9,
+      "cells": [
+        [
+          "DISEASE OUTBREAKS OF PREVIOUS WEEKS REPORTED LATE",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Sl. \nNo",
+          "Name of \nState/UT",
+          "Name of District",
+          "Disease/ Illness",
+          "Cases",
+          "Deaths",
+          "Date of \nstart of \noutbreak",
+          "Current \nStatus",
+          "Comments/ Action taken"
+        ],
+        [
+          "1",
+          "Bihar",
+          "Madhubani",
+          "xxi. Acute \nDiarrhoeal \nDisease",
+          "69",
+          "0",
+          "30/09/13",
+          "Under \nControl",
+          "Cases of diarrhoea and vomiting reported from Village Indra Mandal tola, SC \nSugapatti, PHC Phulparas, District Madhubani. District RRT investigated the \noutbreak. House \nto \nhouse \nsurvey \ndone. Medical \ncamp \norganized. \nSymptomatic treatement given to cases. ORS packets and halogen tablets \ndistributed in the community. Chlorination of water sources done. IEC done \nregarding safe drinking water and sanitation."
+        ],
+        [
+          "",
+          "",
+          "Madhubani",
+          "xxii. Acute \nDiarrhoeal \nDisease",
+          "30",
+          "1",
+          "28/10/13",
+          "Under \nControl",
+          "Cases of diarrhoea and vomiting reported from Village/SC Rupauli, PHC \nJhanjharpur, District Madhubani. District RRT and Block health \nteam \ninvestigated \nthe outbreak. Active search \nfor cases done. Medical camp \norganized. All cases treated. One death occurred in 14yr old female child. \nORS packets and halogen tablets distributed. Chlorination of water sources \ndone. IEC activity regarding safe drinking water done."
+        ],
+        [
+          "",
+          "",
+          "Katihar",
+          "xxiii. Acute \nDiarrhoeal \nDisease",
+          "13",
+          "3",
+          "24/10/13",
+          "Under \ncontrol",
+          "Cases of diarrhoea \nreported \nfrom Village Ahuta, Alipur, SC Lachhor, \nPHC/Block Balrampur, District Katihar. District RRT \ninvestigated \nthe \noutbreak. \n House \nto house survey done. Cases occurred \nin a Adiwasi \ncommunity. 3 deaths occurred in 45yr, 35yr and 5yr old male. Temporary \nmedical camps organized. All cases treated symptomatically. Chlorination of \nwater sources done. Health education given."
+        ]
+      ]
+    }
+  ],
+  "soft_gold_id": "R021_camelot_left_twocol",
+  "struggle": true,
+  "quality": {
+    "doc": "R021_camelot_left_twocol",
+    "peer_mean_cell_confidence": 0.875,
+    "grade": "peer_spot_check",
+    "peer_primary": "camelot_lattice",
+    "phase": "phase2_expand_for_phase3"
+  },
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": false,
+    "topology": "multi_table",
+    "notes": "Expanded T3 for Phase-3 shape/cell gates without diluting Phase-1 core freeze"
+  }
+}

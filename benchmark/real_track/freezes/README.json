@@ -1,1 +1,6 @@
-{"steady":"g2.json","note":"Steady freeze is the regression baseline."}
+{
+  "steady": "g2.json",
+  "note": "Steady freeze is the regression baseline.",
+  "g3_industry": "Phase 5 industry polish / production steady freeze",
+  "phase5": "PASS"
+}

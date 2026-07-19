@@ -69,6 +69,7 @@ PRESET_CLI = {
     "auto": "auto",
     "engine-v2": "engine-v2",
     "high-quality": "high-quality",
+    "fast": "fast",
     "full": "full",
     "lattice-only": "lattice-only",
 }

@@ -1,0 +1,21 @@
+{
+  "id": "R003_bea_gdp_sample",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/real/R003_bea_gdp_sample.pdf",
+  "pdf": "corpus/real/R003_bea_gdp_sample.pdf",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "page_scope": "gold_pages",
+  "failure_families": [
+    "over_detect_risk",
+    "ruled"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.696311+00:00",
+  "notes": "Count-only gold for detect discipline gates. Not cell grids.",
+  "gold_pages": [
+    0
+  ]
+}

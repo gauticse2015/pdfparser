@@ -66,3 +66,35 @@ jobs:
         run: |
           cargo build --release -p pdfparser-cli
           ./target/release/pdfparser extract benchmark/corpus/01_simple_text.pdf | grep -q SIMPLE_TOKEN_ALPHA
+
+  # Real-track freeze gates (G5.5): discipline + FP + structure + phase checks.
+  # Uses committed latest JSON when PDFs are heavy; still re-runs light suites.
+  real-track-gates:
+    name: Real-track phase gates
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build release CLI
+        run: cargo build --release -p pdfparser-cli
+      - name: Detect discipline
+        run: python3 benchmark/scripts/run_detect_discipline.py
+      - name: FP strict
+        run: python3 benchmark/scripts/run_fp_strict.py
+      - name: Real structure (Auto)
+        run: python3 benchmark/scripts/run_real_structure.py --preset auto
+      # Hard-gate only phases that are honestly green (detect precision + recall).
+      # G3 shape / G4 cells remain red under honest metrics — report only, do not
+      # fail CI until those floors are met without gold pads.
+      - name: Phase gates 1–2 (hard)
+        run: |
+          python3 benchmark/scripts/check_phase_gates.py --phase 1
+          python3 benchmark/scripts/check_phase_gates.py --phase 2
+      - name: Phase gates 3–5 (report only; not yet green)
+        continue-on-error: true
+        run: |
+          python3 benchmark/scripts/check_phase_gates.py --phase 3
+          python3 benchmark/scripts/check_phase_gates.py --phase 4
+          python3 benchmark/scripts/check_phase_gates.py --phase 5

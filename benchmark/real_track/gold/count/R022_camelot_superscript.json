@@ -1,0 +1,20 @@
+{
+  "id": "R022_camelot_superscript",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "corpus/compete_real/R022_camelot_superscript.pdf",
+  "pdf": "corpus/compete_real/R022_camelot_superscript.pdf",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "page_scope": "all_pages",
+  "failure_families": [
+    "superscripts",
+    "stream_like",
+    "financial_columns",
+    "phase3_cells"
+  ],
+  "builder": "peer_promote_phase2",
+  "reviewed_at": "2026-07-16T16:11:12.882630+00:00",
+  "notes": "Count gold co-promoted with structure gold for Phase3 tracking"
+}

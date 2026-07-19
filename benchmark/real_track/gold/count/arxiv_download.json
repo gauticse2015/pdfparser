@@ -1,0 +1,19 @@
+{
+  "id": "arxiv_download",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "pdf": "downloads/arxiv_1603.04467.pdf",
+  "expected_table_count": 0,
+  "expected_table_count_tol": 0,
+  "page_scope": "first_page",
+  "gold_pages": [
+    0
+  ],
+  "failure_families": [
+    "fp_prose",
+    "over_detect"
+  ],
+  "builder": "human_count_prose_chrome",
+  "reviewed_at": "2026-07-15T13:03:16.473835+00:00"
+}
