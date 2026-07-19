@@ -12,7 +12,9 @@
     "multi_page",
     "government_layout"
   ],
-  "struggle_tags": [],
+  "struggle_tags": [
+    "phase3_topology"
+  ],
   "builder": "peer_camelot_pdfplumber + human_review",
   "peer_primary": "camelot_lattice",
   "review_notes": "Human OK: peer lattice headers+rows look good (page 1).",
@@ -377,5 +379,11 @@
   ],
   "eval": {
     "stitch_multipage": false
+  },
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": true,
+    "topology": "single",
+    "notes": "Tagged for Phase-3 shape/cell tracking"
   }
 }

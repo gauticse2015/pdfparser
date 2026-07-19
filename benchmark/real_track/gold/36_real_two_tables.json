@@ -13,7 +13,8 @@
   ],
   "struggle_tags": [
     "multi_table",
-    "government_health"
+    "government_health",
+    "phase3_topology"
   ],
   "builder": "peer_camelot_pdfplumber + human_review",
   "peer_primary": "camelot_lattice",
@@ -156,5 +157,11 @@
   ],
   "eval": {
     "stitch_multipage": false
+  },
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": true,
+    "topology": "multi_table",
+    "notes": "Tagged for Phase-3 shape/cell tracking"
   }
 }

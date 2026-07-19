@@ -1,30 +1,37 @@
 {
-  "id": "37_real_liabilities_superscript",
+  "id": "R022_camelot_superscript",
   "schema_version": 1,
   "track": "real_structure",
   "status": "reviewed",
-  "license": "Camelot test fixture",
-  "source_url": "camelot superscript.pdf",
-  "source": "benchmark/corpus/real/37_real_liabilities_superscript.pdf",
-  "soft_gold_id": "37_real_liabilities_superscript",
+  "license": "public sample (camelot demo)",
+  "source_url": "",
+  "source": "corpus/compete_real/R022_camelot_superscript.pdf",
   "failure_classes": [
     "superscripts",
+    "stream_like",
     "financial_columns",
-    "continued_table"
+    "phase3_cells"
   ],
   "struggle_tags": [
-    "phase3_topology"
+    "superscripts",
+    "phase3_cells"
   ],
-  "builder": "peer_camelot_pdfplumber + human_review",
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
   "peer_primary": "camelot_stream",
-  "review_notes": "Human OK: first 25+ rows look good (Camelot stream state liabilities grid).",
-  "reviewed_at": "2026-07-12T07:27:09.425430+00:00",
-  "policy": "Human confirmed peer/vision draft. Not from pdfparser extract. stitch_multipage=false for eval.",
+  "review_notes": "Promoted from peer draft mean_conf=0.75; peer consensus for Phase3 tracking. Spot-check recommended (disputes=0).",
+  "reviewed_at": "2026-07-16T16:11:12.882630+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
   "expected_table_count": 1,
   "expected_table_count_tol": 0,
   "expected_tables": [
     {
       "page": 0,
+      "bbox": {
+        "x0": 89.2101,
+        "y0": 167.257,
+        "x1": 619.3223999999999,
+        "y1": 747.713443478836
+      },
       "rows": 36,
       "cols": 11,
       "cells": [
@@ -496,28 +503,22 @@
           "11.83",
           "11.08"
         ]
-      ],
-      "primary_source": "camelot_stream",
-      "primary_accuracy": 100.0,
-      "supporting_sources": [
-        "camelot_stream"
-      ],
-      "mean_cell_confidence": 0.75,
-      "bbox": {
-        "x0": 89.2101,
-        "y0": 167.257,
-        "x1": 619.3223999999999,
-        "y1": 747.713443478836
-      }
+      ]
     }
   ],
-  "eval": {
-    "stitch_multipage": false
+  "soft_gold_id": "R022_camelot_superscript",
+  "struggle": true,
+  "quality": {
+    "doc": "R022_camelot_superscript",
+    "peer_mean_cell_confidence": 0.75,
+    "grade": "peer_spot_check",
+    "peer_primary": "camelot_stream",
+    "phase": "phase2_expand_for_phase3"
   },
   "phase3_tracking": {
     "shape_interest": true,
     "cell_interest": true,
     "topology": "single",
-    "notes": "Tagged for Phase-3 shape/cell tracking"
+    "notes": "Expanded T3 for Phase-3 shape/cell gates without diluting Phase-1 core freeze"
   }
 }

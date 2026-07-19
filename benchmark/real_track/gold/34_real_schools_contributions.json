@@ -15,7 +15,8 @@
   "struggle_tags": [
     "stream_like",
     "name_address_money",
-    "col_merge"
+    "col_merge",
+    "phase3_topology"
   ],
   "builder": "peer_camelot_pdfplumber + human_review",
   "peer_primary": "camelot_lattice",
@@ -600,5 +601,11 @@
   ],
   "eval": {
     "stitch_multipage": false
+  },
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": true,
+    "topology": "single",
+    "notes": "Tagged for Phase-3 shape/cell tracking"
   }
 }

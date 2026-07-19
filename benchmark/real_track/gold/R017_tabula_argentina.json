@@ -1,25 +1,23 @@
 {
-  "id": "33_real_argentina_votes",
+  "id": "R017_tabula_argentina",
   "schema_version": 1,
   "track": "real_structure",
   "status": "reviewed",
-  "license": "Tabula test fixture",
-  "source_url": "tabula-java argentina_diputados_voting_record.pdf",
-  "source": "benchmark/corpus/real/33_real_argentina_votes.pdf",
-  "soft_gold_id": "33_real_argentina_votes",
+  "license": "public sample (compete_real)",
+  "source_url": "",
+  "source": "benchmark/corpus/compete_real/R017_tabula_argentina.pdf",
   "failure_classes": [
-    "spanish",
-    "irregular_grid",
-    "visible_rules"
+    "compete_real",
+    "phase2_expand"
   ],
   "struggle_tags": [
     "phase3_topology"
   ],
-  "builder": "peer_camelot_pdfplumber + human_review",
-  "peer_primary": "camelot_lattice",
-  "review_notes": "Human OK: Spanish vote grid looks good.",
-  "reviewed_at": "2026-07-12T07:27:09.422911+00:00",
-  "policy": "Human confirmed peer/vision draft. Not from pdfparser extract. stitch_multipage=false for eval.",
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
+  "peer_primary": "camelot",
+  "review_notes": "Promoted from peer draft mean_conf=1.00; peer consensus for Phase3 tracking. Spot-check recommended for disputes=0 drafts.",
+  "reviewed_at": "2026-07-16T15:10:09.020164+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
   "expected_table_count": 1,
   "expected_table_count_tol": 0,
   "expected_tables": [
@@ -222,11 +220,6 @@
         ]
       ],
       "primary_source": "camelot_lattice",
-      "primary_accuracy": 100.0,
-      "supporting_sources": [
-        "camelot_lattice",
-        "pdfplumber"
-      ],
       "mean_cell_confidence": 1.0,
       "bbox": {
         "x0": 24.951612903225808,
@@ -236,9 +229,8 @@
       }
     }
   ],
-  "eval": {
-    "stitch_multipage": false
-  },
+  "soft_gold_id": "R017_tabula_argentina",
+  "struggle": false,
   "phase3_tracking": {
     "shape_interest": true,
     "cell_interest": true,

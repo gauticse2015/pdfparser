@@ -1,0 +1,63 @@
+{
+  "id": "R005_census_acs_sample",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "public sample (compete_real)",
+  "source_url": "",
+  "source": "benchmark/corpus/compete_real/R005_census_acs_sample.pdf",
+  "failure_classes": [
+    "compete_real",
+    "phase2_expand"
+  ],
+  "struggle_tags": [
+    "phase3_topology"
+  ],
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
+  "peer_primary": "camelot",
+  "review_notes": "Promoted from peer draft mean_conf=0.75; peer consensus for Phase3 tracking. Spot-check recommended for disputes=0 drafts.",
+  "reviewed_at": "2026-07-16T15:10:09.018088+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "rows": 5,
+      "cols": 1,
+      "cells": [
+        [
+          "American Community Survey"
+        ],
+        [
+          "and"
+        ],
+        [
+          "Puerto Rico Community"
+        ],
+        [
+          "Survey"
+        ],
+        [
+          "2022 Subject Definitions"
+        ]
+      ],
+      "primary_source": "camelot_stream",
+      "mean_cell_confidence": 0.75,
+      "bbox": {
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 612.0,
+        "y1": 792.0
+      }
+    }
+  ],
+  "soft_gold_id": "R005_census_acs_sample",
+  "struggle": true,
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": true,
+    "topology": "single",
+    "notes": "Tagged for Phase-3 shape/cell tracking"
+  }
+}
