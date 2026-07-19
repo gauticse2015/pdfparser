@@ -1,0 +1,20 @@
+{
+  "id": "38_real_irs_f1040",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/real/38_real_irs_f1040.pdf",
+  "pdf": "corpus/real/38_real_irs_f1040.pdf",
+  "expected_table_count": 0,
+  "expected_table_count_tol": 0,
+  "page_scope": "first_page",
+  "failure_families": [
+    "fp_form"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.696900+00:00",
+  "notes": "Count-only gold for detect discipline gates. Not cell grids.",
+  "gold_pages": [
+    0
+  ]
+}

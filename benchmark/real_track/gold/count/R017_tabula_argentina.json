@@ -1,0 +1,17 @@
+{
+  "id": "R017_tabula_argentina",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/compete_real/R017_tabula_argentina.pdf",
+  "pdf": "corpus/compete_real/R017_tabula_argentina.pdf",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "page_scope": "all_pages",
+  "failure_families": [
+    "ruled"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.697682+00:00",
+  "notes": "Count-only gold for detect discipline gates. Not cell grids."
+}

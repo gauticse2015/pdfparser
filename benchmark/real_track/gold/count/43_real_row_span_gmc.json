@@ -1,0 +1,20 @@
+{
+  "id": "43_real_row_span_gmc",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/real/43_real_row_span_gmc.pdf",
+  "pdf": "corpus/real/43_real_row_span_gmc.pdf",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "page_scope": "gold_pages",
+  "failure_families": [
+    "span"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.695280+00:00",
+  "notes": "Count-only gold for detect discipline gates. Not cell grids.",
+  "gold_pages": [
+    0
+  ]
+}

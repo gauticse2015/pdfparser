@@ -1,0 +1,21 @@
+{
+  "id": "R005_census_acs_sample",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/compete_real/R005_census_acs_sample.pdf",
+  "pdf": "corpus/compete_real/R005_census_acs_sample.pdf",
+  "expected_table_count": 0,
+  "expected_table_count_tol": 0,
+  "page_scope": "first_page",
+  "failure_families": [
+    "borderless",
+    "dense"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.697933+00:00",
+  "notes": "first_page count gold: Auto may miss borderless ACS sample; structure T3 tracks quality when detected",
+  "gold_pages": [
+    0
+  ]
+}

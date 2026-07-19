@@ -1,0 +1,18 @@
+{
+  "id": "R019_camelot_foo",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/compete_real/R019_camelot_foo.pdf",
+  "pdf": "corpus/compete_real/R019_camelot_foo.pdf",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "page_scope": "all_pages",
+  "failure_families": [
+    "ruled",
+    "over_detect_risk"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.697743+00:00",
+  "notes": "Count-only gold for detect discipline gates. Not cell grids."
+}

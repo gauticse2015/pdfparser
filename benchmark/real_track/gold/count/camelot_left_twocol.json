@@ -1,0 +1,20 @@
+{
+  "id": "camelot_left_twocol",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "pdf": "downloads/camelot_left_twocol.pdf",
+  "expected_table_count": 2,
+  "expected_table_count_tol": 0,
+  "page_scope": "first_page",
+  "gold_pages": [
+    0
+  ],
+  "failure_families": [
+    "multi_table",
+    "ruled"
+  ],
+  "builder": "human_count_prose_chrome",
+  "reviewed_at": "2026-07-15T13:03:16.473251+00:00",
+  "notes": "Corrected: page has real disease outbreak lattices, not FP prose"
+}

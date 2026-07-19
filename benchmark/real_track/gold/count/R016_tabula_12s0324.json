@@ -1,0 +1,19 @@
+{
+  "id": "R016_tabula_12s0324",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/compete_real/R016_tabula_12s0324.pdf",
+  "pdf": "corpus/compete_real/R016_tabula_12s0324.pdf",
+  "expected_table_count": 2,
+  "expected_table_count_tol": 0,
+  "page_scope": "all_pages",
+  "failure_families": [
+    "ruled",
+    "multi_table"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.697615+00:00",
+  "notes": "Camelot lattice finds 2 tables on this PDF; count gold corrected",
+  "gold_pages": null
+}
