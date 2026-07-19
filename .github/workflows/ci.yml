@@ -66,3 +66,23 @@ jobs:
         run: |
           cargo build --release -p pdfparser-cli
           ./target/release/pdfparser extract benchmark/corpus/01_simple_text.pdf | grep -q SIMPLE_TOKEN_ALPHA
+
+  # Real-track freeze gates (G5.5). Uses **committed** latest JSON so this PR
+  # can merge independently of the engine binary. Nightly/local should re-run
+  # detect_discipline / real_structure with the product CLI after engine lands.
+  real-track-gates:
+    name: Real-track phase gates
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Phase gates 1–2 (hard, committed results)
+        run: |
+          python3 benchmark/scripts/check_phase_gates.py --phase 1
+          python3 benchmark/scripts/check_phase_gates.py --phase 2
+      - name: Phase gates 3–5 (report only; not yet green)
+        continue-on-error: true
+        run: |
+          python3 benchmark/scripts/check_phase_gates.py --phase 3
+          python3 benchmark/scripts/check_phase_gates.py --phase 4
+          python3 benchmark/scripts/check_phase_gates.py --phase 5
