@@ -1,0 +1,21 @@
+{
+  "id": "44_real_spanning_cells",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/real/44_real_spanning_cells.pdf",
+  "pdf": "corpus/real/44_real_spanning_cells.pdf",
+  "expected_table_count": 2,
+  "expected_table_count_tol": 0,
+  "page_scope": "gold_pages",
+  "failure_families": [
+    "over_detect",
+    "span"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.695532+00:00",
+  "notes": "Count-only gold for detect discipline gates. Not cell grids.",
+  "gold_pages": [
+    0
+  ]
+}

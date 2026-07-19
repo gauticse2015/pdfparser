@@ -1,0 +1,20 @@
+{
+  "id": "45_real_campaign_donors",
+  "schema_version": 1,
+  "track": "detect_discipline",
+  "status": "reviewed",
+  "source": "benchmark/corpus/real/45_real_campaign_donors.pdf",
+  "pdf": "corpus/real/45_real_campaign_donors.pdf",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "page_scope": "gold_pages",
+  "failure_families": [
+    "borderless"
+  ],
+  "builder": "human_count_from_layout_review",
+  "reviewed_at": "2026-07-15T13:02:44.696056+00:00",
+  "notes": "Count-only gold for detect discipline gates. Not cell grids.",
+  "gold_pages": [
+    0
+  ]
+}

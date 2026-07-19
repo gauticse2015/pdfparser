@@ -1,0 +1,160 @@
+{
+  "suite": "real_fp_smoke_strict",
+  "version": 1,
+  "policy": "Expect 0 tables on first page, tol=0. Harder than v0.",
+  "n_docs": 12,
+  "documents": [
+    {
+      "id": "38_real_irs_f1040",
+      "pdf": "corpus/real/38_real_irs_f1040.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_form"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "pdf": "corpus/real/39_real_fed_beigebook.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "pdf": "corpus/real/40_real_arxiv_tensorflow.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "pdf": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "over_detect",
+        "chrome"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "R001_irs_f1040_schedule_c",
+      "pdf": "corpus/compete_real/R001_irs_f1040_schedule_c.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_form"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "R002_irs_f1040",
+      "pdf": "corpus/compete_real/R002_irs_f1040.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_form"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "R006_fed_beigebook",
+      "pdf": "corpus/compete_real/R006_fed_beigebook.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "R007_nist_fips197",
+      "pdf": "corpus/compete_real/R007_nist_fips197.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "R020_irs_schedule_d",
+      "pdf": "corpus/compete_real/R020_irs_schedule_d.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_form"
+      ],
+      "notes": "Strict FP: expect 0 tables on first page"
+    },
+    {
+      "id": "arxiv_download",
+      "pdf": "downloads/arxiv_1603.04467.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "notes": "Strict FP first page"
+    },
+    {
+      "id": "nist_fips_download",
+      "pdf": "downloads/nist_fips197.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "notes": "Strict FP first page"
+    },
+    {
+      "id": "fed_beigebook_download",
+      "pdf": "downloads/fed_beigebook.pdf",
+      "track": "real_fp_smoke_strict",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "notes": "Strict FP first page"
+    }
+  ]
+}

@@ -1,0 +1,532 @@
+{
+  "suite": "detect_discipline",
+  "version": 1,
+  "policy": "Strict table COUNT only (tol=0). Page scope per doc. No ICDAR. Primary gate for over-detect Phase 1.",
+  "n_docs": 34,
+  "documents": [
+    {
+      "id": "30_real_ca_warn_report",
+      "pdf": "corpus/real/30_real_ca_warn_report.pdf",
+      "gold": "gold/count/30_real_ca_warn_report.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "over_detect_risk"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "31_real_background_checks",
+      "pdf": "corpus/real/31_real_background_checks.pdf",
+      "gold": "gold/count/31_real_background_checks.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "wide_tables"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "32_real_census_table324",
+      "pdf": "corpus/real/32_real_census_table324.pdf",
+      "gold": "gold/count/32_real_census_table324.json",
+      "expected_table_count": 2,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "multi_table",
+        "dense"
+      ],
+      "bucket": "multi"
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "pdf": "corpus/real/33_real_argentina_votes.pdf",
+      "gold": "gold/count/33_real_argentina_votes.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "ruled"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "pdf": "corpus/real/34_real_schools_contributions.pdf",
+      "gold": "gold/count/34_real_schools_contributions.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "borderless",
+        "over_detect_risk"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "pdf": "corpus/real/35_real_camelot_fuel.pdf",
+      "gold": "gold/count/35_real_camelot_fuel.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "over_detect"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "36_real_two_tables",
+      "pdf": "corpus/real/36_real_two_tables.pdf",
+      "gold": "gold/count/36_real_two_tables.json",
+      "expected_table_count": 2,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "multi_table"
+      ],
+      "bucket": "multi"
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "pdf": "corpus/real/37_real_liabilities_superscript.pdf",
+      "gold": "gold/count/37_real_liabilities_superscript.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "borderless"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "42_real_insurance_italian",
+      "pdf": "corpus/real/42_real_insurance_italian.pdf",
+      "gold": "gold/count/42_real_insurance_italian.json",
+      "expected_table_count": 2,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "nested",
+        "multi_table"
+      ],
+      "bucket": "multi"
+    },
+    {
+      "id": "43_real_row_span_gmc",
+      "pdf": "corpus/real/43_real_row_span_gmc.pdf",
+      "gold": "gold/count/43_real_row_span_gmc.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "span"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "44_real_spanning_cells",
+      "pdf": "corpus/real/44_real_spanning_cells.pdf",
+      "gold": "gold/count/44_real_spanning_cells.json",
+      "expected_table_count": 2,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "over_detect",
+        "span"
+      ],
+      "bucket": "multi"
+    },
+    {
+      "id": "45_real_campaign_donors",
+      "pdf": "corpus/real/45_real_campaign_donors.pdf",
+      "gold": "gold/count/45_real_campaign_donors.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "borderless"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "R003_bea_gdp_sample",
+      "pdf": "corpus/real/R003_bea_gdp_sample.pdf",
+      "gold": "gold/count/R003_bea_gdp_sample.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "over_detect_risk",
+        "ruled"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "R010_bea_nipa_highlights",
+      "pdf": "corpus/real/R010_bea_nipa_highlights.pdf",
+      "gold": "gold/count/R010_bea_nipa_highlights.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        7
+      ],
+      "failure_families": [
+        "encoding",
+        "over_detect_risk"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "R018_camelot_health",
+      "pdf": "corpus/real/R018_camelot_health.pdf",
+      "gold": "gold/count/R018_camelot_health.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "gold_pages",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "ruled"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "38_real_irs_f1040",
+      "pdf": "corpus/real/38_real_irs_f1040.pdf",
+      "gold": "gold/count/38_real_irs_f1040.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_form"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "39_real_fed_beigebook",
+      "pdf": "corpus/real/39_real_fed_beigebook.pdf",
+      "gold": "gold/count/39_real_fed_beigebook.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "40_real_arxiv_tensorflow",
+      "pdf": "corpus/real/40_real_arxiv_tensorflow.pdf",
+      "gold": "gold/count/40_real_arxiv_tensorflow.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "41_real_nist_withdrawn_notice",
+      "pdf": "corpus/real/41_real_nist_withdrawn_notice.pdf",
+      "gold": "gold/count/41_real_nist_withdrawn_notice.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "over_detect",
+        "chrome"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "R001_irs_f1040_schedule_c",
+      "pdf": "corpus/compete_real/R001_irs_f1040_schedule_c.pdf",
+      "gold": "gold/count/R001_irs_f1040_schedule_c.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_form"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "R002_irs_f1040",
+      "pdf": "corpus/compete_real/R002_irs_f1040.pdf",
+      "gold": "gold/count/R002_irs_f1040.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_form"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "R006_fed_beigebook",
+      "pdf": "corpus/compete_real/R006_fed_beigebook.pdf",
+      "gold": "gold/count/R006_fed_beigebook.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "R007_nist_fips197",
+      "pdf": "corpus/compete_real/R007_nist_fips197.pdf",
+      "gold": "gold/count/R007_nist_fips197.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "R020_irs_schedule_d",
+      "pdf": "corpus/compete_real/R020_irs_schedule_d.pdf",
+      "gold": "gold/count/R020_irs_schedule_d.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_form"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "R016_tabula_12s0324",
+      "pdf": "corpus/compete_real/R016_tabula_12s0324.pdf",
+      "gold": "gold/count/R016_tabula_12s0324.json",
+      "expected_table_count": 2,
+      "expected_table_count_tol": 0,
+      "page_scope": "all_pages",
+      "gold_pages": null,
+      "failure_families": [
+        "ruled",
+        "multi_table"
+      ],
+      "bucket": "multi"
+    },
+    {
+      "id": "R017_tabula_argentina",
+      "pdf": "corpus/compete_real/R017_tabula_argentina.pdf",
+      "gold": "gold/count/R017_tabula_argentina.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "all_pages",
+      "gold_pages": null,
+      "failure_families": [
+        "ruled"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "R019_camelot_foo",
+      "pdf": "corpus/compete_real/R019_camelot_foo.pdf",
+      "gold": "gold/count/R019_camelot_foo.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "all_pages",
+      "gold_pages": null,
+      "failure_families": [
+        "ruled",
+        "over_detect_risk"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "R008_cdc_mmwr_sample",
+      "pdf": "corpus/compete_real/R008_cdc_mmwr_sample.pdf",
+      "gold": "gold/count/R008_cdc_mmwr_sample.json",
+      "expected_table_count": 1,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "borderless",
+        "compete_real"
+      ],
+      "bucket": "single"
+    },
+    {
+      "id": "R009_sec_10q_sample",
+      "pdf": "corpus/compete_real/R009_sec_10q_sample.pdf",
+      "gold": "gold/count/R009_sec_10q_sample.json",
+      "expected_table_count": 3,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "multi_table",
+        "financial"
+      ],
+      "bucket": "multi"
+    },
+    {
+      "id": "R005_census_acs_sample",
+      "pdf": "corpus/compete_real/R005_census_acs_sample.pdf",
+      "gold": "gold/count/R005_census_acs_sample.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "borderless",
+        "dense"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "camelot_left_twocol",
+      "pdf": "downloads/camelot_left_twocol.pdf",
+      "gold": "gold/count/camelot_left_twocol.json",
+      "expected_table_count": 2,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "multi_table",
+        "ruled"
+      ],
+      "bucket": "multi"
+    },
+    {
+      "id": "arxiv_download",
+      "pdf": "downloads/arxiv_1603.04467.pdf",
+      "gold": "gold/count/arxiv_download.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "nist_fips_download",
+      "pdf": "downloads/nist_fips197.pdf",
+      "gold": "gold/count/nist_fips_download.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "bucket": "fp"
+    },
+    {
+      "id": "fed_beigebook_download",
+      "pdf": "downloads/fed_beigebook.pdf",
+      "gold": "gold/count/fed_beigebook_download.json",
+      "expected_table_count": 0,
+      "expected_table_count_tol": 0,
+      "page_scope": "first_page",
+      "gold_pages": [
+        0
+      ],
+      "failure_families": [
+        "fp_prose",
+        "over_detect"
+      ],
+      "bucket": "fp"
+    }
+  ]
+}
