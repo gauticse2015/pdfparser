@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "suite_id": "phase3_topology",
+  "generated_at": "2026-07-16T17:14:37.238414+00:00",
+  "status": {
+    "phase0": "PASS",
+    "phase1": "PASS",
+    "phase2": "PASS",
+    "phase3": "PASS",
+    "phase4": "BLOCKED \u2014 R010 encoding + census multi-level cols + liabilities schema",
+    "phase5": "NOT STARTED"
+  },
+  "detect_discipline": {
+    "summary": {
+      "n_docs": 34,
+      "n_scored": 34,
+      "exact_count_rate": 0.9705882352941176,
+      "over_doc_rate": 0.0,
+      "under_doc_rate": 0.029411764705882353,
+      "n_exact": 33,
+      "n_over": 0,
+      "n_under": 1,
+      "sum_pred": 28,
+      "sum_exp": 29,
+      "pred_gt_ratio": 0.9655172413793104,
+      "n_severe_over": 0
+    }
+  },
+  "fp_strict": {
+    "summary": {
+      "n_docs": 12,
+      "n_pass": 12,
+      "n_fail": 0,
+      "fp_zero_rate": 1.0,
+      "pass_rate": 1.0
+    }
+  },
+  "real_structure_core": {
+    "n": 15,
+    "micro_shape_exact": 0.8,
+    "micro_row_acc": 0.8333333333333334,
+    "micro_col_acc": 0.8333333333333334,
+    "micro_cell_f1": 0.6971702881301737,
+    "n_shape_zero": 3
+  },
+  "real_structure_full": {
+    "n_docs": 23,
+    "n_ok": 23,
+    "n_fail": 0,
+    "micro_cell_f1": 0.5907523890720708,
+    "micro_shape_exact_rate": 0.6666666666666667,
+    "micro_det_count_f1": 0.9130434782608695,
+    "micro_det_iou_f1": 0.8958333333333334,
+    "micro_score_0_100": 72.25328396867994,
+    "note": "soft progressive scores; G1 not claimed"
+  },
+  "code_changes": [
+    "trim_empty_border_rows_cols",
+    "densify_y wrap vs statistical pitch + wide multi + numeric skip_y",
+    "normalize_title_row_and_footnote (NICS 59x25)",
+    "Schedule D / 1099 form FP kill",
+    "GATE-3 automation in check_phase_gates.py"
+  ],
+  "icdar_pdfparser": {
+    "f1": 0.7727272727272726,
+    "teds": 0.49156431380846655,
+    "row": 0.5042016806722689,
+    "col": 0.5714285714285714,
+    "time_s": 26.434934292003163,
+    "errors": 0,
+    "docs": 67
+  },
+  "icdar_counts": {
+    "pred_gt_ratio": 0.9493670886075949,
+    "over_doc_rate": 0.23880597014925373,
+    "under_doc_rate": 0.208955223880597
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-18T07:39:49.988743+00:00",
+  "icdar_live": true,
+  "detect_discipline": {
+    "summary": {
+      "n_docs": 34,
+      "n_scored": 34,
+      "exact_count_rate": 0.9705882352941176,
+      "over_doc_rate": 0.0,
+      "under_doc_rate": 0.029411764705882353,
+      "n_exact": 33,
+      "n_over": 0,
+      "n_under": 1,
+      "sum_pred": 28,
+      "sum_exp": 29,
+      "pred_gt_ratio": 0.9655172413793104,
+      "n_severe_over": 0
+    }
+  },
+  "fp_strict": {
+    "summary": {
+      "n_docs": 12,
+      "n_pass": 12,
+      "n_fail": 0,
+      "fp_zero_rate": 1.0,
+      "pass_rate": 1.0
+    }
+  },
+  "real_structure_core": {
+    "n": 15,
+    "micro_cell_f1": 0.8196500058672181,
+    "micro_shape_exact": 0.8333333333333334,
+    "micro_row_acc": 0.8333333333333334,
+    "micro_col_acc": 0.9333333333333333
+  },
+  "icdar": {
+    "live": true,
+    "n_docs": 67,
+    "pred_gt_ratio": 1.1455696202531647,
+    "over_detect_doc_rate": 0.2835820895522388,
+    "under_detect_doc_rate": 0.14925373134328357,
+    "pdfparser": {
+      "f1": 0.8141592920353983,
+      "teds": 0.43960613719950636,
+      "row": 0.4420289855072464,
+      "col": 0.4855072463768116,
+      "time_s": 25.786555665981723,
+      "errors": 0,
+      "docs": 67
+    },
+    "ranking": [
+      {
+        "tool": "camelot_auto",
+        "f1": 0.863768115942029,
+        "teds": 0.7855027900692086,
+        "row": 0.5637583892617449,
+        "col": 0.7919463087248322,
+        "time_s": 73.01602283399552,
+        "errors": 0,
+        "docs": 67,
+        "rank": 1
+      },
+      {
+        "tool": "pdfparser",
+        "f1": 0.8141592920353983,
+        "teds": 0.43960613719950636,
+        "row": 0.4420289855072464,
+        "col": 0.4855072463768116,
+        "time_s": 25.786555665981723,
+        "errors": 0,
+        "docs": 67,
+        "rank": 2
+      },
+      {
+        "tool": "pymupdf",
+        "f1": 0.7758007117437722,
+        "teds": 0.6736259412286585,
+        "row": 0.5779816513761468,
+        "col": 0.6422018348623854,
+        "time_s": 10.558369957987452,
+        "errors": 0,
+        "docs": 67,
+        "rank": 3
+      },
+      {
+        "tool": "camelot_lattice_vector",
+        "f1": 0.7657992565055762,
+        "teds": 0.7838816726186509,
+        "row": 0.7475728155339806,
+        "col": 0.8058252427184466,
+        "time_s": 3.7323177499929443,
+        "errors": 0,
+        "docs": 67,
+        "rank": 4
+      },
+      {
+        "tool": "pdfplumber",
+        "f1": 0.6624605678233437,
+        "teds": 0.6496610592922069,
+        "row": 0.5714285714285714,
+        "col": 0.5333333333333333,
+        "time_s": 9.008680540981004,
+        "errors": 0,
+        "docs": 67,
+        "rank": 5
+      }
+    ]
+  },
+  "note": "ICDAR metrics from live multi-peer run; never skipped.",
+  "suite_id": "phase2_detect_recall",
+  "status": {
+    "phase0": "PASS",
+    "phase1": "PASS",
+    "phase2": "PASS",
+    "phase3": "NOT STARTED",
+    "phase4": "NOT STARTED",
+    "phase5": "NOT STARTED"
+  },
+  "gates_passed": [
+    "G1.*",
+    "G2.* including live ICDAR G2.6/G2.7"
+  ]
+}
