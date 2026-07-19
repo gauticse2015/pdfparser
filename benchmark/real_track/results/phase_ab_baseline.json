@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-07-18T12:56:34.393525+00:00",
+  "policy": "post kill-list cleanup: no gold pads, no census [8-12] densify, no invented rows",
+  "icdar": {
+    "f1": 0.825301204819277,
+    "teds": 0.4771185188797848,
+    "row": 0.48905109489051096,
+    "col": 0.5474452554744526
+  },
+  "real_core_cell_f1": 0.7382763731906249,
+  "floors": {
+    "icdar_f1_min": 0.815301204819277,
+    "icdar_teds_min": 0.4721185188797848,
+    "icdar_row_min": 0.48405109489051096,
+    "icdar_col_min": 0.5424452554744525,
+    "real_core_min": 0.7182763731906249
+  },
+  "note": "Honest baseline after removing gold/ICDAR bypasses. Metrics may be below previous padded board."
+}

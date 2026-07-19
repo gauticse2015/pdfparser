@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-07-18T06:21:41.364719+00:00",
+  "summary": {
+    "preset": "fast",
+    "n_ok": 8,
+    "n_docs": 8,
+    "p50_ms": 10.880938018090092,
+    "p95_ms": 409.03888345346803,
+    "mean_ms": 89.67851063061971,
+    "max_ms": 604.4711249996908,
+    "budget_p95_ms": 30000.0,
+    "enable_full_page_render": false,
+    "allow_auto_render": false,
+    "note": "Fast preset hard-disables full-page render (G5.6)."
+  },
+  "documents": [
+    {
+      "id": "30_real_ca_warn_report",
+      "ms": 604.4711249996908,
+      "ok": true
+    },
+    {
+      "id": "31_real_background_checks",
+      "ms": 25.708875007694587,
+      "ok": true
+    },
+    {
+      "id": "32_real_census_table324",
+      "ms": 14.715167024405673,
+      "ok": true
+    },
+    {
+      "id": "33_real_argentina_votes",
+      "ms": 7.04670901177451,
+      "ok": true
+    },
+    {
+      "id": "34_real_schools_contributions",
+      "ms": 46.0932920104824,
+      "ok": true
+    },
+    {
+      "id": "35_real_camelot_fuel",
+      "ms": 6.2763750029262155,
+      "ok": true
+    },
+    {
+      "id": "36_real_two_tables",
+      "ms": 6.488249986432493,
+      "ok": true
+    },
+    {
+      "id": "37_real_liabilities_superscript",
+      "ms": 6.628292001551017,
+      "ok": true
+    }
+  ]
+}
