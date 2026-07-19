@@ -22,30 +22,57 @@ pub struct ToUnicodeMap {
 
 impl ToUnicodeMap {
     /// Parse a (decoded) ToUnicode CMap byte stream.
+    ///
+    /// Handles both line-oriented CMaps and **single-line** CMaps (common in
+    /// BEA/NIPA-style Type0 fonts) where `beginbfchar` … `endbfchar` and all
+    /// `<src> <dst>` pairs live on one continuous line with no newlines.
     pub fn parse(data: &[u8]) -> Result<Self, ToUnicodeParseError> {
         let text = String::from_utf8_lossy(data);
         let mut map = HashMap::new();
-        let mut lines = text.lines();
-        while let Some(line) = lines.next() {
-            let line = line.trim();
-            if line.ends_with("beginbfchar") {
-                // count may be on same line or previous — consume until endbfchar
-                for l in lines.by_ref() {
-                    let l = l.trim();
-                    if l.contains("endbfchar") {
-                        break;
+
+        // Region-based parse: independent of newlines.
+        for region in cmap_regions(&text, "beginbfchar", "endbfchar") {
+            parse_bfchar_region(region, &mut map);
+        }
+        for region in cmap_regions(&text, "beginbfrange", "endbfrange") {
+            parse_bfrange_region(region, &mut map);
+        }
+
+        // Legacy line-oriented path as backup when region scan finds nothing
+        // (odd formatting). Safe: only fills missing keys.
+        if map.is_empty() {
+            let mut lines = text.lines();
+            while let Some(line) = lines.next() {
+                let line = line.trim();
+                if line.contains("beginbfchar") {
+                    // Same-line pairs after the keyword.
+                    if let Some(rest) = line.split("beginbfchar").nth(1) {
+                        parse_bfchar_region(rest, &mut map);
                     }
-                    if let Some((src, dst)) = parse_bfchar_line(l) {
-                        map.insert(src, dst);
+                    for l in lines.by_ref() {
+                        let l = l.trim();
+                        if l.contains("endbfchar") {
+                            if let Some(before) = l.split("endbfchar").next() {
+                                parse_bfchar_region(before, &mut map);
+                            }
+                            break;
+                        }
+                        parse_bfchar_region(l, &mut map);
                     }
-                }
-            } else if line.ends_with("beginbfrange") {
-                for l in lines.by_ref() {
-                    let l = l.trim();
-                    if l.contains("endbfrange") {
-                        break;
+                } else if line.contains("beginbfrange") {
+                    if let Some(rest) = line.split("beginbfrange").nth(1) {
+                        parse_bfrange_region(rest, &mut map);
                     }
-                    parse_bfrange_line(l, &mut map);
+                    for l in lines.by_ref() {
+                        let l = l.trim();
+                        if l.contains("endbfrange") {
+                            if let Some(before) = l.split("endbfrange").next() {
+                                parse_bfrange_region(before, &mut map);
+                            }
+                            break;
+                        }
+                        parse_bfrange_region(l, &mut map);
+                    }
                 }
             }
         }
@@ -115,7 +142,24 @@ fn utf16be_to_string(b: &[u8]) -> String {
     s
 }
 
-/// Extract `<hex>` tokens from a CMap line (handles glued forms like `<21><21><0041>`).
+/// Slices between `begin_kw` and `end_kw` (exclusive of keywords).
+fn cmap_regions<'a>(text: &'a str, begin_kw: &str, end_kw: &str) -> Vec<&'a str> {
+    let mut out = Vec::new();
+    let mut rest = text;
+    while let Some(b) = rest.find(begin_kw) {
+        let after = &rest[b + begin_kw.len()..];
+        if let Some(e) = after.find(end_kw) {
+            out.push(&after[..e]);
+            rest = &after[e + end_kw.len()..];
+        } else {
+            out.push(after);
+            break;
+        }
+    }
+    out
+}
+
+/// Extract `<hex>` tokens (handles glued forms like `<21><21><0041>`).
 fn hex_tokens(l: &str) -> Vec<String> {
     let mut out = Vec::new();
     let bytes = l.as_bytes();
@@ -134,50 +178,96 @@ fn hex_tokens(l: &str) -> Vec<String> {
     out
 }
 
-fn parse_bfchar_line(l: &str) -> Option<(u32, String)> {
-    let toks = hex_tokens(l);
-    if toks.len() < 2 {
-        // Fallback: whitespace-separated
-        let mut parts = l.split_whitespace();
-        let src = parse_hex_token(parts.next()?)?;
-        let dst = parse_hex_token(parts.next()?)?;
-        return Some((bytes_to_u32(&src), utf16be_to_string(&dst)));
+/// Parse all `<src> <dst>` pairs in a bfchar region (any whitespace / one line).
+fn parse_bfchar_region(region: &str, map: &mut HashMap<u32, String>) {
+    let toks = hex_tokens(region);
+    let mut i = 0;
+    while i + 1 < toks.len() {
+        if let (Some(src), Some(dst)) = (parse_hex_token(&toks[i]), parse_hex_token(&toks[i + 1])) {
+            map.insert(bytes_to_u32(&src), utf16be_to_string(&dst));
+        }
+        i += 2;
     }
-    let src = parse_hex_token(&toks[0])?;
-    let dst = parse_hex_token(&toks[1])?;
-    Some((bytes_to_u32(&src), utf16be_to_string(&dst)))
 }
 
-fn parse_bfrange_line(l: &str, map: &mut HashMap<u32, String>) {
-    // Array form: <lo> <hi> [<dst>…] — skip for now if '[' present without simple triple.
-    if l.contains('[') {
-        return;
-    }
-    let toks = hex_tokens(l);
-    if toks.len() < 3 {
-        return;
-    }
-    let start = match parse_hex_token(&toks[0]) {
-        Some(b) => bytes_to_u32(&b),
-        None => return,
-    };
-    let end = match parse_hex_token(&toks[1]) {
-        Some(b) => bytes_to_u32(&b),
-        None => return,
-    };
-    if let Some(dst) = parse_hex_token(&toks[2]) {
-        // Destination is UTF-16BE code unit(s). For single BMP char ranges the
-        // first unit is the base codepoint (standard ToUnicode identity ranges).
-        let base = if dst.len() >= 2 {
-            ((dst[0] as u32) << 8) | (dst[1] as u32)
-        } else {
-            bytes_to_u32(&dst)
-        };
-        for c in start..=end {
-            let cp = base + (c - start);
-            if let Some(ch) = char::from_u32(cp) {
-                map.insert(c, ch.to_string());
+/// Parse simple `<lo> <hi> <dst>` bfrange triples (array form skipped).
+fn parse_bfrange_region(region: &str, map: &mut HashMap<u32, String>) {
+    // Array form: <lo> <hi> [<dst>…] — skip brackets for now.
+    if region.contains('[') {
+        // Still try simple triples outside brackets if any.
+        for part in region.split('[') {
+            if !part.contains(']') {
+                parse_bfrange_simple_triples(part, map);
             }
         }
+        return;
+    }
+    parse_bfrange_simple_triples(region, map);
+}
+
+fn parse_bfrange_simple_triples(region: &str, map: &mut HashMap<u32, String>) {
+    let toks = hex_tokens(region);
+    let mut i = 0;
+    while i + 2 < toks.len() {
+        let start = match parse_hex_token(&toks[i]) {
+            Some(b) => bytes_to_u32(&b),
+            None => {
+                i += 1;
+                continue;
+            }
+        };
+        let end = match parse_hex_token(&toks[i + 1]) {
+            Some(b) => bytes_to_u32(&b),
+            None => {
+                i += 1;
+                continue;
+            }
+        };
+        if let Some(dst) = parse_hex_token(&toks[i + 2]) {
+            let base = if dst.len() >= 2 {
+                ((dst[0] as u32) << 8) | (dst[1] as u32)
+            } else {
+                bytes_to_u32(&dst)
+            };
+            if end >= start && end - start < 10_000 {
+                for c in start..=end {
+                    let cp = base + (c - start);
+                    if let Some(ch) = char::from_u32(cp) {
+                        map.insert(c, ch.to_string());
+                    }
+                }
+            }
+            i += 3;
+        } else {
+            i += 1;
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_single_line_bfchar_bea_style() {
+        // Minimal single-line CMap like R010 NIPA Type0 fonts (no newlines).
+        let data = b"/CIDInit /ProcSet findresource begin 12 dict begin begincmap \
+            1 begincodespacerange <0000> <FFFF> endcodespacerange \
+            4 beginbfchar <0003> <0020> <002A> <0047> <0037> <0054> <0055> <0072> endbfchar \
+            endcmap CMapName currentdict /CMap defineresource pop end end";
+        let map = ToUnicodeMap::parse(data).expect("parse");
+        assert_eq!(map.get(0x03).as_deref(), Some(" "));
+        assert_eq!(map.get(0x2A).as_deref(), Some("G")); // * CID -> G
+        assert_eq!(map.get(0x37).as_deref(), Some("T")); // 7 CID -> T
+        assert_eq!(map.get(0x55).as_deref(), Some("r"));
+        assert!(map.len() >= 4);
+    }
+
+    #[test]
+    fn parse_multiline_bfchar_still_works() {
+        let data = b"2 beginbfchar\n<0041> <0041>\n<0042> <0042>\nendbfchar\n";
+        let map = ToUnicodeMap::parse(data).expect("parse");
+        assert_eq!(map.get(0x41).as_deref(), Some("A"));
+        assert_eq!(map.get(0x42).as_deref(), Some("B"));
     }
 }
