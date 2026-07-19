@@ -1076,6 +1076,11 @@ fn is_chrome_lattice_fp(t: &Table) -> bool {
     if t.method != TableMethod::Lattice {
         return false;
     }
+    // Image-painted grids legitimately have zero extractable text (ink is in
+    // the bitmap). Never treat raster lattices as empty chrome frames.
+    if t.is_from_raster() {
+        return false;
+    }
     let empty = lattice_empty_frac(t);
     let num = stream_numeric_density(t);
     let mean = stream_mean_cell_chars(t);

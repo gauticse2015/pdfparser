@@ -168,7 +168,11 @@ pub fn detect_ruled_tables(
         }
         // Drop fully empty leading/trailing rows and empty outer columns that
         // are not part of the data span (decorative frame chrome).
-        trim_empty_border_rows_cols(t);
+        // Never trim pure image lattices: all cells are text-empty, so border
+        // trim would collapse the schema to nothing.
+        if !(used_raster && t.fill_rate < 0.05) {
+            trim_empty_border_rows_cols(t);
+        }
     }
 
     tables.sort_by(|a, b| {
