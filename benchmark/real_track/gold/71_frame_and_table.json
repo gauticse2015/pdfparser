@@ -1,0 +1,67 @@
+{
+  "id": "71_frame_and_table",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "synthetic corpus (owned generator gold)",
+  "source_url": "",
+  "source": "corpus/hard_precision/71_frame_and_table.pdf",
+  "failure_classes": [
+    "OVER_DETECT",
+    "MEGA_GRID"
+  ],
+  "struggle_tags": [
+    "phase5_t3_expand",
+    "synthetic_precision"
+  ],
+  "builder": "phase5_promote_hard_precision_gt",
+  "peer_primary": "generator_ground_truth",
+  "review_notes": "Phase 5 G5.7 T3 expansion: owned hard_precision generator gold (not pdfparser self-gold). Not mixed into core g2 freeze set.",
+  "reviewed_at": "2026-07-18T06:20:01.545520+00:00",
+  "policy": "Synthetic hard_precision T3 for suite depth. Core real freeze metrics remain on g2 core ids only.",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "rows": 5,
+      "cols": 3,
+      "cells": [
+        [
+          "Item",
+          "Owner",
+          "Status"
+        ],
+        [
+          "Design TOKEN_P71_R",
+          "Ada",
+          "Done"
+        ],
+        [
+          "Build",
+          "Lin",
+          "WIP"
+        ],
+        [
+          "Test",
+          "Sam",
+          "Todo"
+        ],
+        [
+          "Ship",
+          "Pat",
+          "Todo"
+        ]
+      ],
+      "primary_source": "generator_ground_truth",
+      "bbox": {
+        "x0": 0,
+        "y0": 0,
+        "x1": 100,
+        "y1": 100
+      }
+    }
+  ],
+  "phase5_tracking": true,
+  "synthetic": true
+}

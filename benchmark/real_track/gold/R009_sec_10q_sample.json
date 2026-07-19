@@ -1,0 +1,182 @@
+{
+  "id": "R009_sec_10q_sample",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "public sample (compete_real)",
+  "source_url": "",
+  "source": "benchmark/corpus/compete_real/R009_sec_10q_sample.pdf",
+  "failure_classes": [
+    "compete_real",
+    "phase2_expand"
+  ],
+  "struggle_tags": [
+    "phase3_topology"
+  ],
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
+  "peer_primary": "camelot",
+  "review_notes": "Promoted from peer draft mean_conf=0.70; peer consensus for Phase3 tracking. Spot-check recommended for disputes=0 drafts.",
+  "reviewed_at": "2026-07-16T15:10:09.019221+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
+  "expected_table_count": 3,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "rows": 6,
+      "cols": 2,
+      "cells": [
+        [
+          "",
+          "OMB APPROVAL"
+        ],
+        [
+          "UNITED STATES",
+          "OMB Number: \n \n3235-0070"
+        ],
+        [
+          "SECURITIES AND EXCHANGE COMMISSION",
+          "Expires: \nSeptember 30, 2028"
+        ],
+        [
+          "",
+          "Estimated average burden"
+        ],
+        [
+          "Washington, D.C. 20549",
+          ""
+        ],
+        [
+          "",
+          "hours per response………135.13"
+        ]
+      ],
+      "primary_source": "camelot_stream",
+      "mean_cell_confidence": 0.7000000000000001,
+      "bbox": {
+        "x0": 162.92000000000002,
+        "y0": 659.78228,
+        "x1": 593.66908,
+        "y1": 772.0871980327869
+      }
+    },
+    {
+      "page": 0,
+      "rows": 8,
+      "cols": 2,
+      "cells": [
+        [
+          "",
+          "GENERAL INSTRUCTIONS"
+        ],
+        [
+          "Rule as to Use of Form 1O-Q.",
+          ""
+        ],
+        [
+          "1.",
+          "Form 10-Q shall be used for quarterly reports under Section 13 or 15(d) of the"
+        ],
+        [
+          "",
+          "Securities Exchange Act of 1934 (15 U.S.C. 78m or 78o(d)), filed pursuant to Rule"
+        ],
+        [
+          "",
+          "13a-13 (17 CFR 240.13a-13) or Rule 15d-13 (17 CFR 240.15d-13). A quarterly report"
+        ],
+        [
+          "",
+          "on this Form pursuant to Rule 13a-13 or Rule 15d-13 shall be filed within the following"
+        ],
+        [
+          "",
+          "period after the end of each of the first three fiscal quarters of each fiscal year, but no"
+        ],
+        [
+          "",
+          "report need be filed for the fourth quarter of any fiscal year:"
+        ]
+      ],
+      "primary_source": "camelot_stream",
+      "mean_cell_confidence": 0.7000000000000001,
+      "bbox": {
+        "x0": 89.00000000000006,
+        "y0": 490.31600000000014,
+        "x1": 548.5599999999998,
+        "y1": 639.2209180327869
+      }
+    },
+    {
+      "page": 0,
+      "rows": 12,
+      "cols": 2,
+      "cells": [
+        [
+          "",
+          "b.\n45 days after the end of the fiscal quarter for all other registrants."
+        ],
+        [
+          "Application of General Rules and Regulations.",
+          ""
+        ],
+        [
+          "1.",
+          "The General Rules and Regulations under the Act contain certain general"
+        ],
+        [
+          "",
+          "requirements which are applicable to reports on any form. These general requirements"
+        ],
+        [
+          "",
+          "should be carefully read and observed in the preparation and filing of reports on this"
+        ],
+        [
+          "",
+          "Form."
+        ],
+        [
+          "2.",
+          "Particular attention is directed to Regulation 12B which contains general"
+        ],
+        [
+          "",
+          "requirements regarding matters such as the kind and size of paper to be used, the"
+        ],
+        [
+          "",
+          "legibility of the report, the information to be given whenever the title of securities is"
+        ],
+        [
+          "",
+          "required to be stated, and the filing of the report. The definitions contained in Rule"
+        ],
+        [
+          "",
+          "12b-2 (17 CFR 240. 12b-2) should be especially noted. See also Regulations 13A and"
+        ],
+        [
+          "",
+          "15D."
+        ]
+      ],
+      "primary_source": "camelot_stream",
+      "mean_cell_confidence": 0.7000000000000001,
+      "bbox": {
+        "x0": 90.80000000000008,
+        "y0": 237.116,
+        "x1": 552.76,
+        "y1": 453.220918032787
+      }
+    }
+  ],
+  "soft_gold_id": "R009_sec_10q_sample",
+  "struggle": true,
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": true,
+    "topology": "multi_table",
+    "notes": "Tagged for Phase-3 shape/cell tracking"
+  }
+}

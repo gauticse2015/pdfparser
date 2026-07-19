@@ -1,0 +1,91 @@
+{
+  "id": "R016_tabula_12s0324",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "public sample (compete_real)",
+  "source_url": "",
+  "source": "benchmark/corpus/compete_real/R016_tabula_12s0324.pdf",
+  "failure_classes": [
+    "compete_real",
+    "phase2_expand"
+  ],
+  "struggle_tags": [
+    "phase3_topology"
+  ],
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
+  "peer_primary": "camelot",
+  "review_notes": "Promoted from peer draft mean_conf=0.75; peer consensus for Phase3 tracking. Spot-check recommended for disputes=0 drafts.",
+  "reviewed_at": "2026-07-16T15:10:09.019721+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
+  "expected_table_count": 2,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "rows": 3,
+      "cols": 4,
+      "cells": [
+        [
+          "Offense charged",
+          "Total",
+          "Male",
+          "Female"
+        ],
+        [
+          "",
+          "Under 18 \n18 years \nTotal\nyears\nand over",
+          "Under 18 \n18 years \nTotal\nyears\nand over",
+          "Under 18 \n18 years \nTotal\nyears\nand over"
+        ],
+        [
+          "Total .\n .\n . . . . . .\n . .\n . .\n . .\n . .\n . .\n . .\n . .\n . . .\nViolent crime . . . . . . . .\n . .\n . .\n . .\n . .\n . .\n Murder and nonnegligent \n manslaughter . . . . . . . .\n. .\n. .\n. .\n. .\n.\n Forcible rape . . . . . . . .\n. .\n. .\n. .\n. .\n. .\n Robbery . . . .\n. .\n. . .\n. . .\n.\n. . .\n.\n. . .\n.\n.\n Aggravated assault . . . . . . . .\n. .\n. .\n.\nProperty crime . . . .\n . .\n . . .\n . . .\n .\n . . . .\n Burglary . .\n. . . . . .\n. .\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n Larceny-theft . . . . . . . .\n. .\n. .\n. .\n. .\n. .\n Motor vehicle theft . . . . .\n. .\n. . .\n.\n.\n. .\n Arson .\n. . . . .\n. . .\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. .\nOther assaults .\n. . . . . .\n. . .\n.\n. . .\n.\n. .\n.\nForgery and counterfeiting .\n. . . . . . .\n.\nFraud .\n.\n.\n. .\n. . . .\n. .\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\n.\nEmbezzlement . . .\n. . . . .\n. . .\n.\n. . .\n.\n.\n.\nStolen property 1 . . . . . . .\n. . .\n. .\n. .\n.\n.\nVandalism . . . . . . . .\n. .\n. .\n. .\n. .\n. .\n.\n.\n.\nWeapons; carrying, possessing, etc. .\nProstitution and commercialized vice \nSex offenses 2 . . . . .\n. . . . .\n. .\n. .\n. . .\n.\nDrug abuse violations . . . . . . . .\n. .\n.\n.\nGambling .\n. . . . . .\n. .\n.\n. . .\n.\n. . .\n.\n. .\n.\n.\nOffenses against the family and \n children . . . .\n. . . .\n. .\n. .\n. .\n. .\n. .\n. . .\n.\nDriving under the influence . . . . . .\n. .\nLiquor laws . . . . . . . .\n. .\n. .\n. .\n. .\n. .\n. .\nDrunkenness . . .\n. . . . .\n. . .\n.\n. . .\n.\n. .\n.\nDisorderly conduct . .\n. . . . . . .\n. .\n. .\n. .\nVagrancy . . . .\n. . . . .\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\nAll other offenses (except traffic) . . .\n.\nSuspicion . . . .\n. . . .\n. .\n. .\n. .\n. .\n. .\n. . .\n.\nCurfew and loitering law violations .\n.\nRunaways . . . . . . . .\n. .\n. .\n. .\n. .\n. .\n.\n.\n.",
+          "11,062 .6\n1,540 .0\n9,522 .6\n467 .9\n69 .1\n398 .8\n10.0\n0.9\n9.1\n17.5\n2.6\n14.9\n102.1\n25.5\n76.6\n338.4\n40.1\n298.3\n1,396 .4\n338 .7\n1,057 .7\n240.9\n60.3\n180.6\n1,080.1\n258.1\n822.0\n65.6\n16.0\n49.6\n9.8\n4.3\n5.5\n1,061.3\n175.3\n886.1\n68.9\n1.7\n67.2\n173.7\n5.1\n168.5\n14.6\n–\n14.1\n84.3\n15.1\n69.2\n217.4\n72.7\n144.7\n132.9\n27.1\n105.8\n56.9\n1.1\n55.8\n61.5\n10.7\n50.7\n1,333.0\n136.6\n1,196.4\n8.2\n1.4\n6.8\n92.4\n3.7\n88.7\n1,158.5\n109.2\n1,147.5\n48.2\n90.2\n368.0\n488.1\n11.4\n476.8\n529.5\n136.1\n393.3\n26.6\n2.2\n24.4\n306.1\n263.4\n2,800.8\n1.6\n–\n1.4\n91.0\n91.0\n(X)\n75.8\n75.8\n(X)",
+          "8,263 .3\n1,071 .6\n7,191 .7\n380 .2\n56 .5\n323 .7\n9.0\n0.9\n8.1\n17.2\n2.5\n14.7\n90.0\n22.9\n67.1\n264.0\n30.2\n233.8\n875 .9\n210 .8\n665 .1\n205.0\n53.4\n151.7\n608.8\n140.5\n468.3\n53.9\n13.3\n40.7\n8.1\n3.7\n4.4\n785.4\n115.4\n670.0\n42.9\n1.2\n41.7\n98.4\n3.3\n95.0\n7.2\n–\n6.9\n66.7\n12.2\n54.5\n178.1\n62.8\n115.3\n122.1\n24.3\n97.8\n17.3\n–\n17.1\n56.1\n9.6\n46.5\n1,084.3\n115.2\n969.1\n7.2\n1.4\n5.9\n68.9\n2.4\n66.6\n895.8\n8.2\n887.6\n326.8\n55.4\n271.4\n406.8\n8.5\n398.3\n387.1\n90.8\n296.2\n20.9\n1.6\n19.3\n2,337.1\n194.2\n2,142.9\n1.2\n–\n1.0\n63.1\n63.1\n(X)\n34.0\n34.0\n(X)",
+          "2,799 .2\n468 .3\n2,330 .9\n87 .7\n12 .6\n75 .2\n1.1\n–\n1.0\n–\n–\n–\n12.1\n2.5\n9.5\n74.4\n9.9\n64.5\n608 .2\n127 .9\n392 .6\n35.9\n6.9\n29.0\n471.3\n117.6\n353.6\n11.7\n2.7\n8.9\n1.7\n0.6\n1.1\n276.0\n59.9\n216.1\n26.0\n0.5\n25.5\n75.3\n1.8\n73.5\n7.4\n–\n7.2\n17.6\n2.8\n14.7\n39.3\n9.9\n29.4\n10.8\n2.8\n8.0\n39.6\n0.8\n38.7\n5.4\n1.1\n4.3\n248.7\n21.4\n227.3\n0.9\n–\n0.9\n23.4\n1.3\n22.1\n262.7\n2.7\n260.0\n131.4\n34.7\n96.6\n81.3\n2.9\n78.4\n142.4\n45.3\n97.1\n5.7\n0.6\n5.1\n727.0\n69.2\n657.9\n–\n–\n–\n28.0\n28.0\n(X)\n41.8\n41.8\n(X)"
+        ]
+      ],
+      "primary_source": "camelot_lattice",
+      "mean_cell_confidence": 0.75,
+      "bbox": {
+        "x0": 35.7395773843518,
+        "y0": 342.96,
+        "x1": 384.02055968018277,
+        "y1": 592.8
+      }
+    },
+    {
+      "page": 0,
+      "rows": 2,
+      "cols": 3,
+      "cells": [
+        [
+          "Offense charged",
+          "Total",
+          "American \nIndian/Alaskan \nAsian Pacific \nWhite\nBlack\nNative\nIslander"
+        ],
+        [
+          "Total .\n .\n .\n .\n . .\n . . .\n . . .\n .\n . . .\n .\n . . .\n . .\n .\n . . .\n .\n .\n .\n . .\n . .\n . .\nViolent crime . . . . . . . .\n . .\n . .\n . .\n . .\n .\n .\n . .\n . .\n .\n .\n .\n .\n . .\n Murder and nonnegligent manslaughter . .\n. .\n.\n. .\n Forcible rape . . . . . . . .\n. .\n. .\n. .\n. .\n.\n.\n. .\n. .\n.\n.\n.\n.\n. .\n Robbery . . . . .\n. . . . .\n.\n. . .\n.\n. . .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. . . .\n Aggravated assault . . . . . . . .\n. .\n. .\n.\n.\n.\n.\n. .\n. .\n.\n.\n.\nProperty crime . . . . .\n . . . . .\n .\n . . .\n .\n . .\n .\n .\n .\n . .\n .\n . .\n .\n .\n Burglary . . .\n. . . . .\n. . .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n. . . .\n Larceny-theft . . . . . . . .\n. .\n. .\n. .\n. .\n.\n.\n. .\n. .\n.\n.\n.\n.\n. .\n Motor vehicle theft . . . . . .\n. .\n.\n. . .\n.\n. .\n.\n.\n.\n. .\n.\n. .\n.\n Arson .\n. . . .\n. .\n. .\n. .\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. . . . . .\nOther assaults .\n. . . . . . .\n.\n. . .\n.\n. . .\n.\n. .\n.\n.\n.\n. .\n.\n. .\n.\nForgery and counterfeiting .\n. . . . . . .\n.\n. .\n.\n.\n.\n. .\n. .\n.\nFraud .\n.\n. . . . . .\n. .\n. .\n. .\n. .\n. .\n. .\n. .\n. .\n. .\n.\n.\n. . . . . . .\nEmbezzlement . . . .\n. . . . .\n.\n. . .\n.\n. . .\n.\n.\n. .\n.\n. .\n.\n.\n.\n.\nStolen property; buying, receiving, possessing .\n. .\nVandalism . . . . . . . .\n. .\n. .\n. .\n. .\n. .\n. .\n.\n.\n. .\n. .\n.\n.\n.\n. .\nWeapons—carrying, possessing, etc. .\n. .\n. .\n.\n. .\n. .\nProstitution and commercialized vice . .\n.\n. .\n. .\n. .\n.\nSex offenses 1 . . . . . . . .\n. .\n. .\n. .\n. .\n.\n.\n. .\n. .\n.\n.\n.\n.\n. .\nDrug abuse violations . . . . . . . .\n. . .\n.\n.\n.\n. .\n. .\n.\n.\n.\n.\nGambling . . . . .\n. . . . .\n.\n. . .\n.\n. . .\n. .\n.\n. . .\n.\n.\n.\n.\n. .\n. .\nOffenses against the family and children .\n.\n. .\n. .\n. .\nDriving under the influence . . . . . . .\n. .\n.\n. .\n.\n.\n.\n.\n. .\nLiquor laws . . . . . . . .\n. .\n. .\n. .\n. .\n. . .\n.\n.\n.\n. .\n. .\n.\n.\n.\n.\nDrunkenness . .\n. . . . . . .\n.\n. . .\n.\n. . .\n.\n.\n.\n. . .\n.\n.\n.\n.\n.\n.\nDisorderly conduct . . .\n. . . . . .\n. .\n. . .\n.\n.\n.\n. .\n. .\n.\n.\n.\n.\nVagrancy . . .\n. .\n. . . .\n. .\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. .\n.\n.\n. . . .\nAll other offenses (except traffic) . .\n. .\n. .\n. .\n.\n.\n.\n. .\n.\nSuspicion . . .\n. . . . .\n. .\n. .\n. .\n. .\n. .\n. .\n. .\n.\n.\n.\n.\n. .\n. . . .\nCurfew and loitering law violations . .\n. .\n.\n. .\n. .\n.\n.\n.\nRunaways . . . . . . . .\n. .\n. .\n. .\n. .\n. .\n. .\n.\n.\n. .\n. .\n.\n.\n.\n. .",
+          "10,690,561 \n 456,965 \n 9,739 \n 16,362 \n 100,496 \n 330,368 \n 1,364,409 \n 234,551 \n 1,056,473 \n 63,919 \n 9,466 \n 1,032,502 \n 67,054 \n 161,233 \n 13,960 \n 82,714 \n 212,173 \n 130,503 \n 56,560 \n 60,175 \n 1,301,629 \n 8,046 \n 87,232 \n 1,105,401 \n 444,087 \n 469,958 \n 515,689 \n 26,347 \n 2,929,217 \n 1,513 \n 89,578 \n 73,616",
+          "7,389,208 \n 3,027,153 \n 150,544 \n 123,656 \n 268,346 \n 177,766 \n 5,608 \n 5,245 \n 4,741 \n 4,801 \n 100 \n 97 \n 10,644 \n 5,319 \n 169 \n 230 \n 43,039 \n 55,742 \n 726 \n 989 \n 209,922 \n 111,904 \n 4,613 \n 3,929 \n 922,139 \n 406,382 \n 17,599 \n 18,289 \n 155,994 \n 74,419 \n 2,021 \n 2,117 \n 719,983 \n 306,625 \n 14,646 \n 15,219 \n 39,077 \n 23,184 \n 817 \n 841 \n 7,085 \n 2,154 \n 115 \n 112 \n 672,865 \n 332,435 \n 15,127 \n 12,075 \n 44,730 \n 21,251 \n 345 \n 728 \n 108,032 \n 50,367 \n 1,315 \n 1,519 \n 9,208 \n 4,429 \n 75 \n 248 \n 51,953 \n 29,357 \n 662 \n 742 \n 157,723 \n 48,746 \n 3,352 \n 2,352 \n 74,942 \n 53,441 \n 951 \n 1,169 \n 31,699 \n 23,021 \n 427 \n 1,413 \n 44,240 \n 14,347 \n 715 \n 873 \n 845,974 \n 437,623 \n 8,588 \n 9,444 \n 2,290 \n 5,518 \n 27 \n 211 \n 58,068 \n 26,850 \n 1,690 \n 624 \n 954,444 \n 121,594 \n 14,903 \n 14,460 \n 373,189 \n 50,431 \n 14,876 \n 5,591 \n 387,542 \n 71,020 \n 8,552 \n 2,844 \n 326,563 \n 176,169 \n 8,783 \n 4,174 \n 14,581 \n 11,031 \n 543 \n 192 \n 1,937,221 \n 911,670 \n 43,880 \n 36,446 \n 677 \n 828 \n 1 \n 7 \n 54,439 \n 33,207 \n 872 \n 1,060 \n 48,343 \n 19,670 \n 1,653 \n 3,950"
+        ]
+      ],
+      "primary_source": "camelot_lattice",
+      "mean_cell_confidence": 0.75,
+      "bbox": {
+        "x0": 35.7395773843518,
+        "y0": 65.03999999999999,
+        "x1": 384.02055968018277,
+        "y1": 297.84
+      }
+    }
+  ],
+  "soft_gold_id": "R016_tabula_12s0324",
+  "struggle": true,
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": true,
+    "topology": "multi_table",
+    "notes": "Tagged for Phase-3 shape/cell tracking"
+  }
+}

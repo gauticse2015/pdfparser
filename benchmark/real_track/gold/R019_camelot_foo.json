@@ -1,24 +1,23 @@
 {
-  "id": "35_real_camelot_fuel",
+  "id": "R019_camelot_foo",
   "schema_version": 1,
   "track": "real_structure",
   "status": "reviewed",
-  "license": "Camelot project sample",
-  "source_url": "camelot foo.pdf / fuel research sample",
-  "source": "benchmark/corpus/real/35_real_camelot_fuel.pdf",
-  "soft_gold_id": "35_real_camelot_fuel",
+  "license": "public sample (compete_real)",
+  "source_url": "",
+  "source": "benchmark/corpus/compete_real/R019_camelot_foo.pdf",
   "failure_classes": [
-    "visible_rules",
-    "scientific_layout"
+    "compete_real",
+    "phase2_expand"
   ],
   "struggle_tags": [
     "phase3_topology"
   ],
-  "builder": "peer_camelot_pdfplumber + human_review",
-  "peer_primary": "camelot_lattice",
-  "review_notes": "Human OK + vision/Camelot agree on fuel savings table.",
-  "reviewed_at": "2026-07-12T07:27:09.424342+00:00",
-  "policy": "Human confirmed peer/vision draft. Not from pdfparser extract. stitch_multipage=false for eval.",
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
+  "peer_primary": "camelot",
+  "review_notes": "Promoted from peer draft mean_conf=1.00; peer consensus for Phase3 tracking. Spot-check recommended for disputes=0 drafts.",
+  "reviewed_at": "2026-07-16T15:10:09.020657+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
   "expected_table_count": 1,
   "expected_table_count_tol": 0,
   "expected_tables": [
@@ -28,9 +27,9 @@
       "cols": 7,
       "cells": [
         [
-          "Cycle  Name",
-          "KI  (1/km)",
-          "Distance  (mi)",
+          "Cycle \nName",
+          "KI \n(1/km)",
+          "Distance \n(mi)",
           "Percent Fuel Savings",
           "",
           "",
@@ -40,10 +39,10 @@
           "",
           "",
           "",
-          "Improved  Speed",
-          "Decreased  Accel",
-          "Eliminate  Stops",
-          "Decreased  Idle"
+          "Improved \nSpeed",
+          "Decreased \nAccel",
+          "Eliminate \nStops",
+          "Decreased \nIdle"
         ],
         [
           "2012_2",
@@ -92,11 +91,6 @@
         ]
       ],
       "primary_source": "camelot_lattice",
-      "primary_accuracy": 99.02,
-      "supporting_sources": [
-        "camelot_lattice",
-        "pdfplumber"
-      ],
       "mean_cell_confidence": 1.0,
       "bbox": {
         "x0": 120.24,
@@ -106,9 +100,8 @@
       }
     }
   ],
-  "eval": {
-    "stitch_multipage": false
-  },
+  "soft_gold_id": "R019_camelot_foo",
+  "struggle": false,
   "phase3_tracking": {
     "shape_interest": true,
     "cell_interest": true,

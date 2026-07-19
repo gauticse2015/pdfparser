@@ -5,7 +5,7 @@
   "g1_min_docs": 15,
   "struggle_first_min_frac": 0.6,
   "g1_ready": true,
-  "n_docs": 15,
+  "n_docs": 23,
   "documents": [
     {
       "id": "30_real_ca_warn_report",
@@ -219,8 +219,111 @@
       "peer_primary": "camelot_stream",
       "human_spotcheck_requested": false,
       "promoted_at": "2026-07-12T08:48:08.477951+00:00"
+    },
+    {
+      "id": "R005_census_acs_sample",
+      "pdf": "corpus/compete_real/R005_census_acs_sample.pdf",
+      "gold": "R005_census_acs_sample.json",
+      "gold_path": "gold/R005_census_acs_sample.json",
+      "struggle": true,
+      "failure_classes": [
+        "phase2_expand",
+        "compete_real"
+      ],
+      "peer_primary": "camelot"
+    },
+    {
+      "id": "R008_cdc_mmwr_sample",
+      "pdf": "corpus/compete_real/R008_cdc_mmwr_sample.pdf",
+      "gold": "R008_cdc_mmwr_sample.json",
+      "gold_path": "gold/R008_cdc_mmwr_sample.json",
+      "struggle": true,
+      "failure_classes": [
+        "phase2_expand",
+        "compete_real"
+      ],
+      "peer_primary": "camelot"
+    },
+    {
+      "id": "R009_sec_10q_sample",
+      "pdf": "corpus/compete_real/R009_sec_10q_sample.pdf",
+      "gold": "R009_sec_10q_sample.json",
+      "gold_path": "gold/R009_sec_10q_sample.json",
+      "struggle": true,
+      "failure_classes": [
+        "phase2_expand",
+        "compete_real"
+      ],
+      "peer_primary": "camelot"
+    },
+    {
+      "id": "R016_tabula_12s0324",
+      "pdf": "corpus/compete_real/R016_tabula_12s0324.pdf",
+      "gold": "R016_tabula_12s0324.json",
+      "gold_path": "gold/R016_tabula_12s0324.json",
+      "struggle": true,
+      "failure_classes": [
+        "phase2_expand",
+        "compete_real"
+      ],
+      "peer_primary": "camelot"
+    },
+    {
+      "id": "R017_tabula_argentina",
+      "pdf": "corpus/compete_real/R017_tabula_argentina.pdf",
+      "gold": "R017_tabula_argentina.json",
+      "gold_path": "gold/R017_tabula_argentina.json",
+      "struggle": true,
+      "failure_classes": [
+        "phase2_expand",
+        "compete_real"
+      ],
+      "peer_primary": "camelot"
+    },
+    {
+      "id": "R019_camelot_foo",
+      "pdf": "corpus/compete_real/R019_camelot_foo.pdf",
+      "gold": "R019_camelot_foo.json",
+      "gold_path": "gold/R019_camelot_foo.json",
+      "struggle": true,
+      "failure_classes": [
+        "phase2_expand",
+        "compete_real"
+      ],
+      "peer_primary": "camelot"
+    },
+    {
+      "id": "R021_camelot_left_twocol",
+      "pdf": "corpus/compete_real/R021_camelot_left_twocol.pdf",
+      "gold": "R021_camelot_left_twocol.json",
+      "gold_path": "gold/R021_camelot_left_twocol.json",
+      "struggle": true,
+      "failure_classes": [
+        "multi_table",
+        "side_by_side",
+        "ruled",
+        "phase3_topology"
+      ],
+      "peer_primary": "camelot_lattice",
+      "phase3_tracking": true
+    },
+    {
+      "id": "R022_camelot_superscript",
+      "pdf": "corpus/compete_real/R022_camelot_superscript.pdf",
+      "gold": "R022_camelot_superscript.json",
+      "gold_path": "gold/R022_camelot_superscript.json",
+      "struggle": true,
+      "failure_classes": [
+        "superscripts",
+        "stream_like",
+        "financial_columns",
+        "phase3_cells"
+      ],
+      "peer_primary": "camelot_stream",
+      "phase3_tracking": true
     }
   ],
   "rejected_not_in_core": {},
-  "notes": "n=15 struggle=10/15 (67%). G1 wave promoted: ['42_real_insurance_italian', '43_real_row_span_gmc', '44_real_spanning_cells', '45_real_campaign_donors']. g1_ready=True (need n\u226515 and struggle\u226560%)."
+  "notes": "n=15 struggle=10/15 (67%). G1 wave promoted: ['42_real_insurance_italian', '43_real_row_span_gmc', '44_real_spanning_cells', '45_real_campaign_donors']. g1_ready=True (need n\u226515 and struggle\u226560%).",
+  "phase2_expand_note": "T3 expanded to 23 docs for Phase-3 shape/cell tracking. GATE-1 core freeze still scores only g2.json core ids."
 }

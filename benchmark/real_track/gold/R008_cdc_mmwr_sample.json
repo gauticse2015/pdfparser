@@ -1,0 +1,236 @@
+{
+  "id": "R008_cdc_mmwr_sample",
+  "schema_version": 1,
+  "track": "real_structure",
+  "status": "reviewed",
+  "license": "public sample (compete_real)",
+  "source_url": "",
+  "source": "benchmark/corpus/compete_real/R008_cdc_mmwr_sample.pdf",
+  "failure_classes": [
+    "compete_real",
+    "phase2_expand"
+  ],
+  "struggle_tags": [
+    "phase3_topology"
+  ],
+  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
+  "peer_primary": "camelot",
+  "review_notes": "Promoted from peer draft mean_conf=0.75; peer consensus for Phase3 tracking. Spot-check recommended for disputes=0 drafts.",
+  "reviewed_at": "2026-07-16T15:10:09.018486+00:00",
+  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
+  "expected_table_count": 1,
+  "expected_table_count_tol": 0,
+  "expected_tables": [
+    {
+      "page": 0,
+      "rows": 47,
+      "cols": 2,
+      "cells": [
+        [
+          "",
+          "MPH3; Rosalie T. Trevejo, DVM, PhD4; Elaine Scallan Walter, PhD5; Katie Wymore, MPH6; Tamara Rissman, MPH7; Marcy McMillian, MPH8; Sarah"
+        ],
+        [
+          "",
+          "Lathrop, DVM, PhD9; Bethany LaClair, MPH10; Michelle M. Boyle, MPH11; Stic Harris, DVM12; Joanna Zablotsky-Kufel, PhD13; Kennedy Houck,"
+        ],
+        [
+          "MPH1; Carey J. Devine, MPH1; Carey E. Lau1; Robert V. Tauxe, MD1; Beau B. Bruce, MD, PhD1; Patricia M. Griffin, MD1; Daniel C. Payne, PhD1",
+          ""
+        ],
+        [
+          "Each year, infections from major foodborne pathogens are",
+          "CDC, 10 state health departments, the U.S. Department"
+        ],
+        [
+          "responsible for an estimated 9.4 million illnesses, 56,000",
+          "of Agriculture’s Food Safety and Inspection Service (FSIS),"
+        ],
+        [
+          "hospitalizations, and 1,350 deaths in the United States (1).",
+          "and the Food and Drug Administration (FDA) collaborate to"
+        ],
+        [
+          "To evaluate progress toward prevention of enteric infections in",
+          "conduct active population-based surveillance of the FoodNet"
+        ],
+        [
+          "the United States, the Foodborne Diseases Active Surveillance",
+          "catchment area,* which included an estimated 51 million"
+        ],
+        [
+          "Network (FoodNet) conducts surveillance for laboratory-",
+          ""
+        ],
+        [
+          "",
+          "* The FoodNet catchment includes Connecticut, Georgia, Maryland, Minnesota,"
+        ],
+        [
+          "diagnosed infections caused by eight pathogens transmitted",
+          ""
+        ],
+        [
+          "",
+          "New Mexico, Oregon, Tennessee, and selected counties in California, Colorado,"
+        ],
+        [
+          "commonly through food at 10 U.S. sites. During 2020–2021,",
+          "and New York."
+        ],
+        [
+          "FoodNet detected decreases in many infections that were due",
+          ""
+        ],
+        [
+          "to behavioral modifications, public health interventions, and",
+          "INSIDE"
+        ],
+        [
+          "changes in health care–seeking and testing practices during",
+          "707 Prevalence of Adverse Childhood Experiences"
+        ],
+        [
+          "the COVID-19 pandemic. This report presents preliminary",
+          "Among U.S. Adults — Behavioral Risk Factor"
+        ],
+        [
+          "estimates of pathogen-specific annual incidences during 2022,",
+          "Surveillance System, 2011–2020"
+        ],
+        [
+          "compared with average annual incidences during 2016–2018,",
+          "716 Hepatitis C Virus Clearance Cascade — United States,"
+        ],
+        [
+          "the reference period for the U.S. Department of Health and",
+          "2013–2022"
+        ],
+        [
+          "Human Services’ Healthy People 2030 targets (2). Many pan-",
+          "721 \nIllicitly Manufactured Fentanyl–Involved Overdose"
+        ],
+        [
+          "demic interventions ended by 2022, resulting in a resumption",
+          "Deaths with Detected Xylazine — United States,"
+        ],
+        [
+          "",
+          "January 2019–June 2022"
+        ],
+        [
+          "of outbreaks, international travel, and other factors leading to",
+          ""
+        ],
+        [
+          "",
+          "728 Disparities in COVID-19 Disease Incidence by Income"
+        ],
+        [
+          "enteric infections. During 2022, annual incidences of illnesses",
+          ""
+        ],
+        [
+          "",
+          "and Vaccination Coverage — 81 Communities,"
+        ],
+        [
+          "caused by the pathogens Campylobacter, Salmonella, Shigella,",
+          ""
+        ],
+        [
+          "",
+          "Los Angeles, California, July 2020–September 2021"
+        ],
+        [
+          "and Listeria were similar to average annual incidences during",
+          ""
+        ],
+        [
+          "",
+          "732 Notes from the Field: Multistate Outbreak of"
+        ],
+        [
+          "2016–2018; however, incidences of Shiga toxin-producing",
+          ""
+        ],
+        [
+          "",
+          "Escherichia coli O157:H7 Infections Linked to a"
+        ],
+        [
+          "Escherichia coli (STEC), Yersinia, Vibrio, and Cyclospora ill-",
+          ""
+        ],
+        [
+          "",
+          "National Fast-Food Chain — United States, 2022"
+        ],
+        [
+          "nesses were higher. Increasing culture-independent diagnostic",
+          ""
+        ],
+        [
+          "",
+          "734 Notes from the Field: Outbreak of Cryptosporidiosis"
+        ],
+        [
+          "test (CIDT) usage likely contributed to increased detection by",
+          ""
+        ],
+        [
+          "",
+          "Among Collegiate Swimmers and Evidence of"
+        ],
+        [
+          "identifying infections that would have remained undetected",
+          ""
+        ],
+        [
+          "",
+          "Secondary Transmission — Massachusetts and"
+        ],
+        [
+          "before widespread CIDT usage. Reducing pathogen contami-",
+          ""
+        ],
+        [
+          "",
+          "Rhode Island, 2023"
+        ],
+        [
+          "nation during poultry slaughter and processing of leafy greens",
+          ""
+        ],
+        [
+          "",
+          "737 QuickStats"
+        ],
+        [
+          "requires collaboration among food growers and processors,",
+          ""
+        ],
+        [
+          "retail stores, restaurants, and regulators.",
+          ""
+        ]
+      ],
+      "primary_source": "camelot_stream",
+      "mean_cell_confidence": 0.75,
+      "bbox": {
+        "x0": 26.0,
+        "y0": 127.31109999999998,
+        "x1": 588.7368,
+        "y1": 566.4563328767123
+      }
+    }
+  ],
+  "soft_gold_id": "R008_cdc_mmwr_sample",
+  "struggle": true,
+  "phase3_tracking": {
+    "shape_interest": true,
+    "cell_interest": true,
+    "topology": "single",
+    "notes": "Tagged for Phase-3 shape/cell tracking"
+  }
+}
