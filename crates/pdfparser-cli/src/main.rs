@@ -54,6 +54,12 @@ enum Commands {
         /// Force legacy soup NMS router (rollback / A/B). Overrides Auto Engine V2 path.
         #[arg(long)]
         legacy_router: bool,
+        /// Override table geometry/densify tuning (`key=value`, repeatable).
+        ///
+        /// Example: `--table-setting densify_y_skip_numeric_frac=0.10`
+        /// See `TableTuning` / `TABLE_TUNING_KEYS` for the full settings dict.
+        #[arg(long = "table-setting", value_name = "KEY=VALUE")]
+        table_settings: Vec<String>,
     },
     /// Show document info
     Info { path: PathBuf },
@@ -72,6 +78,8 @@ enum CliTablePreset {
     EngineV2,
     #[value(name = "high-quality")]
     HighQuality,
+    /// Latency path: Engine V2, never full-page render.
+    Fast,
     Full,
     #[value(name = "lattice-only")]
     LatticeOnly,
@@ -83,6 +91,7 @@ impl CliTablePreset {
             CliTablePreset::Auto => TablePreset::Auto,
             CliTablePreset::EngineV2 => TablePreset::EngineV2,
             CliTablePreset::HighQuality => TablePreset::HighQuality,
+            CliTablePreset::Fast => TablePreset::Fast,
             CliTablePreset::Full => TablePreset::Full,
             CliTablePreset::LatticeOnly => TablePreset::LatticeOnly,
         }
@@ -105,8 +114,13 @@ fn main() -> ExitCode {
             pages,
             dump_evidence,
             legacy_router,
+            table_settings,
         } => {
-            let want_tables = tables || tables_hq || table_preset.is_some() || dump_evidence;
+            let want_tables = tables
+                || tables_hq
+                || table_preset.is_some()
+                || dump_evidence
+                || !table_settings.is_empty();
             match run_extract(
                 path,
                 format,
@@ -120,6 +134,7 @@ fn main() -> ExitCode {
                 pages,
                 dump_evidence,
                 legacy_router,
+                table_settings,
             ) {
                 Ok(()) => ExitCode::SUCCESS,
                 Err(e) => {
@@ -152,6 +167,7 @@ fn run_extract(
     pages: Option<String>,
     dump_evidence: bool,
     legacy_router: bool,
+    table_settings: Vec<String>,
 ) -> Result<(), String> {
     let t0 = Instant::now();
     let doc = Document::open(&path).map_err(|e| e.to_string())?;
@@ -178,6 +194,11 @@ fn run_extract(
     }
     if legacy_router {
         table_opts.legacy_router = true;
+    }
+    for s in &table_settings {
+        table_opts
+            .apply_tuning_kv_string(s)
+            .map_err(|e| format!("--table-setting: {e}"))?;
     }
     let preset_name = match table_preset.as_ref() {
         Some(p) => format!("{p:?}"),

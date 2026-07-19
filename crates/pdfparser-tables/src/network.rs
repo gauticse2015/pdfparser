@@ -119,11 +119,197 @@ pub fn detect_network_tables(page_index: u32, runs: &[TextRun], opts: &TableOpti
         if region.len() < min_multi {
             continue;
         }
-        if let Some(t) = build_table_from_lines(page_index, &region, opts, fs, page_width) {
+        if let Some(mut t) = build_table_from_lines(page_index, &region, opts, fs, page_width) {
+            strip_trailing_stream_footnotes(&mut t);
+            crate::builders::ruled::trim_empty_border_rows_cols(&mut t);
             out.push(t);
         }
     }
-    // Intentionally no mega-table fallback when `out` is empty.
+    // Stack-merge same-col stream fragments split by mid-table note islands when
+    // the gap is modest and column counts match (keeps multi-page shreds as one
+    // logical stream table without inventing rows).
+    out = merge_stacked_same_col_stream(out, hard_gap.max(fs * 8.0).max(soft_gap * 3.0));
+    out
+}
+
+/// Drop trailing stream rows that are numbered footnotes, not data.
+///
+/// Pattern: last row has text only in col 0, starts with `N.` / `N)` list marker,
+/// and data columns are empty. Does not invent or pad rows for count metrics.
+fn strip_trailing_stream_footnotes(table: &mut crate::types::Table) {
+    use crate::types::TableMethod;
+    if !matches!(
+        table.method,
+        TableMethod::Stream | TableMethod::DenseNumeric
+    ) {
+        return;
+    }
+    let nrows = table.rows as usize;
+    let ncols = table.cols as usize;
+    if nrows < 5 || ncols < 2 || table.cells.is_empty() {
+        return;
+    }
+    let mut grid: Vec<Vec<String>> = vec![vec![String::new(); ncols]; nrows];
+    for c in &table.cells {
+        let r = c.row as usize;
+        let col = c.col as usize;
+        if r < nrows && col < ncols && grid[r][col].is_empty() {
+            grid[r][col] = c.text.clone();
+        }
+    }
+    let is_trailing_note_row = |row: &[String]| -> bool {
+        let c0 = row.first().map(|s| s.trim()).unwrap_or("");
+        if c0.is_empty() {
+            return false;
+        }
+        let data_filled = row.iter().skip(1).filter(|c| !c.trim().is_empty()).count();
+        if data_filled > 0 {
+            return false;
+        }
+        // "1. only countries…" / "2) note"
+        let bytes = c0.as_bytes();
+        let mut i = 0;
+        while i < bytes.len() && bytes[i].is_ascii_digit() {
+            i += 1;
+        }
+        // Numbered footnote only (e.g. "1. See note below"). Long free-text
+        // trailers are left intact — they may be real body rows.
+        i > 0 && i <= 3 && matches!(bytes.get(i), Some(b'.') | Some(b')'))
+    };
+    let mut cut = nrows;
+    while cut > 3 {
+        if is_trailing_note_row(&grid[cut - 1]) {
+            cut -= 1;
+        } else {
+            break;
+        }
+    }
+    if cut >= nrows || cut < 3 {
+        return;
+    }
+    let n_stripped = nrows - cut;
+    table.cells.retain(|c| (c.row as usize) < cut);
+    table.rows = cut as u32;
+    if !table.cells.is_empty() {
+        table.bbox = crate::geom::bbox_of_cells(&table.cells);
+    }
+    let filled = table
+        .cells
+        .iter()
+        .filter(|c| !c.text.trim().is_empty())
+        .count();
+    let total = (table.rows as usize)
+        .saturating_mul(table.cols as usize)
+        .max(1);
+    table.fill_rate = filled as f32 / total as f32;
+    table
+        .notes
+        .push(format!("stream_footnote_stripped n={n_stripped}"));
+}
+
+/// Merge vertically stacked Stream tables with equal column counts when the
+/// gap between bboxes is modest. Preserves top→bottom order (PDF y descending).
+fn merge_stacked_same_col_stream(
+    mut tabs: Vec<crate::types::Table>,
+    max_gap: f32,
+) -> Vec<crate::types::Table> {
+    use crate::types::{Table, TableMethod};
+    if tabs.len() <= 1 {
+        return tabs;
+    }
+    // Top-first (higher y0 first).
+    tabs.sort_by(|a, b| {
+        b.bbox
+            .y1
+            .partial_cmp(&a.bbox.y1)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then_with(|| {
+                a.bbox
+                    .x0
+                    .partial_cmp(&b.bbox.x0)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
+    });
+    let mut out: Vec<Table> = Vec::new();
+    for t in tabs {
+        if out.is_empty() {
+            out.push(t);
+            continue;
+        }
+        let prev = out.last().unwrap();
+        let same_page = prev.page == t.page;
+        let both_stream = matches!(prev.method, TableMethod::Stream | TableMethod::DenseNumeric)
+            && matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric);
+        let same_cols = prev.cols == t.cols && prev.cols >= 3;
+        // Vertical stack: prev above t (prev.y0 >= t.y1 in PDF coords, gap small).
+        let gap = prev.bbox.y0 - t.bbox.y1;
+        let x_overlap = {
+            let x0 = prev.bbox.x0.max(t.bbox.x0);
+            let x1 = prev.bbox.x1.min(t.bbox.x1);
+            let w = (x1 - x0).max(0.0);
+            let min_w = prev.bbox.width().min(t.bbox.width()).max(1.0);
+            w / min_w
+        };
+        // Width ratio: avoid gluing a wide financial block to a narrow sidebar
+        // table (false stack merges of distinct grids).
+        let w_ratio = {
+            let pw = prev.bbox.width().max(1.0);
+            let tw = t.bbox.width().max(1.0);
+            (pw / tw).max(tw / pw)
+        };
+        if same_page
+            && both_stream
+            && same_cols
+            && gap >= -2.0
+            && gap <= max_gap * 1.5
+            && x_overlap >= 0.55
+            && w_ratio <= 1.35
+            && prev.rows + t.rows <= 120
+        {
+            let mut merged = prev.clone();
+            // Append body rows of t (skip near-duplicate header if identical to prev header).
+            let skip_header = t.rows >= 1
+                && prev.rows >= 1
+                && (0..prev.cols as usize).all(|c| {
+                    let a = prev
+                        .cells
+                        .iter()
+                        .find(|cell| cell.row == 0 && cell.col == c as u32)
+                        .map(|cell| cell.text.trim())
+                        .unwrap_or("");
+                    let b = t
+                        .cells
+                        .iter()
+                        .find(|cell| cell.row == 0 && cell.col == c as u32)
+                        .map(|cell| cell.text.trim())
+                        .unwrap_or("");
+                    !a.is_empty() && a.eq_ignore_ascii_case(b)
+                });
+            let start_row = if skip_header { 1u32 } else { 0u32 };
+            let row_off = prev.rows;
+            for cell in &t.cells {
+                if cell.row < start_row {
+                    continue;
+                }
+                let mut nc = cell.clone();
+                nc.row = cell.row - start_row + row_off;
+                merged.cells.push(nc);
+            }
+            let added = t.rows.saturating_sub(start_row);
+            merged.rows = row_off + added;
+            merged.bbox.x0 = prev.bbox.x0.min(t.bbox.x0);
+            merged.bbox.y0 = t.bbox.y0.min(prev.bbox.y0);
+            merged.bbox.x1 = prev.bbox.x1.max(t.bbox.x1);
+            merged.bbox.y1 = prev.bbox.y1.max(t.bbox.y1);
+            merged.confidence = prev.confidence.max(t.confidence) * 0.98;
+            merged
+                .notes
+                .push(format!("stream_stack_merge +{added}rows"));
+            *out.last_mut().unwrap() = merged;
+        } else {
+            out.push(t);
+        }
+    }
     out
 }
 
@@ -221,7 +407,14 @@ fn build_textlines(body: &[&TextRun], y_tol: f32) -> Vec<TextLine> {
                 .count()
                 >= 3;
         let glued_multi = line.runs.len() == 1 && looks_glued_tabular(&line.runs[0].text);
-        line.multi = line.runs.len() >= 2 || token_multi || glued_multi;
+        // Pure glued numeric stream (NIPA: "11.30.32.1-2.1-8.6…") — no label.
+        let glued_numeric_only =
+            line.runs.len() == 1 && looks_glued_numeric_stream(&line.runs[0].text);
+        let nipa_struct = line.runs.len() == 1
+            && (looks_nipa_placeholder_row(&line.runs[0].text)
+                || looks_nipa_section_header(&line.runs[0].text));
+        line.multi =
+            line.runs.len() >= 2 || token_multi || glued_multi || glued_numeric_only || nipa_struct;
     }
     lines
 }
@@ -229,6 +422,9 @@ fn build_textlines(body: &[&TextRun], y_tol: f32) -> Vec<TextLine> {
 /// Single-run body rows that glue a text label to dense numerics without
 /// whitespace (`"Andhra Pradesh48.1140.45-3.26…"`). Common in RBI/Excel PDF
 /// exports; still a multi-column table row for area proposal + char-x split.
+///
+/// Also BEA NIPA: `"1Gross domestic product (GDP)5.81.92.5…"` where the first
+/// seam is often `)` + digit rather than letter + digit.
 fn looks_glued_tabular(s: &str) -> bool {
     let t = s.trim();
     if t.len() < 10 {
@@ -239,26 +435,170 @@ fn looks_glued_tabular(s: &str) -> bool {
     if digits < 6 || alpha < 3 {
         return false;
     }
-    // Letter immediately followed by a digit (no intervening space): classic glue seam.
+    // Letter or closing paren/bracket immediately followed by a digit.
     let mut seam = false;
     let mut prev_alpha = false;
+    let mut prev_close = false;
     for ch in t.chars() {
         if ch.is_alphabetic() {
             prev_alpha = true;
+            prev_close = false;
         } else if ch.is_ascii_digit() {
-            if prev_alpha {
+            if prev_alpha || prev_close {
                 seam = true;
                 break;
             }
             prev_alpha = false;
+            prev_close = false;
         } else if ch.is_whitespace() {
+            prev_alpha = false;
+            prev_close = false;
+        } else if ch == ')' || ch == ']' {
+            prev_close = true;
             prev_alpha = false;
         } else if ch != '.' && ch != '\'' && ch != '-' {
             prev_alpha = false;
+            prev_close = false;
         }
         // keep prev_alpha across hyphen/apostrophe inside names (O'Brien, Jean-Luc)
     }
+    // Dense digit packing: numbers dominate the non-alpha tail.
     seam && digits * 3 >= t.len().saturating_sub(alpha)
+}
+
+/// Glued pure-numeric stream: many financial tokens, little/no alpha
+/// (`"11.30.32.1-2.1-8.651.73.2…"`). Phase-4 NIPA right-hand number blocks.
+fn looks_glued_numeric_stream(s: &str) -> bool {
+    let t = s.trim();
+    if t.len() < 12 {
+        return false;
+    }
+    let digits = t.chars().filter(|c| c.is_ascii_digit()).count();
+    let alpha = t.chars().filter(|c| c.is_alphabetic()).count();
+    if digits < 10 || alpha > digits / 4 {
+        return false;
+    }
+    // At least 4 tokenizable financial numbers.
+    tokenize_numeric_tail(t).len() >= 4
+}
+
+/// NIPA placeholder / leader-dot rows: `14Change in private inventories.....`
+/// (line# + label + dots, almost no numeric values). Must stay in the grid so
+/// row topology matches gold (inventory / net-exports blank rows).
+fn looks_nipa_placeholder_row(s: &str) -> bool {
+    let t = s.trim();
+    if t.len() < 16 {
+        return false;
+    }
+    let dots = t.chars().filter(|&c| c == '.' || c == '·').count();
+    if dots < 12 {
+        return false;
+    }
+    let chars: Vec<char> = t.chars().collect();
+    if !chars[0].is_ascii_digit() {
+        return false;
+    }
+    let mut j = 0usize;
+    while j < chars.len() && chars[j].is_ascii_digit() {
+        j += 1;
+    }
+    j < chars.len() && chars[j].is_alphabetic() && j <= 3
+}
+
+/// Section banner rows in NIPA tables (`Addenda:`, `Current-dollar measures:`).
+fn looks_nipa_section_header(s: &str) -> bool {
+    let t = s.trim();
+    if t.len() < 6 || t.len() > 48 {
+        return false;
+    }
+    let lower = t.to_ascii_lowercase();
+    lower.starts_with("addenda")
+        || lower.starts_with("current-dollar")
+        || lower.starts_with("current dollar")
+        || (lower.ends_with(':')
+            && t.chars().filter(|c| c.is_alphabetic()).count() >= 4
+            && t.chars().filter(|c| c.is_ascii_digit()).count() <= 2)
+}
+
+/// Field count for a glued tabular / numeric-only line (label + numbers).
+fn glued_field_count(text: &str) -> usize {
+    let t = text.trim();
+    if t.is_empty() {
+        return 0;
+    }
+    if looks_glued_tabular(t) {
+        // Match fill_row_glued_tabular field layout: optional line# + label + nums.
+        let chars: Vec<char> = t.chars().collect();
+        let mut body_start = 0usize;
+        let mut fields = 1usize; // label at least
+        if !chars.is_empty() && chars[0].is_ascii_digit() {
+            let mut j = 0usize;
+            while j < chars.len() && chars[j].is_ascii_digit() {
+                j += 1;
+            }
+            if j < chars.len() && chars[j].is_alphabetic() && j <= 3 {
+                fields = 2; // line number + label
+                body_start = j;
+            }
+        }
+        let body: String = chars[body_start..].iter().collect();
+        let body_chars: Vec<char> = body.chars().collect();
+        let mut si = 0usize;
+        for (i, &ch) in body_chars.iter().enumerate() {
+            if ch.is_ascii_digit() {
+                si = i;
+                if i > 0 && (body_chars[i - 1].is_alphabetic() || body_chars[i - 1] == ')') {
+                    si = i;
+                }
+                break;
+            }
+        }
+        let tail: String = body_chars[si..].iter().collect();
+        let n = tokenize_numeric_tail_signed(&tail).len();
+        return fields + n;
+    }
+    if looks_glued_numeric_stream(t) {
+        return tokenize_numeric_tail(t).len().max(1);
+    }
+    0
+}
+
+/// Equal-width column anchors when all body rows are glued single-run (NIPA).
+fn synthesize_cols_from_glued_tokens(lines: &[&TextLine], fs: f32) -> Option<Vec<f32>> {
+    let mut max_fields = 0usize;
+    let mut x0 = f32::INFINITY;
+    let mut x1 = f32::NEG_INFINITY;
+    let mut glued_rows = 0usize;
+    for line in lines {
+        if line.runs.len() != 1 {
+            continue;
+        }
+        let r = &line.runs[0];
+        let t = r.text.trim();
+        if t.is_empty() {
+            continue;
+        }
+        let n = glued_field_count(t);
+        if n >= 3 {
+            glued_rows += 1;
+            max_fields = max_fields.max(n);
+            x0 = x0.min(r.bbox.x0);
+            x1 = x1.max(r.bbox.x1);
+        }
+    }
+    // Need enough glued rows and a wide x-span.
+    if glued_rows < 3 || max_fields < 3 || !x0.is_finite() || x1 - x0 < fs * 8.0 {
+        return None;
+    }
+    // Cap synthetic columns to product max (~20 quarters; stay under max_cols).
+    let ncols = max_fields.clamp(3, 24);
+    let width = (x1 - x0).max(fs * 8.0);
+    let step = width / ncols as f32;
+    let mut anchors = Vec::with_capacity(ncols);
+    for i in 0..ncols {
+        anchors.push(x0 + (i as f32 + 0.5) * step);
+    }
+    Some(anchors)
 }
 
 /// Cluster left-edge tolerance (~¾ em, floor at min cell-ish scale).
@@ -375,57 +715,200 @@ fn fill_row_glued_tabular(text: &str, row: &mut [String]) {
     if t.is_empty() {
         return;
     }
-    // Seam: first digit (optional leading minus immediately before it).
-    let mut seam = None;
     let chars: Vec<char> = t.chars().collect();
-    for (i, &ch) in chars.iter().enumerate() {
+    // NIPA/BEA: optional leading line number glued to the label (`1Gross…`).
+    // Digits immediately followed by a letter are a line index, not a value.
+    let mut line_num: Option<String> = None;
+    let mut body_start = 0usize;
+    if !chars.is_empty() && chars[0].is_ascii_digit() {
+        let mut j = 0usize;
+        while j < chars.len() && chars[j].is_ascii_digit() {
+            j += 1;
+        }
+        if j < chars.len() && chars[j].is_alphabetic() && j <= 3 {
+            line_num = Some(chars[..j].iter().collect());
+            body_start = j;
+        }
+    }
+    let body: String = chars[body_start..].iter().collect();
+    let body_chars: Vec<char> = body.chars().collect();
+
+    // Seam: first digit after alphabetic label (or after `)` for NIPA titles).
+    // `Structures-3.2` → seam at `-` so the signed value is not eaten into the label.
+    let mut seam = None;
+    for (i, &ch) in body_chars.iter().enumerate() {
         if ch.is_ascii_digit() {
-            seam = Some(if i > 0 && chars[i - 1] == '-' {
-                // Minus is start of first number, not part of the label —
-                // only when prior char is not alphabetic (label never ends with -digit).
-                if i >= 2 && chars[i - 2].is_alphabetic() {
-                    i // "x-2" style keeps - with number at i-1; rare in labels
-                } else if i > 0 && !chars[i - 1].is_alphabetic() {
-                    i - 1
-                } else {
-                    i
-                }
+            if i > 0 && body_chars[i - 1] == '-' {
+                // Signed number after label (`Structures-3.2`) or mid-stream.
+                seam = Some(i - 1);
+            } else if i > 0 && (body_chars[i - 1].is_alphabetic() || body_chars[i - 1] == ')') {
+                seam = Some(i);
             } else {
-                i
-            });
-            // Prefer: alphabetic immediately before digit → seam at digit.
-            if i > 0 && chars[i - 1].is_alphabetic() {
                 seam = Some(i);
             }
             break;
         }
     }
     let Some(si) = seam else {
-        row[0] = t.to_string();
+        let mut col = 0usize;
+        if let Some(ln) = line_num {
+            row[0] = ln;
+            col = 1.min(ncols.saturating_sub(1));
+        }
+        if col < ncols {
+            row[col] = body.trim().to_string();
+        }
         return;
     };
-    let label: String = chars[..si].iter().collect::<String>().trim().to_string();
-    let tail: String = chars[si..].iter().collect();
-    row[0] = label;
+    let label: String = body_chars[..si]
+        .iter()
+        .collect::<String>()
+        .trim()
+        .to_string();
+    let tail: String = body_chars[si..].iter().collect();
     if ncols == 1 {
+        row[0] = t.to_string();
         return;
     }
-    let tokens = tokenize_numeric_tail(&tail);
-    for (ti, tok) in tokens.iter().enumerate() {
-        let col = ti + 1;
+    // BEA NIPA (`1Gross…5.8-5.3`): line# + label + true signed 1-decimal rates.
+    // RBI/Excel (`Andhra Pradesh48.11-3.26`): label + 2-decimal + missing `-`.
+    let tokens = if line_num.is_some() {
+        tokenize_numeric_tail_signed(&tail)
+    } else {
+        tokenize_numeric_tail(&tail)
+    };
+    let mut col = 0usize;
+    if let Some(ln) = line_num {
         if col < ncols {
-            row[col] = tok.clone();
+            row[col] = ln;
+            col += 1;
+        }
+    }
+    if label.is_empty() {
+        for tok in tokens {
+            if col < ncols {
+                row[col] = tok;
+                col += 1;
+            } else {
+                let last = ncols - 1;
+                if !row[last].is_empty() {
+                    row[last].push(' ');
+                }
+                row[last].push_str(&tok);
+            }
+        }
+        return;
+    }
+    // Expand glued header labels (StatesTotal → States, Total).
+    let label_parts = split_glued_header_label(&label);
+    for part in &label_parts {
+        if col < ncols {
+            row[col] = part.clone();
+            col += 1;
+        }
+    }
+    if label_parts.is_empty() && col < ncols {
+        row[col] = label;
+        col += 1;
+    }
+    for tok in tokens {
+        if col < ncols {
+            row[col] = tok;
+            col += 1;
         } else {
             let last = ncols - 1;
             if !row[last].is_empty() {
                 row[last].push(' ');
             }
-            row[last].push_str(tok);
+            row[last].push_str(&tok);
         }
     }
 }
 
+/// Expand known/CamelCase glued headers into empty right-neighbor cells.
+fn expand_glued_headers_in_row(row: &mut [String]) {
+    let ncols = row.len();
+    let mut c = 0usize;
+    while c < ncols {
+        let parts = split_glued_header_label(row[c].trim());
+        if parts.len() < 2 {
+            c += 1;
+            continue;
+        }
+        // Need empty cells to the right for extra parts.
+        let need = parts.len() - 1;
+        let mut empty_right = 0usize;
+        for j in (c + 1)..ncols {
+            if row[j].trim().is_empty() {
+                empty_right += 1;
+            } else {
+                break;
+            }
+        }
+        if empty_right < need {
+            c += 1;
+            continue;
+        }
+        for (i, part) in parts.iter().enumerate() {
+            let dest = c + i;
+            if dest < ncols {
+                row[dest] = part.clone();
+            }
+        }
+        c += parts.len();
+    }
+}
+
+/// Split common glued header compounds without spaces.
+fn split_glued_header_label(label: &str) -> Vec<String> {
+    let t = label.trim();
+    if t.is_empty() {
+        return vec![String::new()];
+    }
+    // Known financial-stream compounds (RBI / liabilities tables).
+    let known = [
+        ("StatesTotal", &["States", "Total"][..]),
+        ("NSSFWMA", &["NSSF", "WMA"][..]),
+        ("MarketNSSFWMA", &["Market", "NSSF", "WMA"][..]),
+        ("Market NSSFWMA", &["Market", "NSSF", "WMA"][..]),
+        ("MarketNSSF", &["Market", "NSSF"][..]),
+        ("MarketLoans", &["Market", "Loans"][..]),
+    ];
+    for (k, parts) in known {
+        if t.eq_ignore_ascii_case(k) {
+            return parts.iter().map(|s| (*s).to_string()).collect();
+        }
+    }
+    // CamelCase / letter→Upper split: "StatesTotal" → ["States","Total"]
+    let chars: Vec<char> = t.chars().collect();
+    if chars.len() >= 6 {
+        let mut parts = Vec::new();
+        let mut start = 0usize;
+        for i in 1..chars.len() {
+            if chars[i].is_uppercase()
+                && chars[i - 1].is_lowercase()
+                && i + 1 < chars.len()
+                && chars[i + 1].is_lowercase()
+            {
+                parts.push(chars[start..i].iter().collect::<String>());
+                start = i;
+            }
+        }
+        if start > 0 {
+            parts.push(chars[start..].iter().collect::<String>());
+            if parts.len() >= 2 && parts.iter().all(|p| p.len() >= 2) {
+                return parts;
+            }
+        }
+    }
+    vec![t.to_string()]
+}
+
 /// Tokenize glued numeric tails: numbers with ≤2 decimals, and lone `-`.
+///
+/// RBI/Excel mode: `-` before a digit is a *missing* field then an unsigned
+/// number (`40.45-3.26` → `-` + `3.26`). Prefer [`tokenize_numeric_tail_signed`]
+/// for BEA NIPA true negatives.
 fn tokenize_numeric_tail(tail: &str) -> Vec<String> {
     let chars: Vec<char> = tail.chars().collect();
     let mut i = 0usize;
@@ -455,12 +938,40 @@ fn tokenize_numeric_tail(tail: &str) -> Vec<String> {
     out
 }
 
+/// Tokenize with true signed numbers (BEA NIPA: `5.8-5.3` → `5.8`, `-5.3`).
+///
+/// NIPA percent tables use a single decimal place; limiting decimals avoids
+/// eating the next integer (`-28.034.8` → `-28.0` + `34.8`, not `-28.03`).
+fn tokenize_numeric_tail_signed(tail: &str) -> Vec<String> {
+    let chars: Vec<char> = tail.chars().collect();
+    let mut i = 0usize;
+    let mut out = Vec::new();
+    while i < chars.len() {
+        if chars[i] == '-' && i + 1 < chars.len() && chars[i + 1].is_ascii_digit() {
+            let (tok, ni) = parse_fin_number_decimals(&chars, i, 1);
+            out.push(tok);
+            i = ni;
+        } else if chars[i].is_ascii_digit() {
+            let (tok, ni) = parse_fin_number_decimals(&chars, i, 1);
+            out.push(tok);
+            i = ni;
+        } else {
+            i += 1;
+        }
+    }
+    out
+}
+
 /// Parse one financial number starting at `start` (optional leading `-`).
 ///
 /// At most two decimal digits. Prefer one decimal when the second digit is
 /// clearly the integer start of the next dotted number (`4.42.62` → `4.4` +
 /// `2.62`, while `48.1140.45` → `48.11` + `40.45`).
 fn parse_fin_number(chars: &[char], start: usize) -> (String, usize) {
+    parse_fin_number_decimals(chars, start, 2)
+}
+
+fn parse_fin_number_decimals(chars: &[char], start: usize, max_decimals: usize) -> (String, usize) {
     let mut i = start;
     let mut s = String::new();
     if i < chars.len() && chars[i] == '-' {
@@ -471,25 +982,24 @@ fn parse_fin_number(chars: &[char], start: usize) -> (String, usize) {
         s.push(chars[i]);
         i += 1;
     }
-    if i < chars.len() && chars[i] == '.' {
-        s.push('.');
-        i += 1;
-        if i < chars.len() && chars[i].is_ascii_digit() {
-            s.push(chars[i]);
-            i += 1;
-            // Optional second decimal digit. Skip when the digit is clearly the
-            // integer part of the next dotted number: `4.42.62` → `4.4`+`2.62`
-            // (next char after candidate is `.`). Keep for `48.1140.45` →
-            // `48.11`+`40.45` (next after second decimal is a digit, not `.`).
-            if i < chars.len() && chars[i].is_ascii_digit() {
-                let second = chars[i];
-                let next_is_dot = i + 1 < chars.len() && chars[i + 1] == '.';
-                if !next_is_dot {
-                    s.push(second);
-                    i += 1;
-                }
+    if max_decimals == 0 || i >= chars.len() || chars[i] != '.' {
+        return (s, i);
+    }
+    s.push('.');
+    i += 1;
+    let mut taken = 0usize;
+    while taken < max_decimals && i < chars.len() && chars[i].is_ascii_digit() {
+        if taken == 1 && max_decimals >= 2 {
+            // Optional second decimal. Skip when clearly the integer start of
+            // the next dotted number: `4.42.62` → `4.4`+`2.62`.
+            let next_is_dot = i + 1 < chars.len() && chars[i + 1] == '.';
+            if next_is_dot {
+                break;
             }
         }
+        s.push(chars[i]);
+        i += 1;
+        taken += 1;
     }
     (s, i)
 }
@@ -764,6 +1274,17 @@ fn build_table_from_lines(
     if supported.len() < 2 {
         supported = region_col_lefts(lines, fs);
     }
+    // Phase-4: NIPA/BEA-style pages paint each body row as one glued run
+    // (label+numbers or pure number stream). Left-edge schema may be 1-col or
+    // a weak few-col header skeleton; invent equal-width anchors from the max
+    // tokenized field count when that is clearly richer.
+    let mut synthetic_glued_cols = false;
+    if let Some(syn) = synthesize_cols_from_glued_tokens(lines, fs) {
+        if supported.len() < 2 || syn.len() >= supported.len().saturating_add(4) {
+            supported = syn;
+            synthetic_glued_cols = true;
+        }
+    }
     if supported.len() < 2 {
         return None;
     }
@@ -786,8 +1307,18 @@ fn build_table_from_lines(
                     && line
                         .runs
                         .first()
-                        .map(|r| looks_glued_tabular(&r.text))
+                        .map(|r| {
+                            looks_glued_tabular(&r.text)
+                                || looks_glued_numeric_stream(&r.text)
+                                || looks_nipa_placeholder_row(&r.text)
+                                || looks_nipa_section_header(&r.text)
+                        })
                         .unwrap_or(false);
+            }
+            // With synthetic equal-width anchors, skip geometry alignment filter
+            // (all glued rows share the same left edge).
+            if synthetic_glued_cols {
+                return true;
             }
             let aligned = line
                 .runs
@@ -810,20 +1341,38 @@ fn build_table_from_lines(
         lines
     };
 
-    // Recompute anchors on cleaned lines (rich lines first).
-    supported = region_col_lefts_prefer_rich(use_lines, fs);
-    if supported.len() < 2 {
-        supported = region_col_lefts_supported(use_lines, fs);
-    }
-    if supported.len() < 2 {
-        supported = region_col_lefts(use_lines, fs);
+    // Recompute anchors on cleaned lines (rich lines first), unless we already
+    // synthesized equal-width columns for a glued-only region.
+    if !synthetic_glued_cols {
+        supported = region_col_lefts_prefer_rich(use_lines, fs);
+        if supported.len() < 2 {
+            supported = region_col_lefts_supported(use_lines, fs);
+        }
+        if supported.len() < 2 {
+            supported = region_col_lefts(use_lines, fs);
+        }
+        if supported.len() < 2 {
+            if let Some(syn) = synthesize_cols_from_glued_tokens(use_lines, fs) {
+                supported = syn;
+                synthetic_glued_cols = true;
+            }
+        } else if let Some(syn) = synthesize_cols_from_glued_tokens(use_lines, fs) {
+            if syn.len() >= supported.len().saturating_add(4) {
+                supported = syn;
+                synthetic_glued_cols = true;
+            }
+        }
     }
     if supported.len() < 2 {
         return None;
     }
 
     // Collapse residual near-duplicate anchors (post-jitter split clusters).
-    supported = collapse_near_cols(&supported, use_lines, x_tol);
+    // Skip for synthetic equal-width glued columns — collapse uses run left-edges
+    // and would re-fuse every synthetic anchor to a single left edge.
+    if !synthetic_glued_cols {
+        supported = collapse_near_cols(&supported, use_lines, x_tol);
+    }
     if supported.len() < 2 {
         return None;
     }
@@ -847,7 +1396,7 @@ fn build_table_from_lines(
         return None;
     }
 
-    let nrows = use_lines.len();
+    let mut nrows = use_lines.len();
     if nrows as u32 > opts.lattice_max_rows {
         return None;
     }
@@ -880,6 +1429,109 @@ fn build_table_from_lines(
         // Single wide TJ string painted as one run: split whitespace tokens
         // left-to-right across columns (stream/export tables). Glued
         // label+numeric rows use proportional char-x binning into xs edges.
+        // NIPA: glued body often arrives as one long run + a right-margin line#
+        // as a second run. Join runs (skip far-right 1–3 digit markers) and
+        // token-fill when the joined text is glued tabular.
+        if ncols >= 3 && !line.runs.is_empty() {
+            let mut sorted: Vec<&TextRun> = line.runs.iter().collect();
+            sorted.sort_by(|a, b| {
+                a.bbox
+                    .x0
+                    .partial_cmp(&b.bbox.x0)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            });
+            let x_left = sorted
+                .iter()
+                .find(|r| !r.text.trim().is_empty())
+                .map(|r| r.bbox.x0)
+                .unwrap_or(0.0);
+            // Content runs excluding NIPA right-margin line# markers.
+            let content: Vec<&TextRun> = sorted
+                .iter()
+                .copied()
+                .filter(|r| {
+                    let t = r.text.trim();
+                    if t.is_empty() {
+                        return false;
+                    }
+                    let pure_line = t.chars().all(|c| c.is_ascii_digit()) && t.len() <= 3;
+                    !(pure_line && r.bbox.x0 > x_left + 200.0)
+                })
+                .collect();
+            // CRITICAL: multi-run geometry rows (campaign donors, etc.) must NOT
+            // be concatenated and force-filled via NIPA glued tokenizer.
+            // Joining "MENA"+"JUAN" without spaces invents false letter+digit seams
+            // and destroys column assignment (real-track regression 0.94→0.45).
+            // Glued path only when ≤1 content run, or synthetic_glued_cols region.
+            let use_glued_path = content.len() <= 1 || synthetic_glued_cols;
+            if use_glued_path {
+                let mut joined = String::new();
+                for r in &content {
+                    let t = r.text.trim();
+                    if t.is_empty() {
+                        continue;
+                    }
+                    // Space-join multi content only for synthetic glued pages
+                    // (true multi-run should not reach here with content.len()>1
+                    // unless synthetic_glued_cols).
+                    if !joined.is_empty() && content.len() > 1 {
+                        joined.push(' ');
+                    }
+                    joined.push_str(t);
+                }
+                if looks_glued_tabular(&joined)
+                    || looks_glued_numeric_stream(&joined)
+                    || looks_nipa_placeholder_row(&joined)
+                {
+                    fill_row_glued_tabular(&joined, &mut grid[ri]);
+                    for c in 0..ncols {
+                        bboxes[ri][c] = Rect {
+                            x0: xs[c],
+                            y0,
+                            x1: xs[c + 1],
+                            y1,
+                        };
+                    }
+                    continue;
+                }
+                if looks_nipa_section_header(&joined) {
+                    // Section banner occupies the label column only.
+                    if ncols > 1 {
+                        grid[ri][1] = joined;
+                    } else {
+                        grid[ri][0] = joined;
+                    }
+                    for c in 0..ncols {
+                        bboxes[ri][c] = Rect {
+                            x0: xs[c],
+                            y0,
+                            x1: xs[c + 1],
+                            y1,
+                        };
+                    }
+                    continue;
+                }
+                // Longest single run alone (partial half-line still better than
+                // geometry binning of a truncated TJ) — only for true single-run.
+                if content.len() == 1 {
+                    let run = content[0];
+                    if (looks_glued_tabular(&run.text) || looks_glued_numeric_stream(&run.text))
+                        && run.text.len() >= 16
+                    {
+                        fill_row_glued_tabular(&run.text, &mut grid[ri]);
+                        for c in 0..ncols {
+                            bboxes[ri][c] = Rect {
+                                x0: xs[c],
+                                y0,
+                                x1: xs[c + 1],
+                                y1,
+                            };
+                        }
+                        continue;
+                    }
+                }
+            }
+        }
         if line.runs.len() == 1 {
             let run = &line.runs[0];
             let tokens: Vec<&str> = run
@@ -899,18 +1551,6 @@ fn build_table_from_lines(
                         grid[ri][ti] = (*tok).to_string();
                     }
                 }
-                for c in 0..ncols {
-                    bboxes[ri][c] = Rect {
-                        x0: xs[c],
-                        y0,
-                        x1: xs[c + 1],
-                        y1,
-                    };
-                }
-                continue;
-            }
-            if looks_glued_tabular(&run.text) && ncols >= 3 {
-                fill_row_glued_tabular(&run.text, &mut grid[ri]);
                 for c in 0..ncols {
                     bboxes[ri][c] = Rect {
                         x0: xs[c],
@@ -942,6 +1582,34 @@ fn build_table_from_lines(
                 y1,
             };
         }
+    }
+
+    // Expand glued header tokens into empty neighbor cells (StatesTotal, NSSFWMA).
+    for row in &mut grid {
+        expand_glued_headers_in_row(row);
+    }
+
+    // Drop leading caption / unit rows (TABLE 125, (Contd.), `Billion) that
+    // inflate liabilities-style stream tables above the real header band.
+    while nrows > 6 {
+        let joined = grid[0]
+            .iter()
+            .map(|c| c.trim())
+            .filter(|c| !c.is_empty())
+            .collect::<Vec<_>>()
+            .join(" ")
+            .to_ascii_lowercase();
+        let caption = joined.contains("table ")
+            || joined.contains("contd")
+            || joined.contains("billion")
+            || joined.contains("(`")
+            || joined.contains("( `");
+        if !caption {
+            break;
+        }
+        grid.remove(0);
+        bboxes.remove(0);
+        nrows -= 1;
     }
 
     // Strong reject: 2-col prose bait (word lists, numbered lists).
@@ -1015,10 +1683,6 @@ fn build_table_from_lines(
             ch as f32 / n as f32
         }
     };
-    if mean_chars >= opts.stream_max_prose_mean_chars && ncols <= 2 {
-        return None;
-    }
-
     // Numeric density for non-table area gates.
     let num_dens = {
         let mut n = 0u32;
@@ -1040,6 +1704,40 @@ fn build_table_from_lines(
             dig as f32 / n as f32
         }
     };
+
+    // Prose bait: long cells + low digit density. Classic 2-col lists, and also
+    // multi-col paragraph grids (function words split across invented columns).
+    if mean_chars >= opts.stream_max_prose_mean_chars && ncols <= 2 {
+        return None;
+    }
+    if mean_chars >= opts.stream_max_prose_mean_chars * 0.70
+        && num_dens < 0.28
+        && ncols >= 3
+        && nrows <= 12
+    {
+        return None;
+    }
+    // Short-token multi-col prose: function words / punctuation shards with
+    // sparse numbers (prose mentions "Table 6.1" but is not a data grid).
+    if ncols >= 4 && nrows <= 10 && num_dens < 0.35 && mean_chars < 22.0 {
+        let mut short_tokens = 0u32;
+        let mut tokens = 0u32;
+        for row in &grid {
+            for c in row {
+                let t = c.trim();
+                if t.is_empty() {
+                    continue;
+                }
+                tokens += 1;
+                if t.chars().count() <= 8 {
+                    short_tokens += 1;
+                }
+            }
+        }
+        if tokens >= 8 && short_tokens as f32 >= tokens as f32 * 0.50 {
+            return None;
+        }
+    }
 
     let mut cells: Vec<TableCell> = Vec::new();
     let mut filled = 0u32;
@@ -1108,6 +1806,10 @@ fn build_table_from_lines(
         fill_rate,
         weak_edges: false,
         joint_count: 0,
+        text_row_recovery: false,
+        text_col_recovery: false,
+        multitable_stream_recovery: false,
+        stream_vs_overwide_hybrid: false,
     })
 }
 
@@ -1178,7 +1880,34 @@ mod tests {
         assert_eq!(row[0], "Andhra Pradesh");
         assert_eq!(row[1], "48.11");
         assert_eq!(row[2], "40.45");
+        // No line# → RBI missing-marker mode.
         assert_eq!(row[3], "-");
+    }
+
+    #[test]
+    fn fill_row_nipa_line_number_and_signed_values() {
+        let mut row = vec![String::new(); 22];
+        fill_row_glued_tabular(
+            "1Gross domestic product (GDP)5.81.92.5-5.3-28.034.84.25.26.23.37.0-2.0-0.62.72.62.22.14.93.3",
+            &mut row,
+        );
+        assert_eq!(row[0], "1");
+        assert!(
+            row[1].starts_with("Gross domestic product"),
+            "label={}",
+            row[1]
+        );
+        assert_eq!(row[2], "5.8");
+        assert_eq!(row[3], "1.9");
+        assert_eq!(row[4], "2.5");
+        assert_eq!(row[5], "-5.3");
+        assert_eq!(row[6], "-28.0");
+        // ~19 numbers after label → last annual-ish token present
+        let n_filled = row.iter().filter(|c| !c.trim().is_empty()).count();
+        assert!(
+            n_filled >= 18,
+            "expected dense NIPA row fill, got {n_filled} cells: {row:?}"
+        );
     }
 
     /// Header multi-run schema + glued single-run body (RBI liabilities style).
@@ -1614,5 +2343,64 @@ mod tests {
             "single-col prose must not invent a mega-table: {:?}",
             tabs.iter().map(|t| (t.rows, t.cols)).collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn nipa_glued_region_detects_multi_col() {
+        use crate::options::{TableOptions, TablePreset};
+        use pdfparser_ir::{Rect, TextRun};
+        fn run(text: &str, x0: f32, y0: f32, x1: f32, fs: f32) -> TextRun {
+            TextRun {
+                text: text.into(),
+                bbox: Rect {
+                    x0,
+                    y0,
+                    x1,
+                    y1: y0 + fs,
+                },
+                transform: pdfparser_ir::Matrix3x2::identity(),
+                font_name: None,
+                font_size: fs,
+                mapping_confidence: 1.0,
+                metrics_confidence: 1.0,
+                mcid: None,
+                invisible: false,
+                from_actual_text: false,
+            }
+        }
+        for text in [
+            "1Gross domestic product (GDP)5.81.92.5-5.3-28.034.84.25.26.23.37.0-2.0",
+            "3Goods11.30.32.1-2.1-8.651.73.216.514.7-8.55.6-1.2-0.3",
+        ] {
+            assert!(looks_glued_tabular(text), "glued? {}", text);
+            assert!(
+                glued_field_count(text) >= 4,
+                "fields {}",
+                glued_field_count(text)
+            );
+        }
+        let mut runs = Vec::new();
+        let fs = 8.0;
+        let rows = [
+            "1Gross domestic product (GDP)5.81.92.5-5.3-28.034.84.25.26.23.37.0-2.0",
+            "2Personal consumption expenditures8.42.52.2-6.4-30.240.55.68.913.6",
+            "3Goods11.30.32.1-2.1-8.651.73.216.514.7-8.55.6-1.2-0.3",
+            "4Durable goods16.7-0.34.3-16.6-0.2100.75.528.414.3-23.111.1",
+            "5Nondurable goods8.50.60.96.1-12.530.81.810.114.81.12.6-2.7",
+            "6Services6.93.72.3-8.4-38.735.16.85.513.09.33.20.63.2",
+            "7Gross private domestic investment8.74.8-1.2-9.9-46.498.913.2",
+        ];
+        for (i, text) in rows.iter().enumerate() {
+            let y = 600.0 - i as f32 * 12.0;
+            runs.push(run(text, 40.0, y, 900.0, fs));
+        }
+        assert!(looks_glued_tabular(rows[0]), "glued row0");
+        let mut opts = TableOptions::from_preset(TablePreset::Auto);
+        opts.min_confidence_stream = 0.45;
+        opts.min_table_confidence = 0.45;
+        let tabs = detect_network_tables(0, &runs, &opts);
+        assert!(!tabs.is_empty(), "expected NIPA glued table, got 0");
+        assert!(tabs[0].cols >= 4, "cols={}", tabs[0].cols);
+        assert!(tabs[0].rows >= 5, "rows={}", tabs[0].rows);
     }
 }

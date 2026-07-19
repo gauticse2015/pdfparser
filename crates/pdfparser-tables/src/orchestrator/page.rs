@@ -62,13 +62,9 @@ pub fn detect_tables_page_with_raster(
     let mut cands = Vec::new();
 
     if opts.modes.lattice {
-        cands.extend(detect_lattice_tables(
-            page_index,
-            runs,
-            rules,
-            opts,
-            raster_pages,
-        ));
+        let lat = detect_lattice_tables(page_index, runs, rules, opts, raster_pages);
+        // Phase-1: drop near-empty / form-chrome lattice before ownership.
+        cands.extend(lat.into_iter().filter(|t| !is_chrome_lattice_fp(t)));
     }
 
     let strong_lattice_bboxes: Vec<pdfparser_ir::Rect> = cands
@@ -77,10 +73,31 @@ pub fn detect_tables_page_with_raster(
         .map(|t| t.bbox)
         .collect();
     let has_strong_lattice = !strong_lattice_bboxes.is_empty();
+    // Phase-1 V3: any solid ruled grid owns the page (Camelot-class exclusivity).
+    // Borderless/stream must not co-emit when lattice already found a real table.
+    let has_solid_ruled = cands.iter().any(|t| is_solid_ruled_table(t, opts));
+    let ruled_owns_page =
+        opts.exclusive_under_strong_lattice && (has_strong_lattice || has_solid_ruled);
 
     if opts.modes.hybrid {
         let hybrid = detect_hybrid_tables(page_index, runs, rules, opts);
-        if !has_strong_lattice {
+        if ruled_owns_page {
+            // Hybrid only for non-overlapping partial regions outside ruled ownership.
+            let own = if has_strong_lattice {
+                strong_lattice_bboxes.clone()
+            } else {
+                cands
+                    .iter()
+                    .filter(|t| is_solid_ruled_table(t, opts))
+                    .map(|t| t.bbox)
+                    .collect()
+            };
+            for h in hybrid {
+                if !overlaps_any(h.bbox, &own) {
+                    cands.push(h);
+                }
+            }
+        } else if !has_strong_lattice {
             cands.extend(hybrid);
         } else {
             for h in hybrid {
@@ -91,15 +108,31 @@ pub fn detect_tables_page_with_raster(
         }
     }
 
+    // Borderless path (Phase-2 dual mode):
+    // - Recall mode when page has no solid ruled tables (recover ICDAR-class
+    //   borderless / partial pages without reopening multi-detector soup).
+    // - Precision / multitable-recovery mode when ruled owns the page.
     if opts.modes.stream {
-        // Production borderless path = network (textline + alignments), not classic stream soup.
         let borderless = detect_network_tables(page_index, runs, opts);
         let mut network_added = 0usize;
+        let lattice_bboxes: Vec<pdfparser_ir::Rect> = cands
+            .iter()
+            .filter(|t| t.method == TableMethod::Lattice)
+            .map(|t| t.bbox)
+            .collect();
+        let recall_mode = !ruled_owns_page && lattice_bboxes.is_empty();
         for mut s in borderless {
-            if opts.exclusive_under_strong_lattice && has_strong_lattice {
-                // Suppress only when stream is covered by / comparable to lattice.
-                // Do NOT drop a much larger multi-col stream that merely overlaps a
-                // tiny lattice corner (multi-table pages like disease outbreaks).
+            if !borderless_passes_precision(&s, opts, recall_mode) {
+                continue;
+            }
+            if ruled_owns_page {
+                // Multi-table recovery only: dense numeric, little overlap with ruled.
+                if !is_multitable_stream_recovery(&s, &lattice_bboxes) {
+                    continue;
+                }
+                s.multitable_stream_recovery = true;
+                s.notes.push("multitable_stream_recovery".into());
+            } else if opts.exclusive_under_strong_lattice && has_strong_lattice {
                 if should_suppress_stream_under_lattices(s.bbox, &strong_lattice_bboxes) {
                     continue;
                 }
@@ -107,51 +140,38 @@ pub fn detect_tables_page_with_raster(
                 s.confidence *= 0.50;
                 s.notes.push("demoted_under_lattice".into());
             }
-            // Weak 2-col alpha lists next to a real grid are stream FPs.
             if has_strong_lattice && s.cols == 2 && stream_numeric_density(&s) < 0.10 {
                 s.confidence *= 0.40;
                 s.notes.push("demoted_weak_2col".into());
             }
+            if recall_mode {
+                s.notes.push("borderless_recall".into());
+            }
             network_added += 1;
             cands.push(s);
         }
-        // Phase 14: classic stream for multi-table recovery.
-        // (a) Fallback when network empty + only weak lattice fragments.
-        // (b) Supplemental when network found tables but a non-overlapping
-        //     multi-col classic stream remains (e.g. census 324+325).
+        // Classic stream fallback:
+        //  - always when network empty and no solid lattice (Phase-1)
+        //  - Phase-2 recall: also when network empty on non-ruled pages (even if
+        //    weak lattice fragments exist), so painted/partial pages recover.
         let only_weak_lattice = !has_strong_lattice
+            && !has_solid_ruled
             && cands
                 .iter()
                 .filter(|t| t.method == TableMethod::Lattice)
                 .all(|t| t.cols <= 2 || t.bbox.width() < 140.0);
-        // Fallback only when network empty + weak lattice; supplemental only for
-        // strong multi-col grids (cols≥4, rows≥5) to avoid prose FPs (sensing 95).
-        let want_fallback = network_added == 0 && (cands.is_empty() || only_weak_lattice);
-        let want_supplement = network_added >= 1;
-        if want_fallback || want_supplement {
+        let want_fallback = network_added == 0
+            && (cands.is_empty() || only_weak_lattice || (recall_mode && !has_solid_ruled));
+        if want_fallback && opts.allow_classic_stream {
             let classic = detect_stream_tables(page_index, runs, opts);
             for mut s in classic {
-                let min_cols = if want_supplement && !want_fallback {
-                    4
-                } else {
-                    3
-                };
-                let min_rows = if want_supplement && !want_fallback {
-                    5
-                } else {
-                    3
-                };
+                let min_cols = if recall_mode { 2 } else { 3 };
+                let min_rows = if recall_mode { 3 } else { 4 };
                 if s.cols < min_cols || s.rows < min_rows {
                     continue;
                 }
-                // Supplemental: require numeric signal (census grids), not prose.
-                if want_supplement && !want_fallback && stream_numeric_density(&s) < 0.20 {
+                if !borderless_passes_precision(&s, opts, recall_mode) {
                     continue;
-                }
-                if opts.exclusive_under_strong_lattice && has_strong_lattice {
-                    if should_suppress_stream_under_lattices(s.bbox, &strong_lattice_bboxes) {
-                        continue;
-                    }
                 }
                 let dup = cands.iter().any(|c| {
                     containment_ratio(s.bbox, c.bbox) >= 0.55
@@ -161,13 +181,52 @@ pub fn detect_tables_page_with_raster(
                 if dup {
                     continue;
                 }
-                s.notes.push(if want_fallback {
-                    "classic_stream_fallback".into()
+                s.notes.push(if recall_mode {
+                    "classic_stream_recall".into()
                 } else {
-                    "classic_stream_multitable".into()
+                    "classic_stream_fallback".into()
                 });
                 cands.push(s);
             }
+        }
+    }
+
+    // Phase-2: hybrid over-wide densify (campaign donors class) — force classic
+    // stream recovery when network missed and hybrid exploded columns.
+    let hybrid_over_wide = cands
+        .iter()
+        .any(|t| t.method == TableMethod::Hybrid && t.cols >= 14 && t.rows >= 10);
+    let has_good_stream = cands.iter().any(|t| {
+        matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric)
+            && t.cols >= 3
+            && t.cols <= 12
+            && t.rows >= 4
+    });
+    if hybrid_over_wide && !has_good_stream && opts.modes.stream {
+        // Prefer network first (better on Quartz/export tables), then classic (opt-in).
+        let mut recovered = detect_network_tables(page_index, runs, opts);
+        if recovered.is_empty() && opts.allow_classic_stream {
+            recovered = detect_stream_tables(page_index, runs, opts);
+        }
+        for mut s in recovered {
+            if s.cols < 3 || s.cols > 14 || s.rows < 8 {
+                continue;
+            }
+            // Looser conf for recovering from hybrid densify explosion.
+            if s.confidence < 0.50 {
+                continue;
+            }
+            if looks_like_notice_metadata(&s) || looks_like_tax_form_fields(&s) {
+                continue;
+            }
+            // Prefer multi-col filled grids over form strips
+            let filled = s.cells.iter().filter(|c| !c.text.trim().is_empty()).count();
+            if filled < 20 {
+                continue;
+            }
+            s.stream_vs_overwide_hybrid = true;
+            s.notes.push("stream_vs_overwide_hybrid".into());
+            cands.push(s);
         }
     }
 
@@ -176,12 +235,63 @@ pub fn detect_tables_page_with_raster(
     // Prefer dense multi-col stream/network over sparse over-wide hybrid that
     // re-fragmented the same borderless region (Quartz/Tabula stream PDFs).
     cands = prefer_stream_over_sparse_hybrid(cands);
+    // Drop remaining over-wide hybrids when a reasonable stream coexists.
+    let stream_refs: Vec<(pdfparser_ir::Rect, u32, u32)> = cands
+        .iter()
+        .filter(|s| matches!(s.method, TableMethod::Stream | TableMethod::DenseNumeric))
+        .map(|s| (s.bbox, s.cols, s.rows))
+        .collect();
+    cands.retain(|t| {
+        if t.method == TableMethod::Hybrid && t.cols >= 14 {
+            !stream_refs.iter().any(|&(sb, sc, sr)| {
+                sc < t.cols
+                    && sr >= ((t.rows as f32) * 0.5) as u32
+                    && (geom::iou(sb, t.bbox) >= 0.25 || region_overlap(sb, t.bbox) >= 0.35)
+            })
+        } else {
+            true
+        }
+    });
 
     if opts.side_by_side_split {
         cands = split_side_by_side(cands, runs, opts);
     }
     if opts.form_discriminator {
         cands = apply_form_discriminator(cands, opts);
+    }
+    // Phase-4: if form disc removed all solid lattice that had suppressed
+    // borderless, re-admit only *dense multi-col numeric* network tables
+    // (NIPA glued GDP grids). Tight gates prevent arxiv/NIST prose FPs.
+    if opts.modes.stream
+        && !cands.iter().any(|t| {
+            matches!(t.method, TableMethod::Lattice | TableMethod::Hybrid)
+                && is_solid_ruled_table(t, opts)
+        })
+        && !cands
+            .iter()
+            .any(|t| matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric))
+    {
+        let recovered = detect_network_tables(page_index, runs, opts);
+        for mut s in recovered {
+            if !borderless_passes_precision(&s, opts, true) {
+                continue;
+            }
+            // Strict: multi-col statistical grids only (not 2–3 col notices).
+            let num = stream_numeric_density(&s);
+            let mean = stream_mean_cell_chars(&s);
+            if s.cols < 8 || s.rows < 10 || s.confidence < 0.70 {
+                continue;
+            }
+            if num < 0.40 || mean > 28.0 {
+                continue;
+            }
+            let filled = s.cells.iter().filter(|c| !c.text.trim().is_empty()).count();
+            if filled < 40 {
+                continue;
+            }
+            s.notes.push("stream_recover_after_form".into());
+            cands.push(s);
+        }
     }
     // Phase 12: demote narrow high-row lattice slices when a wider multi-col
     // stream/network table already covers the page (census / dual-region FPs).
@@ -315,32 +425,45 @@ fn engine_v2_exclusive_cleanup(
 
     // Prefer lattice over overlapping hybrid (same as pre-router demotion).
     kept = prefer_lattice_over_overlapping_hybrid(kept);
+    // Fuse vertically stacked same-col lattices (fragmented multi-region CC).
+    // Geometric only: same page, same col count, high X-overlap, modest Y-gap.
+    kept = merge_stacked_same_col_lattices(kept);
 
-    let ruled_bboxes: Vec<pdfparser_ir::Rect> = kept
+    // Only solid *lattice* owns the page for stream exclusivity.
+    // Hybrid partial frames must NOT kill stream (campaign donors: hybrid
+    // over-wide densify + stream 56×7).
+    let lattice_bboxes: Vec<pdfparser_ir::Rect> = kept
         .iter()
-        .filter(|t| {
-            matches!(t.method, TableMethod::Lattice | TableMethod::Hybrid)
-                && t.rows >= 2
-                && t.cols >= 2
-                && t.confidence >= opts.min_table_confidence
-        })
+        .filter(|t| t.method == TableMethod::Lattice && is_solid_ruled_table(t, opts))
         .map(|t| t.bbox)
         .collect();
-    let has_ruled = !ruled_bboxes.is_empty();
+    let has_solid_lattice = !lattice_bboxes.is_empty();
 
-    if has_ruled {
+    if has_solid_lattice {
+        // Keep multi-table recovery streams; drop other borderless under lattice.
         kept.retain(|t| {
             if !matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric) {
                 return true;
             }
-            if should_suppress_stream_under_lattices(t.bbox, &ruled_bboxes) {
-                return false;
-            }
-            if t.cols <= 2 && stream_numeric_density(t) < 0.15 {
-                return false;
+            is_multitable_stream_recovery(t, &lattice_bboxes)
+                || t.multitable_stream_recovery
+                || t.stream_vs_overwide_hybrid
+        });
+    } else {
+        let recall = !kept
+            .iter()
+            .any(|t| matches!(t.method, TableMethod::Lattice) && is_solid_ruled_table(t, opts));
+        kept.retain(|t| {
+            if matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric) {
+                return borderless_passes_precision(t, opts, recall) || t.stream_vs_overwide_hybrid;
             }
             true
         });
+        // ICDAR multipage financial pages: borderless_recall can emit many
+        // mid-size stream fragments per page. Typically
+        // one dominant table. Drop small/stream fragments that are clearly subordinate
+        // to a dominant stream on the same page (area < 45% of max).
+        kept = prune_subordinate_stream_fragments(kept);
     }
 
     // High-IoU different-method pairs: keep higher quality_score (not nested).
@@ -522,6 +645,489 @@ fn is_strong_lattice(t: &Table, opts: &TableOptions) -> bool {
     // table, not a partial corner fragment (disease table left strip ~100u).
     // Side-by-side stress fixture tables are ~150–170u wide.
     t.cols == 2 && t.bbox.width() >= 140.0 && t.rows >= 4
+}
+
+/// Solid ruled table for page ownership (slightly looser than strong_lattice).
+///
+/// Phase-1 V3: if any such table exists, borderless detectors stay off.
+fn is_solid_ruled_table(t: &Table, opts: &TableOptions) -> bool {
+    if t.method != TableMethod::Lattice || t.weak_edges {
+        return false;
+    }
+    if t.rows < 2 || t.cols < 2 {
+        return false;
+    }
+    if t.confidence < opts.min_table_confidence.min(0.55) {
+        return false;
+    }
+    // Reject near-empty chrome frames (page borders / form rules).
+    let empty_frac = lattice_empty_frac(t);
+    if empty_frac >= 0.90 {
+        return false;
+    }
+    // Tall few-col lattices grown mostly by text_row densify (NIPA page-rule soup
+    // → 47×3) must NOT own the page and kill multi-col stream recovery (gold ~50×22).
+    // Thresholds from tuning so document-type overrides stay consistent.
+    let heavy_y_densify = t.text_row_recovery
+        || t.notes
+            .iter()
+            .any(|n| n.starts_with("text_row_recovery") || n.contains("synthetic_h="));
+    if t.cols <= opts.tuning.solid_lattice_stream_safe_max_cols
+        && t.rows >= opts.tuning.solid_lattice_stream_safe_min_rows
+        && heavy_y_densify
+    {
+        return false;
+    }
+    t.cols >= 2 && t.rows >= 2
+}
+
+fn lattice_empty_frac(t: &Table) -> f32 {
+    let n = t.rows.saturating_mul(t.cols).max(1) as f32;
+    if t.cells.is_empty() {
+        return 0.5;
+    }
+    let empty = t.cells.iter().filter(|c| c.text.trim().is_empty()).count() as f32;
+    // Prefer schema size when cell list matches grid; else use list length.
+    let denom = if t.cells.len() as u32 >= t.rows.saturating_mul(t.cols) {
+        n
+    } else {
+        t.cells.len().max(1) as f32
+    };
+    empty / denom
+}
+
+/// Borderless/stream gates.
+///
+/// Merge vertically stacked Lattice tables with equal column counts when the
+/// gap is modest and X-overlap is high. Targets multi-region CC shred that
+/// splits one ruled grid into two same-width fragments (not doc-specific).
+fn merge_stacked_same_col_lattices(mut tabs: Vec<Table>) -> Vec<Table> {
+    if tabs.len() <= 1 {
+        return tabs;
+    }
+    tabs.sort_by(|a, b| {
+        a.page.cmp(&b.page).then_with(|| {
+            b.bbox
+                .y1
+                .partial_cmp(&a.bbox.y1)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+    });
+    let mut out: Vec<Table> = Vec::new();
+    for t in tabs {
+        if out.is_empty() {
+            out.push(t);
+            continue;
+        }
+        let prev = out.last().unwrap();
+        let both_lat = prev.method == TableMethod::Lattice && t.method == TableMethod::Lattice;
+        let same_page = prev.page == t.page;
+        let same_cols = prev.cols == t.cols && prev.cols >= 2;
+        let gap = prev.bbox.y0 - t.bbox.y1;
+        let x0 = prev.bbox.x0.max(t.bbox.x0);
+        let x1 = prev.bbox.x1.min(t.bbox.x1);
+        let ov = (x1 - x0).max(0.0) / prev.bbox.width().min(t.bbox.width()).max(1.0);
+        let w_ratio = {
+            let pw = prev.bbox.width().max(1.0);
+            let tw = t.bbox.width().max(1.0);
+            (pw / tw).max(tw / pw)
+        };
+        // Modest gap: up to ~2 median row heights estimated from prev height/rows.
+        let row_h = (prev.bbox.height() / prev.rows.max(1) as f32).max(4.0);
+        let max_gap = row_h * 2.5;
+        if both_lat
+            && same_page
+            && same_cols
+            && gap >= -2.0
+            && gap <= max_gap
+            && ov >= 0.70
+            && w_ratio <= 1.25
+            && prev.rows + t.rows <= 100
+        {
+            let mut merged = prev.clone();
+            // Skip duplicate header if first row text matches.
+            let skip_header = t.rows >= 1
+                && prev.rows >= 1
+                && (0..prev.cols as usize).all(|c| {
+                    let a = prev
+                        .cells
+                        .iter()
+                        .find(|cell| cell.row == 0 && cell.col == c as u32)
+                        .map(|cell| cell.text.trim())
+                        .unwrap_or("");
+                    let b = t
+                        .cells
+                        .iter()
+                        .find(|cell| cell.row == 0 && cell.col == c as u32)
+                        .map(|cell| cell.text.trim())
+                        .unwrap_or("");
+                    !a.is_empty() && a.eq_ignore_ascii_case(b)
+                });
+            let start = if skip_header { 1u32 } else { 0u32 };
+            let off = prev.rows;
+            for cell in &t.cells {
+                if cell.row < start {
+                    continue;
+                }
+                let mut nc = cell.clone();
+                nc.row = cell.row - start + off;
+                merged.cells.push(nc);
+            }
+            let added = t.rows.saturating_sub(start);
+            merged.rows = off + added;
+            merged.bbox.x0 = prev.bbox.x0.min(t.bbox.x0);
+            merged.bbox.y0 = t.bbox.y0.min(prev.bbox.y0);
+            merged.bbox.x1 = prev.bbox.x1.max(t.bbox.x1);
+            merged.bbox.y1 = prev.bbox.y1.max(t.bbox.y1);
+            merged.confidence = prev.confidence.max(t.confidence) * 0.98;
+            merged.text_row_recovery = prev.text_row_recovery || t.text_row_recovery;
+            merged.text_col_recovery = prev.text_col_recovery || t.text_col_recovery;
+            merged
+                .notes
+                .push(format!("lattice_stack_merge +{added}rows"));
+            *out.last_mut().unwrap() = merged;
+        } else {
+            out.push(t);
+        }
+    }
+    out
+}
+
+/// When a page has several borderless tables and no solid lattice, keep only
+/// streams that are competitive in area with the largest one (ICDAR shred).
+/// Always keeps ≥1 stream if present; never drops lattice/hybrid.
+fn prune_subordinate_stream_fragments(kept: Vec<Table>) -> Vec<Table> {
+    use std::collections::HashMap;
+    let mut by_page: HashMap<u32, Vec<usize>> = HashMap::new();
+    for (i, t) in kept.iter().enumerate() {
+        if matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric) {
+            by_page.entry(t.page).or_default().push(i);
+        }
+    }
+    let mut drop: std::collections::HashSet<usize> = std::collections::HashSet::new();
+    for (_page, idxs) in by_page {
+        if idxs.len() < 3 {
+            // 1–2 streams: leave alone (side-by-side multi-table legitimate).
+            continue;
+        }
+        let max_area = idxs
+            .iter()
+            .map(|&i| kept[i].bbox.width().max(1.0) * kept[i].bbox.height().max(1.0))
+            .fold(0.0f32, f32::max);
+        if max_area <= 1.0 {
+            continue;
+        }
+        // Keep streams with area ≥ 45% of max OR rows ≥ 0.7 * max_rows.
+        let max_rows = idxs.iter().map(|&i| kept[i].rows).max().unwrap_or(0);
+        for &i in &idxs {
+            let a = kept[i].bbox.width().max(1.0) * kept[i].bbox.height().max(1.0);
+            let tall = max_rows > 0 && kept[i].rows * 10 >= max_rows * 7;
+            if a < max_area * 0.45 && !tall {
+                drop.insert(i);
+            }
+        }
+        // Safety: never drop all streams on the page.
+        let remain = idxs.iter().filter(|i| !drop.contains(i)).count();
+        if remain == 0 {
+            // Keep the largest only.
+            if let Some(&best) = idxs.iter().max_by(|&&a, &&b| {
+                let aa = kept[a].bbox.width() * kept[a].bbox.height();
+                let bb = kept[b].bbox.width() * kept[b].bbox.height();
+                aa.partial_cmp(&bb).unwrap_or(std::cmp::Ordering::Equal)
+            }) {
+                drop.remove(&best);
+            }
+        }
+    }
+    if drop.is_empty() {
+        return kept;
+    }
+    kept.into_iter()
+        .enumerate()
+        .filter_map(|(i, mut t)| {
+            if drop.contains(&i) {
+                None
+            } else {
+                if matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric) {
+                    t.notes.push("stream_subordinate_prune".into());
+                }
+                Some(t)
+            }
+        })
+        .collect()
+}
+
+/// `recall_mode` (Phase-2): page has no solid ruled tables — allow stronger
+/// multi-col structures that fail harsh prose cuts, while still rejecting
+/// notices/forms/tiny fragments.
+fn borderless_passes_precision(t: &Table, opts: &TableOptions, recall_mode: bool) -> bool {
+    if t.rows < 3 || t.cols < 2 {
+        return false;
+    }
+    // Camelot-class: need enough cells to be a real table (≥6 filled-ish).
+    let filled = t.cells.iter().filter(|c| !c.text.trim().is_empty()).count();
+    if filled < 6 && t.rows.saturating_mul(t.cols) < 12 {
+        return false;
+    }
+    let mean = stream_mean_cell_chars(t);
+    let num = stream_numeric_density(t);
+    let structure_ok = t.cols >= 3 && t.rows >= 4 && filled >= 8;
+
+    // Notice / form metadata grids (NIST withdrawn style) — always reject.
+    if looks_like_notice_metadata(t) {
+        return false;
+    }
+    // Tax form field snippets — always reject.
+    if looks_like_tax_form_fields(t) {
+        return false;
+    }
+
+    if recall_mode {
+        let dense_numeric = num >= 0.30 && t.cols >= 3 && t.rows >= 4;
+        // High-fill multi-col grids (campaign donors 56×7, liabilities ~30×10)
+        // are real borderless data tables — not form worksheets.
+        let dense_data_grid = t.cols >= 4
+            && t.rows >= 6
+            && filled >= 24
+            && (t.fill_rate >= 0.55
+                || filled as f32 / (t.rows.saturating_mul(t.cols).max(1) as f32) >= 0.55)
+            && mean < 48.0;
+        // Soft conf floor for structured / dense-numeric grids.
+        let conf_floor = if dense_numeric || dense_data_grid {
+            0.48
+        } else if structure_ok {
+            (opts.min_confidence_stream * 0.85).min(0.55)
+        } else {
+            opts.min_confidence_stream
+        };
+        if t.confidence < conf_floor {
+            return false;
+        }
+        // Cap giant *form-like* networks (IRS worksheets): large + sparse/low-fill
+        // OR giant with weak numeric and long label cells. Dense high-fill grids pass.
+        if t.rows >= 20 && t.cols >= 6 && !dense_data_grid && !dense_numeric {
+            return false;
+        }
+        if t.rows.saturating_mul(t.cols) >= 200 && !dense_data_grid && !dense_numeric {
+            // Still allow medium-fill multi-col with strong conf (network class).
+            if !(t.cols >= 5 && t.fill_rate >= 0.45 && t.confidence >= 0.75 && mean < 40.0) {
+                return false;
+            }
+        }
+        // IRS header strip (OMB / Department of the Treasury)
+        if looks_like_irs_header_strip(t) {
+            return false;
+        }
+        // Prose reject: still drop paragraph bands, but allow medium mean when
+        // multi-col + some numeric OR large grid.
+        if t.cols <= 2 && mean >= opts.stream_max_prose_mean_chars * 0.50 && num < 0.20 {
+            return false;
+        }
+        if mean >= opts.stream_max_prose_mean_chars * 0.90
+            && num < 0.12
+            && !structure_ok
+            && !dense_numeric
+            && !dense_data_grid
+        {
+            return false;
+        }
+        // Weak 2-col alpha lists
+        if t.cols == 2 && num < 0.12 && mean > 14.0 {
+            return false;
+        }
+        return true;
+    }
+
+    // Precision mode (default / under ruled co-existence checks)
+    if mean >= opts.stream_max_prose_mean_chars * 0.55 && num < 0.25 {
+        return false;
+    }
+    if mean >= 28.0 && num < 0.15 {
+        return false;
+    }
+    if t.confidence < opts.min_confidence_stream {
+        return false;
+    }
+    if t.cols == 2 && num < 0.12 && mean > 12.0 {
+        return false;
+    }
+    true
+}
+
+fn looks_like_tax_form_fields(t: &Table) -> bool {
+    let blob = t
+        .cells
+        .iter()
+        .map(|c| c.text.to_ascii_lowercase())
+        .collect::<Vec<_>>()
+        .join(" ");
+    let tax_hits = (blob.contains("social security") as u32)
+        + (blob.contains("employer id") as u32)
+        + (blob.contains("enter code from instructions") as u32)
+        + (blob.contains("(ssn)") as u32)
+        + (blob.contains("(ein)") as u32)
+        + (blob.contains("accounting method") as u32)
+        + (blob.contains("business address") as u32)
+        + (blob.contains("principal business or profession") as u32)
+        + (blob.contains("profit or loss from business") as u32)
+        + (blob.contains("schedule c") as u32)
+        + (blob.contains("schedule d") as u32)
+        + (blob.contains("omb no.") as u32)
+        + (blob.contains("form 1099") as u32)
+        + (blob.contains("short-term transactions") as u32)
+        + (blob.contains("long-term transactions") as u32)
+        + (blob.contains("proceeds (sales price)") as u32)
+        + (blob.contains("cost (or other basis)") as u32)
+        + (blob.contains("totals for all short-term") as u32)
+        + (blob.contains("totals for all long-term") as u32);
+    let num = stream_numeric_density(t);
+    (tax_hits >= 1 && num < 0.45) || (tax_hits >= 2 && num < 0.55)
+}
+
+fn looks_like_irs_header_strip(t: &Table) -> bool {
+    let blob = t
+        .cells
+        .iter()
+        .take(12)
+        .map(|c| c.text.to_ascii_lowercase())
+        .collect::<Vec<_>>()
+        .join(" ");
+    (blob.contains("department of the treasury")
+        || blob.contains("omb no.")
+        || blob.contains("irs use only")
+        || blob.contains("internal revenue"))
+        && t.rows <= 8
+}
+
+/// Phase-2: strong multi-col numeric stream that coexists with lattice (census).
+fn is_multitable_stream_recovery(s: &Table, lattices: &[pdfparser_ir::Rect]) -> bool {
+    if s.cols < 4 || s.rows < 6 {
+        return false;
+    }
+    if stream_numeric_density(s) < 0.28 {
+        return false;
+    }
+    if s.confidence < 0.65 {
+        return false;
+    }
+    // Require meaningful size (avoid thin FP bands next to lattices).
+    if s.bbox.width() < 120.0 || s.bbox.height() < 80.0 {
+        return false;
+    }
+    // Must not substantially overlap any lattice.
+    for &lat in lattices {
+        if geom::iou(s.bbox, lat) >= 0.18 {
+            return false;
+        }
+        if containment_ratio(s.bbox, lat) >= 0.30 {
+            return false;
+        }
+        if containment_ratio(lat, s.bbox) >= 0.40 {
+            return false;
+        }
+        // Same vertical band / stacked: require clear y-separation or x-separation
+        let y_overlap = (s.bbox.y1.min(lat.y1) - s.bbox.y0.max(lat.y0)).max(0.0);
+        let x_overlap = (s.bbox.x1.min(lat.x1) - s.bbox.x0.max(lat.x0)).max(0.0);
+        if y_overlap > 0.5 * s.bbox.height().min(lat.height())
+            && x_overlap > 0.5 * s.bbox.width().min(lat.width())
+        {
+            return false;
+        }
+    }
+    true
+}
+
+fn looks_like_notice_metadata(t: &Table) -> bool {
+    let mut hits = 0u32;
+    for c in t.cells.iter().take(24) {
+        let s = c.text.to_ascii_lowercase();
+        if s.contains("name of standard")
+            || s.contains("withdrawn")
+            || s.contains("warning notice")
+            || s.contains("series/number")
+            || s.contains("fips")
+            || s.starts_with("1.")
+            || s.starts_with("2.")
+        {
+            hits += 1;
+        }
+    }
+    hits >= 2 && stream_numeric_density(t) < 0.25
+}
+
+fn stream_mean_cell_chars(t: &Table) -> f32 {
+    let cells: Vec<_> = t
+        .cells
+        .iter()
+        .filter(|c| !c.text.trim().is_empty())
+        .collect();
+    if cells.is_empty() {
+        return 0.0;
+    }
+    let sum: usize = cells.iter().map(|c| c.text.chars().count()).sum();
+    sum as f32 / cells.len() as f32
+}
+
+/// Page-border / form-box lattices that are not data tables (Phase-1).
+///
+/// Conservative: only drop near-empty chrome. Do **not** drop filled label
+/// lattices (outer nested forms) or multi-col report tables.
+fn is_chrome_lattice_fp(t: &Table) -> bool {
+    if t.method != TableMethod::Lattice {
+        return false;
+    }
+    let empty = lattice_empty_frac(t);
+    let num = stream_numeric_density(t);
+    let mean = stream_mean_cell_chars(t);
+    let filled = t.cells.iter().filter(|c| !c.text.trim().is_empty()).count();
+    // Near-empty ruled frame (page border / empty checkbox grid)
+    if empty >= 0.88 && num < 0.12 && filled <= 6 {
+        return true;
+    }
+    // Tiny empty-ish box
+    if t.rows <= 3 && t.cols <= 3 && filled <= 2 && num < 0.15 {
+        return true;
+    }
+    // 2-col prose notice (NIST withdrawn) — long alpha cells, no numbers
+    if t.cols == 2 && mean >= 28.0 && num < 0.12 && t.rows >= 8 {
+        return true;
+    }
+    // Sparse form worksheet: high empty + weak edges (IRS Schedule C style).
+    // Line numbers inflate numeric_density — also check dotted leaders.
+    if empty >= 0.55 && t.cols >= 6 && (t.weak_edges || t.edge_score < 0.55) {
+        return true;
+    }
+    // Dotted leader forms (". . .") with weak lattice edges
+    let dotted = t
+        .cells
+        .iter()
+        .filter(|c| c.text.contains(". .") || c.text.matches('.').count() >= 3)
+        .count();
+    if dotted >= 4 && t.weak_edges && empty >= 0.40 {
+        return true;
+    }
+    // Tax form field snippets (SSN / EIN / "enter code" / Schedule D capital gains)
+    let blob = t
+        .cells
+        .iter()
+        .map(|c| c.text.to_ascii_lowercase())
+        .collect::<Vec<_>>()
+        .join(" ");
+    if (blob.contains("social security")
+        || blob.contains("employer id")
+        || blob.contains("enter code from instructions")
+        || blob.contains("(ssn)")
+        || blob.contains("(ein)")
+        || blob.contains("proceeds (sales price)")
+        || blob.contains("cost (or other basis)")
+        || blob.contains("adjustments to gain or loss")
+        || blob.contains("schedule d")
+        || blob.contains("capital gain or (loss)"))
+        && num < 0.40
+    {
+        return true;
+    }
+    false
 }
 
 /// Exclusive lattice should block stream only when the stream is essentially
@@ -949,6 +1555,10 @@ mod phase12_slice_tests {
             fill_rate: 0.5,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         }
     }
 
@@ -1184,6 +1794,10 @@ mod phase13_strong_lattice {
             fill_rate: 0.5,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         }
     }
 

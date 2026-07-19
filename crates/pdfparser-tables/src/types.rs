@@ -123,4 +123,29 @@ pub struct Table {
     /// not fabricated rows×cols estimates.
     #[cfg_attr(feature = "serde", serde(default))]
     pub joint_count: u32,
+    /// Lattice recovered missing H lines from text bands (typed control signal).
+    ///
+    /// Prefer this over parsing `notes` for orchestration decisions.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub text_row_recovery: bool,
+    /// Lattice recovered missing V lines / exterior stub cols from text.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub text_col_recovery: bool,
+    /// Stream kept under solid lattice on multi-table pages (typed control signal).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub multitable_stream_recovery: bool,
+    /// Stream preferred over an over-wide hybrid frame (typed control signal).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub stream_vs_overwide_hybrid: bool,
+}
+
+impl Table {
+    /// True when lattice rules were recovered from raster morphology.
+    ///
+    /// Prefer [`PipelineId::S6RasterLines`] in `strategy_provenance` over note strings.
+    pub fn is_from_raster(&self) -> bool {
+        self.strategy_provenance
+            .contains(&PipelineId::S6RasterLines)
+            || self.notes.iter().any(|n| n.contains("raster_lines"))
+    }
 }

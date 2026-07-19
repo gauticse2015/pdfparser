@@ -35,6 +35,7 @@ mod raster;
 mod split;
 mod stitch;
 mod stream;
+mod tuning;
 mod types;
 
 pub mod evidence;
@@ -51,7 +52,9 @@ pub mod legacy {
 pub use form::scrub_document_table_fps;
 pub use lattice::detect_lattice_tables;
 pub use network::detect_network_tables;
-pub use options::{TableModeSet, TableOptions, TablePreset};
+pub use options::{
+    TableAdvancedOptions, TableModeSet, TableOptions, TablePreset, PRODUCT_TABLE_OPTION_FIELDS,
+};
 pub use providers::{
     ExternalCliPageRenderer, NullPageRenderer, PageRenderer, ProviderError, RenderSafety,
 };
@@ -67,6 +70,7 @@ pub use stitch::{materialize_stitched, stitch_document};
 /// This export remains for experiments and will be feature-gated later.
 #[doc(alias = "experimental_stream")]
 pub use stream::detect_stream_tables;
+pub use tuning::{TableTuning, TABLE_TUNING_KEYS};
 pub use types::{PipelineId, Table, TableCell, TableMethod};
 
 pub use evidence::{
@@ -314,6 +318,15 @@ mod tests {
         assert!(hq.allow_auto_render);
         assert!(hq.enable_full_page_render);
         assert!(TableOptions::default().allow_auto_render);
+        // Fast: no render, no classic stream (G5.4 / G5.6).
+        let fast = TableOptions::from_preset(TablePreset::Fast);
+        assert!(fast.use_engine_v2);
+        assert!(!fast.enable_full_page_render);
+        assert!(!fast.allow_auto_render);
+        assert!(!fast.allow_classic_stream);
+        assert!(!TableOptions::from_preset(TablePreset::Auto).allow_classic_stream);
+        assert!(TableOptions::product_field_count() <= 12);
+        assert_eq!(PRODUCT_TABLE_OPTION_FIELDS.len(), 12);
     }
 
     #[test]

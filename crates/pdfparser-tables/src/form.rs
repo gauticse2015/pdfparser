@@ -232,13 +232,22 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                 && (num >= 0.08 || mean_chars < 80.0);
 
             // Raster-recovered ruled grids may have zero text (ink is in the image).
-            let is_raster = t.strategy_provenance.contains(&PipelineId::S6RasterLines)
-                || t.notes.iter().any(|n| n.contains("raster_lines"));
+            let is_raster = t.is_from_raster();
             let raster_lattice = t.method == TableMethod::Lattice
                 && is_raster
                 && t.cols >= 2
                 && t.rows >= 2
                 && !t.weak_edges;
+
+            // Dense multi-col streams (names+ids+amounts) often have low pure-numeric
+            // density because of dates/IDs — still real data tables.
+            let dense_stream_data =
+                matches!(t.method, TableMethod::Stream | TableMethod::DenseNumeric)
+                    && fill >= 0.55
+                    && t.cols >= 4
+                    && t.rows >= 6
+                    && mean_chars < 48.0
+                    && t.confidence >= 0.55;
 
             let looks_like_data = (fill >= 0.45
                 && num >= 0.15
@@ -249,26 +258,137 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                 || (t.method == TableMethod::Lattice && fill >= 0.5 && t.cols >= 2 && num >= 0.1)
                 || strong_lattice
                 || wide_ruled_data
-                || raster_lattice;
+                || raster_lattice
+                || dense_stream_data;
 
-            if !looks_like_data && form >= 0.75 && num < 0.15 && t.method != TableMethod::Structure
+            // Phase-1: harder form veto (was 0.75) — chrome/forms over-detect.
+            if !looks_like_data && form >= 0.52 && num < 0.20 && t.method != TableMethod::Structure
             {
                 return None;
             }
-            // Narrow stream with long paragraph cells → prose layout, not a grid
-            if t.method == TableMethod::Stream
-                && t.cols <= 2
-                && mean_chars >= opts.stream_max_prose_mean_chars * 0.8
-                && num < 0.20
-            {
-                return None;
+            // Stream / borderless: prose and form-like grids hard-drop earlier.
+            if t.method == TableMethod::Stream {
+                // Dense multi-col data grids (campaign donors, liabilities, ACS):
+                // high fill, moderate mean length — keep even when large.
+                let dense_data_grid = t.cols >= 4
+                    && t.rows >= 6
+                    && fill >= 0.55
+                    && mean_chars < 48.0
+                    && t.confidence >= 0.55;
+                // Structured: short tables OR large dense grids (rows>25 used to fail).
+                let structured = t.cols >= 3
+                    && t.rows >= 4
+                    && fill >= 0.35
+                    && (t.rows <= 25 || dense_data_grid || (fill >= 0.60 && t.cols >= 4));
+                // Huge form worksheets (Schedule C style) — not dense data tables.
+                // Phase-2: do not hard-drop high-fill multi-col streams solely on size.
+                if t.rows >= 20 && t.cols >= 6 && form >= 0.35 && !dense_data_grid {
+                    // Sparse/label form sheets still drop; keep filled grids.
+                    if fill < 0.50 || num < 0.08 {
+                        return None;
+                    }
+                }
+                if t.rows * t.cols >= 200 && form >= 0.30 && !dense_data_grid {
+                    if fill < 0.50 || (num < 0.10 && mean_chars > 30.0) {
+                        return None;
+                    }
+                }
+                // Paragraph prose (narrow + long cells)
+                if mean_chars >= opts.stream_max_prose_mean_chars * 0.50
+                    && num < 0.22
+                    && t.cols <= 3
+                {
+                    return None;
+                }
+                // Form-likeness + low numeric (not multi-col structured grids)
+                if form >= 0.48 && num < 0.20 && !structured && !dense_data_grid {
+                    return None;
+                }
+                if form >= 0.55 && num < 0.25 && t.cols <= 3 {
+                    return None;
+                }
+                // Tiny low-fill stream fragments on form pages
+                if fill < 0.40 && t.rows <= 5 && num < 0.30 && t.cols <= 3 {
+                    return None;
+                }
+                // IRS / label-value streams
+                if t.cols <= 2 && t.rows <= 12 && num < 0.15 && mean_chars > 8.0 {
+                    return None;
+                }
+                // Notice / standard metadata grids / IRS form worksheets
+                let lower = t
+                    .cells
+                    .iter()
+                    .take(40)
+                    .map(|c| c.text.to_ascii_lowercase())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let irs_or_notice = lower.contains("name of standard")
+                    || lower.contains("withdrawn")
+                    || lower.contains("warning notice")
+                    || lower.contains("social security")
+                    || lower.contains("employer id")
+                    || lower.contains("department of the treasury")
+                    || lower.contains("omb no.")
+                    || lower.contains("irs use only")
+                    || lower.contains("accounting method")
+                    || lower.contains("principal business or profession")
+                    || lower.contains("business address")
+                    || lower.contains("schedule c")
+                    || lower.contains("schedule d")
+                    || lower.contains("profit or loss from business")
+                    || lower.contains("employer identification")
+                    || lower.contains("proceeds (sales price)")
+                    || lower.contains("cost (or other basis)")
+                    || lower.contains("adjustments to gain or loss")
+                    || lower.contains("capital gain or (loss)")
+                    || lower.contains("form 1099-b")
+                    || lower.contains("form 1099")
+                    || lower.contains("short-term transactions")
+                    || lower.contains("long-term transactions")
+                    || lower.contains("totals for all short-term")
+                    || lower.contains("totals for all long-term");
+                if irs_or_notice && (num < 0.45 || t.rows <= 16 || fill < 0.70) {
+                    return None;
+                }
             }
-            if !looks_like_data && form >= 0.55 {
-                t.confidence = (t.confidence * (1.0 - 0.55 * form)).clamp(0.0, 1.0);
+            // Lattice Schedule D / tax capital-gains form fragments (sparse ruled)
+            if t.method == TableMethod::Lattice {
+                let lower = t
+                    .cells
+                    .iter()
+                    .take(30)
+                    .map(|c| c.text.to_ascii_lowercase())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                if (lower.contains("proceeds (sales price)")
+                    || lower.contains("cost (or other basis)")
+                    || lower.contains("adjustments to gain or loss")
+                    || lower.contains("schedule d"))
+                    && num < 0.40
+                {
+                    return None;
+                }
+            }
+            // Lattice chrome / form sheets (IRS Schedule C style): high form
+            // likeness + sparse fill + low numeric. Keep dense filled lattices
+            // (nested outer forms with full cells still pass looks_like_data or
+            // have fill high enough).
+            if t.method == TableMethod::Lattice && !looks_like_data {
+                if fill < 0.22 && num < 0.10 && t.rows * t.cols >= 8 {
+                    return None;
+                }
+                // Form worksheets: many blank cells, label text, form score high
+                if form >= 0.60 && fill < 0.50 && num < 0.18 && t.cols >= 4 {
+                    return None;
+                }
+            }
+            if !looks_like_data && form >= 0.50 {
+                t.confidence = (t.confidence * (1.0 - 0.60 * form)).clamp(0.0, 1.0);
                 t.strategy_provenance.push(PipelineId::P1FormDisc);
                 t.notes.push(format!("form_likeness={form:.2}"));
             }
-            if t.confidence < min_drop.max(0.40) {
+            if t.confidence < min_drop.max(0.45) {
                 return None;
             }
             // Huge empty non-raster grids with no numeric signal → form/layout junk.
@@ -378,7 +498,12 @@ fn form_likeness(t: &Table) -> f32 {
     } else {
         mean_chars / 40.0
     };
-    let size_pen = if t.rows >= 15 || (t.rows * t.cols) >= 60 {
+    // Size alone must not mark a dense multi-row data grid as form-like
+    // (campaign-donor / liability class tables are 30–60 rows of real data).
+    // Apply size penalty only when the grid is also sparse/empty-ish.
+    let size_pen = if fill >= 0.55 && t.cols >= 3 {
+        0.0
+    } else if t.rows >= 15 || (t.rows * t.cols) >= 60 {
         0.35
     } else if t.rows >= 8 {
         0.15
@@ -447,6 +572,10 @@ mod tests {
             fill_rate: 0.9,
             weak_edges: false,
             joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
         }
     }
 
@@ -458,13 +587,45 @@ mod tests {
             3,
             &["A", "B", "C", "1", "2", "3", "4", "5", "6"],
         );
-        let opts = TableOptions {
-            detect_tables: true,
-            form_discriminator: true,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.form_discriminator = true;
         let out = apply_form_discriminator(vec![t], &opts);
         assert_eq!(out.len(), 1);
+    }
+
+    #[test]
+    fn form_disc_keeps_large_dense_stream_grid() {
+        // Campaign-donor class: many rows, multi-col, high fill — not IRS form.
+        let cols = 7u32;
+        let rows = 24u32;
+        let mut texts = Vec::new();
+        for r in 0..rows {
+            for c in 0..cols {
+                if r == 0 {
+                    texts.push(format!("H{c}"));
+                } else if c >= 4 {
+                    texts.push(format!("{}", 1000 + r * 10 + c));
+                } else {
+                    texts.push(format!("Name{r}_{c}"));
+                }
+            }
+        }
+        let refs: Vec<&str> = texts.iter().map(|s| s.as_str()).collect();
+        let mut t = grid(TableMethod::Stream, rows, cols, &refs);
+        t.fill_rate = 1.0;
+        t.confidence = 0.95;
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.min_table_confidence = 0.55;
+        opts.form_discriminator = true;
+        opts.min_confidence_stream = 0.62;
+        let out = apply_form_discriminator(vec![t], &opts);
+        assert_eq!(
+            out.len(),
+            1,
+            "dense multi-col stream must survive form disc"
+        );
     }
 
     #[test]
@@ -483,12 +644,10 @@ mod tests {
         t.cells[2].text = "Street address line one".into();
         t.cells[4].text = "Daytime phone number".into();
         t.cells[6].text = "Email address for contact".into();
-        let opts = TableOptions {
-            detect_tables: true,
-            form_discriminator: true,
-            min_table_confidence: 0.55,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.min_table_confidence = 0.55;
+        opts.form_discriminator = true;
         let out = apply_form_discriminator(vec![t], &opts);
         // Form-like sparse stream should be dropped or heavily demoted out
         assert!(
@@ -509,12 +668,10 @@ mod tests {
             &[long, long, long, long, long, long],
         );
         t.fill_rate = 1.0;
-        let opts = TableOptions {
-            detect_tables: true,
-            form_discriminator: true,
-            stream_max_prose_mean_chars: 70.0,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.form_discriminator = true;
+        opts.stream_max_prose_mean_chars = 70.0;
         let out = apply_form_discriminator(vec![t], &opts);
         assert!(out.is_empty(), "prose stream must be vetoed");
     }
@@ -530,11 +687,9 @@ mod tests {
                 "SKU", "Desc", "Qty", "A1", "Widget", "2", "B2", "Gadget", "1", "C3", "Bolt", "5",
             ],
         );
-        let opts = TableOptions {
-            detect_tables: true,
-            form_discriminator: true,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.form_discriminator = true;
         let out = apply_form_discriminator(vec![t], &opts);
         assert_eq!(out.len(), 1, "SKU lattice is data");
     }
@@ -560,14 +715,12 @@ mod tests {
         }
         let mut all = junks;
         all.push(good);
-        let opts = TableOptions {
-            detect_tables: true,
-            form_discriminator: true,
-            overseg_trigger: 4,
-            max_logical_tables: 4,
-            min_data_table_score: 0.42,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.form_discriminator = true;
+        opts.overseg_trigger = 4;
+        opts.max_logical_tables = 4;
+        opts.min_data_table_score = 0.42;
         let out = scrub_document_table_fps(all, &opts);
         assert!(!out.is_empty(), "should keep at least the data table");
         assert!(out.len() <= 4, "soft cap under overseg, got {}", out.len());
@@ -590,10 +743,8 @@ mod tests {
             3,
             &["A", "B", "C", "1", "2", "3", "4", "5", "6"],
         );
-        let opts = TableOptions {
-            overseg_trigger: 8,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.overseg_trigger = 8;
         let out = scrub_document_table_fps(vec![t.clone()], &opts);
         assert_eq!(out.len(), 1);
     }
@@ -632,12 +783,10 @@ mod tests {
             many.push(j);
         }
         many.push(good);
-        let opts = TableOptions {
-            overseg_trigger: 3,
-            max_logical_tables: 2,
-            min_data_table_score: 0.42,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.overseg_trigger = 3;
+        opts.max_logical_tables = 2;
+        opts.min_data_table_score = 0.42;
         let out = scrub_document_table_fps(many, &opts);
         // Caption-like should not dominate; at most soft_cap kept
         assert!(out.len() <= 2);
@@ -668,11 +817,9 @@ mod tests {
             ],
         );
         t.fill_rate = 1.0;
-        let opts = TableOptions {
-            detect_tables: true,
-            form_discriminator: true,
-            ..TableOptions::default()
-        };
+        let mut opts = TableOptions::default();
+        opts.detect_tables = true;
+        opts.form_discriminator = true;
         let _ = apply_form_discriminator(vec![t], &opts);
         // Code-like
         let code = grid(

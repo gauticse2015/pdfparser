@@ -441,6 +441,10 @@ fn hybrid_grid(
         fill_rate,
         weak_edges: false,
         joint_count: 0,
+        text_row_recovery: false,
+        text_col_recovery: false,
+        multitable_stream_recovery: false,
+        stream_vs_overwide_hybrid: false,
     })
 }
 
