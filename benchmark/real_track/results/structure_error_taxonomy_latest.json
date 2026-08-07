@@ -1,0 +1,386 @@
+{
+  "generated_at": "2026-07-19T14:00:14.992649+00:00",
+  "policy": "generic shape taxonomy; no engine doc-id coupling",
+  "real_structure": {
+    "source": "real_structure",
+    "path": "/Users/gautamkumar/Desktop/pdfParser/benchmark/real_track/results/real_structure_latest.json",
+    "n_docs": 23,
+    "mode_counts": {
+      "unknown": 23
+    },
+    "documents": [
+      {
+        "id": "30_real_ca_warn_report",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.8411633109619687
+      },
+      {
+        "id": "33_real_argentina_votes",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.8956521739130435
+      },
+      {
+        "id": "34_real_schools_contributions",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.46551724137931033
+      },
+      {
+        "id": "35_real_camelot_fuel",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.7164179104477612
+      },
+      {
+        "id": "36_real_two_tables",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.9174311926605504
+      },
+      {
+        "id": "37_real_liabilities_superscript",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.8069073783359497
+      },
+      {
+        "id": "31_real_background_checks",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.8235765838011228
+      },
+      {
+        "id": "32_real_census_table324",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.0037523452157598495
+      },
+      {
+        "id": "R018_camelot_health",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.9948979591836734
+      },
+      {
+        "id": "R003_bea_gdp_sample",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 1.0
+      },
+      {
+        "id": "R010_bea_nipa_highlights",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.002063983488132095
+      },
+      {
+        "id": "42_real_insurance_italian",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.9500000000000001
+      },
+      {
+        "id": "43_real_row_span_gmc",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.9947089947089947
+      },
+      {
+        "id": "44_real_spanning_cells",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.7064676616915423
+      },
+      {
+        "id": "45_real_campaign_donors",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.9433962264150944
+      },
+      {
+        "id": "R005_census_acs_sample",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.0
+      },
+      {
+        "id": "R008_cdc_mmwr_sample",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.0
+      },
+      {
+        "id": "R009_sec_10q_sample",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.0
+      },
+      {
+        "id": "R016_tabula_12s0324",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.2857142857142857
+      },
+      {
+        "id": "R017_tabula_argentina",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.8956521739130435
+      },
+      {
+        "id": "R019_camelot_foo",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.7164179104477612
+      },
+      {
+        "id": "R021_camelot_left_twocol",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.9174311926605504
+      },
+      {
+        "id": "R022_camelot_superscript",
+        "tags": [
+          "unknown"
+        ],
+        "pred": [
+          null,
+          null
+        ],
+        "gold": [
+          null,
+          null
+        ],
+        "cell_f1": 0.8069073783359497
+      }
+    ]
+  },
+  "icdar": {
+    "source": "icdar_failure_analysis",
+    "path": "/Users/gautamkumar/Desktop/pdfParser/benchmark/results/icdar_failure_analysis.json",
+    "mode_counts": {
+      "multi_table_page": 17,
+      "multi_page_doc": 28,
+      "content_structure": 38,
+      "row_miscount": 39,
+      "wrong_shape": 46,
+      "col_miscount": 31,
+      "over_detect": 21,
+      "miss_all": 2,
+      "under_detect": 10
+    },
+    "shape_bins_first_table": {
+      "shape_exact": 21,
+      "over_row": 9,
+      "wrong_shape": 44,
+      "row_explode": 21,
+      "under_col": 16,
+      "col_explode": 15,
+      "over_col": 15,
+      "under_row": 30
+    },
+    "n_docs": 67,
+    "note": "ICDAR ids used for measurement only; not for engine control"
+  }
+}

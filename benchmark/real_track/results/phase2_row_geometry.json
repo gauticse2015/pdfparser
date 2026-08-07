@@ -1,0 +1,19 @@
+{
+  "phase": 2,
+  "status": "PASS",
+  "icdar": {
+    "f1": 0.8255813953488371,
+    "teds": 0.4586720349108515,
+    "row": 0.5,
+    "col": 0.5352112676056338
+  },
+  "real_core_cell_f1": 0.7700745642675092,
+  "vs_phase1": {
+    "f1": -0.006277011730808857,
+    "teds": -0.0035483771479610238,
+    "row": 0.017730496453900735,
+    "col": -0.003795824592947805
+  },
+  "criteria": "row>=0.50 or +0.02 vs p1; shared guards; stream 07/59 green",
+  "notes": "stream near-top single-run multi-word headers + multi-run aligned\u22651; trailing prose footnotes; TableTuning multi-band densify (defaults no-op-safe). Fixtures 07/59 pass."
+}

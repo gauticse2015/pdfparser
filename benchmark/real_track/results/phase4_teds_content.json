@@ -1,0 +1,18 @@
+{
+  "phase": 4,
+  "status": "BLOCKED",
+  "icdar": {
+    "f1": 0.8255813953488371,
+    "teds": 0.4586720349108515,
+    "row": 0.5,
+    "col": 0.5352112676056338
+  },
+  "real_core_cell_f1": 0.7700745642675092,
+  "criteria": "teds>=0.50 or +0.02 vs p3; shared guards",
+  "gap": {
+    "teds_now": 0.4586720349108515,
+    "need_abs": 0.5,
+    "delta": 0.04132796508914849
+  },
+  "notes": "TEDS ~0.46; blocked on col+content. Human direction for lattice content assignment and under-col partial-V densify."
+}
