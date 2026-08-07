@@ -103,7 +103,9 @@ def main() -> int:
         "budget_p95_ms": float(man.get("budget_p95_ms") or 30_000),
         "enable_full_page_render": False,
         "allow_auto_render": False,
-        "note": "Fast preset hard-disables full-page render (G5.6).",
+        "cli_preset": "fast",
+        "cli_args": ["extract", "--tables", "--table-preset", "fast"],
+        "note": "Invoked TablePreset::Fast; Fast hard-disables full-page render (G5.6).",
     }
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

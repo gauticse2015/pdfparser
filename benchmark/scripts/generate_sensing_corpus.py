@@ -42,7 +42,7 @@ import json
 from pathlib import Path
 
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
+from corpuslib import LETTER as letter
 from reportlab.pdfgen import canvas
 
 ROOT = Path(__file__).resolve().parents[1]
