@@ -116,6 +116,14 @@ def test_gold_none_skipped() -> None:
     assert m.get("skipped") is True
 
 
+def test_token_set_metrics_is_recall_only() -> None:
+    m = M.token_set_metrics("hello world TOKEN", ["TOKEN", "MISSING"])
+    assert m["precision"] is None
+    assert m["skipped"] is False
+    assert abs(m["recall"] - 0.5) < 1e-9
+    assert abs(m["f1"] - 0.5) < 1e-9
+
+
 def main() -> int:
     tests = [
         test_rect_iou_identical,
@@ -130,6 +138,7 @@ def main() -> int:
         test_iou_empty_both,
         test_count_fallback_missing_gold_bbox,
         test_gold_none_skipped,
+        test_token_set_metrics_is_recall_only,
     ]
     failed = 0
     for t in tests:

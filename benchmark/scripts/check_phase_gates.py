@@ -62,7 +62,13 @@ def gate0() -> bool:
         # suite hard enough if exact < 0.70 OR over_doc_rate > 0.2
         hard = exact is not None and (exact < 0.70 or (s.get("over_doc_rate") or 0) > 0.20)
         results.append(ok("G0.7 baseline shows red on over-detect (exact<0.70 or over>0.20)", hard, f"exact={exact} over={s.get('over_doc_rate')}"))
-    results.append(ok("G0.8 no ICDAR in repo", True))  # enforced separately
+    import subprocess
+
+    icdar_rc = subprocess.call(
+        ["python3", str(BENCH / "scripts" / "assert_no_icdar.py")],
+        cwd=str(REPO),
+    )
+    results.append(ok("G0.8 no ICDAR in repo", icdar_rc == 0, f"assert_no_icdar exit={icdar_rc}"))
     return all(results)
 
 

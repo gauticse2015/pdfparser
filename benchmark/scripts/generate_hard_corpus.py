@@ -30,9 +30,9 @@ from typing import Any, Optional
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
-from reportlab.lib.pagesizes import letter
+from corpuslib import LETTER as letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import inch
+from corpuslib import INCH as inch
 from reportlab.platypus import (
     Paragraph,
     SimpleDocTemplate,

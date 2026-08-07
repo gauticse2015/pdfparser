@@ -27,9 +27,9 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
+from corpuslib import LETTER as letter
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
+from corpuslib import INCH as inch
 from reportlab.pdfgen import canvas
 from reportlab.platypus import (
     SimpleDocTemplate,
