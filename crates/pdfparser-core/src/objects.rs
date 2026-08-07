@@ -75,6 +75,8 @@ impl DocumentObjects {
 
 /// Extract objects from an open lopdf document + page tree.
 pub fn extract_objects(doc: &Document, pages: &PageTree) -> Result<DocumentObjects> {
+    doc.catalog()
+        .map_err(|e| crate::Error::Syntax(format!("catalog: {e}")))?;
     Ok(DocumentObjects {
         images: collect_images(doc, pages),
         links: collect_links(doc, pages),
@@ -398,7 +400,7 @@ fn collect_outline_titles(doc: &Document) -> Vec<String> {
 }
 
 fn walk_outline_titles(doc: &Document, node: &Object, titles: &mut Vec<String>, depth: u32) {
-    if depth > 64 {
+    if depth > crate::limits::hard_max::MAX_NESTING_DEPTH {
         return;
     }
     let mut current = match resolve_dict_ref(doc, node) {

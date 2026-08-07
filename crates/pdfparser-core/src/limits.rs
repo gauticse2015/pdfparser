@@ -28,6 +28,8 @@ pub mod hard_max {
     pub const MAX_EXPAND_RATIO: u64 = 1000;
     /// Max ops per page.
     pub const MAX_PAGE_OPS: u64 = 10_000_000;
+    /// Max page-tree / outline nesting (shared with [`super::ResourceLimits::max_nesting_depth`]).
+    pub const MAX_NESTING_DEPTH: u32 = 64;
 }
 
 /// Configurable limits (clamped to hard_max).
@@ -52,7 +54,7 @@ impl Default for ResourceLimits {
             max_total_expanded_bytes: 256 * 1024 * 1024,
             max_expand_ratio: 200,
             max_page_ops: 2_000_000,
-            max_nesting_depth: 64,
+            max_nesting_depth: hard_max::MAX_NESTING_DEPTH,
         }
     }
 }
@@ -66,6 +68,7 @@ impl ResourceLimits {
             .min(hard_max::MAX_TOTAL_EXPANDED);
         self.max_expand_ratio = self.max_expand_ratio.min(hard_max::MAX_EXPAND_RATIO);
         self.max_page_ops = self.max_page_ops.min(hard_max::MAX_PAGE_OPS);
+        self.max_nesting_depth = self.max_nesting_depth.min(hard_max::MAX_NESTING_DEPTH);
         self
     }
 }
@@ -89,13 +92,22 @@ impl ResourceGovernor {
 
     /// Charge expanded bytes; error if over budget.
     pub fn charge_expanded(&self, n: u64) -> Result<(), crate::Error> {
-        let prev = self.expanded.fetch_add(n, Ordering::SeqCst);
-        if prev.saturating_add(n) > self.limits.max_total_expanded_bytes {
-            return Err(crate::Error::LimitExceeded {
-                kind: LimitKind::ExpandedBytes,
-            });
+        loop {
+            let prev = self.expanded.load(Ordering::SeqCst);
+            let next = prev.saturating_add(n);
+            if next > self.limits.max_total_expanded_bytes {
+                return Err(crate::Error::LimitExceeded {
+                    kind: LimitKind::ExpandedBytes,
+                });
+            }
+            if self
+                .expanded
+                .compare_exchange(prev, next, Ordering::SeqCst, Ordering::SeqCst)
+                .is_ok()
+            {
+                return Ok(());
+            }
         }
-        Ok(())
     }
 
     /// Check single-stream expansion ratio.

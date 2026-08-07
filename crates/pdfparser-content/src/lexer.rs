@@ -1,20 +1,33 @@
 //! PDF content stream tokenizer.
 
+/// One content-stream token (operands + operators).
 #[derive(Debug, Clone)]
 pub enum Token {
+    /// Numeric operand.
     Number(f32),
+    /// `/Name` operand (leading slash stripped).
     Name(String),
+    /// Literal `(...)` string bytes.
     LiteralString(Vec<u8>),
+    /// Hex `<...>` string bytes.
     HexString(Vec<u8>),
+    /// `[`
     ArrayStart,
+    /// `]`
     ArrayEnd,
+    /// `<<`
     DictStart,
+    /// `>>`
     DictEnd,
+    /// Operator name (`Tj`, `re`, …).
     Operator(String),
+    /// Boolean operand.
     Boolean(bool),
+    /// `null` operand.
     Null,
 }
 
+/// Tokenize a PDF content stream into operands and operators.
 pub fn tokenize(data: &[u8]) -> Vec<Token> {
     let mut tokens = Vec::new();
     let mut i = 0;

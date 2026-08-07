@@ -1,0 +1,33 @@
+//! Adobe MacExpertEncoding → Unicode stand-ins (PDF 1.7 Appendix D).
+
+/// Full 256-code MacExpert map (small-caps → uppercase, oldstyle → digits).
+pub(crate) const MAC_EXPERT: [char; 256] = [
+    '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    ' ', '!', '\u{02DD}', '\u{00A2}', '$', '$', '&', '\u{00B4}', '\u{207D}', '\u{207E}',
+    '\u{2025}', '\u{2024}', ',', '-', '.', '\u{2044}', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+    '9', ':', ';', '\u{FFFD}', '\u{2014}', '\u{FFFD}', '?', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    '\u{FFFD}', '\u{00D0}', '\u{FFFD}', '\u{FFFD}', '\u{00BC}', '\u{00BD}', '\u{00BE}', '\u{215B}',
+    '\u{215C}', '\u{215D}', '\u{215E}', '\u{2153}', '\u{2154}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FB00}', '\u{FB01}', '\u{FB02}', '\u{FB03}', '\u{FB04}',
+    '\u{208D}', '\u{FFFD}', '\u{208E}', '\u{02C6}', '-', '`', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+    'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    '\u{20A1}', '1', 'R', '~', '\u{FFFD}', '\u{FFFD}', 'a', '\u{00A2}', '\u{FFFD}', '\u{FFFD}',
+    '\u{FFFD}', '\u{FFFD}', '\u{00C1}', '\u{00C0}', '\u{00C2}', '\u{00C4}', '\u{00C3}', '\u{00C5}',
+    '\u{00C7}', '\u{00C9}', '\u{00C8}', '\u{00CA}', '\u{00CB}', '\u{00CD}', '\u{00CC}', '\u{00CE}',
+    '\u{00CF}', '\u{00D1}', '\u{00D3}', '\u{00D2}', '\u{00D4}', '\u{00D6}', '\u{00D5}', '\u{00DA}',
+    '\u{00D9}', '\u{00DB}', '\u{00DC}', '\u{FFFD}', '\u{2078}', '\u{2084}', '\u{2083}', '\u{2086}',
+    '\u{2088}', '\u{2087}', '\u{0160}', '\u{FFFD}', '\u{00A2}', '\u{2082}', '\u{FFFD}', '\u{00A8}',
+    '\u{FFFD}', '\u{02C7}', 'o', '\u{2085}', '\u{FFFD}', ',', '.', '\u{00DD}', '\u{FFFD}', '$',
+    '\u{FFFD}', '\u{FFFD}', '\u{00DE}', '\u{FFFD}', '\u{2089}', '\u{2080}', '\u{017D}', '\u{00C6}',
+    '\u{00D8}', '\u{00BF}', '\u{2081}', '\u{0141}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    '\u{FFFD}', '\u{FFFD}', '\u{00B8}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+    '\u{0152}', '\u{2012}', '\u{207B}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{00A1}',
+    '\u{FFFD}', '\u{0178}', '\u{FFFD}', '\u{00B9}', '\u{00B2}', '\u{00B3}', '\u{2074}', '\u{2075}',
+    '\u{2076}', '\u{2077}', '\u{2079}', '\u{2070}', '\u{FFFD}', 'e', 'r', 't', '\u{FFFD}',
+    '\u{FFFD}', 'i', 's', 'd', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', 'l',
+    '\u{02DB}', '\u{02D8}', '\u{00AF}', 'b', 'n', 'm', ',', '.', '\u{02D9}', '\u{02DA}',
+    '\u{FFFD}', '\u{FFFD}', '\u{FFFD}', '\u{FFFD}',
+];
