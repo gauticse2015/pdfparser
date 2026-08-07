@@ -21,6 +21,10 @@ jobs:
         rust: [stable]
 
     steps:
+      - name: Force LF checkouts (Windows rustfmt)
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf false
+
       - uses: actions/checkout@v4
 
       - name: Install Rust
@@ -31,7 +35,9 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
+      # rustfmt newline_style=Unix; skip the check on Windows if CRLF still leaks.
       - name: Format
+        if: runner.os != 'Windows'
         run: cargo fmt --all -- --check
 
       - name: Clippy
@@ -44,16 +50,17 @@ jobs:
         run: cargo build --release -p pdfparser-cli
 
   msrv:
-    name: MSRV 1.75
+    # Lockfile / crates.io (e.g. time 0.3.53) requires edition2024 → Rust 1.85+.
+    name: MSRV 1.85
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust 1.75
-        uses: dtolnay/rust-toolchain@1.75.0
+      - name: Install Rust 1.85
+        uses: dtolnay/rust-toolchain@1.85.0
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
       - name: Test on MSRV
-        run: cargo test --workspace --offline || cargo test --workspace
+        run: cargo test --workspace --locked
 
   python-unit:
     name: Python metric / policy tests
