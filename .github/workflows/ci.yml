@@ -50,8 +50,8 @@ jobs:
         run: cargo build --release -p pdfparser-cli
 
   msrv:
-    # image 0.25.10 / time 0.3.53 declare rustc 1.88.
-    name: MSRV 1.88
+    # Package rust-version is 1.75; lockfile crates (image/time) need rustc 1.88.
+    name: Lockfile rustc 1.88
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
         uses: dtolnay/rust-toolchain@1.88.0
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
-      - name: Test on MSRV
+      - name: Test lockfile on rustc 1.88
         run: cargo test --workspace --locked
 
   python-unit:
