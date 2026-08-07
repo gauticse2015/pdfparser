@@ -1,5 +1,10 @@
 //! Form-vs-table discriminator and document-level over-segmentation scrub.
+#![allow(clippy::field_reassign_with_default)]
+#![allow(clippy::collapsible_if)]
+
+use crate::lexicon::{cell_blob, phrase_hits, TAX_FORM_PHRASES};
 use crate::options::TableOptions;
+use crate::stats::CellStats;
 use crate::types::{PipelineId, Table, TableMethod};
 
 /// Document-level scrub for over-segmented non-data grids.
@@ -11,7 +16,7 @@ pub fn scrub_document_table_fps(tables: Vec<Table>, opts: &TableOptions) -> Vec<
     if tables.is_empty() {
         return tables;
     }
-    let trigger = opts.overseg_trigger.max(1) as usize;
+    let trigger = opts.advanced.overseg_trigger.max(1) as usize;
     if tables.len() <= trigger {
         return tables;
     }
@@ -22,7 +27,7 @@ pub fn scrub_document_table_fps(tables: Vec<Table>, opts: &TableOptions) -> Vec<
         .collect();
 
     // Stricter bar under over-segmentation pressure
-    let min_score = (opts.min_data_table_score + 0.12).min(0.85);
+    let min_score = (opts.advanced.min_data_table_score + 0.12).min(0.85);
     let mut keep: Vec<(f32, Table)> = scored
         .into_iter()
         .filter(|(s, t)| *s >= min_score && is_plausible_data_table(t))
@@ -35,11 +40,11 @@ pub fn scrub_document_table_fps(tables: Vec<Table>, opts: &TableOptions) -> Vec<
     }
 
     // Soft max under over-seg: prefer quality over volume
-    let soft_cap = opts.overseg_trigger.max(1) as usize;
-    let hard_cap = if opts.max_logical_tables == 0 {
+    let soft_cap = opts.advanced.overseg_trigger.max(1) as usize;
+    let hard_cap = if opts.advanced.max_logical_tables == 0 {
         soft_cap
     } else {
-        (opts.max_logical_tables as usize).min(soft_cap)
+        (opts.advanced.max_logical_tables as usize).min(soft_cap)
     };
     keep.truncate(hard_cap);
     keep.into_iter().map(|(_, t)| t).collect()
@@ -47,10 +52,11 @@ pub fn scrub_document_table_fps(tables: Vec<Table>, opts: &TableOptions) -> Vec<
 
 /// Extra geometric/content gates used only under over-segmentation.
 fn is_plausible_data_table(t: &Table) -> bool {
-    let mean = mean_cell_chars(t);
+    let st = CellStats::from_table(t);
+    let mean = st.mean_chars;
     let hex = hex_density(t);
     let hdr = header_alpha_ratio(t);
-    let num = numeric_density(t);
+    let num = st.numeric_density;
     let code = code_like_density(t);
     if hex >= 0.40 {
         return false;
@@ -124,9 +130,10 @@ fn looks_like_caption_table(t: &Table) -> bool {
 
 /// Score how much a candidate looks like a data table (0..1).
 fn data_table_score(t: &Table) -> f32 {
-    let fill = fill_rate(t);
-    let num = numeric_density(t);
-    let mean_chars = mean_cell_chars(t);
+    let st = CellStats::from_table(t);
+    let fill = st.fill_rate;
+    let num = st.numeric_density;
+    let mean_chars = st.mean_chars;
     let header = header_alpha_ratio(t);
     let hexish = hex_density(t);
     let mut s = 0.0;
@@ -206,10 +213,11 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
     tables
         .into_iter()
         .filter_map(|mut t| {
+            let st = CellStats::from_table(&t);
             let form = form_likeness(&t);
-            let num = numeric_density(&t);
-            let fill = fill_rate(&t);
-            let mean_chars = mean_cell_chars(&t);
+            let num = st.numeric_density;
+            let fill = st.fill_rate;
+            let mean_chars = st.mean_chars;
 
             // Data tables are not only numeric: SKU / code / id grids are fully
             // filled ruled lattices with short alphanumeric cells and num≈0.
@@ -288,13 +296,15 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                         return None;
                     }
                 }
-                if t.rows * t.cols >= 200 && form >= 0.30 && !dense_data_grid {
-                    if fill < 0.50 || (num < 0.10 && mean_chars > 30.0) {
-                        return None;
-                    }
+                if t.rows * t.cols >= 200
+                    && form >= 0.30
+                    && !dense_data_grid
+                    && (fill < 0.50 || (num < 0.10 && mean_chars > 30.0))
+                {
+                    return None;
                 }
                 // Paragraph prose (narrow + long cells)
-                if mean_chars >= opts.stream_max_prose_mean_chars * 0.50
+                if mean_chars >= opts.advanced.stream_max_prose_mean_chars * 0.50
                     && num < 0.22
                     && t.cols <= 3
                 {
@@ -316,57 +326,23 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
                     return None;
                 }
                 // Notice / standard metadata grids / IRS form worksheets
-                let lower = t
-                    .cells
-                    .iter()
-                    .take(40)
-                    .map(|c| c.text.to_ascii_lowercase())
-                    .collect::<Vec<_>>()
-                    .join(" ");
-                let irs_or_notice = lower.contains("name of standard")
+                let lower = cell_blob(t.cells.iter().map(|c| c.text.as_str()), 40);
+                let irs_or_notice = phrase_hits(&lower, TAX_FORM_PHRASES) >= 1
+                    || lower.contains("name of standard")
                     || lower.contains("withdrawn")
-                    || lower.contains("warning notice")
-                    || lower.contains("social security")
-                    || lower.contains("employer id")
-                    || lower.contains("department of the treasury")
-                    || lower.contains("omb no.")
-                    || lower.contains("irs use only")
-                    || lower.contains("accounting method")
-                    || lower.contains("principal business or profession")
-                    || lower.contains("business address")
-                    || lower.contains("schedule c")
-                    || lower.contains("schedule d")
-                    || lower.contains("profit or loss from business")
-                    || lower.contains("employer identification")
-                    || lower.contains("proceeds (sales price)")
-                    || lower.contains("cost (or other basis)")
-                    || lower.contains("adjustments to gain or loss")
-                    || lower.contains("capital gain or (loss)")
-                    || lower.contains("form 1099-b")
-                    || lower.contains("form 1099")
-                    || lower.contains("short-term transactions")
-                    || lower.contains("long-term transactions")
-                    || lower.contains("totals for all short-term")
-                    || lower.contains("totals for all long-term");
+                    || lower.contains("warning notice");
                 if irs_or_notice && (num < 0.45 || t.rows <= 16 || fill < 0.70) {
                     return None;
                 }
             }
             // Lattice Schedule D / tax capital-gains form fragments (sparse ruled)
             if t.method == TableMethod::Lattice {
-                let lower = t
-                    .cells
-                    .iter()
-                    .take(30)
-                    .map(|c| c.text.to_ascii_lowercase())
-                    .collect::<Vec<_>>()
-                    .join(" ");
-                if (lower.contains("proceeds (sales price)")
+                let lower = cell_blob(t.cells.iter().map(|c| c.text.as_str()), 30);
+                let schedule_d = lower.contains("proceeds (sales price)")
                     || lower.contains("cost (or other basis)")
                     || lower.contains("adjustments to gain or loss")
-                    || lower.contains("schedule d"))
-                    && num < 0.40
-                {
+                    || lower.contains("schedule d");
+                if schedule_d && num < 0.40 {
                     return None;
                 }
             }
@@ -420,79 +396,15 @@ pub fn apply_form_discriminator(tables: Vec<Table>, opts: &TableOptions) -> Vec<
         .collect()
 }
 
-fn fill_rate(t: &Table) -> f32 {
-    let ne = t.cells.iter().filter(|c| !c.text.trim().is_empty()).count();
-    ne as f32 / t.cells.len().max(1) as f32
-}
-
-fn mean_cell_chars(t: &Table) -> f32 {
-    let cells: Vec<_> = t
-        .cells
-        .iter()
-        .filter(|c| !c.text.trim().is_empty())
-        .collect();
-    if cells.is_empty() {
-        return 0.0;
-    }
-    cells.iter().map(|c| c.text.len() as f32).sum::<f32>() / cells.len() as f32
-}
-
 fn punctuation_density(t: &Table) -> f32 {
-    let mut punct = 0u32;
-    let mut chars = 0u32;
-    for c in &t.cells {
-        for ch in c.text.chars() {
-            if ch.is_whitespace() {
-                continue;
-            }
-            chars += 1;
-            if matches!(ch, '.' | '?' | '!' | ',' | ';' | ':') {
-                punct += 1;
-            }
-        }
-    }
-    if chars == 0 {
-        0.0
-    } else {
-        punct as f32 / chars as f32
-    }
-}
-
-fn numeric_density(t: &Table) -> f32 {
-    let cells: Vec<_> = t
-        .cells
-        .iter()
-        .filter(|c| !c.text.trim().is_empty())
-        .collect();
-    if cells.is_empty() {
-        return 0.0;
-    }
-    let n = cells.iter().filter(|c| is_numeric_token(&c.text)).count();
-    n as f32 / cells.len() as f32
-}
-
-fn is_numeric_token(s: &str) -> bool {
-    let t = s
-        .trim()
-        .trim_matches(|c: char| c == '$' || c == '%' || c == '(' || c == ')');
-    if t.is_empty() {
-        return false;
-    }
-    let mut has_digit = false;
-    for ch in t.chars() {
-        if ch.is_ascii_digit() {
-            has_digit = true;
-        } else if !matches!(ch, '.' | ',' | '-' | '+' | ' ') {
-            return false;
-        }
-    }
-    has_digit
+    CellStats::from_table(t).punctuation_density
 }
 
 fn form_likeness(t: &Table) -> f32 {
-    let fill = fill_rate(t);
-    let num = numeric_density(t);
-    let mean_chars = mean_cell_chars(t);
+    let st = CellStats::from_table(t);
+    let fill = st.fill_rate;
+    let num = st.numeric_density;
+    let mean_chars = st.mean_chars;
     let long_cell = if mean_chars >= 40.0 {
         1.0
     } else {
@@ -589,7 +501,7 @@ mod tests {
         );
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
-        opts.form_discriminator = true;
+        opts.advanced.form_discriminator = true;
         let out = apply_form_discriminator(vec![t], &opts);
         assert_eq!(out.len(), 1);
     }
@@ -618,8 +530,8 @@ mod tests {
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
         opts.min_table_confidence = 0.55;
-        opts.form_discriminator = true;
-        opts.min_confidence_stream = 0.62;
+        opts.advanced.form_discriminator = true;
+        opts.advanced.min_confidence_stream = 0.62;
         let out = apply_form_discriminator(vec![t], &opts);
         assert_eq!(
             out.len(),
@@ -647,7 +559,7 @@ mod tests {
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
         opts.min_table_confidence = 0.55;
-        opts.form_discriminator = true;
+        opts.advanced.form_discriminator = true;
         let out = apply_form_discriminator(vec![t], &opts);
         // Form-like sparse stream should be dropped or heavily demoted out
         assert!(
@@ -670,8 +582,8 @@ mod tests {
         t.fill_rate = 1.0;
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
-        opts.form_discriminator = true;
-        opts.stream_max_prose_mean_chars = 70.0;
+        opts.advanced.form_discriminator = true;
+        opts.advanced.stream_max_prose_mean_chars = 70.0;
         let out = apply_form_discriminator(vec![t], &opts);
         assert!(out.is_empty(), "prose stream must be vetoed");
     }
@@ -689,7 +601,7 @@ mod tests {
         );
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
-        opts.form_discriminator = true;
+        opts.advanced.form_discriminator = true;
         let out = apply_form_discriminator(vec![t], &opts);
         assert_eq!(out.len(), 1, "SKU lattice is data");
     }
@@ -717,10 +629,10 @@ mod tests {
         all.push(good);
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
-        opts.form_discriminator = true;
-        opts.overseg_trigger = 4;
-        opts.max_logical_tables = 4;
-        opts.min_data_table_score = 0.42;
+        opts.advanced.form_discriminator = true;
+        opts.advanced.overseg_trigger = 4;
+        opts.advanced.max_logical_tables = 4;
+        opts.advanced.min_data_table_score = 0.42;
         let out = scrub_document_table_fps(all, &opts);
         assert!(!out.is_empty(), "should keep at least the data table");
         assert!(out.len() <= 4, "soft cap under overseg, got {}", out.len());
@@ -744,7 +656,7 @@ mod tests {
             &["A", "B", "C", "1", "2", "3", "4", "5", "6"],
         );
         let mut opts = TableOptions::default();
-        opts.overseg_trigger = 8;
+        opts.advanced.overseg_trigger = 8;
         let out = scrub_document_table_fps(vec![t.clone()], &opts);
         assert_eq!(out.len(), 1);
     }
@@ -784,9 +696,9 @@ mod tests {
         }
         many.push(good);
         let mut opts = TableOptions::default();
-        opts.overseg_trigger = 3;
-        opts.max_logical_tables = 2;
-        opts.min_data_table_score = 0.42;
+        opts.advanced.overseg_trigger = 3;
+        opts.advanced.max_logical_tables = 2;
+        opts.advanced.min_data_table_score = 0.42;
         let out = scrub_document_table_fps(many, &opts);
         // Caption-like should not dominate; at most soft_cap kept
         assert!(out.len() <= 2);
@@ -819,7 +731,7 @@ mod tests {
         t.fill_rate = 1.0;
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
-        opts.form_discriminator = true;
+        opts.advanced.form_discriminator = true;
         let _ = apply_form_discriminator(vec![t], &opts);
         // Code-like
         let code = grid(

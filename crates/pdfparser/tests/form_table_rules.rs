@@ -83,7 +83,7 @@ fn form_xobject_rules_enable_lattice_table() {
     assert_eq!(doc.page_count(), 1);
 
     let mut table_opts = TableOptions::from_preset(TablePreset::LatticeOnly);
-    table_opts.raster_line_detect = false;
+    table_opts.advanced.raster_line_detect = false;
     let tabs = doc
         .page(0)
         .unwrap()

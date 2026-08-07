@@ -1,6 +1,6 @@
 [package]
 name = "pdfparser"
-description = "Native PDF parser — library-first text extraction (Phase T)"
+description = "Native PDF parser — library-first text, tables, and document objects"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -16,9 +16,6 @@ pdfparser-layout = { workspace = true }
 pdfparser-export = { workspace = true }
 pdfparser-tables = { workspace = true }
 lopdf = { workspace = true }
-thiserror = { workspace = true }
-serde = { workspace = true }
-tracing = { workspace = true }
 flate2 = { workspace = true }
 image = { workspace = true }
 

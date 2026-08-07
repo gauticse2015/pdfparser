@@ -56,7 +56,7 @@ impl RenderSafety {
 
 /// Optional full-page gray renderer (Tier 1).
 ///
-/// Implement with pdfium/skia/etc. behind cargo feature `full-page-render`.
+/// Optional backends (external CLI) implement this trait.
 /// Default builds use [`NullPageRenderer`] (always errors → fail-soft).
 pub trait PageRenderer: Send + Sync {
     /// Render page to grayscale raster in page space.

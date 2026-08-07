@@ -34,6 +34,28 @@ pub enum PipelineId {
     D1Stitch,
 }
 
+/// Which table engine path produced a page's tables (telemetry, not a note string).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
+pub enum EnginePath {
+    /// Exclusive Engine V2 AutoRouter.
+    EngineV2,
+    /// Legacy soup NMS rollback.
+    #[default]
+    Legacy,
+}
+
+impl EnginePath {
+    /// Stable wire name for diagnostics JSON.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            EnginePath::EngineV2 => "engine_v2",
+            EnginePath::Legacy => "legacy",
+        }
+    }
+}
+
 /// Detection method.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -140,12 +162,49 @@ pub struct Table {
 }
 
 impl Table {
+    /// Minimal grid for unit tests / discriminator fixtures.
+    pub fn fixture(
+        method: TableMethod,
+        rows: u32,
+        cols: u32,
+        cells: Vec<TableCell>,
+        confidence: f32,
+    ) -> Self {
+        Self {
+            bbox: Rect {
+                x0: 0.0,
+                y0: 0.0,
+                x1: 100.0,
+                y1: 100.0,
+            },
+            page: 0,
+            method,
+            confidence,
+            rows,
+            cols,
+            cells,
+            header_rows: 1,
+            continued_from_previous_page: false,
+            continued_to_next_page: false,
+            logical_table_id: None,
+            strategy_provenance: vec![],
+            notes: vec![],
+            edge_score: 0.0,
+            fill_rate: 0.0,
+            weak_edges: false,
+            joint_count: 0,
+            text_row_recovery: false,
+            text_col_recovery: false,
+            multitable_stream_recovery: false,
+            stream_vs_overwide_hybrid: false,
+        }
+    }
+
     /// True when lattice rules were recovered from raster morphology.
     ///
     /// Prefer [`PipelineId::S6RasterLines`] in `strategy_provenance` over note strings.
     pub fn is_from_raster(&self) -> bool {
         self.strategy_provenance
             .contains(&PipelineId::S6RasterLines)
-            || self.notes.iter().any(|n| n.contains("raster_lines"))
     }
 }

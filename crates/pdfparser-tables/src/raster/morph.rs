@@ -18,6 +18,9 @@
 //!
 //! Designed for born-digital image-painted grids and clean scans. Not OCR.
 
+#![allow(clippy::needless_range_loop)]
+#![allow(clippy::wrong_self_convention)]
+
 /// Grayscale page or image region in raster space.
 #[derive(Debug, Clone)]
 pub struct RasterPage {

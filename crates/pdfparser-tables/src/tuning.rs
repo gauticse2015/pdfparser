@@ -9,13 +9,13 @@
 //! use pdfparser_tables::{TableOptions, TablePreset, TableTuning};
 //!
 //! let mut opts = TableOptions::from_preset(TablePreset::Auto);
-//! opts.tuning
+//! opts.advanced.tuning
 //!     .apply_overrides([
 //!         ("densify_y_skip_numeric_frac", 0.10),
 //!         ("densify_y_explode_growth_hi", 3.0),
 //!     ])
 //!     .unwrap();
-//! assert!((opts.tuning.densify_y_skip_numeric_frac - 0.10).abs() < 1e-6);
+//! assert!((opts.advanced.tuning.densify_y_skip_numeric_frac - 0.10).abs() < 1e-6);
 //! ```
 //!
 //! Keys form a flat settings dict (`key → f64`). Booleans/u32 fields use 0/1
@@ -26,8 +26,8 @@ use serde::{Deserialize, Serialize};
 
 /// Geometry / densify / lattice thresholds that often need document-type tuning.
 ///
-/// Nested under [`crate::TableAdvancedOptions::tuning`] (reachable as
-/// `opts.tuning` via Deref). Not part of the ≤12 product surface.
+/// Nested under [`crate::TableAdvancedOptions::tuning`] (`opts.advanced.tuning`).
+/// Not part of the ≤12 product surface.
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(default))]
@@ -54,6 +54,16 @@ pub struct TableTuning {
     pub densify_y_skip_min_h_rows: u32,
     /// Numeric text-run fraction below which prose-Y skip may fire (default **0.22**).
     pub densify_y_skip_numeric_frac: f32,
+    /// Max densified body rows as a multiple of multi-col text bands (default **1.35**).
+    ///
+    /// Rejects densify that invents far more rows than multi-column text supports
+    /// (wrap-line shredding). Statistical grids keep ~1 multi band per body row.
+    pub densify_y_max_rows_vs_multi_band: f32,
+    /// Additive slack rows on the multi-band row cap (default **2**).
+    pub densify_y_multi_band_slack: f32,
+    /// If multi-col bands ≥ this × H-rows on sparse-H grids, force densify even
+    /// when prose-skip would fire (default **2.0**).
+    pub densify_y_sparse_h_force_mult: f32,
 
     // ── densify X guards ─────────────────────────────────────────────────
     /// Reject X densify when densified cols > this absolute (default **14**).
@@ -82,7 +92,7 @@ pub struct TableTuning {
     pub lattice_raster_v_span_frac: f32,
     /// Raster-line H span floor (default **0.10**).
     pub lattice_raster_h_span_frac: f32,
-    /// Recover long H rules when long-clustered count ≥ ys×ratio (default **1.5**).
+    /// Recover long H rules when long-clustered count ≥ ys×ratio (default **1.35**).
     pub lattice_long_h_recover_ratio: f32,
     /// Long-H recovery requires segment length ≥ width×this (default **0.55**).
     pub lattice_long_h_width_frac: f32,
@@ -92,6 +102,18 @@ pub struct TableTuning {
     pub solid_lattice_stream_safe_max_cols: u32,
     /// Min rows for the stream-safe densified lattice exception (default **20**).
     pub solid_lattice_stream_safe_min_rows: u32,
+    /// Overdense-H collapse factor vs multi-col text bands (default **1.35**).
+    pub lattice_overdense_h_factor: f32,
+
+    // ── network / borderless row banding ─────────────────────────────────
+    /// Soft region-gap as multiple of multi-line pitch (default **1.6**).
+    pub stream_soft_gap_pitch_mult: f32,
+    /// Hard region-gap as multiple of multi-line pitch (default **6.0**).
+    pub stream_hard_gap_pitch_mult: f32,
+    /// y-band tol floor as multiple of font size (default **0.65**).
+    pub stream_y_tol_font_mult: f32,
+    /// y-band tol as multiple of median row pitch (default **0.45**).
+    pub stream_y_tol_pitch_mult: f32,
 }
 
 impl Default for TableTuning {
@@ -106,22 +128,99 @@ impl Default for TableTuning {
             densify_y_skip_max_h_rows: 5,
             densify_y_skip_min_h_rows: 2,
             densify_y_skip_numeric_frac: 0.22,
+            // Mild multi-band cap: reject densify that invents far more rows than
+            // multi-col text supports (over-row). Slack keeps near-miss statistical grids.
+            densify_y_max_rows_vs_multi_band: 1.75,
+            densify_y_multi_band_slack: 4.0,
+            // Sparse-H densify force off by default (profiles enable, e.g. 1.5).
+            densify_y_sparse_h_force_mult: 99.0,
             densify_x_explode_abs_cols: 14,
             densify_x_explode_growth_factor: 3.5,
             densify_x_explode_growth_add: 2.0,
             densify_x_narrow_max_extra: 1,
             densify_x_exterior_pad_frac: 0.55,
             densify_x_short_token_chars: 14,
-            densify_pitch_cv_max: 0.45,
+            densify_pitch_cv_max: 0.50,
             lattice_v_span_frac: 0.40,
             lattice_h_span_frac: 0.22,
             lattice_raster_v_span_frac: 0.15,
             lattice_raster_h_span_frac: 0.10,
-            lattice_long_h_recover_ratio: 1.5,
+            // Milder long-H recover (1.35×): joint-span filter often drops partial-joint
+            // body H that still span most of the frame — under-row recovery lever.
+            lattice_long_h_recover_ratio: 1.35,
             lattice_long_h_width_frac: 0.55,
             solid_lattice_stream_safe_max_cols: 3,
             solid_lattice_stream_safe_min_rows: 20,
+            // Slightly tighter overdense collapse: rejects false underline H that
+            // inflate row count (over-row). SparseRuled profile uses 1.25.
+            lattice_overdense_h_factor: 1.28,
+            stream_soft_gap_pitch_mult: 1.6,
+            stream_hard_gap_pitch_mult: 6.0,
+            stream_y_tol_font_mult: 0.65,
+            stream_y_tol_pitch_mult: 0.45,
         }
+    }
+}
+
+/// Named document-class profiles: pure override maps on [`TableTuning`] defaults.
+///
+/// Profiles describe **geometry classes**, not corpus or ICDAR document ids.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
+pub enum TableProfile {
+    /// Production mixed-PDF defaults.
+    Default,
+    /// Sparse H rules + dense numeric body (statistical yearbooks).
+    SparseRuled,
+    /// Multi-line prose cells with rich V skeleton.
+    ProseGrid,
+    /// Partial vertical rules + numeric columns.
+    SparseVNumeric,
+    /// Multi-level headers with short H under sub-columns.
+    MultiLevelHeader,
+}
+
+impl TableProfile {
+    /// Stable CLI / JSON name.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Default => "default",
+            Self::SparseRuled => "sparse_ruled",
+            Self::ProseGrid => "prose_grid",
+            Self::SparseVNumeric => "sparse_v_numeric",
+            Self::MultiLevelHeader => "multi_level_header",
+        }
+    }
+
+    /// Parse profile name (case-insensitive; `-` or `_`).
+    pub fn parse(s: &str) -> Result<Self, String> {
+        let n = s.trim().to_ascii_lowercase().replace('-', "_");
+        Ok(match n.as_str() {
+            "default" | "" => Self::Default,
+            "sparse_ruled" | "sparse_h" | "statistical" => Self::SparseRuled,
+            "prose_grid" | "prose" | "wrapped" => Self::ProseGrid,
+            "sparse_v_numeric" | "sparse_v" | "partial_v" => Self::SparseVNumeric,
+            "multi_level_header" | "multilevel_header" | "header_levels" => {
+                Self::MultiLevelHeader
+            }
+            _ => {
+                return Err(format!(
+                    "unknown table profile '{s}' (try: default, sparse_ruled, prose_grid, sparse_v_numeric, multi_level_header)"
+                ))
+            }
+        })
+    }
+
+    /// All profile names.
+    pub fn all_names() -> &'static [&'static str] {
+        &[
+            "default",
+            "sparse_ruled",
+            "prose_grid",
+            "sparse_v_numeric",
+            "multi_level_header",
+        ]
     }
 }
 
@@ -136,6 +235,9 @@ pub const TABLE_TUNING_KEYS: &[&str] = &[
     "densify_y_skip_max_h_rows",
     "densify_y_skip_min_h_rows",
     "densify_y_skip_numeric_frac",
+    "densify_y_max_rows_vs_multi_band",
+    "densify_y_multi_band_slack",
+    "densify_y_sparse_h_force_mult",
     "densify_x_explode_abs_cols",
     "densify_x_explode_growth_factor",
     "densify_x_explode_growth_add",
@@ -151,6 +253,11 @@ pub const TABLE_TUNING_KEYS: &[&str] = &[
     "lattice_long_h_width_frac",
     "solid_lattice_stream_safe_max_cols",
     "solid_lattice_stream_safe_min_rows",
+    "lattice_overdense_h_factor",
+    "stream_soft_gap_pitch_mult",
+    "stream_hard_gap_pitch_mult",
+    "stream_y_tol_font_mult",
+    "stream_y_tol_pitch_mult",
 ];
 
 impl TableTuning {
@@ -176,6 +283,9 @@ impl TableTuning {
             "densify_y_skip_max_h_rows" => self.densify_y_skip_max_h_rows as f64,
             "densify_y_skip_min_h_rows" => self.densify_y_skip_min_h_rows as f64,
             "densify_y_skip_numeric_frac" => self.densify_y_skip_numeric_frac as f64,
+            "densify_y_max_rows_vs_multi_band" => self.densify_y_max_rows_vs_multi_band as f64,
+            "densify_y_multi_band_slack" => self.densify_y_multi_band_slack as f64,
+            "densify_y_sparse_h_force_mult" => self.densify_y_sparse_h_force_mult as f64,
             "densify_x_explode_abs_cols" => self.densify_x_explode_abs_cols as f64,
             "densify_x_explode_growth_factor" => self.densify_x_explode_growth_factor as f64,
             "densify_x_explode_growth_add" => self.densify_x_explode_growth_add as f64,
@@ -191,6 +301,11 @@ impl TableTuning {
             "lattice_long_h_width_frac" => self.lattice_long_h_width_frac as f64,
             "solid_lattice_stream_safe_max_cols" => self.solid_lattice_stream_safe_max_cols as f64,
             "solid_lattice_stream_safe_min_rows" => self.solid_lattice_stream_safe_min_rows as f64,
+            "lattice_overdense_h_factor" => self.lattice_overdense_h_factor as f64,
+            "stream_soft_gap_pitch_mult" => self.stream_soft_gap_pitch_mult as f64,
+            "stream_hard_gap_pitch_mult" => self.stream_hard_gap_pitch_mult as f64,
+            "stream_y_tol_font_mult" => self.stream_y_tol_font_mult as f64,
+            "stream_y_tol_pitch_mult" => self.stream_y_tol_pitch_mult as f64,
             _ => return None,
         })
     }
@@ -212,6 +327,11 @@ impl TableTuning {
             "densify_y_skip_max_h_rows" => self.densify_y_skip_max_h_rows = as_u32(value, key)?,
             "densify_y_skip_min_h_rows" => self.densify_y_skip_min_h_rows = as_u32(value, key)?,
             "densify_y_skip_numeric_frac" => self.densify_y_skip_numeric_frac = value as f32,
+            "densify_y_max_rows_vs_multi_band" => {
+                self.densify_y_max_rows_vs_multi_band = value as f32
+            }
+            "densify_y_multi_band_slack" => self.densify_y_multi_band_slack = value as f32,
+            "densify_y_sparse_h_force_mult" => self.densify_y_sparse_h_force_mult = value as f32,
             "densify_x_explode_abs_cols" => self.densify_x_explode_abs_cols = as_u32(value, key)?,
             "densify_x_explode_growth_factor" => {
                 self.densify_x_explode_growth_factor = value as f32
@@ -233,6 +353,11 @@ impl TableTuning {
             "solid_lattice_stream_safe_min_rows" => {
                 self.solid_lattice_stream_safe_min_rows = as_u32(value, key)?
             }
+            "lattice_overdense_h_factor" => self.lattice_overdense_h_factor = value as f32,
+            "stream_soft_gap_pitch_mult" => self.stream_soft_gap_pitch_mult = value as f32,
+            "stream_hard_gap_pitch_mult" => self.stream_hard_gap_pitch_mult = value as f32,
+            "stream_y_tol_font_mult" => self.stream_y_tol_font_mult = value as f32,
+            "stream_y_tol_pitch_mult" => self.stream_y_tol_pitch_mult = value as f32,
             _ => {
                 return Err(format!(
                     "unknown table tuning key '{key}' (see TableTuning::keys())"
@@ -240,6 +365,53 @@ impl TableTuning {
             }
         }
         Ok(())
+    }
+
+    /// Build tuning from a document-class profile (defaults + geometric overrides).
+    pub fn from_profile(profile: TableProfile) -> Self {
+        let mut t = Self::default();
+        match profile {
+            TableProfile::Default => {}
+            TableProfile::SparseRuled => {
+                t.densify_y_skip_numeric_frac = 0.12;
+                t.densify_y_explode_growth_hi = 3.5;
+                t.densify_y_explode_min_before = 8;
+                t.densify_y_small_growth_max = 1.5;
+                t.lattice_overdense_h_factor = 1.25;
+                t.densify_y_max_rows_vs_multi_band = 1.55;
+                t.densify_y_multi_band_slack = 4.0;
+                t.densify_y_sparse_h_force_mult = 1.5;
+            }
+            TableProfile::ProseGrid => {
+                t.densify_y_skip_numeric_frac = 0.35;
+                t.densify_y_skip_min_v_cols = 4;
+                t.densify_y_explode_growth_lo = 1.25;
+                t.densify_y_explode_growth_hi = 2.2;
+                t.densify_y_small_growth_max = 1.25;
+                t.densify_y_small_delta_max = 1;
+                t.densify_pitch_cv_max = 0.35;
+                // Tight multi-band cap: reject wrap densify explosions.
+                t.densify_y_max_rows_vs_multi_band = 1.25;
+                t.densify_y_multi_band_slack = 1.0;
+                t.densify_y_sparse_h_force_mult = 99.0;
+            }
+            TableProfile::SparseVNumeric => {
+                t.densify_x_exterior_pad_frac = 0.70;
+                t.densify_x_explode_growth_factor = 4.5;
+                t.densify_x_narrow_max_extra = 2;
+                t.densify_x_short_token_chars = 18;
+                t.lattice_v_span_frac = 0.32;
+                // Slightly tighter y-bands so one logical row does not merge two.
+                t.stream_y_tol_pitch_mult = 0.40;
+            }
+            TableProfile::MultiLevelHeader => {
+                t.lattice_h_span_frac = 0.12;
+                t.lattice_v_span_frac = 0.45;
+                t.lattice_long_h_recover_ratio = 1.25;
+                t.lattice_long_h_width_frac = 0.45;
+            }
+        }
+        t
     }
 
     /// Apply a settings dict (key → value). Stops on first unknown / invalid key.
@@ -266,7 +438,7 @@ impl TableTuning {
     ///
     /// Example: `"densify_y_skip_numeric_frac=0.10,densify_y_explode_growth_hi=3.0"`.
     pub fn apply_kv_string(&mut self, s: &str) -> Result<(), String> {
-        for part in s.split(|c| c == ',' || c == ';') {
+        for part in s.split([',', ';']) {
             let part = part.trim();
             if part.is_empty() {
                 continue;
@@ -326,5 +498,19 @@ mod tests {
     fn unknown_key_errors() {
         let mut t = TableTuning::defaults();
         assert!(t.set("not_a_real_key", 1.0).is_err());
+    }
+
+    #[test]
+    fn profiles_differ_from_defaults() {
+        let d = TableTuning::from_profile(TableProfile::Default);
+        let s = TableTuning::from_profile(TableProfile::SparseRuled);
+        let p = TableTuning::from_profile(TableProfile::ProseGrid);
+        assert_eq!(d, TableTuning::default());
+        assert!(s.densify_y_skip_numeric_frac < d.densify_y_skip_numeric_frac);
+        assert!(p.densify_y_skip_numeric_frac > d.densify_y_skip_numeric_frac);
+        assert_eq!(
+            TableProfile::parse("sparse-ruled").unwrap(),
+            TableProfile::SparseRuled
+        );
     }
 }

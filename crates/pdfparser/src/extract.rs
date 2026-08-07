@@ -52,7 +52,10 @@ pub fn page_content(
     };
     // When capturing rules (table path), expand Form XObjects so vector rules
     // painted inside forms become RuleSegments (PR2a / K19).
-    let mut result = if capture_rules {
+    // Expand Form XObjects whenever we need rules *or* the caller wants form
+    // text (plain `/Fm1 Do` pages otherwise extract empty).
+    let expand_forms = capture_rules || opts.expand_forms;
+    let mut result = if expand_forms {
         match DocFormResolver::for_page(doc, page_index) {
             Ok(mut resolver) => {
                 interpret_page_with_resolver(&content, &fonts, &iopts, Some(&mut resolver))
@@ -144,7 +147,7 @@ pub fn page_tables(
         return Ok(Vec::new());
     }
     let pc = page_content(doc, page_index, text_opts, true)?;
-    let mut raster = if table_opts.raster_line_detect {
+    let mut raster = if table_opts.advanced.raster_line_detect {
         raster_pages_for_page(doc, page_index, &pc.image_placements).unwrap_or_default()
     } else {
         Vec::new()
@@ -263,7 +266,7 @@ pub fn document_tables(
     let mut page_heights: Vec<f32> = Vec::with_capacity(n);
     for i in 0..n {
         let pc = page_content(doc, i, text_opts, true)?;
-        let mut raster = if table_opts.raster_line_detect {
+        let mut raster = if table_opts.advanced.raster_line_detect {
             raster_pages_for_page(doc, i, &pc.image_placements).unwrap_or_default()
         } else {
             Vec::new()
@@ -309,22 +312,29 @@ pub fn document_tables(
     } else {
         page_tables.iter().flatten().cloned().collect()
     };
-    if table_opts.form_discriminator {
+    if table_opts.advanced.form_discriminator {
         logical = pdfparser_tables::scrub_document_table_fps(logical, table_opts);
     }
     Ok((page_tables, logical))
 }
 
-/// Extract whole document (text + optional tables).
+/// Extract whole document text IR (tables remain opt-in via [`crate::Document::tables`]).
 pub fn extract_document(doc: &PdfDocument, opts: &ExtractOptions) -> Result<ExtractedDocument> {
     let mut pages = Vec::new();
     let mut warnings = Vec::new();
     let n = doc.page_count();
     for i in 0..n {
-        let page_info = doc.pages.get(i as usize).unwrap();
-        let text = page_text(doc, i as usize, &opts.text)?;
+        let page_info = doc
+            .pages
+            .get(i as usize)
+            .ok_or(Error::PageOutOfRange { index: i })?;
         let (runs, mut pw) = page_elements(doc, i as usize, &opts.text)?;
         warnings.append(&mut pw);
+        let text = if opts.text.sort_reading_order {
+            reading_order_text(&runs)
+        } else {
+            runs.iter().map(|r| r.text.as_str()).collect()
+        };
         pages.push(ExtractedPage {
             index: i,
             media_box: page_info.media_box,
@@ -456,7 +466,7 @@ BT /F1 9 Tf 168 70 Td (IndiaNine) Tj ET
         let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
         let pc = page_content(&doc, 0, &TextOptions::default(), true).unwrap();
         let mut opts = TableOptions::from_preset(TablePreset::LatticeOnly);
-        opts.raster_line_detect = false;
+        opts.advanced.raster_line_detect = false;
         let (tabs, diag) =
             detect_tables_page_with_diagnostics(0, &pc.runs, &pc.rules, &opts, &[], 300.0, 300.0);
         assert!(

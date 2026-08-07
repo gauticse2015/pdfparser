@@ -1,4 +1,6 @@
 //! S4 hybrid detector: partial borders + text-derived columns/rows.
+#![allow(clippy::needless_range_loop)]
+
 use crate::geom::{
     band_runs, cells_from_grid, cluster_coords, column_separation_score, grid_regularity_score,
     median_f32, median_font_size, runs_in_rect,
@@ -18,7 +20,7 @@ pub fn detect_hybrid_tables(
     if rules.len() < 3 || runs.len() < 6 {
         return Vec::new();
     }
-    let tol = opts.line_snap_tol;
+    let tol = opts.advanced.line_snap_tol;
     let frames = find_outer_frames(rules, tol);
     let mut out = Vec::new();
     for frame in frames {
@@ -183,7 +185,7 @@ fn hybrid_grid(
     frame: Rect,
     opts: &TableOptions,
 ) -> Option<Table> {
-    let tol = opts.line_snap_tol;
+    let tol = opts.advanced.line_snap_tol;
     let inset = 1.5f32;
     let inner = Rect {
         x0: frame.x0 + inset,
@@ -369,7 +371,8 @@ fn hybrid_grid(
         return None;
     }
 
-    let (cells, filled) = cells_from_grid(&inside, &col_edges, &row_edges, opts.min_cell_size);
+    let (cells, filled) =
+        cells_from_grid(&inside, &col_edges, &row_edges, opts.advanced.min_cell_size);
     if filled < 4 {
         return None;
     }
@@ -410,7 +413,7 @@ fn hybrid_grid(
 
     // Prefer multi-column recovered grids in NMS (floor conf when ≥3×3)
     let confidence = if max_col >= 3 && max_row >= 3 {
-        confidence.max(opts.hybrid_min_conf_when_grid)
+        confidence.max(opts.advanced.hybrid_min_conf_when_grid)
     } else {
         confidence
     };

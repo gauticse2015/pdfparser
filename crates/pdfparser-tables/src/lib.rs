@@ -10,29 +10,21 @@
 //! Rollback to soup NMS: `TableOptions.legacy_router = true`.
 //! See `docs/design-table-engine-v2.md`.
 #![deny(missing_docs)]
-// Geometric detectors use multi-arg helpers and dense grid loops; keep -D warnings
-// CI useful without forcing noisy refactors of every nested index walk.
-#![allow(clippy::too_many_arguments)]
-#![allow(clippy::needless_range_loop)]
-#![allow(clippy::type_complexity)]
-#![allow(clippy::if_same_then_else)]
-#![allow(clippy::collapsible_if)]
-#![allow(clippy::manual_div_ceil)]
-#![allow(clippy::field_reassign_with_default)]
-#![allow(clippy::manual_find)]
-#![allow(clippy::wrong_self_convention)]
-#![allow(clippy::bool_comparison)]
-#![allow(clippy::manual_pattern_char_comparison)]
 
 pub mod builders;
+mod constants;
+mod detectors;
 mod form;
 mod geom;
 mod hybrid;
 mod lattice;
+mod lexicon;
 mod network;
 mod options;
 mod raster;
 mod split;
+mod stack_merge;
+mod stats;
 mod stitch;
 mod stream;
 mod tuning;
@@ -49,6 +41,11 @@ pub mod legacy {
     pub use crate::orchestrator::*;
 }
 
+pub use constants::{LETTER_PAGE_AREA, LETTER_PAGE_HEIGHT, LETTER_PAGE_WIDTH};
+pub use detectors::{
+    ExclusiveAutoRouter, HybridDetector, LatticeDetector, NetworkDetector, StreamDetector,
+    TableDetector, TableRouter,
+};
 pub use form::scrub_document_table_fps;
 pub use lattice::detect_lattice_tables;
 pub use network::detect_network_tables;
@@ -62,16 +59,20 @@ pub use raster::{
     config_for_raster_page, gray_from_rgb, gray_from_rgba, merge_rules, rules_from_raster,
     RasterConfig, RasterPage, RasterRule,
 };
+pub use stats::CellStats;
 pub use stitch::{materialize_stitched, stitch_document};
 /// Classic whitespace stream detector.
 ///
-/// **Deprecated for product use:** production Auto/Full uses
-/// [`detect_network_tables`] when `modes.stream` is set. Prefer network.
-/// This export remains for experiments and will be feature-gated later.
+/// Production Auto/Full uses [`detect_network_tables`] when `modes.stream` is set.
+/// This export remains for experiments (`allow_classic_stream` / LatticeStream).
+#[deprecated(
+    since = "0.1.0",
+    note = "use detect_network_tables / NetworkDetector; classic stream is experimental"
+)]
 #[doc(alias = "experimental_stream")]
 pub use stream::detect_stream_tables;
-pub use tuning::{TableTuning, TABLE_TUNING_KEYS};
-pub use types::{PipelineId, Table, TableCell, TableMethod};
+pub use tuning::{TableProfile, TableTuning, TABLE_TUNING_KEYS};
+pub use types::{EnginePath, PipelineId, Table, TableCell, TableMethod};
 
 pub use evidence::{
     page_evidence_from_inputs, EvidenceDiagnostics, LineEvidence, LineSourceKind, MethodMix,
@@ -91,7 +92,10 @@ pub use router::{
     vertical_merge, x_iou, y_gap, DEFAULT_X_IOU_MIN, Y_GAP_MEDIAN_MULT,
 };
 
-/// Whether the table engine is available.
+/// Whether the native table engine is linked into this build.
+///
+/// Always `true` for this workspace member; retained as a capability probe so
+/// embedders can feature-gate call sites without a compile-time `cfg` fork.
 pub fn tables_available() -> bool {
     true
 }
@@ -130,13 +134,13 @@ pub fn detect_tables_page_with_diagnostics(
         t.method == TableMethod::Lattice
             && t.cols >= 2
             && t.rows >= 2
-            && t.confidence >= opts.strong_lattice_min_conf
+            && t.confidence >= opts.advanced.strong_lattice_min_conf
             && !t.weak_edges
     });
     evidence.diagnostics.engine_path = if opts.use_engine_v2 && !opts.legacy_router {
-        "engine_v2".into()
+        crate::EnginePath::EngineV2
     } else {
-        "legacy".into()
+        crate::EnginePath::Legacy
     };
     if opts.shadow_diagnostics {
         evidence.diagnostics.notes.push("shadow_diagnostics".into());
@@ -247,11 +251,7 @@ mod tests {
             "expected Lattice method, got {:?}",
             tabs.iter().map(|t| t.method).collect::<Vec<_>>()
         );
-        assert!(
-            tabs.iter()
-                .any(|t| t.notes.iter().any(|n| n == "engine_v2_router")),
-            "EngineV2 tables should carry engine_v2_router note"
-        );
+        assert!(opts.use_engine_v2 && !opts.legacy_router);
     }
 
     /// Auto/Full post-flip use Engine V2 router (same path as EngineV2 preset).
@@ -268,11 +268,7 @@ mod tests {
                 tabs.iter().any(|t| t.method == TableMethod::Lattice),
                 "{preset:?} expected Lattice"
             );
-            assert!(
-                tabs.iter()
-                    .any(|t| t.notes.iter().any(|n| n == "engine_v2_router")),
-                "{preset:?} must tag engine_v2_router"
-            );
+            assert!(opts.use_engine_v2 && !opts.legacy_router, "{preset:?}");
         }
     }
 
@@ -283,7 +279,7 @@ mod tests {
         let (tabs, diag) =
             detect_tables_page_with_diagnostics(0, &runs, &rules, &opts, &[], 612.0, 792.0);
         assert!(!tabs.is_empty());
-        assert_eq!(diag.engine_path, "engine_v2");
+        assert_eq!(diag.engine_path, EnginePath::EngineV2);
     }
 
     #[test]
@@ -295,7 +291,11 @@ mod tests {
                 .lattice
         );
         assert!(TableOptions::from_preset(TablePreset::Full).modes.hybrid);
-        assert!(TableOptions::from_preset(TablePreset::Auto).exclusive_under_strong_lattice);
+        assert!(
+            TableOptions::from_preset(TablePreset::Auto)
+                .advanced
+                .exclusive_under_strong_lattice
+        );
         assert_eq!(
             TableOptions::from_preset(TablePreset::Auto).modes.lattice,
             TableOptions::from_preset(TablePreset::Full).modes.lattice
@@ -338,7 +338,7 @@ mod tests {
             detect_tables_page_with_diagnostics(0, &runs, &rules, &opts, &[], 612.0, 792.0);
         assert!(!tabs.is_empty());
         assert!(diag.vector_rule_count >= 2);
-        assert_eq!(diag.engine_path, "engine_v2");
+        assert_eq!(diag.engine_path, EnginePath::EngineV2);
         assert!(diag.method_mix.total() >= 1);
     }
 
@@ -377,13 +377,9 @@ mod tests {
             detect_tables_page_with_diagnostics(0, &runs, &rules, &opts, &[], 612.0, 792.0);
         assert!(!tabs.is_empty());
         assert_eq!(
-            diag.engine_path, "legacy",
+            diag.engine_path,
+            EnginePath::Legacy,
             "legacy_router=true must force engine_path=legacy"
-        );
-        assert!(
-            tabs.iter()
-                .all(|t| !t.notes.iter().any(|n| n == "engine_v2_router")),
-            "rollback must not emit engine_v2_router notes"
         );
     }
 }

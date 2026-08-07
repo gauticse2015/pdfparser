@@ -27,8 +27,7 @@ fn c100_image_rules_detects_table() {
         (tabs[0].rows, tabs[0].cols)
     );
     assert!(
-        tabs[0].notes.iter().any(|n| n.contains("raster_lines"))
-            || format!("{:?}", tabs[0].strategy_provenance).contains("Raster"),
+        tabs[0].is_from_raster(),
         "expected raster provenance notes={:?}",
         tabs[0].notes
     );
@@ -60,7 +59,7 @@ fn c102_image_rules_detects_table() {
 fn raster_off_misses_image_only_grid() {
     let doc = Document::open(path("C100_img_rules_8x4.pdf")).unwrap();
     let mut opts = TableOptions::from_preset(TablePreset::Auto);
-    opts.raster_line_detect = false;
+    opts.advanced.raster_line_detect = false;
     let tabs = doc
         .page(0)
         .unwrap()

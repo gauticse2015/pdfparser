@@ -30,6 +30,7 @@ pub use pdfparser_ir::{
 pub use pdfparser_tables::{
     detect_tables_page_with_diagnostics,
     page_evidence_from_inputs,
+    EnginePath,
     // Engine V2 foundation (diagnostics / evidence); product Auto uses V2 router.
     EvidenceDiagnostics,
     MethodMix,
@@ -40,6 +41,7 @@ pub use pdfparser_tables::{
     TableModeSet,
     TableOptions,
     TablePreset,
+    TableProfile,
     TableTuning,
     TABLE_TUNING_KEYS,
 };

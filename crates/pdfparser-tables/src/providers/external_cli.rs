@@ -42,7 +42,8 @@ impl ExternalCliPageRenderer {
 }
 
 fn which(bin: &str) -> bool {
-    Command::new("which")
+    let finder = if cfg!(windows) { "where" } else { "which" };
+    Command::new(finder)
         .arg(bin)
         .output()
         .map(|o| o.status.success())
@@ -79,13 +80,15 @@ impl PageRenderer for ExternalCliPageRenderer {
             std::process::id(),
             page_index
         ));
-        let png = render_with_tool(tool, &self.pdf_path, page_index, dpi, &prefix)?;
-        if stamp.elapsed() > Duration::from_millis(safety.timeout_ms) {
-            let _ = std::fs::remove_file(&png);
-            return Err(ProviderError {
-                message: format!("render exceeded timeout_ms={}", safety.timeout_ms),
-            });
-        }
+        let png = render_with_tool(
+            tool,
+            &self.pdf_path,
+            page_index,
+            dpi,
+            &prefix,
+            safety.timeout_ms,
+        )?;
+        let _ = stamp;
         let page = load_png_as_raster_page(&png, self.page_width, self.page_height)?;
         let _ = std::fs::remove_file(&png);
         // pdftoppm may write prefix-1.png etc — best-effort cleanup
@@ -109,34 +112,62 @@ impl PageRenderer for ExternalCliPageRenderer {
     }
 }
 
+fn run_timed(
+    cmd: &mut Command,
+    timeout_ms: u64,
+) -> Result<std::process::ExitStatus, ProviderError> {
+    let mut child = cmd.spawn().map_err(|e| ProviderError {
+        message: format!("spawn: {e}"),
+    })?;
+    let start = Instant::now();
+    loop {
+        match child.try_wait() {
+            Ok(Some(st)) => return Ok(st),
+            Ok(None) if start.elapsed().as_millis() as u64 >= timeout_ms => {
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err(ProviderError {
+                    message: format!("render exceeded timeout_ms={timeout_ms}"),
+                });
+            }
+            Ok(None) => std::thread::sleep(Duration::from_millis(20)),
+            Err(e) => {
+                return Err(ProviderError {
+                    message: format!("wait: {e}"),
+                });
+            }
+        }
+    }
+}
+
 fn render_with_tool(
     tool: &str,
     pdf: &Path,
     page_index: u32,
     dpi: u32,
     prefix: &Path,
+    timeout_ms: u64,
 ) -> Result<PathBuf, ProviderError> {
     let page_1based = page_index + 1;
     match tool {
         "pdftoppm" => {
-            let status = Command::new("pdftoppm")
-                .args([
-                    "-gray",
-                    "-png",
-                    "-r",
-                    &dpi.to_string(),
-                    "-f",
-                    &page_1based.to_string(),
-                    "-l",
-                    &page_1based.to_string(),
-                    "-singlefile",
-                ])
-                .arg(pdf)
-                .arg(prefix)
-                .status()
-                .map_err(|e| ProviderError {
-                    message: format!("pdftoppm spawn: {e}"),
-                })?;
+            let status = run_timed(
+                Command::new("pdftoppm")
+                    .args([
+                        "-gray",
+                        "-png",
+                        "-r",
+                        &dpi.to_string(),
+                        "-f",
+                        &page_1based.to_string(),
+                        "-l",
+                        &page_1based.to_string(),
+                        "-singlefile",
+                    ])
+                    .arg(pdf)
+                    .arg(prefix),
+                timeout_ms,
+            )?;
             if !status.success() {
                 return Err(ProviderError {
                     message: format!("pdftoppm failed: {status}"),
@@ -153,24 +184,23 @@ fn render_with_tool(
         }
         "mutool" => {
             let out = prefix.with_extension("png");
-            let status = Command::new("mutool")
-                .args([
-                    "draw",
-                    "-F",
-                    "png",
-                    "-c",
-                    "gray",
-                    "-r",
-                    &dpi.to_string(),
-                    "-o",
-                ])
-                .arg(&out)
-                .arg(pdf)
-                .arg(page_1based.to_string())
-                .status()
-                .map_err(|e| ProviderError {
-                    message: format!("mutool spawn: {e}"),
-                })?;
+            let status = run_timed(
+                Command::new("mutool")
+                    .args([
+                        "draw",
+                        "-F",
+                        "png",
+                        "-c",
+                        "gray",
+                        "-r",
+                        &dpi.to_string(),
+                        "-o",
+                    ])
+                    .arg(&out)
+                    .arg(pdf)
+                    .arg(page_1based.to_string()),
+                timeout_ms,
+            )?;
             if !status.success() || !out.is_file() {
                 return Err(ProviderError {
                     message: format!("mutool draw failed: {status}"),
@@ -180,22 +210,21 @@ fn render_with_tool(
         }
         "gs" => {
             let out = prefix.with_extension("png");
-            let status = Command::new("gs")
-                .args([
-                    "-dSAFER",
-                    "-dBATCH",
-                    "-dNOPAUSE",
-                    "-sDEVICE=pnggray",
-                    &format!("-r{dpi}"),
-                    &format!("-dFirstPage={page_1based}"),
-                    &format!("-dLastPage={page_1based}"),
-                    &format!("-sOutputFile={}", out.display()),
-                ])
-                .arg(pdf)
-                .status()
-                .map_err(|e| ProviderError {
-                    message: format!("gs spawn: {e}"),
-                })?;
+            let status = run_timed(
+                Command::new("gs")
+                    .args([
+                        "-dSAFER",
+                        "-dBATCH",
+                        "-dNOPAUSE",
+                        "-sDEVICE=pnggray",
+                        &format!("-r{dpi}"),
+                        &format!("-dFirstPage={page_1based}"),
+                        &format!("-dLastPage={page_1based}"),
+                        &format!("-sOutputFile={}", out.display()),
+                    ])
+                    .arg(pdf),
+                timeout_ms,
+            )?;
             if !status.success() || !out.is_file() {
                 return Err(ProviderError {
                     message: format!("gs failed: {status}"),
