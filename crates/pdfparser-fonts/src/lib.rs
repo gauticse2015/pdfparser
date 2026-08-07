@@ -2,6 +2,7 @@
 #![deny(missing_docs)]
 
 mod encodings;
+mod mac_expert;
 mod tounicode;
 
 use encodings::{decode_simple, BaseEncoding, EncodingKind};
@@ -28,7 +29,6 @@ pub struct LoadedFont {
     /// Widths by char code (simple) or default.
     widths: Vec<f32>,
     /// First char for widths array.
-    #[allow(dead_code)]
     first_char: u8,
     /// Missing width.
     missing_width: f32,
@@ -137,15 +137,15 @@ impl LoadedFont {
                 }
             }
             self.default_width
-        } else if (code as usize) < self.widths.len() {
+        } else if code < self.first_char as u32 || (code as usize) >= self.widths.len() {
+            self.missing_width
+        } else {
             let w = self.widths[code as usize];
             if w > 0.0 {
                 w
             } else {
                 self.missing_width
             }
-        } else {
-            self.missing_width
         }
     }
 
@@ -153,7 +153,7 @@ impl LoadedFont {
     pub fn to_unicode(&self, code: u32) -> (String, f32) {
         if let Some(map) = &self.to_unicode {
             if let Some(s) = map.get(code) {
-                return (s, 1.0);
+                return (s.to_string(), 1.0);
             }
         }
         if self.is_cid {

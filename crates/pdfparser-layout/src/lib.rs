@@ -3,6 +3,17 @@
 
 use pdfparser_ir::{Point, Rect, TextRun};
 
+/// Y-band tolerance as a fraction of median font size (space insertion / lines).
+const LINE_Y_TOL_FONT_FRAC: f32 = 0.25;
+/// Word-space insertion: gap vs font-size multiplier.
+const WORD_SPACE_FONT_FRAC: f32 = 0.25;
+/// Gaps larger than this × font size are column gutters, not word spaces.
+const MAX_WORD_GAP_FONT_MULT: f32 = 3.0;
+/// Spanning line if width ≥ this fraction of page width.
+const SPANNING_LINE_PAGE_FRAC: f32 = 0.80;
+/// Default median font size when none recorded.
+const DEFAULT_MEDIAN_FONT: f32 = 12.0;
+
 /// Apply page /Rotate to a point (R8 frozen matrices).
 pub fn rotate_point(p: Point, rotate: i32, media: Rect) -> Point {
     let r = rotate.rem_euclid(360);
@@ -58,7 +69,7 @@ pub fn insert_spaces(runs: &[TextRun]) -> Vec<TextRun> {
     let mut indexed: Vec<(usize, &TextRun)> = runs.iter().enumerate().collect();
     // group into bands
     let median_fs = median(runs.iter().map(|r| r.font_size).collect());
-    let y_tol = 0.25 * median_fs.max(1.0);
+    let y_tol = LINE_Y_TOL_FONT_FRAC * median_fs.max(1.0);
 
     indexed.sort_by(|a, b| {
         b.1.bbox
@@ -87,9 +98,9 @@ pub fn insert_spaces(runs: &[TextRun]) -> Vec<TextRun> {
                 .partial_cmp(&b.bbox.x0)
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
-        let space_w = 0.25 * median_fs.max(1.0);
+        let space_w = WORD_SPACE_FONT_FRAC * median_fs.max(1.0);
         // Gaps larger than this are column gutters, not word spaces.
-        let max_word_gap = median_fs.max(1.0) * 3.0;
+        let max_word_gap = median_fs.max(1.0) * MAX_WORD_GAP_FONT_MULT;
         for (i, run) in band.iter().enumerate() {
             if i > 0 {
                 let prev = band[i - 1];
@@ -136,8 +147,8 @@ pub fn reading_order_text(runs: &[TextRun]) -> String {
         return String::new();
     }
     let median_fs = median(runs.iter().map(|r| r.font_size).collect()).max(1.0);
-    let y_tol = 0.25 * median_fs;
-    let median_space = 0.25 * median_fs;
+    let y_tol = LINE_Y_TOL_FONT_FRAC * median_fs;
+    let median_space = WORD_SPACE_FONT_FRAC * median_fs;
     let g_col = 1.5 * median_space;
     let w_min = 3.0 * median_fs;
 
@@ -256,7 +267,7 @@ pub fn reading_order_text(runs: &[TextRun]) -> String {
     let full_w = (page_x1 - page_x0).max(1.0);
     for l in &lines {
         let w = l.x1 - l.x0;
-        if w >= full_w * 0.80 {
+        if w >= full_w * SPANNING_LINE_PAGE_FRAC {
             spanning.push(l);
             continue;
         }
@@ -290,7 +301,7 @@ pub fn paint_order_text(runs: &[TextRun]) -> String {
 
 fn median(mut v: Vec<f32>) -> f32 {
     if v.is_empty() {
-        return 12.0;
+        return DEFAULT_MEDIAN_FONT;
     }
     v.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
     v[v.len() / 2]

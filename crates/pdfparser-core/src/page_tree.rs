@@ -1,8 +1,13 @@
 //! Page tree walk with inheritance.
 use crate::error::{Error, Result};
+use crate::limits::hard_max;
 use crate::rect_from_object;
 use lopdf::{Document, Object, ObjectId};
 use pdfparser_ir::Rect;
+
+/// Fallback MediaBox when the page tree omits `/MediaBox` (US Letter).
+const DEFAULT_MEDIA_WIDTH: f32 = 612.0;
+const DEFAULT_MEDIA_HEIGHT: f32 = 792.0;
 
 /// One page summary.
 #[derive(Debug, Clone)]
@@ -80,7 +85,7 @@ fn walk_pages(
     out: &mut Vec<PageInfo>,
     depth: u32,
 ) -> Result<()> {
-    if depth > 64 {
+    if depth > hard_max::MAX_NESTING_DEPTH {
         return Err(Error::LimitExceeded {
             kind: crate::limits::LimitKind::NestingDepth,
         });
@@ -115,8 +120,8 @@ fn walk_pages(
         let media = next.media_box.unwrap_or(Rect {
             x0: 0.0,
             y0: 0.0,
-            x1: 612.0,
-            y1: 792.0,
+            x1: DEFAULT_MEDIA_WIDTH,
+            y1: DEFAULT_MEDIA_HEIGHT,
         });
         out.push(PageInfo {
             id,

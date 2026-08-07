@@ -40,16 +40,44 @@ fn filter_list(dict: &Dictionary) -> Vec<String> {
     }
 }
 
+/// Named PDF stream filter (content / image decode).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum StreamFilter {
+    Flate,
+    AsciiHex,
+    Ascii85,
+    RunLength,
+    Lzw,
+    Dct,
+}
+
+impl StreamFilter {
+    fn parse(name: &str) -> Option<Self> {
+        match name.trim_start_matches('/') {
+            "FlateDecode" | "Fl" => Some(Self::Flate),
+            "ASCIIHexDecode" | "AHx" => Some(Self::AsciiHex),
+            "ASCII85Decode" | "A85" => Some(Self::Ascii85),
+            "RunLengthDecode" | "RL" => Some(Self::RunLength),
+            "LZWDecode" | "LZW" => Some(Self::Lzw),
+            // JPEG: pass encoded bytes through for `image` crate decode.
+            "DCTDecode" | "DCT" => Some(Self::Dct),
+            _ => None,
+        }
+    }
+}
+
 fn apply_filter(name: &str, data: &[u8], dict: &Dictionary) -> Result<Vec<u8>> {
-    let n = name.trim_start_matches('/');
-    match n {
-        "FlateDecode" | "Fl" => decode_flate(data, dict),
-        "ASCIIHexDecode" | "AHx" => decode_ascii_hex(data),
-        "ASCII85Decode" | "A85" => decode_ascii85(data),
-        "RunLengthDecode" | "RL" => decode_run_length(data),
-        "LZWDecode" | "LZW" => decode_lzw(data),
-        // DCT etc. returned as raw for non-content or later
-        other => Err(Error::Unsupported(format!("filter {other}"))),
+    match StreamFilter::parse(name) {
+        Some(StreamFilter::Flate) => decode_flate(data, dict),
+        Some(StreamFilter::AsciiHex) => decode_ascii_hex(data),
+        Some(StreamFilter::Ascii85) => decode_ascii85(data),
+        Some(StreamFilter::RunLength) => decode_run_length(data),
+        Some(StreamFilter::Lzw) => decode_lzw(data),
+        Some(StreamFilter::Dct) => Ok(data.to_vec()),
+        None => Err(Error::Unsupported(format!(
+            "filter {}",
+            name.trim_start_matches('/')
+        ))),
     }
 }
 

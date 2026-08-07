@@ -1,5 +1,5 @@
 //! Content stream interpretation → TextRun IR + rule segments.
-#![allow(missing_docs)]
+#![deny(missing_docs)]
 
 mod lexer;
 mod vm;

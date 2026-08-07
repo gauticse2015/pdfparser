@@ -19,7 +19,7 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 rust-version = "1.75"
 authors = ["pdfparser contributors"]
-repository = "https://github.com/example/pdfparser"
+repository = "https://github.com/gauticse2015/pdfparser"
 
 [workspace.dependencies]
 pdfparser-ir = { path = "crates/pdfparser-ir", version = "0.1.0" }

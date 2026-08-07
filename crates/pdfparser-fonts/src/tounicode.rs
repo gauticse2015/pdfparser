@@ -80,8 +80,8 @@ impl ToUnicodeMap {
     }
 
     /// Look up a character code (or CID for Type0).
-    pub fn get(&self, code: u32) -> Option<String> {
-        self.map.get(&code).cloned()
+    pub fn get(&self, code: u32) -> Option<&str> {
+        self.map.get(&code).map(String::as_str)
     }
 
     /// Number of mapped codes (for diagnostics/tests).
@@ -256,10 +256,10 @@ mod tests {
             4 beginbfchar <0003> <0020> <002A> <0047> <0037> <0054> <0055> <0072> endbfchar \
             endcmap CMapName currentdict /CMap defineresource pop end end";
         let map = ToUnicodeMap::parse(data).expect("parse");
-        assert_eq!(map.get(0x03).as_deref(), Some(" "));
-        assert_eq!(map.get(0x2A).as_deref(), Some("G")); // * CID -> G
-        assert_eq!(map.get(0x37).as_deref(), Some("T")); // 7 CID -> T
-        assert_eq!(map.get(0x55).as_deref(), Some("r"));
+        assert_eq!(map.get(0x03), Some(" "));
+        assert_eq!(map.get(0x2A), Some("G")); // * CID -> G
+        assert_eq!(map.get(0x37), Some("T")); // 7 CID -> T
+        assert_eq!(map.get(0x55), Some("r"));
         assert!(map.len() >= 4);
     }
 
@@ -267,7 +267,7 @@ mod tests {
     fn parse_multiline_bfchar_still_works() {
         let data = b"2 beginbfchar\n<0041> <0041>\n<0042> <0042>\nendbfchar\n";
         let map = ToUnicodeMap::parse(data).expect("parse");
-        assert_eq!(map.get(0x41).as_deref(), Some("A"));
-        assert_eq!(map.get(0x42).as_deref(), Some("B"));
+        assert_eq!(map.get(0x41), Some("A"));
+        assert_eq!(map.get(0x42), Some("B"));
     }
 }
