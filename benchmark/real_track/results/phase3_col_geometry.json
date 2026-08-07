@@ -1,0 +1,19 @@
+{
+  "phase": 3,
+  "status": "FAIL",
+  "icdar": {
+    "f1": 0.8255813953488371,
+    "teds": 0.4586720349108515,
+    "row": 0.5,
+    "col": 0.5352112676056338
+  },
+  "real_core_cell_f1": 0.7700745642675092,
+  "vs_phase2": {
+    "f1": 0.0,
+    "teds": 0.0,
+    "row": 0.0,
+    "col": 0.0
+  },
+  "criteria": "col>=0.55 or +0.02 vs p2; shared guards",
+  "notes": "col 0.535 short of 0.55. Transient 0.558 had broken stream fixtures (orphan attach) \u2014 not shippable. lattice_v_span 0.35 tried, insufficient. Need densify_x / partial-V architecture for under-col (us-036/038/039 class)."
+}

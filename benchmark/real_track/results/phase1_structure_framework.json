@@ -1,0 +1,12 @@
+{
+  "phase": 1,
+  "status": "PASS",
+  "icdar": {
+    "f1": 0.831858407079646,
+    "teds": 0.46222041205881254,
+    "row": 0.48226950354609927,
+    "col": 0.5390070921985816
+  },
+  "real_core_cell_f1": 0.7382763731906249,
+  "criteria": "framework+taxonomy+profiles; no-regress F1/core only"
+}
