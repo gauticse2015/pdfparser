@@ -8,6 +8,8 @@
 //! Product Auto/Full call this via the page orchestrator (`use_engine_v2` +
 //! `!legacy_router`).
 
+#![allow(clippy::too_many_arguments)]
+
 use std::cmp::Ordering;
 
 use pdfparser_ir::Rect;

@@ -2,7 +2,7 @@
 
 use super::line::LineEvidence;
 use crate::raster::RasterPage;
-use crate::types::TableMethod;
+use crate::types::{EnginePath, TableMethod};
 use pdfparser_ir::{Rect, TextRun};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -120,8 +120,8 @@ pub struct EvidenceDiagnostics {
     pub strong_lattice_fired: bool,
     /// Method mix of final page tables.
     pub method_mix: MethodMix,
-    /// Engine path used: "legacy" or "engine_v2".
-    pub engine_path: String,
+    /// Engine path used for this page.
+    pub engine_path: EnginePath,
     /// Free-form notes.
     pub notes: Vec<String>,
 }

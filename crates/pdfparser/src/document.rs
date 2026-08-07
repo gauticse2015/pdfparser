@@ -1,6 +1,5 @@
 //! Document / Page handles.
 use crate::extract::{document_tables, page_elements, page_tables, page_text};
-use crate::font_load::load_page_fonts;
 use crate::options::{OpenOptions, TextOptions};
 use pdfparser_core::{Error, PdfDocument, Result};
 use pdfparser_ir::{Element, ExtractWarning, TextRun};
@@ -89,6 +88,11 @@ impl Document {
             table_opts,
             self.source_path.as_deref(),
         )
+    }
+
+    /// Full-document text IR (`schema_version` JSON-ready).
+    pub fn extract(&self, opts: &crate::ExtractOptions) -> Result<pdfparser_ir::ExtractedDocument> {
+        crate::extract::extract_document(&self.inner, opts)
     }
 
     /// Stitched logical tables only (Phase V D1).
@@ -181,13 +185,5 @@ impl Page {
     pub fn font_names(&self) -> Result<Vec<String>> {
         let refs = self.doc.page_font_map(self.index as usize)?;
         Ok(refs.into_iter().map(|(n, _)| n).collect())
-    }
-
-    #[allow(dead_code)]
-    pub(crate) fn load_fonts(
-        &self,
-    ) -> Result<std::collections::HashMap<String, pdfparser_fonts::LoadedFont>> {
-        let refs = self.doc.page_font_map(self.index as usize)?;
-        self.doc.with_doc(|d| Ok(load_page_fonts(d, &refs)))?
     }
 }

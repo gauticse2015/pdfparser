@@ -3,18 +3,17 @@
 //! # Product surface (GATE-5 / G5.3)
 //!
 //! [`TableOptions`] exposes **≤12 top-level public fields**. Numeric detector
-//! knobs live on nested [`TableAdvancedOptions`] and are reachable via
-//! [`std::ops::Deref`] / [`DerefMut`] so existing `opts.lattice_min_joints`
-//! call sites keep compiling. Serde flattens advanced knobs for JSON compat.
+//! knobs live on nested [`TableAdvancedOptions`] (`opts.advanced.*`).
+//! Serde flattens advanced knobs for JSON compat.
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use std::ops::{Deref, DerefMut};
 
 /// Which detectors to run.
 #[derive(Debug, Clone, Copy)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct TableModeSet {
-    /// Structure tree tables (unused today).
+    /// Structure-tree tables (PDF `/StructTreeRoot`). Reserved; product
+    /// detectors do not read this bit yet — leave `false` in Auto/Full.
     pub structure: bool,
     /// Ruled lattice.
     pub lattice: bool,
@@ -88,8 +87,8 @@ pub enum TablePreset {
 
 /// Nested detector knobs (not part of the ≤12 product surface).
 ///
-/// Accessed via [`TableOptions`] Deref, or `opts.advanced.*`. Subject to
-/// deprecation / policy versioning; prefer presets for product code.
+/// Accessed as `opts.advanced.*`. Subject to deprecation / policy versioning;
+/// prefer presets for product code.
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct TableAdvancedOptions {
@@ -234,7 +233,7 @@ impl Default for TableAdvancedOptions {
             nms_containment_frac: 0.82,
             exclusive_under_strong_lattice: true,
             lattice_collapse_overdense_h: true,
-            lattice_overdense_h_factor: 1.35,
+            lattice_overdense_h_factor: crate::TableTuning::default().lattice_overdense_h_factor,
             lattice_text_densify: true,
             raster_line_detect: true,
             raster_adaptive_radius: 6,
@@ -251,7 +250,10 @@ impl Default for TableAdvancedOptions {
 
 /// Public table options — **≤12 top-level fields** (product surface).
 ///
-/// Advanced knobs: [`TableAdvancedOptions`] via [`Self::advanced`] or Deref.
+/// [`Default`] is **detect off** (library-safe). Product Auto/Full is
+/// [`TableOptions::from_preset`] with [`TablePreset::Auto`].
+///
+/// Advanced knobs: [`TableAdvancedOptions`] via [`Self::advanced`].
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct TableOptions {
@@ -327,19 +329,6 @@ impl Default for TableOptions {
     }
 }
 
-impl Deref for TableOptions {
-    type Target = TableAdvancedOptions;
-    fn deref(&self) -> &Self::Target {
-        &self.advanced
-    }
-}
-
-impl DerefMut for TableOptions {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.advanced
-    }
-}
-
 impl TableOptions {
     /// Top-level product field count (must be ≤12 for GATE-5).
     pub const fn product_field_count() -> usize {
@@ -363,9 +352,54 @@ impl TableOptions {
         self.advanced.tuning.apply_overrides(pairs)
     }
 
-    /// Parse CLI-style `key=value` fragments into [`Self::tuning`].
+    /// Parse CLI-style `key=value` fragments into [`TableAdvancedOptions::tuning`].
     pub fn apply_tuning_kv_string(&mut self, s: &str) -> Result<(), String> {
         self.advanced.tuning.apply_kv_string(s)
+    }
+
+    /// Replace tuning with a document-class profile (then optional overrides).
+    ///
+    /// Also syncs `lattice_overdense_h_factor` onto advanced so form/other paths
+    /// that still read the advanced field stay consistent.
+    pub fn with_table_profile(mut self, profile: crate::TableProfile) -> Self {
+        self.apply_table_profile(profile);
+        self
+    }
+
+    /// In-place document-class profile.
+    pub fn apply_table_profile(&mut self, profile: crate::TableProfile) {
+        self.advanced.tuning = crate::TableTuning::from_profile(profile);
+        self.advanced.lattice_overdense_h_factor = self.advanced.tuning.lattice_overdense_h_factor;
+    }
+
+    /// Shared product Engine V2 base (Auto / Full / EngineV2 / HQ / Fast).
+    fn product_engine_v2(
+        shadow_diagnostics: bool,
+        enable_full_page_render: bool,
+        allow_auto_render: bool,
+    ) -> Self {
+        let mut o = Self {
+            detect_tables: true,
+            modes: TableModeSet {
+                structure: false,
+                lattice: true,
+                stream: true,
+                hybrid: true,
+            },
+            max_tables_per_page: 12,
+            stitch_multipage: true,
+            use_engine_v2: true,
+            legacy_router: false,
+            shadow_diagnostics,
+            enable_full_page_render,
+            allow_auto_render,
+            allow_classic_stream: false,
+            ..Self::default()
+        };
+        o.advanced.exclusive_under_strong_lattice = true;
+        o.advanced.min_confidence_stream = 0.62;
+        o.advanced.stream_max_prose_mean_chars = 48.0;
+        o
     }
 
     /// Apply a preset.
@@ -386,108 +420,13 @@ impl TableOptions {
                     stream: true,
                     hybrid: false,
                 },
-                // LatticeStream is the explicit classic/network experiment path.
                 allow_classic_stream: true,
                 ..Self::default()
             },
-            // Post flip: Auto/Full use exclusive Engine V2 router (parity with EngineV2).
-            TablePreset::Full | TablePreset::Auto => {
-                let mut o = Self {
-                    detect_tables: true,
-                    modes: TableModeSet {
-                        structure: false,
-                        lattice: true,
-                        stream: true,
-                        hybrid: true,
-                    },
-                    max_tables_per_page: 12,
-                    stitch_multipage: true,
-                    use_engine_v2: true,
-                    legacy_router: false,
-                    shadow_diagnostics: false,
-                    enable_full_page_render: false,
-                    allow_auto_render: true,
-                    allow_classic_stream: false,
-                    ..Self::default()
-                };
-                o.exclusive_under_strong_lattice = true;
-                o.min_confidence_stream = 0.62;
-                o.stream_max_prose_mean_chars = 48.0;
-                o
-            }
-            TablePreset::EngineV2 => {
-                let mut o = Self {
-                    detect_tables: true,
-                    modes: TableModeSet {
-                        structure: false,
-                        lattice: true,
-                        stream: true,
-                        hybrid: true,
-                    },
-                    max_tables_per_page: 12,
-                    stitch_multipage: true,
-                    use_engine_v2: true,
-                    legacy_router: false,
-                    shadow_diagnostics: true,
-                    enable_full_page_render: false,
-                    allow_auto_render: true,
-                    allow_classic_stream: false,
-                    ..Self::default()
-                };
-                o.exclusive_under_strong_lattice = true;
-                o.min_confidence_stream = 0.62;
-                o.stream_max_prose_mean_chars = 48.0;
-                o
-            }
-            TablePreset::HighQuality => {
-                let mut o = Self {
-                    detect_tables: true,
-                    modes: TableModeSet {
-                        structure: false,
-                        lattice: true,
-                        stream: true,
-                        hybrid: true,
-                    },
-                    max_tables_per_page: 12,
-                    stitch_multipage: true,
-                    use_engine_v2: true,
-                    legacy_router: false,
-                    shadow_diagnostics: true,
-                    enable_full_page_render: true,
-                    allow_auto_render: true,
-                    allow_classic_stream: false,
-                    ..Self::default()
-                };
-                o.exclusive_under_strong_lattice = true;
-                o.min_confidence_stream = 0.62;
-                o.stream_max_prose_mean_chars = 48.0;
-                o
-            }
-            TablePreset::Fast => {
-                let mut o = Self {
-                    detect_tables: true,
-                    modes: TableModeSet {
-                        structure: false,
-                        lattice: true,
-                        stream: true,
-                        hybrid: true,
-                    },
-                    max_tables_per_page: 12,
-                    stitch_multipage: true,
-                    use_engine_v2: true,
-                    legacy_router: false,
-                    shadow_diagnostics: false,
-                    // Hard off: no explicit and no opportunistic full-page render.
-                    enable_full_page_render: false,
-                    allow_auto_render: false,
-                    allow_classic_stream: false,
-                    ..Self::default()
-                };
-                o.exclusive_under_strong_lattice = true;
-                o.min_confidence_stream = 0.62;
-                o.stream_max_prose_mean_chars = 48.0;
-                o
-            }
+            TablePreset::Full | TablePreset::Auto => Self::product_engine_v2(false, false, true),
+            TablePreset::EngineV2 => Self::product_engine_v2(true, false, true),
+            TablePreset::HighQuality => Self::product_engine_v2(true, true, true),
+            TablePreset::Fast => Self::product_engine_v2(false, false, false),
         }
     }
 }
@@ -535,9 +474,9 @@ mod tests {
     #[test]
     fn deref_advanced_knobs() {
         let mut o = TableOptions::default();
-        o.lattice_min_joints = 9;
+        o.advanced.lattice_min_joints = 9;
         assert_eq!(o.advanced.lattice_min_joints, 9);
-        assert_eq!(o.lattice_min_joints, 9);
+        assert_eq!(o.advanced.lattice_min_joints, 9);
     }
 
     #[test]
@@ -545,10 +484,10 @@ mod tests {
         let mut o = TableOptions::from_preset(TablePreset::Auto);
         o.apply_tuning_kv_string("densify_y_skip_numeric_frac=0.05")
             .unwrap();
-        assert!((o.tuning.densify_y_skip_numeric_frac - 0.05).abs() < 1e-6);
+        assert!((o.advanced.tuning.densify_y_skip_numeric_frac - 0.05).abs() < 1e-6);
         let o2 = TableOptions::from_preset(TablePreset::Auto)
             .with_tuning_override("densify_x_explode_abs_cols", 20.0)
             .unwrap();
-        assert_eq!(o2.tuning.densify_x_explode_abs_cols, 20);
+        assert_eq!(o2.advanced.tuning.densify_x_explode_abs_cols, 20);
     }
 }

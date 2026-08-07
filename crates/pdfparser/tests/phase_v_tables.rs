@@ -19,7 +19,7 @@ fn text_opts() -> TextOptions {
 }
 
 fn table_opts() -> TableOptions {
-    TableOptions::from_preset(TablePreset::Full)
+    TableOptions::from_preset(TablePreset::Auto)
 }
 
 #[test]
@@ -220,13 +220,7 @@ fn hard_sensing(name: &str) -> PathBuf {
 #[test]
 fn precision_prose_not_stream_75() {
     let path = hard_precision("75_prose_not_stream.pdf");
-    if !path.is_file() {
-        eprintln!(
-            "skip precision_prose_not_stream_75: missing {}",
-            path.display()
-        );
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)
@@ -246,13 +240,7 @@ fn precision_prose_not_stream_75() {
 #[test]
 fn precision_caption_not_extra_table_76() {
     let path = hard_precision("76_caption_not_table.pdf");
-    if !path.is_file() {
-        eprintln!(
-            "skip precision_caption_not_extra_table_76: missing {}",
-            path.display()
-        );
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)
@@ -280,13 +268,7 @@ fn precision_caption_not_extra_table_76() {
 #[test]
 fn precision_phantom_verticals_81() {
     let path = hard_precision("81_phantom_verticals.pdf");
-    if !path.is_file() {
-        eprintln!(
-            "skip precision_phantom_verticals_81: missing {}",
-            path.display()
-        );
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)
@@ -306,10 +288,7 @@ fn precision_phantom_verticals_81() {
 #[test]
 fn precision_span_header_79() {
     let path = hard_precision("79_span_header_precision.pdf");
-    if !path.is_file() {
-        eprintln!("skip precision_span_header_79: missing {}", path.display());
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)
@@ -372,10 +351,7 @@ fn precision_span_header_79() {
 #[test]
 fn hard_row_span_54() {
     let path = hard("54_row_span_categories.pdf");
-    if !path.is_file() {
-        eprintln!("skip hard_row_span_54: missing {}", path.display());
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)
@@ -407,10 +383,7 @@ fn hard_row_span_54() {
 #[test]
 fn hard_column_span_53() {
     let path = hard("53_column_span_header.pdf");
-    if !path.is_file() {
-        eprintln!("skip hard_column_span_53: missing {}", path.display());
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)
@@ -603,7 +576,7 @@ fn sensing_borderless_prose_gap_92() {
     // across the note; the win condition is still one ~28×8 table (not two halves).
 }
 
-/// OPEN STRUGGLE 93: gold 12×5 lattice; baseline often collapses to H-line count (e.g. 4×5).
+/// Gold: one 12×5 lattice (partial body H-lines recovered via text densify).
 #[test]
 fn sensing_partial_body_hlines_93() {
     let path = hard_sensing("93_partial_body_hlines.pdf");
@@ -633,30 +606,20 @@ fn sensing_partial_body_hlines_93() {
             .collect::<Vec<_>>()
     );
     let t = &tabs[0];
-    assert_eq!(t.cols, 5, "cols should be 5, got {}", t.cols);
-    if (t.rows, t.cols) == (12, 5) {
-        // Fixed: full gold shape.
-        assert_eq!(t.method, TableMethod::Lattice);
-        let blob = cell_blob(&tabs);
-        for need in ["Metric", "TOKEN_S93_R1", "TOKEN_S93_LAST", "M01", "M11"] {
-            assert!(blob.contains(need), "missing {need}");
-        }
-    } else {
-        // Documented open struggle: row undercount vs 12×5 gold.
-        eprintln!(
-            "OPEN STRUGGLE 93: got {:?}/{:?} (target 12×5 lattice) — row recovery incomplete",
-            (t.rows, t.cols),
-            t.method
-        );
-        assert!(
-            t.rows >= 3 && t.rows < 12,
-            "unexpected residual shape {:?}",
-            (t.rows, t.cols)
-        );
+    assert_eq!(t.method, TableMethod::Lattice);
+    assert_eq!(
+        (t.rows, t.cols),
+        (12, 5),
+        "expected 12×5 lattice, got {:?}",
+        (t.rows, t.cols, t.method)
+    );
+    let blob = cell_blob(&tabs);
+    for need in ["Metric", "TOKEN_S93_R1", "TOKEN_S93_LAST", "M01", "M11"] {
+        assert!(blob.contains(need), "missing {need}");
     }
 }
 
-/// OPEN STRUGGLE 94: gold items-only 4×5; baseline may keep totals as extra rows (6×5).
+/// Gold: items-only 4×5 lattice (invoice totals stay outside the grid).
 #[test]
 fn sensing_invoice_totals_under_grid_94() {
     let path = hard_sensing("94_invoice_totals_under_grid.pdf");
@@ -687,29 +650,19 @@ fn sensing_invoice_totals_under_grid_94() {
             .collect::<Vec<_>>()
     );
     let t = &tabs[0];
-    assert_eq!(t.cols, 5, "cols should be 5, got {}", t.cols);
+    assert_eq!(
+        (t.rows, t.cols),
+        (4, 5),
+        "expected 4×5 items grid, got {:?}",
+        (t.rows, t.cols, t.method)
+    );
     let blob = cell_blob(&tabs);
     for need in ["SKU-A", "TOKEN_S94_A", "SKU-C", "200", "30"] {
         assert!(blob.contains(need), "missing {need} in {blob}");
     }
-    if (t.rows, t.cols) == (4, 5) {
-        // Fixed: footer/totals stripped from grid.
-    } else {
-        eprintln!(
-            "OPEN STRUGGLE 94: got {:?}/{:?} (target 4×5) — totals rows still in lattice",
-            (t.rows, t.cols),
-            t.method
-        );
-        // Soft gate: still a single 5-col items grid (not exploded into many tables).
-        assert!(
-            (4..=8).contains(&t.rows),
-            "unexpected residual shape {:?}",
-            (t.rows, t.cols)
-        );
-    }
 }
 
-/// OPEN STRUGGLE 95: gold n=1 lattice 3×2; baseline may also emit stream FP on word columns.
+/// Gold: exactly one 3×2 lattice; multi-column prose is not a second table.
 #[test]
 fn sensing_multicolumn_prose_not_table_95() {
     let path = hard_sensing("95_multicolumn_prose_not_table.pdf");
@@ -729,49 +682,26 @@ fn sensing_multicolumn_prose_not_table_95() {
         .unwrap()
         .tables(&text_opts(), &table_opts())
         .unwrap();
-    let lattice_32: Vec<_> = tabs
-        .iter()
-        .filter(|t| t.method == TableMethod::Lattice && t.rows == 3 && t.cols == 2)
-        .collect();
     assert_eq!(
-        lattice_32.len(),
+        tabs.len(),
         1,
-        "expect exactly one 3×2 lattice, got {:?}",
+        "expect n=1 3x2 lattice, got {:?}",
         tabs.iter()
             .map(|t| (t.rows, t.cols, t.method))
             .collect::<Vec<_>>()
     );
+    assert_eq!(tabs[0].method, TableMethod::Lattice);
+    assert_eq!((tabs[0].rows, tabs[0].cols), (3, 2));
     let blob = cell_blob(&tabs);
     for need in ["Key", "TOKEN_S95_T", "beta", "1", "2"] {
-        assert!(blob.contains(need), "missing {need} in {blob}");
-    }
-    if tabs.len() == 1 {
-        // Fixed: multicolumn prose no longer stream-detected.
-        assert_eq!((tabs[0].rows, tabs[0].cols), (3, 2));
-    } else {
-        eprintln!(
-            "OPEN STRUGGLE 95: n={} shapes={:?} (target n=1 3×2 lattice) — stream FP on prose columns",
-            tabs.len(),
-            tabs.iter().map(|t| (t.rows, t.cols, t.method)).collect::<Vec<_>>()
-        );
-        // Soft gate: do not explode beyond lattice + one stream FP region.
-        assert!(
-            tabs.len() <= 2,
-            "over-detect: too many tables {:?}",
-            tabs.iter()
-                .map(|t| (t.rows, t.cols, t.method))
-                .collect::<Vec<_>>()
-        );
+        assert!(blob.contains(need), "missing {need}");
     }
 }
 
 #[test]
 fn stream_multi_region_59() {
     let path = hard("59_stream_multi_region.pdf");
-    if !path.is_file() {
-        eprintln!("skip stream_multi_region_59: missing {}", path.display());
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)
@@ -817,9 +747,7 @@ fn stream_multi_region_59() {
 #[test]
 fn two_close_grids_62() {
     let path = hard("62_two_close_grids.pdf");
-    if !path.is_file() {
-        return;
-    }
+    assert!(path.is_file(), "missing fixture {}", path.display());
     let doc = Document::open(&path).unwrap();
     let tabs = doc
         .page(0)

@@ -1,6 +1,6 @@
 //! pdfparser CLI — text + Phase V tables.
 use clap::{Parser, Subcommand, ValueEnum};
-use pdfparser::{Document, TableOptions, TablePreset, TextOptions};
+use pdfparser::{Document, EnginePath, TableOptions, TablePreset, TableProfile, TextOptions};
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::time::Instant;
@@ -54,6 +54,12 @@ enum Commands {
         /// Force legacy soup NMS router (rollback / A/B). Overrides Auto Engine V2 path.
         #[arg(long)]
         legacy_router: bool,
+        /// Document-class table tuning profile (geometry class, not corpus ids).
+        ///
+        /// Values: default, sparse_ruled, prose_grid, sparse_v_numeric, multi_level_header.
+        /// Applied before `--table-setting` overrides.
+        #[arg(long = "table-profile", value_name = "NAME")]
+        table_profile: Option<String>,
         /// Override table geometry/densify tuning (`key=value`, repeatable).
         ///
         /// Example: `--table-setting densify_y_skip_numeric_frac=0.10`
@@ -114,19 +120,21 @@ fn main() -> ExitCode {
             pages,
             dump_evidence,
             legacy_router,
+            table_profile,
             table_settings,
         } => {
             let want_tables = tables
                 || tables_hq
                 || table_preset.is_some()
                 || dump_evidence
+                || table_profile.is_some()
                 || !table_settings.is_empty();
-            match run_extract(
+            match run_extract(ExtractArgs {
                 path,
                 format,
                 paint_order,
                 no_rotate,
-                want_tables,
+                tables: want_tables,
                 tables_hq,
                 table_preset,
                 no_stitch,
@@ -134,8 +142,9 @@ fn main() -> ExitCode {
                 pages,
                 dump_evidence,
                 legacy_router,
+                table_profile,
                 table_settings,
-            ) {
+            }) {
                 Ok(()) => ExitCode::SUCCESS,
                 Err(e) => {
                     eprintln!("error: {e}");
@@ -153,8 +162,7 @@ fn main() -> ExitCode {
     }
 }
 
-#[allow(clippy::too_many_arguments)] // CLI flag surface maps 1:1 to extract options
-fn run_extract(
+struct ExtractArgs {
     path: PathBuf,
     format: OutFormat,
     paint_order: bool,
@@ -167,8 +175,27 @@ fn run_extract(
     pages: Option<String>,
     dump_evidence: bool,
     legacy_router: bool,
+    table_profile: Option<String>,
     table_settings: Vec<String>,
-) -> Result<(), String> {
+}
+
+fn run_extract(a: ExtractArgs) -> Result<(), String> {
+    let ExtractArgs {
+        path,
+        format,
+        paint_order,
+        no_rotate,
+        tables,
+        tables_hq,
+        table_preset,
+        no_stitch,
+        page_tables,
+        pages,
+        dump_evidence,
+        legacy_router,
+        table_profile,
+        table_settings,
+    } = a;
     let t0 = Instant::now();
     let doc = Document::open(&path).map_err(|e| e.to_string())?;
     let text_opts = TextOptions {
@@ -176,6 +203,7 @@ fn run_extract(
         insert_spaces: true,
         apply_page_rotate: !no_rotate,
         include_invisible: true,
+        expand_forms: true,
     };
     let mut table_opts = if let Some(ref p) = table_preset {
         TableOptions::from_preset(p.to_preset())
@@ -191,6 +219,10 @@ fn run_extract(
     }
     if dump_evidence {
         table_opts.shadow_diagnostics = true;
+    }
+    if let Some(ref name) = table_profile {
+        let profile = TableProfile::parse(name).map_err(|e| format!("--table-profile: {e}"))?;
+        table_opts.apply_table_profile(profile);
     }
     if legacy_router {
         table_opts.legacy_router = true;
@@ -225,7 +257,11 @@ fn run_extract(
                 "n_tables": tabs.len(),
                 "methods": tabs.iter().map(|t| format!("{:?} {}x{}", t.method, t.rows, t.cols)).collect::<Vec<_>>(),
                 "notes": tabs.iter().map(|t| t.notes.clone()).collect::<Vec<_>>(),
-                "engine_hint": if table_opts.use_engine_v2 && !table_opts.legacy_router { "engine_v2" } else { "legacy" },
+                "engine_path": if table_opts.use_engine_v2 && !table_opts.legacy_router {
+                    EnginePath::EngineV2.as_str()
+                } else {
+                    EnginePath::Legacy.as_str()
+                },
             }));
         }
         let ev = serde_json::json!({

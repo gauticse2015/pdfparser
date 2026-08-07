@@ -3,6 +3,7 @@
 //! Product Auto/Full use this policy via [`ProposalPolicy::from_options`] so
 //! thresholds stay aligned with [`crate::TableOptions`] (single source of truth).
 
+use crate::constants::LETTER_PAGE_AREA;
 use crate::evidence::RegionKind;
 use crate::options::TableOptions;
 use pdfparser_ir::Rect;
@@ -76,15 +77,15 @@ impl ProposalPolicy {
     pub fn from_options(opts: &TableOptions) -> Self {
         // Ruled joint gate: at least lattice min joints, never below design floor 4.
         let mut p = Self {
-            min_joints_ruled: opts.lattice_min_joints.max(4),
-            whitespace_reject: opts.lattice_empty_frac_reject.clamp(0.5, 0.99),
-            allow_text_densify: opts.lattice_text_densify,
+            min_joints_ruled: opts.advanced.lattice_min_joints.max(4),
+            whitespace_reject: opts.advanced.lattice_empty_frac_reject.clamp(0.5, 0.99),
+            allow_text_densify: opts.advanced.lattice_text_densify,
             ..Self::default()
         };
         // Area floor as fraction of letter-ish page when options give absolute area.
         // Callers still pass real page area into area_frac on proposals.
-        if opts.lattice_min_table_area > 0.0 {
-            p.min_area_frac = (opts.lattice_min_table_area / (612.0 * 792.0)).max(1e-5);
+        if opts.advanced.lattice_min_table_area > 0.0 {
+            p.min_area_frac = (opts.advanced.lattice_min_table_area / LETTER_PAGE_AREA).max(1e-5);
         }
         p
     }
@@ -320,9 +321,9 @@ mod tests {
     #[test]
     fn from_options_aligns_joint_and_densify() {
         let mut opts = crate::options::TableOptions::default();
-        opts.lattice_min_joints = 6;
-        opts.lattice_text_densify = false;
-        opts.lattice_empty_frac_reject = 0.88;
+        opts.advanced.lattice_min_joints = 6;
+        opts.advanced.lattice_text_densify = false;
+        opts.advanced.lattice_empty_frac_reject = 0.88;
         let p = ProposalPolicy::from_options(&opts);
         assert_eq!(p.min_joints_ruled, 6);
         assert!(!p.allow_text_densify);

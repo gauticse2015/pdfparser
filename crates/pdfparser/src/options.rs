@@ -20,6 +20,10 @@ pub struct TextOptions {
     pub apply_page_rotate: bool,
     /// Include invisible text (Tr=3).
     pub include_invisible: bool,
+    /// Expand Form XObjects so text painted only via `/Do` is extracted.
+    ///
+    /// Default **true**. Set false for a paint-order dump of the page stream alone.
+    pub expand_forms: bool,
 }
 
 impl Default for TextOptions {
@@ -29,6 +33,7 @@ impl Default for TextOptions {
             insert_spaces: true,
             apply_page_rotate: true,
             include_invisible: true,
+            expand_forms: true,
         }
     }
 }

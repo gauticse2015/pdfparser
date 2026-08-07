@@ -1,6 +1,11 @@
 //! Multi-page table stitcher.
+#![allow(clippy::field_reassign_with_default)]
+
 use crate::options::TableOptions;
 use crate::types::{PipelineId, Table, TableCell};
+
+/// Default header-row similarity to treat a continued page as repeating the header.
+const DEFAULT_STITCH_HEADER_SIM: f32 = 0.85;
 
 /// Stitch multi-page table fragments in-place (flags + logical_table_id).
 ///
@@ -28,7 +33,8 @@ pub fn stitch_document(page_tables: &mut [Vec<Table>], page_heights: &[f32], opt
             .iter()
             .enumerate()
             .filter(|(_, t)| {
-                !t.continued_to_next_page && in_bottom_band(t, h_prev, opts.stitch_band_frac)
+                !t.continued_to_next_page
+                    && in_bottom_band(t, h_prev, opts.advanced.stitch_band_frac)
             })
             .map(|(idx, _)| idx)
             .collect();
@@ -36,7 +42,8 @@ pub fn stitch_document(page_tables: &mut [Vec<Table>], page_heights: &[f32], opt
             .iter()
             .enumerate()
             .filter(|(_, t)| {
-                !t.continued_from_previous_page && in_top_band(t, h_cur, opts.stitch_band_frac)
+                !t.continued_from_previous_page
+                    && in_top_band(t, h_cur, opts.advanced.stitch_band_frac)
             })
             .map(|(idx, _)| idx)
             .collect();
@@ -143,7 +150,7 @@ fn merge_fragments(frags: &[&Table]) -> Option<Table> {
         if frag.cols != cols {
             continue;
         }
-        let skip = if header_sim(first, frag) >= 0.85 {
+        let skip = if header_sim(first, frag) >= DEFAULT_STITCH_HEADER_SIM {
             header_rows
         } else {
             0
@@ -245,12 +252,13 @@ fn stitch_score(a: &Table, b: &Table, opts: &TableOptions) -> Option<f32> {
         _ => {}
     }
     let col_dx = mean_col_dx(a, b);
-    let max_dx = opts.stitch_max_col_dx;
+    let max_dx = opts.advanced.stitch_max_col_dx;
     if col_dx > max_dx {
         return None;
     }
     let hs = header_sim(a, b);
-    let header_ok = hs >= opts.stitch_min_header_sim || headers_subset(a, b) || b.header_rows == 0;
+    let header_ok =
+        hs >= opts.advanced.stitch_min_header_sim || headers_subset(a, b) || b.header_rows == 0;
     // Same-shape multi-row grids with aligned columns can continue without header copy
     let continuation_ok = a.cols >= 3 && a.rows >= 4 && b.rows >= 2 && col_dx <= max_dx * 0.7;
     if !header_ok && !continuation_ok {
@@ -461,9 +469,9 @@ mod tests {
         let heights = [792.0f32, 792.0];
         let mut opts = TableOptions::default();
         opts.stitch_multipage = true;
-        opts.stitch_band_frac = 0.30;
-        opts.stitch_max_col_dx = 12.0;
-        opts.stitch_min_header_sim = 0.85;
+        opts.advanced.stitch_band_frac = 0.30;
+        opts.advanced.stitch_max_col_dx = 12.0;
+        opts.advanced.stitch_min_header_sim = 0.85;
         stitch_document(&mut pages, &heights, &opts);
         assert!(
             pages[0][0].continued_to_next_page && pages[1][0].continued_from_previous_page,

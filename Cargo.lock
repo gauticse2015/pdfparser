@@ -534,10 +534,7 @@ dependencies = [
  "pdfparser-ir",
  "pdfparser-layout",
  "pdfparser-tables",
- "serde",
  "serde_json",
- "thiserror",
- "tracing",
 ]
 
 [[package]]

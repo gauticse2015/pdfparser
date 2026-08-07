@@ -1,4 +1,6 @@
 //! Stream detector: whitespace-aligned columns without ruling lines.
+#![allow(clippy::needless_range_loop)]
+
 use crate::geom::{
     alignment_score, band_runs, bbox_of_cells, cells_from_grid, cluster_coords,
     column_separation_score, median_font_size, row_consistency_score,
@@ -41,10 +43,11 @@ pub fn detect_stream_tables(page_index: u32, runs: &[TextRun], opts: &TableOptio
     // Top → bottom (PDF y decreases downward).
     multi_centers.sort_by(|a, b| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Equal));
 
-    let min_bands = opts.stream_min_body_bands.max(3) as usize;
+    let min_bands = opts.advanced.stream_min_body_bands.max(3) as usize;
     // Large inter-band gap → candidate region split (prose / whitespace island).
     // Later re-merge if column structure matches (mid-table note, not two tables).
-    let gap_thresh = (opts.stream_region_gap_font_mult * fs).max(opts.stream_region_gap_min);
+    let gap_thresh =
+        (opts.advanced.stream_region_gap_font_mult * fs).max(opts.advanced.stream_region_gap_min);
     let raw_groups = split_band_groups(&multi_centers, gap_thresh);
     let groups = merge_aligned_band_groups(&body, &multi_centers, &raw_groups, fs, y_tol);
 
@@ -256,7 +259,7 @@ pub fn detect_stream_region(
     let bands = band_runs(&owned, y_tol);
 
     let multi: Vec<&Vec<&TextRun>> = bands.iter().filter(|b| b.len() >= 2).collect();
-    let min_bands = opts.stream_min_body_bands.max(3) as usize;
+    let min_bands = opts.advanced.stream_min_body_bands.max(3) as usize;
     if multi.len() < min_bands {
         return Vec::new();
     }
@@ -397,7 +400,7 @@ pub fn detect_stream_region(
     }
     ys.push(y_centers[y_centers.len() - 1] - fs * 0.65);
 
-    let (cells, filled) = cells_from_grid(&owned, &xs, &ys, opts.min_cell_size);
+    let (cells, filled) = cells_from_grid(&owned, &xs, &ys, opts.advanced.min_cell_size);
     if cells.is_empty() || filled < 4 {
         return Vec::new();
     }
@@ -425,7 +428,7 @@ pub fn detect_stream_region(
     }
 
     let col_sep = column_separation_score(&xs, fs);
-    if col_sep < opts.stream_min_col_sep {
+    if col_sep < opts.advanced.stream_min_col_sep {
         return Vec::new();
     }
 
@@ -441,7 +444,7 @@ pub fn detect_stream_region(
     let num_dens = numeric_density(&cells);
 
     // Layout rejects (geometry/stats only)
-    if mean_chars >= opts.stream_max_prose_mean_chars && max_col <= 2 && num_dens < 0.25 {
+    if mean_chars >= opts.advanced.stream_max_prose_mean_chars && max_col <= 2 && num_dens < 0.25 {
         return Vec::new();
     }
     // Two-column aligned word lists (magazine/article multi-col layout, glossary
@@ -484,11 +487,14 @@ pub fn detect_stream_region(
         + 0.15 * alignment
         + 0.10 * (total as f32 / 6.0).min(1.0))
     .clamp(0.0, 1.0);
-    if mean_chars > opts.stream_max_prose_mean_chars * 0.8 && num_dens < 0.15 && max_col <= 2 {
+    if mean_chars > opts.advanced.stream_max_prose_mean_chars * 0.8
+        && num_dens < 0.15
+        && max_col <= 2
+    {
         confidence *= 0.65;
     }
 
-    if confidence < opts.min_confidence_stream {
+    if confidence < opts.advanced.min_confidence_stream {
         return Vec::new();
     }
 

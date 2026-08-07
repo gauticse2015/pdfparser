@@ -6,6 +6,10 @@
 //! Thresholds that often need document-type tuning flow through
 //! [`DensifyParams`] (sourced from [`crate::TableTuning`]).
 
+#![allow(clippy::needless_range_loop)]
+#![allow(clippy::collapsible_if)]
+#![allow(clippy::manual_div_ceil)]
+
 use crate::geom::cluster_coords;
 use crate::types::TableCell;
 use pdfparser_ir::TextRun;
@@ -32,7 +36,8 @@ impl Default for DensifyParams {
     }
 }
 
-/// of rows, then blocked densify (`text_row_recovery` short-circuit).
+/// Collapse false underline H rules when H-row count far exceeds multi-col
+/// text bands. Returns `None` when the grid is consistent (no collapse).
 pub(crate) fn collapse_overdense_h_from_text(
     y_ttb: &[f32],
     runs: &[TextRun],
@@ -93,7 +98,10 @@ pub(crate) fn collapse_overdense_h_from_text(
 }
 
 /// Multi-col text band centers (top-to-bottom) inside frame defined by y_ttb extremes.
-fn multi_col_band_centers(
+///
+/// Used by densify growth policy: densified row count must stay supported by
+/// multi-column text evidence (generic geometry — not corpus-specific).
+pub(crate) fn multi_col_band_centers(
     runs: &[TextRun],
     frame_x0: f32,
     frame_x1: f32,
@@ -970,7 +978,14 @@ pub(crate) fn densify_y_from_text_bands(
         // (e.g. multi-line header wrapped once) is normal in a full-H grid and
         // must not create phantom rows. Sparse body H leaves many bands/gap.
         // Require table-scale pitch between bands (wrapped lines are ~1em).
-        let min_in_gap = 3;
+        // Small-under recovery: allow 2 bands when the H gap is tall enough for
+        // two table-scale body rows (missing intermediate H rule).
+        let gap_h = gap_top - gap_bot;
+        let min_in_gap = if small_under_only && body_pitch > 0.0 && gap_h >= body_pitch * 1.7 {
+            2
+        } else {
+            3
+        };
         if in_gap.len() >= min_in_gap {
             // Separators only between table-scale bands; wrap lines (~≤1em) skip.
             let min_band_pitch = (min_cell.max(3.0)).max(fs * 1.02);

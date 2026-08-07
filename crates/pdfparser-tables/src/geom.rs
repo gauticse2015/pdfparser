@@ -436,21 +436,9 @@ pub fn runs_in_rect(runs: &[TextRun], r: Rect, pad: f32) -> Vec<&TextRun> {
         .collect()
 }
 
-/// IoU of two rects.
+/// IoU of two rects (delegates to [`crate::policy::rect_iou`] — single implementation).
 pub fn iou(a: Rect, b: Rect) -> f32 {
-    let x0 = a.x0.max(b.x0);
-    let y0 = a.y0.max(b.y0);
-    let x1 = a.x1.min(b.x1);
-    let y1 = a.y1.min(b.y1);
-    let w = (x1 - x0).max(0.0);
-    let h = (y1 - y0).max(0.0);
-    let inter = w * h;
-    let ua = a.width() * a.height() + b.width() * b.height() - inter;
-    if ua <= 0.0 {
-        0.0
-    } else {
-        inter / ua
-    }
+    crate::policy::rect_iou(a, b)
 }
 
 #[cfg(test)]

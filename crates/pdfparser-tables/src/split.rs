@@ -1,4 +1,6 @@
 //! Side-by-side anti over-segmentation: split fused tables on empty gutters.
+#![allow(clippy::field_reassign_with_default)]
+
 use crate::geom::bbox_of_cells;
 use crate::options::TableOptions;
 use crate::types::{PipelineId, Table, TableCell, TableMethod};
@@ -124,11 +126,11 @@ fn try_split_gutter(t: &Table, _runs: &[TextRun], opts: &TableOptions) -> Option
         .collect();
     ws.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
     let median_w = if ws.is_empty() {
-        opts.min_gutter_gap
+        opts.advanced.min_gutter_gap
     } else {
         ws[ws.len() / 2]
     };
-    if gap < opts.min_gutter_gap || gap < median_w * opts.min_gutter_vs_col {
+    if gap < opts.advanced.min_gutter_gap || gap < median_w * opts.advanced.min_gutter_vs_col {
         return None;
     }
 
@@ -300,9 +302,9 @@ mod tests {
         let t = fused_table();
         let mut opts = TableOptions::default();
         opts.detect_tables = true;
-        opts.side_by_side_split = true;
-        opts.min_gutter_gap = 15.0;
-        opts.min_gutter_vs_col = 0.6;
+        opts.advanced.side_by_side_split = true;
+        opts.advanced.min_gutter_gap = 15.0;
+        opts.advanced.min_gutter_vs_col = 0.6;
         let out = split_side_by_side(vec![t], &[], &opts);
         assert_eq!(
             out.len(),
