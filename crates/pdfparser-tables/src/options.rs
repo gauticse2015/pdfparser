@@ -435,6 +435,18 @@ impl TableOptions {
 mod tests {
     use super::*;
 
+    /// Compile-time: `TableOptions` must not implement `Deref`.
+    /// Re-adding `impl Deref<Target = TableAdvancedOptions>` makes `AmbiguousIfImpl<_>` fail.
+    const _: fn() = || {
+        struct Check<T: ?Sized>(core::marker::PhantomData<T>);
+        trait AmbiguousIfImpl<A> {
+            fn check() {}
+        }
+        impl<T: ?Sized> AmbiguousIfImpl<()> for Check<T> {}
+        impl<T: ?Sized + std::ops::Deref> AmbiguousIfImpl<u8> for Check<T> {}
+        <Check<TableOptions> as AmbiguousIfImpl<_>>::check();
+    };
+
     #[test]
     fn product_surface_at_most_12() {
         assert!(
@@ -443,6 +455,7 @@ mod tests {
             TableOptions::product_field_count()
         );
         assert_eq!(PRODUCT_TABLE_OPTION_FIELDS.len(), 12);
+        assert_eq!(TableOptions::product_field_count(), 12);
     }
 
     #[test]
@@ -472,11 +485,16 @@ mod tests {
     }
 
     #[test]
-    fn deref_advanced_knobs() {
+    fn no_deref_advanced_knobs() {
+        // Knobs live on `opts.advanced` only (no Deref to TableAdvancedOptions).
         let mut o = TableOptions::default();
         o.advanced.lattice_min_joints = 9;
         assert_eq!(o.advanced.lattice_min_joints, 9);
-        assert_eq!(o.advanced.lattice_min_joints, 9);
+        assert_eq!(PRODUCT_TABLE_OPTION_FIELDS.len(), 12);
+        assert!(
+            !PRODUCT_TABLE_OPTION_FIELDS.contains(&"lattice_min_joints"),
+            "advanced knobs must not leak onto the 12-field product surface"
+        );
     }
 
     #[test]
