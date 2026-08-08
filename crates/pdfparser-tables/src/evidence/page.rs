@@ -126,23 +126,77 @@ pub struct EvidenceDiagnostics {
     pub notes: Vec<String>,
 }
 
-/// Full page evidence for table detection.
+/// Full page evidence for table detection (diagnostics path in P1.2).
+///
+/// Product Auto/Fast detect does **not** construct this type. Builders still
+/// take raw slices. Clone into [`PageEvidenceOwned`] only when dump is
+/// requested (`shadow_diagnostics && dump`).
 #[derive(Debug, Clone)]
-pub struct PageEvidence {
+pub struct PageEvidence<'a> {
     /// 0-based page index.
     pub page_index: u32,
     /// Page width (user units, post-rotate).
     pub page_width: f32,
     /// Page height (user units, post-rotate).
     pub page_height: f32,
-    /// Text runs.
-    pub runs: Vec<TextRun>,
-    /// Unified lines.
+    /// Text runs (borrowed; no clone on diagnostics construct).
+    pub runs: &'a [TextRun],
+    /// Content-stream rules (borrowed).
+    pub rules: &'a [pdfparser_content::RuleSegment],
+    /// Unified lines. Diagnostics path may build these from `rules`.
     pub lines: LineEvidence,
-    /// Raster pages available for morph (embedded and/or full-page).
-    pub raster_pages: Vec<RasterPage>,
+    /// Raster pages available for morph (borrow pixels; do not clone).
+    pub raster_pages: &'a [RasterPage],
     /// Region proposals (filled by router; empty under legacy).
     pub proposals: Vec<RegionProposal>,
     /// Diagnostics.
+    pub diagnostics: EvidenceDiagnostics,
+}
+
+impl PageEvidence<'_> {
+    /// Clone into dump form. Omits raster pixel buffers (width/height only).
+    ///
+    /// Call only when `opts.shadow_diagnostics && dump requested`.
+    pub fn to_owned_dump(&self) -> PageEvidenceOwned {
+        PageEvidenceOwned {
+            page_index: self.page_index,
+            page_width: self.page_width,
+            page_height: self.page_height,
+            runs: self.runs.to_vec(),
+            rules: self.rules.to_vec(),
+            lines: self.lines.clone(),
+            raster_meta: self
+                .raster_pages
+                .iter()
+                .map(|p| (p.width as u32, p.height as u32))
+                .collect(),
+            proposals: self.proposals.clone(),
+            diagnostics: self.diagnostics.clone(),
+        }
+    }
+}
+
+/// Dump clone of [`PageEvidence`]. Pixel buffers omitted by default.
+///
+/// Produced only when `shadow_diagnostics && dump requested` (`--dump-evidence`).
+#[derive(Debug, Clone)]
+pub struct PageEvidenceOwned {
+    /// 0-based page index.
+    pub page_index: u32,
+    /// Page width (user units, post-rotate).
+    pub page_width: f32,
+    /// Page height (user units, post-rotate).
+    pub page_height: f32,
+    /// Owned text runs.
+    pub runs: Vec<TextRun>,
+    /// Owned content-stream rules.
+    pub rules: Vec<pdfparser_content::RuleSegment>,
+    /// Unified lines (cloned from diagnostics evidence).
+    pub lines: LineEvidence,
+    /// Raster width/height only (no pixel buffers).
+    pub raster_meta: Vec<(u32, u32)>,
+    /// Region proposals.
+    pub proposals: Vec<RegionProposal>,
+    /// Diagnostics snapshot.
     pub diagnostics: EvidenceDiagnostics,
 }

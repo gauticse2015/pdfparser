@@ -55,7 +55,7 @@ optional stitch (product default on; eval --no-stitch)
 | HighQuality | Engine V2 + diagnostics | explicit on |
 | Rollback | `legacy_router=true` soup NMS | unchanged |
 
-`PageEvidence` is diagnostics-only. `route_proposals` is not on the product call graph.
+`PageEvidence<'a>` is diagnostics-only (borrowed; dump clone is `PageEvidenceOwned`). `route_proposals` is not on the product call graph.
 
 ---
 
