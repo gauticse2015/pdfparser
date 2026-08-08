@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Tables -- borrowed PageEvidence on diagnostics (P1.2) (2026-08-08)
+
+- `PageEvidence<'a>` borrows runs/rules/rasters; `PageEvidenceOwned` dump type omits raster pixels.
+- Diagnostics wrapper (`detect_tables_page_with_diagnostics`) no longer clones inputs.
+- Dump clone only via `page_evidence_owned_if_dump` when `shadow_diagnostics && dump`.
+- Product Auto/Fast detect still does **not** construct `PageEvidence` / `LineEvidence`.
+
 ### Bench -- executable owned contract (P0.6) (2026-08-08)
 
 - `check_phase_gates.py --owned-only` is the ICDAR-free CI merge bar (`freezes/owned_gates_v0.json`).

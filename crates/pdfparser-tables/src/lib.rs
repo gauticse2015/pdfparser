@@ -75,8 +75,9 @@ pub use tuning::{TableProfile, TableTuning, TABLE_TUNING_KEYS};
 pub use types::{EnginePath, PipelineId, Table, TableCell, TableMethod};
 
 pub use evidence::{
-    page_evidence_from_inputs, EvidenceDiagnostics, LineEvidence, LineSourceKind, MethodMix,
-    OrientedSeg, PageEvidence, ProposalOrigin, RegionKind, RegionProposal,
+    page_evidence_from_inputs, page_evidence_owned_if_dump, EvidenceDiagnostics, LineEvidence,
+    LineSourceKind, MethodMix, OrientedSeg, PageEvidence, PageEvidenceOwned, ProposalOrigin,
+    RegionKind, RegionProposal,
 };
 pub use orchestrator::{
     detect_tables_document, detect_tables_document_with_raster, detect_tables_page,
@@ -105,6 +106,11 @@ pub fn tables_available() -> bool {
 /// Runs the product page orchestrator (Engine V2 exclusive router when
 /// `use_engine_v2 && !legacy_router`). Pass real media-box width/height so
 /// area gates use the correct page area.
+///
+/// Builds borrowed [`PageEvidence`] for telemetry only — no run/pixel clone.
+/// Product Auto/Fast detect ([`detect_tables_page_with_raster`]) does **not**
+/// construct evidence. Clone into [`PageEvidenceOwned`] only via
+/// [`page_evidence_owned_if_dump`] when `shadow_diagnostics && dump`.
 pub fn detect_tables_page_with_diagnostics(
     page_index: u32,
     runs: &[pdfparser_ir::TextRun],
@@ -340,6 +346,59 @@ mod tests {
         assert!(diag.vector_rule_count >= 2);
         assert_eq!(diag.engine_path, EnginePath::EngineV2);
         assert!(diag.method_mix.total() >= 1);
+    }
+
+    #[test]
+    fn page_evidence_borrows_inputs_no_clone() {
+        let (runs, rules) = lattice_grid(50.0, 200.0, 5, 4, 70.0, 22.0);
+        let rasters = [RasterPage {
+            width: 10,
+            height: 8,
+            pixels: vec![255; 80],
+            scale_x: 1.0,
+            scale_y: 1.0,
+            origin_x: 0.0,
+            origin_y: 0.0,
+            y_down_pixels: true,
+        }];
+        let ev = page_evidence_from_inputs(0, 612.0, 792.0, &runs, &rules, &rasters);
+        assert!(std::ptr::eq(ev.runs, runs.as_slice()));
+        assert!(std::ptr::eq(ev.rules, rules.as_slice()));
+        assert!(std::ptr::eq(ev.raster_pages, rasters.as_slice()));
+        assert_eq!(ev.diagnostics.text_run_count, runs.len() as u32);
+        assert_eq!(ev.diagnostics.vector_rule_count, rules.len() as u32);
+        assert_eq!(ev.diagnostics.raster_page_count, 1);
+    }
+
+    #[test]
+    fn page_evidence_owned_only_when_shadow_and_dump() {
+        let (runs, rules) = lattice_grid(50.0, 200.0, 5, 4, 70.0, 22.0);
+        let rasters = [RasterPage {
+            width: 10,
+            height: 8,
+            pixels: vec![255; 80],
+            scale_x: 1.0,
+            scale_y: 1.0,
+            origin_x: 0.0,
+            origin_y: 0.0,
+            y_down_pixels: true,
+        }];
+        let ev = page_evidence_from_inputs(0, 612.0, 792.0, &runs, &rules, &rasters);
+        assert!(page_evidence_owned_if_dump(&ev, false, false).is_none());
+        assert!(page_evidence_owned_if_dump(&ev, true, false).is_none());
+        assert!(page_evidence_owned_if_dump(&ev, false, true).is_none());
+        let owned = page_evidence_owned_if_dump(&ev, true, true).expect("dump clone");
+        assert_eq!(owned.runs.len(), runs.len());
+        assert_eq!(owned.rules.len(), rules.len());
+        assert_eq!(owned.raster_meta, vec![(10, 8)]);
+        assert!(owned.lines.segs.len() >= 2);
+        // Product Auto/Fast detect does not construct evidence.
+        let auto = TableOptions::from_preset(TablePreset::Auto);
+        let fast = TableOptions::from_preset(TablePreset::Fast);
+        assert!(!auto.shadow_diagnostics);
+        assert!(!fast.shadow_diagnostics);
+        assert!(!detect_tables_page(0, &runs, &rules, &auto).is_empty());
+        assert!(!detect_tables_page(0, &runs, &rules, &fast).is_empty());
     }
 
     #[test]

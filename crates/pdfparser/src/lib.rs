@@ -30,11 +30,13 @@ pub use pdfparser_ir::{
 pub use pdfparser_tables::{
     detect_tables_page_with_diagnostics,
     page_evidence_from_inputs,
+    page_evidence_owned_if_dump,
     EnginePath,
     // Engine V2 foundation (diagnostics / evidence); product Auto uses V2 router.
     EvidenceDiagnostics,
     MethodMix,
     PageEvidence,
+    PageEvidenceOwned,
     Table,
     TableCell,
     TableMethod,
