@@ -5,6 +5,7 @@
 | **Status** | Binding process plan |
 | **Date** | 2026-07-15 |
 | **Architecture** | `docs/design-table-engine-v3-industry.md` |
+| **Gate labels** | [`docs/STATUS.md`](STATUS.md) only. Do not claim GATE-3/4/5 green. |
 | **Rule** | **No phase N+1 work until phase N hard gates pass.** Soft improvements do not unlock the next phase. |
 
 ---

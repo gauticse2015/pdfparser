@@ -52,7 +52,9 @@ The CLI may not yet expose a stitch toggle. When it lands, structure runners mus
 
 ## Freezes
 
-`freezes/*.json` — Boot then Steady regression (Gate G1). Empty until first Boot write.
+`freezes/*.json` - Steady regression lock is **`g2.json`** (core cell Auto **0.637**).  
+`g3_industry.json` is **INVALID** / revoked. Do not claim phase5 PASS.  
+Gate PASS/FAIL: [`docs/STATUS.md`](../../docs/STATUS.md) only.
 
 ## Latency
 
