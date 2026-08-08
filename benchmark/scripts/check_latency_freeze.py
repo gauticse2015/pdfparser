@@ -141,6 +141,42 @@ def validate_freeze_schema(freeze: dict[str, Any]) -> list[str]:
     return errors
 
 
+def check_complete_sample(
+    summary: dict[str, Any],
+    freeze: dict[str, Any],
+    live: dict[str, Any] | None = None,
+) -> list[str]:
+    """Require a full n=8 Fast sample. A crash on the slow doc must not green p95."""
+    errors: list[str] = []
+    try:
+        freeze_n = int(freeze.get("n_docs"))
+    except (TypeError, ValueError):
+        freeze_n = None
+    if freeze_n != 8:
+        errors.append(f"freeze n_docs={freeze.get('n_docs')!r} expected 8")
+    n_ok = summary.get("n_ok")
+    n_docs = summary.get("n_docs")
+    if n_ok is None:
+        errors.append("live summary missing n_ok")
+    elif freeze_n is not None and int(n_ok) != freeze_n:
+        errors.append(
+            f"live n_ok={n_ok} != freeze n_docs={freeze_n} "
+            "(incomplete sample; crashing the slow doc must not green the freeze)"
+        )
+    if n_docs is not None and freeze_n is not None and int(n_docs) != freeze_n:
+        errors.append(f"live n_docs={n_docs} != freeze n_docs={freeze_n}")
+    if live is not None:
+        docs = live.get("documents")
+        if isinstance(docs, list) and docs:
+            bad = [str(d.get("id") or "?") for d in docs if d.get("error") or not d.get("ok")]
+            n_ok_docs = sum(1 for d in docs if d.get("ok") and not d.get("error"))
+            if bad:
+                errors.append(f"live documents with errors: {bad}")
+            if freeze_n is not None and n_ok_docs != freeze_n:
+                errors.append(f"live ok document count={n_ok_docs} != {freeze_n}")
+    return errors
+
+
 def check_fast_never_renders(summary: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if summary.get("preset") not in (None, "fast"):
@@ -208,7 +244,7 @@ def main(argv: list[str] | None = None) -> int:
         "--write-prev",
         type=Path,
         default=None,
-        help="Write this run's p95 as prev_commit snapshot for the next nightly.",
+        help="Write this run's p95 as prev_commit snapshot (PASS only; never ratchet on FAIL).",
     )
     args = ap.parse_args(argv)
 
@@ -230,6 +266,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     render_errs = check_fast_never_renders(summary)
+    complete_errs = check_complete_sample(summary, freeze, live)
     live_p95 = summary.get("p95_ms")
     if live_p95 is None:
         render_errs.append("live summary missing p95_ms")
@@ -265,45 +302,58 @@ def main(argv: list[str] | None = None) -> int:
         failed = True
     if not render_errs:
         print("  [PASS] Fast never full-page-render (flags + preset)")
+    for e in complete_errs:
+        print(f"  [FAIL] complete sample — {e}")
+        failed = True
+    if not complete_errs:
+        print("  [PASS] live n_ok == freeze n_docs == 8")
 
     if live_p95 is None:
-        print("RESULT: FAIL")
-        return 1
+        failed = True
+    else:
+        budget = float(freeze["budget_p95_ms"])
+        for name, passed, detail in evaluate_rules(
+            float(live_p95),
+            budget,
+            prev_p95,
+            same_machine_class=drift_same_class,
+        ):
+            status = "PASS" if passed else "FAIL"
+            print(f"  [{status}] {name} — {detail}")
+            if not passed:
+                failed = True
 
-    budget = float(freeze["budget_p95_ms"])
-    for name, passed, detail in evaluate_rules(
-        float(live_p95),
-        budget,
-        prev_p95,
-        same_machine_class=drift_same_class,
-    ):
-        status = "PASS" if passed else "FAIL"
-        print(f"  [{status}] {name} — {detail}")
-        if not passed:
-            failed = True
-
-    # Explicitly refuse the rejected rule so a future min() wrap cannot hide.
-    rec = float(freeze["recorded_p95_ms"])
-    rejected_ceiling = rec * DRIFT_FACTOR
-    print(
-        f"  [INFO] freeze recorded_p95*1.10={rejected_ceiling:.3f} "
-        f"is NOT a gate (live_p95={float(live_p95):.3f})"
-    )
+        # Explicitly refuse the rejected rule so a future min() wrap cannot hide.
+        rec = float(freeze["recorded_p95_ms"])
+        rejected_ceiling = rec * DRIFT_FACTOR
+        print(
+            f"  [INFO] freeze recorded_p95*1.10={rejected_ceiling:.3f} "
+            f"is NOT a gate (live_p95={float(live_p95):.3f})"
+        )
 
     if args.write_prev:
-        args.write_prev.parent.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "machine_class": live_class,
-            "prev_commit_p95_ms": float(live_p95),
-            "p50_ms": summary.get("p50_ms"),
-            "max_ms": summary.get("max_ms"),
-            "n_docs": summary.get("n_docs") or freeze.get("n_docs"),
-            "preset": "fast",
-            "enable_full_page_render": False,
-            "allow_auto_render": False,
-        }
-        args.write_prev.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-        print(f"  wrote prev snapshot {args.write_prev}")
+        if failed:
+            print(
+                f"  skipped prev snapshot {args.write_prev} "
+                "(RESULT FAIL; do not ratchet prev p95)"
+            )
+        else:
+            args.write_prev.parent.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "machine_class": live_class,
+                "prev_commit_p95_ms": float(live_p95),
+                "p50_ms": summary.get("p50_ms"),
+                "max_ms": summary.get("max_ms"),
+                "n_docs": summary.get("n_docs") or freeze.get("n_docs"),
+                "n_ok": summary.get("n_ok"),
+                "preset": "fast",
+                "enable_full_page_render": False,
+                "allow_auto_render": False,
+            }
+            args.write_prev.write_text(
+                json.dumps(payload, indent=2) + "\n", encoding="utf-8"
+            )
+            print(f"  wrote prev snapshot {args.write_prev}")
 
     print("RESULT:", "FAIL" if failed else "PASS")
     return 1 if failed else 0

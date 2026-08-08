@@ -137,6 +137,7 @@ def main() -> int:
         pdf = find_pdf(doc_id)
         if not pdf:
             per.append({"id": doc_id, "error": "pdf_missing"})
+            print(f"  {doc_id}: MISSING", file=sys.stderr)
             continue
         t0 = time.perf_counter()
         r = subprocess.run(
@@ -147,6 +148,7 @@ def main() -> int:
         dt = (time.perf_counter() - t0) * 1000.0
         if r.returncode != 0:
             per.append({"id": doc_id, "error": r.stderr[-400:], "ms": dt})
+            print(f"  {doc_id}: FAIL rc={r.returncode} ({dt:.1f} ms)", file=sys.stderr)
             continue
         times_ms.append(dt)
         if first_ok_pdf is None:
@@ -154,13 +156,14 @@ def main() -> int:
         per.append({"id": doc_id, "ms": dt, "ok": True})
         print(f"  {doc_id}: {dt:.1f} ms")
 
-    if not times_ms:
-        print("no successful latency samples", file=sys.stderr)
-        return 1
-    times_ms_sorted = sorted(times_ms)
+    n_docs = len(docs)
+    n_ok = len(times_ms)
+    incomplete = n_ok != n_docs or any(d.get("error") for d in per)
+
     def pct(p):
-        if not times_ms_sorted:
+        if not times_ms:
             return None
+        times_ms_sorted = sorted(times_ms)
         k = (len(times_ms_sorted) - 1) * p / 100.0
         f = int(k)
         c = min(f + 1, len(times_ms_sorted) - 1)
@@ -177,22 +180,16 @@ def main() -> int:
             first_ok_pdf
         )
         print(f"  fast_never_render: ok={render_ok} {render_detail}")
-        if not render_ok:
-            print(
-                f"Fast preset must never full-page-render ({render_detail})",
-                file=sys.stderr,
-            )
-            return 1
 
     info_budget = float(man.get("budget_p95_ms") or INFORMATIONAL_BUDGET_P95_MS)
     summary = {
         "preset": "fast",
-        "n_ok": len(times_ms),
-        "n_docs": len(docs),
+        "n_ok": n_ok,
+        "n_docs": n_docs,
         "p50_ms": pct(50),
         "p95_ms": pct(95),
-        "mean_ms": statistics.mean(times_ms),
-        "max_ms": max(times_ms),
+        "mean_ms": statistics.mean(times_ms) if times_ms else None,
+        "max_ms": max(times_ms) if times_ms else None,
         "budget_p95_ms": info_budget,
         "budget_p95_informational": True,
         "enable_full_page_render": False if enable_flag is False else enable_flag,
@@ -203,8 +200,8 @@ def main() -> int:
         "note": (
             "Invoked TablePreset::Fast; Fast hard-disables full-page render (G5.6). "
             "budget_p95_ms here is informational (default 30000). Freeze ceiling is "
-            "freezes/latency_fast_v0.json — do not claim 30s→0.6s tightening until "
-            "ubuntu-latest sample exists."
+            "freezes/latency_fast_v0.json - do not claim 30s->0.6s tightening until "
+            "ubuntu-latest sample exists. Incomplete n_ok!=n_docs is a hard fail."
         ),
     }
     out = {
@@ -216,10 +213,25 @@ def main() -> int:
     out_path = args.out
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    p95 = summary["p95_ms"]
+    p95_s = f"{p95:.1f}" if isinstance(p95, (int, float)) else "None"
     print(
-        f"wrote {out_path} p50={summary['p50_ms']:.1f} p95={summary['p95_ms']:.1f} "
+        f"wrote {out_path} n_ok={n_ok}/{n_docs} p95={p95_s} "
         f"informational_budget={summary['budget_p95_ms']}"
     )
+    if incomplete:
+        print(
+            f"incomplete Fast probe: n_ok={n_ok} n_docs={n_docs} "
+            "(every listed doc must succeed; crashing the slow doc must not green p95)",
+            file=sys.stderr,
+        )
+        return 1
+    if not render_ok:
+        print(
+            f"Fast preset must never full-page-render ({render_detail})",
+            file=sys.stderr,
+        )
+        return 1
     return 0
 
 

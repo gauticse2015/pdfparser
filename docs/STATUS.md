@@ -65,16 +65,16 @@ No-regress floor (G1.7): live core cell >= **g2 auto - 0.03** (0.607). Do not in
 | recorded_p50_ms | ~10.9 |
 | recorded_p95_ms | ~409 |
 | recorded_max_ms | ~604 |
-| budget_p95_ms | **~725.4** = max(p95×1.5, max×1.2) |
+| budget_p95_ms | **~725.4** = max(p95*1.5, max*1.2) |
 
-Hardware is **local macOS**, not ubuntu-latest. **Do not claim 30s→0.6s tightening** until a live ubuntu-latest sample exists. Probe script `budget_p95_ms=30000` stays informational.
+Hardware is **local macOS**, not ubuntu-latest. **Do not claim 30s->0.6s tightening** until a live ubuntu-latest sample exists. Probe script `budget_p95_ms=30000` stays informational.
 
 Two independent fail rules (nightly required; **no `min()`**):
 
 1. fail if live p95 > `budget_p95_ms`
-2. fail if live p95 > `prev_commit_p95 × 1.10` on the **same machine class** (first sample on a class: rule 1 only)
+2. fail if live p95 > `prev_commit_p95 * 1.10` on the **same machine class** (first sample on a class: rule 1 only)
 
-Do **not** gate vs freeze `recorded_p95 × 1.10`. Fast never full-page-renders. Workflow: `.github/workflows/nightly-latency-fast.yml` (not optional). This is **not** GATE-5 PASS.
+Do **not** gate vs freeze `recorded_p95 * 1.10`. Fast never full-page-renders. Workflow: `.github/workflows/nightly-latency-fast.yml` (not optional). This is **not** GATE-5 PASS.
 
 ### T3 gold count (A4.9)
 

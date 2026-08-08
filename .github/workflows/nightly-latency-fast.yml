@@ -23,6 +23,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: nightly-latency-fast-${{ github.ref }}
@@ -79,7 +80,8 @@ jobs:
             $PREV
 
       - name: Save p95 snapshot for next run on this class
-        if: hashFiles('benchmark/real_track/results/latency_prev_class/prev.json') != ''
+        # PASS only: do not persist a ratcheted prev p95 after a freeze FAIL.
+        if: success()
         uses: actions/cache/save@v4
         with:
           path: benchmark/real_track/results/latency_prev_class

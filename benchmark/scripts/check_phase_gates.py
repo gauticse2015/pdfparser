@@ -101,6 +101,9 @@ def gate0() -> bool:
             line.split("#", 1)[0].strip().startswith("continue-on-error:")
             for line in nt.splitlines()
         )
+        has_actions_write = any(
+            line.split("#", 1)[0].strip() == "actions: write" for line in nt.splitlines()
+        )
         results.append(
             ok(
                 "G0.9 required nightly Fast latency workflow",
@@ -110,6 +113,13 @@ def gate0() -> bool:
                 and "run_latency_probe.py" in nt
                 and "schedule:" in nt,
                 str(nightly.name if nightly.is_file() else "missing"),
+            )
+        )
+        results.append(
+            ok(
+                "G0.9 nightly permissions include actions: write (cache)",
+                has_actions_write,
+                "actions/cache + rust-cache need actions: write; contents stays read",
             )
         )
     wf = REPO / ".github" / "workflows"
