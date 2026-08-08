@@ -5,8 +5,10 @@
 //! 2. [`partition`] — gates + priority Ruled > Partial > Borderless + ownership
 //! 3. [`emit_order_key`] / [`sort_by_emit_order`] (K27) — (−y1, x0)
 //!
-//! Product Auto/Full call this via the page orchestrator (`use_engine_v2` +
-//! `!legacy_router`).
+//! Product finalize uses [`merge_then_partition`] (steps 1–2, **no sort**) so
+//! emit-walk order stays partition order. [`route_proposals`] adds K27 sort
+//! for tests / [`crate::ExclusiveAutoRouter`] only — do not drop it into
+//! Engine V2 emit (H18: sort can change emit when `source_indices` overlap).
 
 #![allow(clippy::too_many_arguments)]
 
@@ -317,14 +319,33 @@ pub fn sort_tables_by_emit_order(tables: &mut [Table]) {
     tables.sort_by(|a, b| cmp_emit_order(&a.bbox, &b.bbox));
 }
 
-/// Convenience: merge then partition (full router geometry pass).
-pub fn route_proposals(
+/// Shared primitive: K26 [`vertical_merge`] then exclusive [`partition`].
+///
+/// **Does not sort.** Product Engine V2 finalize walks accepted proposals in
+/// partition order (kind / structure_prior / area). Sorting before that walk
+/// can change emit when `source_indices` overlap (H18).
+///
+/// Tests and [`crate::ExclusiveAutoRouter`] use [`route_proposals`], which
+/// sorts after this function.
+pub fn merge_then_partition(
     proposals: Vec<RegionProposal>,
     median_line_gap: f32,
     policy: &ProposalPolicy,
 ) -> Vec<RegionProposal> {
     let merged = vertical_merge(proposals, median_line_gap, DEFAULT_X_IOU_MIN, policy);
-    let mut accepted = partition(merged, policy);
+    partition(merged, policy)
+}
+
+/// Convenience: [`merge_then_partition`] then K27-sort proposals (tests / trait).
+///
+/// Product finalize must call [`merge_then_partition`] instead — do not drop
+/// this function into Engine V2 emit.
+pub fn route_proposals(
+    proposals: Vec<RegionProposal>,
+    median_line_gap: f32,
+    policy: &ProposalPolicy,
+) -> Vec<RegionProposal> {
+    let mut accepted = merge_then_partition(proposals, median_line_gap, policy);
     accepted.sort_by(|a, b| cmp_emit_order(&a.bbox, &b.bbox));
     accepted
 }
@@ -760,6 +781,53 @@ mod tests {
         let k_top = emit_order_key(&top);
         let k_bot = emit_order_key(&bot);
         assert!(k_top.0 < k_bot.0); // -400 < -200
+    }
+
+    #[test]
+    fn merge_then_partition_keeps_partition_order_not_emit_order() {
+        // Ruled (bottom) outranks Borderless (top) in partition; emit order
+        // would put the top borderless first. H18: do not sort here.
+        let policy = ProposalPolicy::default();
+        let ruled_bottom = prop(
+            RegionKind::RuledContour,
+            50.0,
+            50.0,
+            350.0,
+            200.0,
+            0.85,
+            0.4,
+            12,
+            0.08,
+        );
+        let borderless_top = prop(
+            RegionKind::BorderlessText,
+            400.0,
+            400.0,
+            550.0,
+            550.0,
+            0.0,
+            0.8,
+            0,
+            0.03,
+        );
+        let merged_part = merge_then_partition(
+            vec![borderless_top.clone(), ruled_bottom.clone()],
+            12.0,
+            &policy,
+        );
+        assert_eq!(merged_part.len(), 2);
+        assert_eq!(merged_part[0].kind, RegionKind::RuledContour);
+        assert_eq!(merged_part[1].kind, RegionKind::BorderlessText);
+        assert!(
+            merged_part[0].bbox.y1 < merged_part[1].bbox.y1,
+            "partition order is not K27 emit order"
+        );
+
+        let routed = route_proposals(vec![borderless_top, ruled_bottom], 12.0, &policy);
+        assert_eq!(routed.len(), 2);
+        assert_eq!(routed[0].kind, RegionKind::BorderlessText);
+        assert_eq!(routed[1].kind, RegionKind::RuledContour);
+        assert!(routed[0].bbox.y1 > routed[1].bbox.y1);
     }
 
     #[test]

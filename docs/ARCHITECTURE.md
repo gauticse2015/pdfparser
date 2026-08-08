@@ -40,7 +40,7 @@ page (post-/Rotate runs + rules + optional rasters)
 |  8. demote lattice column slices                             |
 |  9. if use_engine_v2 && !legacy_router:                      |
 |        finalize_engine_v2  (tables -> proposals ->           |
-|          vertical_merge + partition -> emit -> cleanup)      |
+|          merge_then_partition -> emit -> cleanup)            |
 |     else: soup NMS                                           |
 +--------------------------------------------------------------+
     |
