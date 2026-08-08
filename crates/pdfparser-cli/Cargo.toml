@@ -13,5 +13,6 @@ path = "src/main.rs"
 
 [dependencies]
 pdfparser = { workspace = true }
+pdfparser-export = { workspace = true }
 clap = { workspace = true }
 serde_json = { workspace = true }
