@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fonts -- ToUnicode decode shares document governor (P2.2a) (2026-08-08)
+
+- `load_page_fonts` takes `&ResourceGovernor`; ToUnicode stream decode charges the document budget (A2.23).
+- `LimitExceeded` does not fall back to ungoverned inflate.
+
 ### Tables -- DensifyMode default Primary (P1.8) (2026-08-08)
 
 - Added `DensifyMode::{Primary, InsideFrameOnly, Off}` on `TableAdvancedOptions.densify_mode` (H20; not a 13th top-level field).

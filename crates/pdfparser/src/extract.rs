@@ -42,7 +42,7 @@ pub fn page_content(
     })?;
     let content = doc.page_content_bytes(page_index)?;
     let font_refs = doc.page_font_map(page_index)?;
-    let fonts = doc.with_doc(|d| load_page_fonts(d, &font_refs))?;
+    let fonts = doc.with_doc(|d| load_page_fonts(d, &font_refs, &doc.governor))?;
 
     let iopts = InterpretOptions {
         max_ops: doc.governor.limits.max_page_ops,

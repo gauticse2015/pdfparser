@@ -120,7 +120,7 @@ Inventory is against the current tree under `crates/` + `benchmark/` + `.github/
 | A2.20 | Type0 encoding stream CMaps unimplemented; CID always 2-byte BE | **Open** | `codes_from_bytes` Identity 2-byte. Encoding name parsed, not interpreted as CMap. | Large; isolate; not required to "fix architecture." |
 | A2.21 | Type3 charprocs not run | **Out of scope** | Widths used; no charproc VM. | Product later (native design P3). |
 | A2.22 | Font load failure -> silent Helvetica-ish fallback | **Open** | `load_page_fonts` `Err(_) => simple_latin`. | Warning + conf drop; same glyphs until opt-in fail. |
-| A2.23 | ToUnicode decode uses a fresh governor | **Open** | `to_unicode_stream` `ResourceGovernor::new(default)`. | Thread document governor; security. |
+| A2.23 | ToUnicode decode uses a fresh governor | **Fixed** | `load_page_fonts(doc, refs, &doc.governor)`; LimitExceeded skips ungoverned inflate. | — |
 | A2.24 | Reading order: 2 columns only | **Open** | `reading_order_text` detects a single gutter. | Later; text-only freeze. |
 | A2.25 | Rotate applied to bbox only, not `TextRun.transform` | **Open** | `apply_page_rotate_to_runs` mutates bbox only. | Bit-identical for bbox-based tables; transform consumers change. |
 | A2.26 | IR `Element` is text-only; mcid / from_actual_text never set | **Open** | `Element::Text` only. VM always `mcid: None`, `from_actual_text: false`. | Non-goal for table hardening; optional IR PR. |
@@ -206,7 +206,7 @@ Live source unless noted: `benchmark/real_track/results/real_structure_latest.js
 | `metrics.py` honesty | **Partial** | Façade over `metriclib/`. `run_accuracy_benchmark.py` still 824 LOC. |
 | Python god scripts | **Open** | Split later; not product behavior. |
 | External render timeout doesn't kill | **Fixed** | `run_timed` `child.kill()` + `wait`. |
-| Governor / security | **Partial** | Charge-then-check fixed; ToUnicode fresh gov open (A2.23); q/Q unbound (A2.12). |
+| Governor / security | **Partial** | Charge-then-check + ToUnicode shared gov (A2.23) fixed; q/Q unbound (A2.12). |
 | Unused evidence clones | **Open** | `runs.to_vec()` / `raster_pages.to_vec()` on diagnostics path. Product `detect_tables_page_with_raster` does **not** build evidence. |
 
 ---
@@ -999,7 +999,7 @@ Fast: no render. Shadow exclusive excluded. Auto: no new asymptotic / no mandato
 | A2.20 | later | — | Open | CID | Out of hardening critical path |
 | A2.21 | — | — | **Out of scope** | — | Type3 later |
 | A2.22 | 2 | P2.7e | Open | Text | Warning only first |
-| A2.23 | 2 | P2.2a | Open | Security | Shared governor; after P0 |
+| A2.23 | 2 | P2.2a | **Fixed** | Security | Shared governor; after P0 |
 | A2.24 | later | — | Open | Text | Not table-blocking |
 | A2.25 | 2 | P2.8a | Open | Transform consumers | Bbox already rotated |
 | A2.26 | later | — | Open | IR | Not required |
@@ -1101,7 +1101,7 @@ Matches H1–H22 without pretending Auto is still legacy.
 
 | Threat | Severity | Mitigation |
 |--------|----------|------------|
-| ToUnicode / font streams bypass document governor (A2.23) | **High** | Phase 2: shared `ResourceGovernor` |
+| ToUnicode / font streams bypass document governor (A2.23) | **Fixed** | Shared document `ResourceGovernor`; no ungoverned inflate on LimitExceeded |
 | Unbounded `q` stack (A2.12) | **Med** | Cap to `max_nesting_depth`; warn |
 | Expansion bomb via filters | **Low** (fixed charge/check) | Keep `check_expand_ratio` then `charge` |
 | Encryption bypass / empty password | **N/A this program** | Stay hard-error (H16) |
