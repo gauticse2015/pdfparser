@@ -4,6 +4,8 @@
   "gold": "ICDAR *-str.xml via parse_icdar_str_xml",
   "n_docs": 67,
   "policy": "competitive_only_not_regression",
+  "peers": 1,
+  "ranking_note": "solo pdfparser dump; not a multi-peer rank. Do not claim ICDAR #1.",
   "results": {
     "pdfparser": {
       "f1": 0.8255813953488371,

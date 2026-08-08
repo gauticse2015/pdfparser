@@ -1,6 +1,6 @@
 {
   "steady": "g2.json",
-  "note": "Steady freeze is the regression baseline.",
-  "g3_industry": "Phase 5 industry polish / production steady freeze",
-  "phase5": "PASS"
+  "note": "Steady freeze is the regression baseline (core cell Auto 0.637). Gate PASS/FAIL: docs/STATUS.md only.",
+  "g3_industry": "INVALID / revoked - do not cite as PASS. See g3_industry.json revoked_at.",
+  "phase5": "NOT PASS"
 }

@@ -1,6 +1,8 @@
 # Structure quality phases (TEDS / row / col) — success criteria
 
-Autonomous develop→assess loop. **No ICDAR doc-id coupling in engine code.**
+**Gate PASS/FAIL SSOT:** [`STATUS.md`](STATUS.md). This file defines criteria; do not treat the status log below as current promotion. GATE-3/4/5 are **not** green.
+
+Autonomous develop→assess loop. **No ICDAR doc-id coupling in engine code.** ICDAR is never CI.
 
 ## Shared guards (every phase)
 

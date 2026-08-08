@@ -6,6 +6,7 @@
 | **Author** | pdfparser contributors |
 | **Date** | 2026-07-12 |
 | **Status** | Draft (rev 2.3 — gap closure: capability ladder, contour/combined sensing, borderless areas, cell quality, updated plan) |
+| **As-built (2026-08-08)** | Product `TablePreset::Auto` / `Full` **already Engine V2**. Migration text below ("Auto still legacy until G1") is historical. Env `PDFPARSER_TABLE_LEGACY` / CLI `--tables-legacy` are **unimplemented**. Rollback: `legacy_router=true` / `--legacy-router` only. Gate labels: `docs/STATUS.md`. |
 | **Supersedes** | `docs/icdar-plateau-analysis-and-plan.md`, `docs/table-orchestrator-architecture.md` (orchestration section), phase-*-report table notes |
 | **Living path** | `docs/design-table-engine-v2.md` |
 | **Diagrams** | **ASCII only** (no Mermaid) — same convention as `design-native-pdf-parser.md` / `docs/README.md` |
@@ -19,7 +20,9 @@ pdfparser's table stack is a capable **vector-grid product** that scores near-pe
 
 This design proposes a **SOLID, trait-based table engine** with a **capability ladder** (Core vs Auto+Render), **contour-first ruled regions** when raster exists, **combined vector∪raster sensing**, a true **borderless table-area engine**, exclusive routing with **vertical proposal merge**, a **cell-quality** pass, and a **corpus + evaluation program** (struggle-first real gold, synthetic demoted). Gaps that kept the product non-market-ready are closed as **normative requirements** (rev 2.3), not optional polish. Diagrams are **ASCII only**.
 
-**Migration invariant (orchestrator/builders/router only):** product `TablePreset::Auto` keeps today's **legacy orchestrator, builders, and routing** until a **named real_structure gate** (G1) passes; new builders run in **shadow** then **opt-in `EngineV2`** only. Auto flips only after that gate—not when algorithm PRs merge. **Sensing completeness** (Form/dash/clip rules, optional full-page render) may still change Auto table outputs under that frozen orchestrator; that is intentional and not a violation of the invariant (see Migration Stages).
+**As-built note:** Auto **already flipped** to Engine V2 (`use_engine_v2=true` + `finalize_engine_v2`). The migration invariant in the next paragraph is the **historical M0–M2 plan**, not today's product. Do not re-introduce `--tables-legacy` / `PDFPARSER_TABLE_LEGACY`. See `docs/design-zero-regression-hardening.md` (H12 / H22) and `docs/STATUS.md`.
+
+**Migration invariant (orchestrator/builders/router only) — historical:** product `TablePreset::Auto` keeps today's **legacy orchestrator, builders, and routing** until a **named real_structure gate** (G1) passes; new builders run in **shadow** then **opt-in `EngineV2`** only. Auto flips only after that gate—not when algorithm PRs merge. **Sensing completeness** (Form/dash/clip rules, optional full-page render) may still change Auto table outputs under that frozen orchestrator; that is intentional and not a violation of the invariant (see Migration Stages).
 
 ---
 
@@ -1772,7 +1775,7 @@ At top of `docs/table-orchestrator-architecture.md` and `docs/icdar-plateau-anal
 
 Same principles as rev1, plus:
 
-- Until G1: README may say EngineV2 experimental; Auto = legacy orchestrator.
+- Until G1: README may say EngineV2 experimental; Auto = legacy orchestrator. **Superseded:** Auto = Engine V2; README must stay honest via `docs/STATUS.md`.
 - After G1: primary scoreboard = real_structure suite id + date.
 - Latency numbers only from latency_probe methodology.
 - Language bans unchanged (no mixed synthetic #1 as market SOTA).

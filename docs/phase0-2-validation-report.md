@@ -1,8 +1,10 @@
 # Phase 0–2 Validation & ICDAR Status Report
 
+**Superseded as a status plane.** Historical 2026-07-16 snapshot. Current gate labels: [`STATUS.md`](STATUS.md). Do not cite this report as GATE-3/4/5 green. ICDAR numbers here are external honesty, not CI.
+
 **Generated:** 2026-07-16 16:27 UTC  
 **Binary:** `target/release/pdfparser` (product Auto = Engine V2)  
-**Overall:** **ALL GATES PASS**
+**Overall (historical snapshot only):** phases 0–2 owned measurement looked green then; **not** a living board.
 
 ---
 

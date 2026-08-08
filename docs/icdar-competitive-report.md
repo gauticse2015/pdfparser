@@ -1,14 +1,16 @@
 # ICDAR-2013 Competitive Analysis (external)
 
-**Policy:** ICDAR is **not** part of the regression corpus. This report is for competitive measurement only.
+**Policy:** ICDAR is **not** part of the regression corpus, not CI, not a tuning target. This report is for competitive measurement only.
 
 **Docs:** 67 · **Gold:** ICDAR `*-str.xml` · **Metrics:** Camelot `bench/_metrics.score` (F1, TEDS proxy, row/col)
 
-## Leaderboard
+**Incomplete board:** this dump is **pdfparser-only** (**peers=1**). A solo board is **not** a multi-peer rank. Do **not** claim ICDAR #1 from this file. The honest multi-peer table is in the repo README (pdfparser **#2** on detection F1 vs Camelot auto). Gate labels: [`STATUS.md`](STATUS.md).
+
+## Leaderboard (peers=1 - not a rank)
 
 | Rank | Tool | F1 | TEDS | row | col | time (s) |
 |-----:|------|---:|-----:|----:|----:|---------:|
-| 1 | **pdfparser** ← **ours** | 0.826 | 0.459 | 0.500 | 0.535 | 27.25 |
+| n/a (solo) | **pdfparser** | 0.826 | 0.459 | 0.500 | 0.535 | 27.25 |
 
 ## pdfparser vs Camelot (headline)
 
@@ -96,7 +98,7 @@
 
 ## Gap analysis (where we still lack)
 
-pdfparser F1=0.826 TEDS=0.459 row=0.500 col=0.535 vs camelot lattice F1=0.000 TEDS=0.000.
+pdfparser F1=0.826 TEDS=0.459 row=0.500 col=0.535. Camelot columns in this dump are empty (peers=1; not a head-to-head). Do not read F1=0.000 as Camelot scoring zero.
 
 ### Primary remaining gaps
 

@@ -1,26 +1,10 @@
 # Real-track status
 
-**Updated:** 2026-07-18 honest restart (ICDAR hard-required)
+**Superseded.** Gate PASS/FAIL lives only in [`docs/STATUS.md`](../../../docs/STATUS.md).
 
-| Phase | Status |
-|------:|--------|
-| 0–2 | **PASS** (live ICDAR enforced) |
-| 3 Topology | **FAIL** — ICDAR row 0.44 / col 0.49 (need ≥0.50 / ≥0.55) |
-| 4–5 | blocked on GATE-3 |
+This folder holds latest JSON snapshots. They are **not** freeze locks.
 
-## Live ICDAR rank
-1. camelot_auto F1 **0.864** TEDS **0.786**
-2. **pdfparser F1 0.814 TEDS 0.440**
-3. pymupdf F1 0.776
-4. camelot lattice 0.766
-5. pdfplumber 0.662
-
-## Real core
-cell **0.820** (g2 was 0.637); **no g2 regressions**; donors fixed 0.943
-
-## Freezes
-- `phase1_detect_precision.json` — PASS with live ICDAR
-- `phase2_detect_recall.json` — PASS with live ICDAR
-- `phase4_cells.json` / `g3_industry.json` — **INVALID** (prior skip)
-
-See `docs/AUTONOMOUS_PROGRESS.md`.
+- Steady freeze: [`../freezes/g2.json`](../freezes/g2.json) (core cell Auto **0.637**)
+- `g3_industry.json` is **INVALID** / revoked
+- ICDAR is external honesty, not CI. Latest head-to-head dump may be **peers=1** (solo is not rank #1)
+- Do not cite historical "core 0.820" from older copies of this file

@@ -1,6 +1,8 @@
-# TableOptions deprecation map (post Auto=EngineV2 / Phase 5)
+# TableOptions deprecation map (post Auto=EngineV2)
 
-## Product surface (≤12 top-level fields — GATE-5 G5.3)
+Gate PASS/FAIL: [`STATUS.md`](STATUS.md). Do **not** treat this map as GATE-5 PASS.
+
+## Product surface (≤12 top-level fields)
 
 | Field | Status | Notes |
 |-------|--------|-------|
@@ -19,9 +21,9 @@
 
 ## Nested advanced knobs
 
-All lattice/stream/raster numeric fields live on `TableAdvancedOptions` and are
-reachable via `Deref` (`opts.lattice_min_joints` still works). Prefer presets
-over hand-tuning advanced knobs.
+All lattice/stream/raster numeric fields live on `TableAdvancedOptions`.
+**`impl Deref` is gone** — use `opts.advanced.lattice_min_joints` (JSON serde flatten
+still works). Prefer presets over hand-tuning advanced knobs.
 
 | Field / path | Status | Notes |
 |--------------|--------|-------|

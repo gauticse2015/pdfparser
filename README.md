@@ -39,10 +39,11 @@ PDF page
 | **`LatticeOnly`** | Ruled grids only |
 | Rollback | `TableOptions.legacy_router = true` → soup NMS path |
 
-Public `TableOptions` product surface is **≤12 top-level fields**; detector knobs nest under `advanced` (Deref-compatible). Classic whitespace stream is **off** on product Auto (network path only).
+Public `TableOptions` product surface is **≤12 top-level fields**; detector knobs nest under `advanced` (`impl Deref` is **gone** — use `opts.advanced`). Classic whitespace stream is **off** on product Auto (network path only).
 
-Steady quality freezes: [`g2.json`](benchmark/real_track/freezes/g2.json) (detect/core cell).  
-Gated plan: [`docs/implementation-plan-v3-gated.md`](docs/implementation-plan-v3-gated.md) · design: [`docs/design-table-engine-v2.md`](docs/design-table-engine-v2.md).
+Steady quality freeze: [`g2.json`](benchmark/real_track/freezes/g2.json) (detect/core cell **0.637** Auto). `g3_industry.json` is **INVALID**.  
+Gate PASS/FAIL: [`docs/STATUS.md`](docs/STATUS.md) only.  
+Gated plan: [`docs/implementation-plan-v3-gated.md`](docs/implementation-plan-v3-gated.md) · design: [`docs/design-table-engine-v2.md`](docs/design-table-engine-v2.md) · hardening: [`docs/design-zero-regression-hardening.md`](docs/design-zero-regression-hardening.md).
 
 **Document-type tuning (experimental):** geometry densify / lattice thresholds live in `TableTuning` (defaults + per-call override). CLI: `--table-setting key=value`. See [`docs/options-deprecation-map.md`](docs/options-deprecation-map.md).
 
@@ -50,12 +51,14 @@ Gated plan: [`docs/implementation-plan-v3-gated.md`](docs/implementation-plan-v3
 
 ## Status at a glance (customer view) — 2026-07-19
 
+**Gate PASS/FAIL lives only in [`docs/STATUS.md`](docs/STATUS.md).** Do not read CHANGELOG / AUTONOMOUS_PROGRESS / freeze README as a second board.
+
 | Question | Honest answer |
 |----------|----------------|
 | Can I use this in production for **text**? | **Yes** |
 | Can I use this for **table detection** on born-digital PDFs? | **Yes** — strong precision / low over-detect on real-track |
 | Can I use this for **cell-accurate structure** on hard / statistical PDFs? | **Best-effort** — good on clean ruled grids; weak on dense glued streams |
-| Are you #1 on ICDAR-2013? | **No** — **#2 on detection F1** (0.825 vs Camelot auto 0.864); lag on TEDS/structure |
+| Are you #1 on ICDAR-2013? | **No** — **#2 on detection F1** on the multi-peer board (0.825 vs Camelot auto 0.864); lag on TEDS/structure. Latest head-to-head dump is **peers=1** (solo ≠ rank #1) |
 | Is ICDAR used in CI? | **No** — external honesty check only |
 
 ### Maturity labels
@@ -75,7 +78,7 @@ Gated plan: [`docs/implementation-plan-v3-gated.md`](docs/implementation-plan-v3
 | Multipage stitch | **Production optional** | Off for eval (`--no-stitch`) |
 | Full-page OCR / scans | **Not in product** | Out of scope |
 
-**Do not claim:** GATE-3 shape green, GATE-4 cell green, or ICDAR #1. Detection gates (G1/G2) are green under honest metrics.
+**Do not claim:** GATE-3 shape green, GATE-4 cell green, GATE-5 industry green, or ICDAR #1. Detection (G1/G2) is strong under owned metrics. See [`docs/STATUS.md`](docs/STATUS.md).
 
 ---
 
@@ -115,14 +118,15 @@ Gated plan: [`docs/implementation-plan-v3-gated.md`](docs/implementation-plan-v3
 ### 1) Real-structure track (primary product bar)
 
 Human/vision T3 gold · stitch off · product **Auto = Engine V2**.  
-Sources: `benchmark/real_track/results/real_structure_latest.json`, freezes `g2.json`, discipline / FP strict latest.
+Sources: `benchmark/real_track/results/real_structure_latest.json`, freeze `g2.json`, discipline / FP strict latest.
 
-| Metric | Core (g2, n=15) | Full suite (n=23) |
-|--------|----------------:|------------------:|
-| micro **cell F1** | **0.738** | **0.639** |
-| micro **det count F1** | **~0.978** | **0.933** |
-| micro **det IoU F1** | **1.000** | **0.869** |
-| shape exact rate | **~0.667** | **0.580** |
+| Metric | Core (g2 ids, n=15) | Full suite (n=23 scored; 25 T3 gold files on disk) |
+|--------|--------------------:|--------------------------------------------------:|
+| freeze **cell F1** (`g2.json`) | **0.637** | — |
+| later live **cell F1** | **0.738** (not a freeze) | **0.639** |
+| micro **det count F1** | **~0.978** live / **0.964** freeze | **0.933** |
+| micro **det IoU F1** | **1.000** live | **0.869** |
+| shape exact rate | **~0.667** live / **0.533** freeze | **0.580** |
 | detect discipline exact | **0.941** (n=34) | — |
 | over-detect doc rate | **0.029** | — |
 | fp_strict zero rate | **1.000** (n=12) | — |
@@ -130,12 +134,12 @@ Sources: `benchmark/real_track/results/real_structure_latest.json`, freezes `g2.
 **Interpretation for customers**
 
 - **Detection is the strength** — exact table counts, low FP, nested keep.
-- **Cell / shape are the gap** — core cell improved vs older freezes, but several hard docs (dense census, glued financial streams) still drag the mean.
-- Internal hard gates: **G1/G2 PASS**, **G3 shape FAIL**, **G4 cells FAIL** (honest floors; no gold padding).
+- **Cell / shape are the gap** — later live core cell **0.738** is not a freeze; regression lock stays **g2 0.637**. Dense census / glued financial streams still drag the mean.
+- Gate labels: [`docs/STATUS.md`](docs/STATUS.md). **Do not claim GATE-3/4/5 green.**
 
 #### Peer ranking on shared real gold (older equal-weight peer board)
 
-Last full multi-lib peer run on the reviewed T3 set (`REALITY_CHECK_PEERS.md`, 2026-07-12). pdfparser mean cell has since moved to **0.738** core; peer re-run recommended for an updated win table.
+Last full multi-lib peer run on the reviewed T3 set (`REALITY_CHECK_PEERS.md`, 2026-07-12). pdfparser freeze mean cell is **0.637**; later live core **0.738** is not a freeze. Peer re-run recommended for an updated win table.
 
 | Rank (then) | Library | mean cell F1 | mean det F1 | wins (best cell) |
 |------------:|---------|-------------:|------------:|-----------------:|
@@ -160,7 +164,8 @@ On these **owned** suites pdfparser is typically **#1** among open-source peers 
 
 Camelot-shipped PDFs + `*-str.xml`, Camelot-compatible F1 / TEDS / row / col.  
 **Not in repo · not CI · not for tuning.**  
-Source: `benchmark/results/camelot_icdar_headtohead.json` · report: [`docs/icdar-competitive-report.md`](docs/icdar-competitive-report.md).
+Source: `benchmark/results/camelot_icdar_headtohead.json` · report: [`docs/icdar-competitive-report.md`](docs/icdar-competitive-report.md).  
+The **latest** head-to-head JSON dump is pdfparser-only (**peers=1**) — that solo board is **not** rank #1. Use the multi-peer table below.
 
 **pdfparser product Auto (2026-07-19, post kill-list + densify; no gold pads):**
 
@@ -297,7 +302,7 @@ python3 benchmark/scripts/run_icdar_competitive.py \
 | Path | Role |
 |------|------|
 | `crates/` | Rust workspace (core, content, tables, CLI) |
-| `docs/` | Architecture + ICDAR report |
+| `docs/` | STATUS SSOT, architecture stub, designs, ICDAR report |
 | `benchmark/corpus/` | Owned PDFs (synthetic + real) |
 | `benchmark/real_track/gold/` | Reviewed T3 structure golds |
 | `benchmark/real_track/freezes/` | Steady freeze `g2.json` |

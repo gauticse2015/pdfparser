@@ -7,16 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Phase 4–5 — cells + industry polish / production-ready (2026-07-18)
+### Docs -- single status plane (P0.1) (2026-08-08)
 
-- **GATE-4 PASS:** core cell F1 **~0.787**; census + R010 cell F1 ≥0.40; densify_x right-edge + NIPA glue
-- **GATE-5 PASS:** freeze `benchmark/real_track/freezes/g3_industry.json`
-- **API:** `TableOptions` product surface ≤12 fields; knobs on `TableAdvancedOptions` (Deref + serde flatten)
-- **Presets:** `TablePreset::Fast` (never full-page render); classic stream off on product Auto (`allow_classic_stream`)
-- **HQ:** skip full-page render when vector lattice already rich (no regression vs Auto)
-- **CI:** `real-track-gates` job (discipline + FP + structure + phase gates 1–5)
-- **Harness:** `run_latency_probe.py`, `run_hq_vs_auto.py`; T3 gold files ≥25
-- **Docs:** README maturity / scoreboard refreshed; `docs/AUTONOMOUS_PROGRESS.md` Phase 5 PASS
+- **`docs/STATUS.md`** is the only source of truth for gate PASS/FAIL.
+- **Do not claim GATE-3 / GATE-4 / GATE-5 green.** Owned detection (G1/G2) is strong; shape / cells / industry polish are not.
+- Freeze lock remains `benchmark/real_track/freezes/g2.json` (core cell Auto **0.637**). README **0.738** is a later live number, not a freeze.
+- `g3_industry.json` is **INVALID** / revoked - never cite as PASS.
+- Landed `docs/design-zero-regression-hardening.md` + `docs/ARCHITECTURE.md` stub.
+- `impl Deref` on `TableOptions` -> `TableAdvancedOptions` is **already gone**; use `opts.advanced`.
+
+### Phase 4-5 -- cells + industry polish (2026-07-18) -- GATE-4/5 claims retracted
+
+- Work landed: densify_x right-edge + NIPA glue; `TablePreset::Fast` (never full-page render); classic stream off on product Auto (`allow_classic_stream`); HQ skip full-page render when vector lattice already rich; CI `real-track-gates` job; harness `run_latency_probe.py` / `run_hq_vs_auto.py`; T3 gold files on disk = 25.
+- **API:** `TableOptions` product surface ≤12 fields; knobs on `TableAdvancedOptions` (serde flatten). **Deref already removed.**
+- **Not green:** prior Unreleased text claimed GATE-4/5 PASS and freeze `g3_industry.json`. Those claims were false. `g3_industry.json` phase4/5 are INVALID. Core freeze stays `g2.json`.
+- **Docs:** gate labels live in `docs/STATUS.md` only (not `AUTONOMOUS_PROGRESS.md`).
 
 ### Phase 2 — detection completeness / borderless architecture (2026-07-16)
 - **Dense multi-col stream exemption** in form disc + borderless recall: campaign donors (56×7)
@@ -144,8 +149,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Honest competitive note
 
 - Owned multi-lib scoreboard: pdfparser leads cell F1 / overall on synthetic+hard suites
-- ICDAR-2013 external: pdfparser rank #5 (F1 0.58, TEDS 0.33) vs camelot auto F1 0.86 TEDS 0.79 — **not SOTA**; real-PDF track is primary going forward
-- Product Auto remains **legacy orchestrator** until real-structure Gate G1
+- ICDAR-2013 external: **not CI**. Multi-peer board (2026-07-19) has pdfparser **#2** on detection F1 (0.825 vs Camelot auto 0.864). Latest `camelot_icdar_headtohead.json` dump is **peers=1** (pdfparser only) — solo board ≠ rank #1.
+- Product Auto is **Engine V2** (as-built). Rollback: `legacy_router=true`.
 
 
 ## [0.1.0] - 2026-07-10
