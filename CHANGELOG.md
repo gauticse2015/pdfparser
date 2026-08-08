@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Gold -- R005 / R010 PDF review (P0.3) (2026-08-08)
+
+- **R005** structure expected_table_count **1 → 0**. Opened ACS PDF: first page is the title page, not a table. Dropped the 5×1 Camelot stub. Discipline stays n_exp=0 first_page.
+- **R010** counts **unchanged** (structure 51×22 / n_exp=1; discipline n_exp=1 on gold page 7). Live 2 vs 1 is lattice+stream over-detect.
+- `validate_structure_gold.py` allows empty `expected_tables` when `expected_table_count == 0`.
+
 ### Docs -- single status plane (P0.1) (2026-08-08)
 
 - **`docs/STATUS.md`** is the only source of truth for gate PASS/FAIL.

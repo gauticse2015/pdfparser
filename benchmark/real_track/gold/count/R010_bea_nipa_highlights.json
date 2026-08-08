@@ -12,9 +12,9 @@
     "encoding",
     "over_detect_risk"
   ],
-  "builder": "human_count_from_layout_review",
-  "reviewed_at": "2026-07-15T13:02:44.696454+00:00",
-  "notes": "Count-only gold for detect discipline gates. Not cell grids.",
+  "builder": "human_pdf_open_p0.3",
+  "reviewed_at": "2026-08-08T12:00:00+00:00",
+  "notes": "P0.3 (2026-08-08): Opened corpus/real/R010_bea_nipa_highlights.pdf (18 pp BEA GDP advance 2024-01). gold_pages=[7] is 1-based page 8 = Table 1 Real GDP percent change — ONE wide ruled statistical grid (not 2). p1–3 press-release prose+chart; p7 is table-of-tables list (not a data table). Discipline live 2 vs 1 (lattice+stream) is genuine over-detect, not a gold-count error — keep n_exp=1. Structure T3 is 51x22 on the same page; pred 4x3 is P5.1c quality, not a count change. Do not silently bump expected count to match n_pred=2.",
   "gold_pages": [
     7
   ]

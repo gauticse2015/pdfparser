@@ -45,7 +45,11 @@ def main() -> int:
         if g.get("status") in ("needs_human_review", "draft", "auto"):
             errors.append(f"{path.name}: status={g.get('status')} not reviewed for core")
         et = g.get("expected_tables") or []
+        exp_n = g.get("expected_table_count")
         if not et:
+            # Honest first-page / FP golds (e.g. R005 title page): n_exp=0, no T3 grid.
+            if exp_n == 0:
+                continue
             errors.append(f"{path.name}: no expected_tables")
             continue
         for i, t in enumerate(et):

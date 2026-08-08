@@ -218,7 +218,8 @@
         "encoding",
         "over_detect_risk"
       ],
-      "bucket": "single"
+      "bucket": "single",
+      "notes": "P0.3 PDF open: gold_pages=[7] is 1-based p8 Table 1 — one grid. Keep n_exp=1. Live 2 vs 1 is lattice+stream over-detect, not a second human table."
     },
     {
       "id": "R018_camelot_health",
@@ -462,7 +463,8 @@
         "borderless",
         "dense"
       ],
-      "bucket": "fp"
+      "bucket": "fp",
+      "notes": "P0.3 PDF open: first page is ACS title, not a table. Keep n_exp=0. Do not import structure's old 5x1 stub. n_pred_all_pages is later-page noise after filter."
     },
     {
       "id": "camelot_left_twocol",

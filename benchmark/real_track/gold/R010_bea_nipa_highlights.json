@@ -22,7 +22,7 @@
   "peer_accuracy": 99.1416,
   "vision_page_png": "benchmark/real_track/gold/drafts/vision_h2/R010_bea_nipa_highlights_p8.png",
   "page_1based": 8,
-  "review_notes": "Vision confirms Table 1 Real GDP percent change — wide multi-year quarterly grid (page 8). Cell values from Camelot stream after vision structure check. Hard: multi-level headers 2020–2023 quarters. Spot-check GDP row, PCE, last disposable PI. Page 1 is press-release prose (not table gold). Human confirmed vision+peer draft perfect (H2 promote 2026-07-12).",
+  "review_notes": "Vision confirms Table 1 Real GDP percent change — wide multi-year quarterly grid (page 8). Cell values from Camelot stream after vision structure check. Hard: multi-level headers 2020–2023 quarters. Spot-check GDP row, PCE, last disposable PI. Page 1 is press-release prose (not table gold). Human confirmed vision+peer draft perfect (H2 promote 2026-07-12). P0.3 (2026-08-08): Re-opened PDF. gold page 7 (0-based) = 1-based p8 is still ONE Table 1 grid; 51x22 shape kept. Discipline 2 vs 1 is lattice+stream over-detect on this page, not a second human table — do not change expected_table_count. Structure pred 4x3 vs gold 51x22 remains P5.1c quality residual (cell F1 ~0.002). Page 1 prose is not table gold.",
   "built_at": "2026-07-12T08:32:09.776234+00:00",
   "policy": "Human confirmed vision+peer gold. Not from pdfparser extract. stitch_multipage=false for eval.",
   "expected_table_count": 1,

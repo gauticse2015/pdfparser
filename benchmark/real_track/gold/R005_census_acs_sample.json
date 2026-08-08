@@ -4,60 +4,35 @@
   "track": "real_structure",
   "status": "reviewed",
   "license": "public sample (compete_real)",
-  "source_url": "",
+  "source_url": "https://www2.census.gov/programs-surveys/acs/tech_docs/subject_definitions/2022_ACSSubjectDefinitions.pdf",
   "source": "benchmark/corpus/compete_real/R005_census_acs_sample.pdf",
   "failure_classes": [
     "compete_real",
-    "phase2_expand"
+    "phase2_expand",
+    "title_page_not_table"
   ],
   "struggle_tags": [
-    "phase3_topology"
+    "page_scope_first",
+    "not_acs_detect_miss"
   ],
-  "builder": "peer_camelot_pdfplumber + automated_promote_phase2",
-  "peer_primary": "camelot",
-  "review_notes": "Promoted from peer draft mean_conf=0.75; peer consensus for Phase3 tracking. Spot-check recommended for disputes=0 drafts.",
-  "reviewed_at": "2026-07-16T15:10:09.018088+00:00",
-  "policy": "Peer-built structure gold promoted for real_structure expansion (Phase 2/3). Not pdfparser self-gold.",
-  "expected_table_count": 1,
+  "builder": "human_pdf_open_p0.3",
+  "peer_primary": "none",
+  "review_notes": "P0.3 (2026-08-08): Opened compete_real/R005_census_acs_sample.pdf (168 pp ACS 2022 Subject Definitions). Page 0 (1-based p1) is the title page only — American Community Survey / and / Puerto Rico Community Survey / 2022 Subject Definitions. Not a table. Prior 5x1 gold was a Camelot stream stub (full-page bbox 0,0,612,792, mean_conf=0.75) promoted 2026-07-16; do not freeze. PDF p2–5 = TOC with leader dots; p6+ = prose definitions. Later pages include income-bin lists / appendix distributions — out of first-page scope. Live structure: n_pred_all_pages≈99 then page_filter → n_pred=0 on page 0. This is page_filter vs first-page scope, not an ACS detector miss. Discipline already n_exp=0 first_page — do not copy a fake 5x1 into discipline.",
+  "reviewed_at": "2026-08-08T12:00:00+00:00",
+  "policy": "Page-local first-page gold. Not pdfparser self-gold. stitch_multipage=false for eval. Empty expected_tables is honest (n_exp=0), not a missing T3 grid.",
+  "page_scope": "first_page",
+  "gold_pages": [
+    0
+  ],
+  "expected_table_count": 0,
   "expected_table_count_tol": 0,
-  "expected_tables": [
-    {
-      "page": 0,
-      "rows": 5,
-      "cols": 1,
-      "cells": [
-        [
-          "American Community Survey"
-        ],
-        [
-          "and"
-        ],
-        [
-          "Puerto Rico Community"
-        ],
-        [
-          "Survey"
-        ],
-        [
-          "2022 Subject Definitions"
-        ]
-      ],
-      "primary_source": "camelot_stream",
-      "mean_cell_confidence": 0.75,
-      "bbox": {
-        "x0": 0.0,
-        "y0": 0.0,
-        "x1": 612.0,
-        "y1": 792.0
-      }
-    }
-  ],
+  "expected_tables": [],
   "soft_gold_id": "R005_census_acs_sample",
   "struggle": true,
   "phase3_tracking": {
-    "shape_interest": true,
-    "cell_interest": true,
-    "topology": "single",
-    "notes": "Tagged for Phase-3 shape/cell tracking"
+    "shape_interest": false,
+    "cell_interest": false,
+    "topology": "none",
+    "notes": "First-page title is not a table. Do not score 5x1 shape/cells. Later-page ACS lists not in this gold."
   }
 }

@@ -12,9 +12,9 @@
     "borderless",
     "dense"
   ],
-  "builder": "human_count_from_layout_review",
-  "reviewed_at": "2026-07-15T13:02:44.697933+00:00",
-  "notes": "first_page count gold: Auto may miss borderless ACS sample; structure T3 tracks quality when detected",
+  "builder": "human_pdf_open_p0.3",
+  "reviewed_at": "2026-08-08T12:00:00+00:00",
+  "notes": "P0.3 (2026-08-08): Opened PDF. first_page (p0) is the ACS title page — not a table. n_exp=0 confirmed. Do not copy structure's old 5x1 stub here. n_pred_all_pages≈96–99 is later-page TOC/list noise; after first_page filter n_pred=0. Not an ACS detect miss. Later pages are out of scope.",
   "gold_pages": [
     0
   ]

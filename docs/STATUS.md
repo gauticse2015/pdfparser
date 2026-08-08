@@ -1,6 +1,6 @@
 # Status (single source of truth)
 
-**Updated:** 2026-08-08 (P0.2)  
+**Updated:** 2026-08-08 (P0.1 + P0.2 + P0.3)  
 **This file is the only place that may say PASS/FAIL for gates.**  
 Other docs (README, CHANGELOG, AUTONOMOUS_PROGRESS, freeze notes, phase reports) must not invent a second status plane. Point here.
 
@@ -93,12 +93,25 @@ Maturity labels (customer): text + ruled/borderless **detection** production; ce
 
 ---
 
-## Landed this PR (P0.2)
+## Landed: P0.2 taxonomy
 
 `structure_error_taxonomy.py` reads `metrics.per_table[].pred_shape/gold_shape`. Default run is ICDAR-free. Census cell/shape is a **shadow metric only** (no 10-col e2e assert / H17). GATE-3/4/5 stay not green.
+
+## Landed: P0.3 gold review (R005 / R010)
+
+Opened both golds + PDFs. No detector math.
+
+| Doc | Track | Before | After PDF open | Notes |
+|-----|-------|--------|----------------|-------|
+| **R005** ACS title | structure | n_exp=**1** fake 5×1 (Camelot title stub, full-page bbox) | n_exp=**0**, `expected_tables=[]` | Page 0 is title only. Live `n_pred_all_pages≈99` then page_filter → 0. Not an ACS miss. |
+| **R005** | discipline | n_exp=**0** first_page | **unchanged** 0 | Do not copy the old 5×1 into discipline. |
+| **R010** NIPA Table 1 | structure | n_exp=1, 51×22 on page 7 | **unchanged** | 1-based p8 is one wide grid. Pred 4×3 is P5.1c. |
+| **R010** | discipline | n_exp=**1** gold_pages=[7] | **unchanged** 1 | Live 2 vs 1 is lattice+stream over-detect, not a second human table. |
+
+Committed `real_structure_latest.json` still scores R005 as 0 vs 1 (stale until next live `--binary` run). Do not hand-edit that board.
 
 ---
 
 ## What is still open (not this PR)
 
-Harness / gold / executable contract (P0.3-P0.6): R005/R010 gold review, G5.4 unit-test SSOT, latency freeze file, `--owned-only` + `--binary`. Do not invent `--binary` until P0.6.
+Harness / executable contract (P0.5–P0.6): latency freeze file, `--owned-only` + `--binary`. Do not invent `--binary` until P0.6.

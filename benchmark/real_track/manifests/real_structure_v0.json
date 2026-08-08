@@ -154,7 +154,8 @@
       ],
       "peer_primary": "vision+camelot_stream",
       "human_spotcheck_requested": false,
-      "promoted_at": "2026-07-12T08:38:18.611499+00:00"
+      "promoted_at": "2026-07-12T08:38:18.611499+00:00",
+      "notes": "P0.3 PDF open: page 7 (0-based) = one Table 1 grid; keep n_exp=1 and 51x22. Discipline 2 vs 1 is not a structure-count change. Pred 4x3 is P5.1c."
     },
     {
       "id": "42_real_insurance_italian",
@@ -228,9 +229,11 @@
       "struggle": true,
       "failure_classes": [
         "phase2_expand",
-        "compete_real"
+        "compete_real",
+        "title_page_not_table"
       ],
-      "peer_primary": "camelot"
+      "peer_primary": "none",
+      "notes": "P0.3 PDF open: first page is ACS title, not a table. Structure n_exp 1→0 (dropped 5x1 Camelot stub). Discipline stays n_exp=0 first_page. Not an ACS miss; n_pred_all_pages≈99 then page_filter."
     },
     {
       "id": "R008_cdc_mmwr_sample",
