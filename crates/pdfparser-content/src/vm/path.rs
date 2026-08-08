@@ -12,6 +12,17 @@ pub(crate) fn intersect_rect(a: Rect, b: Rect) -> Rect {
     }
 }
 
+/// Axis-aligned bbox of `r` after transforming its four corners by `ctm`.
+/// Returns `None` when the mapped box is degenerate.
+pub(crate) fn transform_rect_aabb(r: Rect, ctm: &Matrix3x2) -> Option<Rect> {
+    let out = Rect::from_points(r.corners().map(|p| ctm.apply(p.x, p.y)));
+    if out.x1 <= out.x0 || out.y1 <= out.y0 {
+        None
+    } else {
+        Some(out)
+    }
+}
+
 /// Clip a near-axis-aligned rule to an optional clip rect (PR2c).
 /// Returns `None` if fully outside or degenerate.
 pub(crate) fn clip_rule_segment(seg: RuleSegment, clip: Option<Rect>) -> Option<RuleSegment> {
