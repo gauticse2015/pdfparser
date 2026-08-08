@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "owned_gates_v0",
+  "policy": {
+    "icdar": "not_a_gate",
+    "note": "H21 SSOT for check_phase_gates.py --owned-only. Floors from g2 auto minus bands. No live-main relative floors. ICDAR never a merge bar."
+  },
+  "source_freeze": "g2.json",
+  "core_ids_from": "documents_auto",
+  "g2_auto": {
+    "micro_cell_f1": 0.6372333167816467,
+    "micro_det_count_f1": 0.9644444444444444,
+    "micro_det_iou_f1": 0.9407407407407408
+  },
+  "bands": {
+    "micro_cell_f1": 0.03,
+    "micro_det_count_f1": 0.02,
+    "micro_det_iou_f1": 0.03
+  },
+  "floors": {
+    "micro_cell_f1": 0.6072333167816467,
+    "micro_det_count_f1": 0.9444444444444444,
+    "micro_det_iou_f1": 0.9107407407407408,
+    "exact_count_rate": 0.88,
+    "over_doc_rate": 0.12,
+    "fp_strict_zero_rate": 1.0,
+    "nested_doc_42_n_tables": 2,
+    "nested_doc_42_cell_f1": 0.9000000000000001
+  },
+  "discipline": {
+    "suite": "detect_discipline_v1",
+    "exact_count_rate_min": 0.88,
+    "over_doc_rate_max": 0.12
+  },
+  "fp_strict": {
+    "suite": "real_fp_smoke_v1_strict",
+    "zero_rate_min": 1.0,
+    "n": 12
+  },
+  "nested_doc_42": {
+    "id": "42_real_insurance_italian",
+    "n_tables": 2,
+    "freeze_cell_f1": 0.9500000000000001,
+    "cell_f1_band": 0.05
+  }
+}

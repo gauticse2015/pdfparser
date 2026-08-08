@@ -75,6 +75,8 @@ jobs:
         run: python3 benchmark/scripts/assert_no_icdar.py
       - name: Phase gate 0 (measurement foundation)
         run: python3 benchmark/scripts/check_phase_gates.py --phase 0
+      - name: Owned-gate checker + dump-compare unit tests
+        run: python3 benchmark/scripts/test_check_phase_gates.py
 
   # Policy: never allow ICDAR competition PDFs/gold under benchmark data trees
   assert-no-icdar:
@@ -99,22 +101,14 @@ jobs:
           cargo build --release -p pdfparser-cli
           ./target/release/pdfparser extract benchmark/corpus/01_simple_text.pdf | grep -q SIMPLE_TOKEN_ALPHA
 
-  # Real-track freeze gates (G5.5). Uses **committed** latest JSON so this PR
-  # can merge independently of the engine binary. Nightly/local should re-run
-  # detect_discipline / real_structure with the product CLI after engine lands.
+  # Real-track freeze gates (G5.5 / P0.6). Uses **committed** latest JSON so PR
+  # CI never needs a live extract. Never load ICDAR metrics (H8). Detector PRs
+  # must re-run live `--binary` locally; nightly on main is required (H15).
   real-track-gates:
-    name: Real-track phase gates
+    name: Real-track owned gates
     runs-on: ubuntu-latest
     needs: test
     steps:
       - uses: actions/checkout@v4
-      - name: Phase gates 1–2 (hard, committed results)
-        run: |
-          python3 benchmark/scripts/check_phase_gates.py --phase 1
-          python3 benchmark/scripts/check_phase_gates.py --phase 2
-      - name: Phase gates 3–5 (report only; not yet green)
-        continue-on-error: true
-        run: |
-          python3 benchmark/scripts/check_phase_gates.py --phase 3
-          python3 benchmark/scripts/check_phase_gates.py --phase 4
-          python3 benchmark/scripts/check_phase_gates.py --phase 5
+      - name: Owned-only gates (no ICDAR metrics)
+        run: python3 benchmark/scripts/check_phase_gates.py --owned-only

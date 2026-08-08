@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Bench -- executable owned contract (P0.6) (2026-08-08)
+
+- `check_phase_gates.py --owned-only` is the ICDAR-free CI merge bar (`freezes/owned_gates_v0.json`).
+- Runners accept `--binary PATH` (`run_detect_discipline`, `run_fp_strict`, `run_real_structure`, `run_latency_probe`).
+- Dump-compare: `dump_product_tables.py` + `compare_table_dumps.py` (`pdfparser_table_dump_v1`).
+- CI `real-track-gates` no longer runs `--phase 1` / `--phase 2` (those load ICDAR metrics).
+
 ### CI -- latency_fast_v0 freeze and nightly probe (P0.5) (2026-08-08)
 
 - Recorded Fast p50/p95/max + hardware in `benchmark/real_track/freezes/latency_fast_v0.json` (copied from committed `latency_probe_latest.json`; local macOS, not ubuntu-latest).

@@ -61,9 +61,9 @@ def hardware_block() -> dict:
     }
 
 
-def fast_cli(pdf: Path, dump_evidence: bool = False) -> list[str]:
+def fast_cli(pdf: Path, binary: Path = BIN, dump_evidence: bool = False) -> list[str]:
     cmd = [
-        str(BIN),
+        str(binary),
         "extract",
         str(pdf),
         "--tables",
@@ -96,10 +96,12 @@ def parse_dump_evidence_flags(stderr: str) -> dict | None:
             return None
 
 
-def verify_fast_never_renders(pdf: Path) -> tuple[bool, bool | None, bool | None, str]:
+def verify_fast_never_renders(
+    pdf: Path, binary: Path = BIN
+) -> tuple[bool, bool | None, bool | None, str]:
     """Untimed dump-evidence probe. Fast must hard-disable both render flags."""
     r = subprocess.run(
-        fast_cli(pdf, dump_evidence=True),
+        fast_cli(pdf, binary=binary, dump_evidence=True),
         capture_output=True,
         text=True,
     )
@@ -123,10 +125,19 @@ def main() -> int:
         default=OUT,
         help="Write probe JSON here (default: real_track/results/latency_probe_latest.json)",
     )
+    ap.add_argument(
+        "--binary",
+        type=Path,
+        default=None,
+        help="pdfparser binary (default: discover target/release/pdfparser)",
+    )
     args = ap.parse_args()
-
-    if not BIN.is_file():
-        print("missing release binary; run: cargo build --release -p pdfparser-cli", file=sys.stderr)
+    binary = args.binary.expanduser() if args.binary is not None else BIN
+    if not binary.is_file():
+        print(
+            f"missing binary: {binary}; run: cargo build --release -p pdfparser-cli",
+            file=sys.stderr,
+        )
         return 2
     man = json.loads(MAN.read_text(encoding="utf-8"))
     docs = man.get("documents") or []
@@ -141,7 +152,7 @@ def main() -> int:
             continue
         t0 = time.perf_counter()
         r = subprocess.run(
-            fast_cli(pdf, dump_evidence=False),
+            fast_cli(pdf, binary=binary, dump_evidence=False),
             capture_output=True,
             text=True,
         )
@@ -177,7 +188,7 @@ def main() -> int:
     render_detail = "no successful pdf for dump-evidence"
     if first_ok_pdf is not None:
         render_ok, enable_flag, allow_flag, render_detail = verify_fast_never_renders(
-            first_ok_pdf
+            first_ok_pdf, binary=binary
         )
         print(f"  fast_never_render: ok={render_ok} {render_detail}")
 

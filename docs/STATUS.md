@@ -1,6 +1,6 @@
 # Status (single source of truth)
 
-**Updated:** 2026-08-08 (P0.1 through P0.5)  
+**Updated:** 2026-08-08 (P0.1 through P0.6)  
 **This file is the only place that may say PASS/FAIL for gates.**  
 Other docs (README, CHANGELOG, AUTONOMOUS_PROGRESS, freeze notes, phase reports) must not invent a second status plane. Point here.
 
@@ -38,9 +38,7 @@ Owned detection is the strength. Quality (shape / cells / TEDS) is not.
 | **GATE-4** cells / TEDS | **NOT green** | Freeze core cell **0.637**; census / NIPA cell F1 still near-zero on live structure; ICDAR TEDS ~0.46 | GATE-4 PASS; g3 cell **0.787** |
 | **GATE-5** industry / production polish | **NOT green** | `g3_industry.json` phase4/5 **INVALID**; freeze README must not cite it | GATE-5 PASS; production-ready |
 
-CI may keep phase 3-5 jobs `continue-on-error` until honestly green. That is **not** PASS.
-
-`--phase 1` / `--phase 2` on `check_phase_gates.py` still load ICDAR JSON today. That is a P0.6 harness bug, **not** policy. Merge bar for this PR: `--phase 0` only. Do not use `--phase 1/2` as a merge bar.
+CI merge bar is `check_phase_gates.py --phase 0` + `--owned-only` on committed JSON (H8/H21). `--phase 1` / `--phase 2` still load ICDAR metrics for **external** promotion only — CI must not call them. Phase 3–5 are **not** green; do not label them PASS.
 
 ---
 
@@ -138,4 +136,4 @@ Committed `real_structure_latest.json` still scores R005 as 0 vs 1 (stale until 
 
 ## What is still open (not this PR)
 
-Executable contract (P0.6): `--owned-only` + `--binary` + dump-compare. Do not invent `--binary` until P0.6.
+Phase 0 complete: `--owned-only`, `--binary` on runners, dump-compare, `owned_gates_v0.json`. Next: Phase 1 bit-identical SOLID.
