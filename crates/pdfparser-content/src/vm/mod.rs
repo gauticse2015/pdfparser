@@ -38,12 +38,23 @@ pub struct InterpretOptions {
     /// Max `q`/`Q` graphics-state stack depth (`ResourceLimits.max_nesting_depth`).
     /// Clamped to [`MAX_GSTACK_DEPTH`] at interpret time. Default 64.
     pub max_nesting_depth: u32,
+    /// When true, ignore fat strokes whose effective width exceeds
+    /// [`Self::stroke_width_max`] instead of emitting 1-D centerline rules.
+    ///
+    /// Default **false** (A2.6 / P2.3). Product Auto / table path stays off
+    /// until a freeze no-drop flip (P2.3b).
+    pub stroke_width_filter: bool,
+    /// Max effective stroke width (user units / pt) kept as a 1-D lattice
+    /// rule when [`Self::stroke_width_filter`] is on. Named threshold; default 4.0.
+    pub stroke_width_max: f32,
 }
 
 /// Default max thickness for thin filled rects treated as lattice rules.
 /// Slightly higher than 2.0 so medium painted bars still become rules (vector
 /// stand-in for Camelot-style line recovery without a full raster engine).
 const DEFAULT_THIN_FILL_RULE_MAX: f32 = 3.5;
+/// Default max effective stroke width kept as a 1-D rule when the filter is on.
+const DEFAULT_STROKE_WIDTH_MAX: f32 = 4.0;
 
 impl Default for InterpretOptions {
     fn default() -> Self {
@@ -53,6 +64,8 @@ impl Default for InterpretOptions {
             thin_fill_rule_max: DEFAULT_THIN_FILL_RULE_MAX,
             capture_image_placements: true,
             max_nesting_depth: MAX_GSTACK_DEPTH,
+            stroke_width_filter: false,
+            stroke_width_max: DEFAULT_STROKE_WIDTH_MAX,
         }
     }
 }
@@ -120,7 +133,7 @@ pub enum VmWarning {
     ClipAabbOnly,
     /// Known ISO op intentionally ignored (reserved; skip set unchanged).
     IgnoredOperator(&'static str),
-    /// Stroke width `w` ignored (reserved until A2.6).
+    /// Fat stroke dropped by [`InterpretOptions::stroke_width_filter`] (A2.6 / P2.3).
     StrokeWidthIgnored,
     /// `q`/`Q` graphics stack hit `max_nesting_depth` (P2.2b).
     GstackNestingDepth,
@@ -225,6 +238,7 @@ pub fn interpret_page_with_resolver(
         form_depth: 0,
         form_cycle: Vec::new(),
         gstack_limit_warned: false,
+        stroke_width_warned: false,
     };
     let mut gs = GState {
         ctm: Matrix3x2::identity(),
@@ -232,6 +246,7 @@ pub fn interpret_page_with_resolver(
         dash: Vec::new(),
         dash_phase: 0.0,
         clip_rect: None,
+        line_width: 1.0,
     };
     let mut gstack: Vec<GState> = Vec::new();
     interpret_stream(
@@ -262,10 +277,22 @@ struct InterpretState<'a> {
     form_depth: u32,
     form_cycle: Vec<ObjectId>,
     gstack_limit_warned: bool,
+    stroke_width_warned: bool,
 }
 
 fn per_form_max_ops(max_ops: u64) -> u64 {
     (max_ops / 4).max(PER_FORM_MAX_OPS_FLOOR)
+}
+
+/// Effective stroke width in user space: `w ×` mean CTM axis scale.
+fn stroke_width_user(gs: &GState) -> f32 {
+    let scale = 0.5 * (gs.ctm.scale_x() + gs.ctm.scale_y());
+    gs.line_width * scale.max(0.0)
+}
+
+/// A2.6 / P2.3: drop fat strokes when the opt-in filter is on.
+fn skip_fat_stroke(gs: &GState, opts: &InterpretOptions) -> bool {
+    opts.stroke_width_filter && stroke_width_user(gs) > opts.stroke_width_max
 }
 
 /// Interpret one content stream. `form_ops_left` is `Some` when inside a form
@@ -368,25 +395,35 @@ fn interpret_stream(
                             path.close();
                         }
                         if state.opts.capture_rules {
-                            for seg in path.segments_user(&gs.ctm) {
-                                // Keep near axis-aligned segments of meaningful length
-                                if !(seg.is_horizontal(1.5) || seg.is_vertical(1.5)) {
-                                    continue;
-                                }
-                                let segs: Vec<RuleSegment> = if gs.dash.is_empty() {
-                                    if seg.len() >= 2.0 {
-                                        vec![seg]
-                                    } else {
-                                        Vec::new()
+                            // A2.6 / P2.3: opt-in skip of fat strokes (default off).
+                            let skip_fat = skip_fat_stroke(gs, state.opts);
+                            if skip_fat && !state.stroke_width_warned {
+                                state.warnings.push(VmWarning::StrokeWidthIgnored);
+                                state.stroke_width_warned = true;
+                            }
+                            if !skip_fat {
+                                for seg in path.segments_user(&gs.ctm) {
+                                    // Keep near axis-aligned segments of meaningful length
+                                    if !(seg.is_horizontal(1.5) || seg.is_vertical(1.5)) {
+                                        continue;
                                     }
-                                } else {
-                                    // Expand dashed H/V strokes into ON pieces only.
-                                    expand_dash_segment(seg, &gs.dash, gs.dash_phase)
-                                };
-                                for piece in segs {
-                                    if let Some(clipped) = clip_rule_segment(piece, gs.clip_rect) {
-                                        if clipped.len() >= 1.0 {
-                                            state.rules.push(clipped);
+                                    let segs: Vec<RuleSegment> = if gs.dash.is_empty() {
+                                        if seg.len() >= 2.0 {
+                                            vec![seg]
+                                        } else {
+                                            Vec::new()
+                                        }
+                                    } else {
+                                        // Expand dashed H/V strokes into ON pieces only.
+                                        expand_dash_segment(seg, &gs.dash, gs.dash_phase)
+                                    };
+                                    for piece in segs {
+                                        if let Some(clipped) =
+                                            clip_rule_segment(piece, gs.clip_rect)
+                                        {
+                                            if clipped.len() >= 1.0 {
+                                                state.rules.push(clipped);
+                                            }
                                         }
                                     }
                                 }
@@ -394,6 +431,7 @@ fn interpret_stream(
                             // Fill+stroke ops (B/b) also paint thin filled rects as rules
                             // (common in Word/Excel PDF export). Stroke-only path capture
                             // misses fill-drawn grid lines when stroke width is zero-ish.
+                            // Independent of stroke-width filter (fills are not `w`).
                             if matches!(op, "B" | "B*" | "b" | "b*")
                                 && state.opts.thin_fill_rule_max > 0.0
                             {
@@ -414,6 +452,12 @@ fn interpret_stream(
                             // close then stroke already in segments if close called; path may need close
                         }
                         path.clear();
+                        stack.clear();
+                    }
+                    "w" => {
+                        // Line width (PDF default 1.0). Always recorded so q/Q
+                        // restore is correct; filter consults it only when on.
+                        gs.line_width = pop_num(&mut stack, &mut state.warnings).max(0.0);
                         stack.clear();
                     }
                     "d" => {
@@ -617,8 +661,9 @@ fn interpret_stream(
                     }
                     "CS" | "cs" | "SC" | "SCN" | "sc" | "scn" | "G" | "g" | "RG" | "rg" | "K"
                     | "k" | "sh" | "gs" | "MP" | "DP" | "BMC" | "BDC" | "EMC" | "BX" | "EX"
-                    | "ri" | "i" | "J" | "j" | "M" | "w" | "d0" | "d1" => {
-                        // Skip set unchanged (P2.1a): still silent, no IgnoredOperator.
+                    | "ri" | "i" | "J" | "j" | "M" | "d0" | "d1" => {
+                        // Skip set otherwise unchanged (P2.1a): still silent, no IgnoredOperator.
+                        // `w` is handled above (A2.6 / P2.3); remains silent on the default path.
                         stack.clear();
                     }
                     _ => {
@@ -1210,5 +1255,153 @@ mod tests {
         let result = interpret_page(&content, &empty_fonts(), &opts);
         assert!(has_gstack_warn(&result.warnings), "{:?}", result.warnings);
         assert_eq!(result.rules.len(), 1);
+    }
+
+    fn filter_on() -> InterpretOptions {
+        InterpretOptions {
+            stroke_width_filter: true,
+            ..InterpretOptions::default()
+        }
+    }
+
+    #[test]
+    fn stroke_width_filter_default_off_keeps_fat_centerline() {
+        let content = b"10 w 0 0 m 80 0 l S\n";
+        let result = interpret_page(content, &empty_fonts(), &InterpretOptions::default());
+        assert!(!InterpretOptions::default().stroke_width_filter);
+        assert_eq!(result.rules.len(), 1, "rules={:?}", result.rules);
+        assert!((result.rules[0].len() - 80.0).abs() < 0.5);
+        assert!(
+            !result
+                .warnings
+                .iter()
+                .any(|w| matches!(w, VmWarning::StrokeWidthIgnored)),
+            "default path must stay silent: {:?}",
+            result.warnings
+        );
+    }
+
+    #[test]
+    fn stroke_width_filter_drops_fat_stroke() {
+        let content = b"10 w 0 0 m 80 0 l S\n";
+        let result = interpret_page(content, &empty_fonts(), &filter_on());
+        assert!(
+            result.rules.is_empty(),
+            "fat stroke should not be a 1-D rule: {:?}",
+            result.rules
+        );
+        assert_eq!(
+            result
+                .warnings
+                .iter()
+                .filter(|w| matches!(w, VmWarning::StrokeWidthIgnored))
+                .count(),
+            1
+        );
+    }
+
+    #[test]
+    fn stroke_width_filter_keeps_thin_and_default_w() {
+        let thin = b"0.5 w 0 0 m 80 0 l S\n";
+        let thin_r = interpret_page(thin, &empty_fonts(), &filter_on());
+        assert_eq!(thin_r.rules.len(), 1, "rules={:?}", thin_r.rules);
+        assert!(
+            !thin_r
+                .warnings
+                .iter()
+                .any(|w| matches!(w, VmWarning::StrokeWidthIgnored)),
+            "{:?}",
+            thin_r.warnings
+        );
+
+        let def_w = b"0 10 m 80 10 l S\n";
+        let def_r = interpret_page(def_w, &empty_fonts(), &filter_on());
+        assert_eq!(
+            def_r.rules.len(),
+            1,
+            "default w=1 should keep: {:?}",
+            def_r.rules
+        );
+
+        // Exactly the named threshold is not "above".
+        let at = b"4 w 0 20 m 80 20 l S\n";
+        let at_r = interpret_page(at, &empty_fonts(), &filter_on());
+        assert_eq!(at_r.rules.len(), 1, "4pt should be kept: {:?}", at_r.rules);
+    }
+
+    #[test]
+    fn stroke_width_filter_uses_ctm_scale() {
+        // 3pt × scale 2 = 6 > 4 → drop when filter on; keep when off.
+        let content = b"2 0 0 2 0 0 cm 3 w 0 0 m 40 0 l S\n";
+        let off = interpret_page(content, &empty_fonts(), &InterpretOptions::default());
+        assert_eq!(off.rules.len(), 1, "default off: {:?}", off.rules);
+        let on = interpret_page(content, &empty_fonts(), &filter_on());
+        assert!(
+            on.rules.is_empty(),
+            "scaled fat should drop: {:?}",
+            on.rules
+        );
+    }
+
+    #[test]
+    fn stroke_width_filter_q_restores_line_width() {
+        // 10pt outside q; 1pt inside q → keep inner, drop outer after Q.
+        let content = b"10 w q 1 w 0 0 m 40 0 l S Q 0 10 m 40 10 l S\n";
+        let result = interpret_page(content, &empty_fonts(), &filter_on());
+        assert_eq!(result.rules.len(), 1, "rules={:?}", result.rules);
+        assert!(result.rules[0].is_horizontal(1.5));
+        assert!(
+            (result.rules[0].y0 - 0.0).abs() < 0.5,
+            "{:?}",
+            result.rules[0]
+        );
+        assert_eq!(
+            result
+                .warnings
+                .iter()
+                .filter(|w| matches!(w, VmWarning::StrokeWidthIgnored))
+                .count(),
+            1
+        );
+    }
+
+    #[test]
+    fn stroke_width_filter_warns_once_for_multiple_fat() {
+        let content = b"8 w 0 0 m 40 0 l S\n0 10 m 40 10 l S\n";
+        let result = interpret_page(content, &empty_fonts(), &filter_on());
+        assert!(result.rules.is_empty(), "rules={:?}", result.rules);
+        assert_eq!(
+            result
+                .warnings
+                .iter()
+                .filter(|w| matches!(w, VmWarning::StrokeWidthIgnored))
+                .count(),
+            1
+        );
+    }
+
+    #[test]
+    fn stroke_width_filter_fill_stroke_still_captures_thin_fill() {
+        // Fat stroke + thin filled band: skip 1-D stroke edges, keep fill rule.
+        let content = b"10 w 10 50 120 1 re B\n";
+        let result = interpret_page(content, &empty_fonts(), &filter_on());
+        let h: Vec<_> = result
+            .rules
+            .iter()
+            .filter(|r| r.is_horizontal(1.5) && r.len() >= 50.0)
+            .collect();
+        assert_eq!(h.len(), 1, "expected thin-fill H rule: {:?}", result.rules);
+        assert!(result
+            .warnings
+            .iter()
+            .any(|w| matches!(w, VmWarning::StrokeWidthIgnored)));
+    }
+
+    #[test]
+    fn vm_warning_stroke_width_ignored_display() {
+        assert_eq!(
+            VmWarning::StrokeWidthIgnored.to_string(),
+            "stroke_width_ignored"
+        );
     }
 }

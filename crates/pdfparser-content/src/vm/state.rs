@@ -44,4 +44,7 @@ pub(crate) struct GState {
     /// Axis-aligned clip rectangle in user space after CTM (PR2c subset).
     /// `None` = no clip. Intersected on successive `W`/`W*`.
     pub(crate) clip_rect: Option<Rect>,
+    /// Line width from `w` (PDF default 1.0 user unit). Used only when
+    /// [`super::InterpretOptions::stroke_width_filter`] is on.
+    pub(crate) line_width: f32,
 }
