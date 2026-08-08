@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Tables -- DensifyMode default Primary (P1.8) (2026-08-08)
+
+- Added `DensifyMode::{Primary, InsideFrameOnly, Off}` on `TableAdvancedOptions.densify_mode` (H20; not a 13th top-level field).
+- Default **Primary** = today's densify-as-primary. Legacy `lattice_text_densify=false` maps to `Off`.
+- **No densify math change.** `InsideFrameOnly` is a P5.2 placeholder and currently runs the same helpers.
+
 ### CLI -- optional text IR via pdfparser-export (P1.7) (2026-08-08)
 
 - `pdfparser extract --format json --use-export-ir` serializes `ExtractedDocument` through `pdfparser-export`.

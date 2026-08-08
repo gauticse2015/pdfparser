@@ -33,6 +33,7 @@ Product names are `PRODUCT_TABLE_OPTION_FIELDS` (exactly **12**).
 | Classic `detect_stream_tables` export | **Deprecated for product** | Network is borderless path |
 | Legacy soup NMS path | Retained | Until M4 (≥1 minor after flip) |
 | `advanced.tuning` (`opts.advanced.tuning`) | **Active** | Document-type settings dict (`TableTuning`); system defaults + per-call override |
+| `advanced.densify_mode` | **Active (P1.8)** | `DensifyMode::{Primary, InsideFrameOnly, Off}`; default **Primary** = today. `lattice_text_densify=false` → Off. No math change; InsideFrameOnly demotion is P5.2. H20: not a 13th top-level field. |
 
 ## TableTuning (settings dict)
 

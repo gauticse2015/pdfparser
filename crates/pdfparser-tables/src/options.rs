@@ -56,6 +56,44 @@ impl Default for TableModeSet {
     }
 }
 
+/// How text densify may invent H/V anchors on ruled grids (H6 / P1.8).
+///
+/// Default [`Primary`](Self::Primary) is today's densify-as-primary behavior.
+/// [`InsideFrameOnly`](Self::InsideFrameOnly) is reserved for P5.2 demotion and
+/// currently uses the **same math** as Primary (no flip in this PR).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
+pub enum DensifyMode {
+    /// Densify X/Y from text as primary structure fill-in (today).
+    #[default]
+    Primary,
+    /// Future: densify only inside an accepted joint/frame bbox (P5.2).
+    ///
+    /// P1.8: same helpers as [`Primary`](Self::Primary) — no math change.
+    InsideFrameOnly,
+    /// Disable text densify X/Y.
+    Off,
+}
+
+impl DensifyMode {
+    /// Map the legacy [`TableAdvancedOptions::lattice_text_densify`] boolean.
+    ///
+    /// `true` → [`Primary`](Self::Primary) (today); `false` → [`Off`](Self::Off).
+    pub fn from_lattice_text_densify(on: bool) -> Self {
+        if on {
+            Self::Primary
+        } else {
+            Self::Off
+        }
+    }
+
+    /// Whether text densify X/Y may run. [`Off`](Self::Off) is the only disabled mode.
+    pub fn is_enabled(self) -> bool {
+        !matches!(self, Self::Off)
+    }
+}
+
 /// Progressive presets.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -174,7 +212,16 @@ pub struct TableAdvancedOptions {
     /// Trigger overdense-H collapse when H-rows > text_bands × factor.
     pub lattice_overdense_h_factor: f32,
     /// Text densify X/Y recovery for partial ruled grids (stub cols / missing H).
+    ///
+    /// Legacy boolean. `false` forces [`DensifyMode::Off`]. Prefer [`Self::densify_mode`].
     pub lattice_text_densify: bool,
+    /// How text densify may invent H/V anchors (H6 / P1.8; H20 advanced-only).
+    ///
+    /// Default [`DensifyMode::Primary`] = today. **No math change:**
+    /// [`DensifyMode::InsideFrameOnly`] currently runs the same helpers as Primary.
+    /// Demotion is P5.2 after freeze A/B.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub densify_mode: DensifyMode,
     /// Recover H/V rules from raster bitmaps (embedded Image XObjects).
     pub raster_line_detect: bool,
     /// Adaptive threshold window half-size (pixels). Typical 6–10.
@@ -240,6 +287,7 @@ impl Default for TableAdvancedOptions {
             lattice_collapse_overdense_h: true,
             lattice_overdense_h_factor: crate::TableTuning::default().lattice_overdense_h_factor,
             lattice_text_densify: true,
+            densify_mode: DensifyMode::Primary,
             raster_line_detect: true,
             raster_adaptive_radius: 6,
             raster_adaptive_bias: 12,
@@ -330,6 +378,20 @@ impl Default for TableOptions {
             allow_classic_stream: false,
             shadow_diagnostics: false,
             advanced: TableAdvancedOptions::default(),
+        }
+    }
+}
+
+impl TableAdvancedOptions {
+    /// Effective densify policy.
+    ///
+    /// Legacy [`Self::lattice_text_densify`] `false` maps to [`DensifyMode::Off`].
+    /// Otherwise returns [`Self::densify_mode`] (default Primary = today).
+    pub fn effective_densify_mode(&self) -> DensifyMode {
+        if !self.lattice_text_densify {
+            DensifyMode::Off
+        } else {
+            self.densify_mode
         }
     }
 }
@@ -512,5 +574,43 @@ mod tests {
             .with_tuning_override("densify_x_explode_abs_cols", 20.0)
             .unwrap();
         assert_eq!(o2.advanced.tuning.densify_x_explode_abs_cols, 20);
+    }
+
+    #[test]
+    fn densify_mode_default_primary_maps_legacy_bool() {
+        assert_eq!(DensifyMode::default(), DensifyMode::Primary);
+        assert_eq!(
+            DensifyMode::from_lattice_text_densify(true),
+            DensifyMode::Primary
+        );
+        assert_eq!(
+            DensifyMode::from_lattice_text_densify(false),
+            DensifyMode::Off
+        );
+        assert!(DensifyMode::Primary.is_enabled());
+        assert!(DensifyMode::InsideFrameOnly.is_enabled());
+        assert!(!DensifyMode::Off.is_enabled());
+
+        let o = TableOptions::from_preset(TablePreset::Auto);
+        assert_eq!(o.advanced.densify_mode, DensifyMode::Primary);
+        assert!(o.advanced.lattice_text_densify);
+        assert_eq!(o.advanced.effective_densify_mode(), DensifyMode::Primary);
+        assert_eq!(TableOptions::product_field_count(), 12);
+
+        let mut off_bool = TableOptions::default();
+        off_bool.advanced.lattice_text_densify = false;
+        assert_eq!(off_bool.advanced.effective_densify_mode(), DensifyMode::Off);
+
+        let mut off_mode = TableOptions::from_preset(TablePreset::Auto);
+        off_mode.advanced.densify_mode = DensifyMode::Off;
+        assert_eq!(off_mode.advanced.effective_densify_mode(), DensifyMode::Off);
+
+        let mut inside = TableOptions::from_preset(TablePreset::Auto);
+        inside.advanced.densify_mode = DensifyMode::InsideFrameOnly;
+        assert_eq!(
+            inside.advanced.effective_densify_mode(),
+            DensifyMode::InsideFrameOnly
+        );
+        assert!(inside.advanced.effective_densify_mode().is_enabled());
     }
 }

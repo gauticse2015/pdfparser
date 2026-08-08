@@ -1,8 +1,12 @@
 //! Text densify / thin-gap / empty-column helpers for ruled lattice grids.
 //!
 //! Extracted from the ruled builder so densify policy stays reviewable and
-//! can be gated via [`crate::TableAdvancedOptions::lattice_text_densify`]
-//! (`opts.advanced.lattice_text_densify`).
+//! can be gated via [`crate::TableAdvancedOptions::densify_mode`] (H6 / P1.8)
+//! (`opts.advanced.densify_mode` / legacy `opts.advanced.lattice_text_densify`).
+//! Legacy `lattice_text_densify` `false` maps to [`crate::DensifyMode::Off`];
+//! default is [`crate::DensifyMode::Primary`] (today's math).
+//! [`crate::DensifyMode::InsideFrameOnly`] is a P5.2 placeholder and currently
+//! runs the same helpers.
 //!
 //! Thresholds that often need document-type tuning flow through
 //! [`DensifyParams`] (sourced from [`crate::TableTuning`]).
@@ -12,8 +16,18 @@
 #![allow(clippy::manual_div_ceil)]
 
 use crate::geom::cluster_coords;
+use crate::options::TableOptions;
 use crate::types::TableCell;
 use pdfparser_ir::TextRun;
+
+/// Whether the ruled builder should run text densify X/Y (P1.8).
+///
+/// Default [`crate::DensifyMode::Primary`] and [`crate::DensifyMode::InsideFrameOnly`]
+/// are both enabled with **today's math**. [`crate::DensifyMode::Off`] (or legacy
+/// `lattice_text_densify = false`) skips densify.
+pub(crate) fn should_run_text_densify(opts: &TableOptions) -> bool {
+    opts.advanced.effective_densify_mode().is_enabled()
+}
 
 /// Subset of [`crate::TableTuning`] consumed by densify helpers.
 #[derive(Debug, Clone, Copy)]
@@ -1141,7 +1155,30 @@ pub(crate) fn collapse_sparse_interior_columns(
 #[cfg(test)]
 mod densify_y_debug {
     use super::*;
+    use crate::options::{DensifyMode, TablePreset};
     use pdfparser_ir::{Rect, TextRun};
+
+    #[test]
+    fn densify_mode_primary_enabled_off_disabled() {
+        let auto = TableOptions::from_preset(TablePreset::Auto);
+        assert!(should_run_text_densify(&auto));
+        assert_eq!(auto.advanced.densify_mode, DensifyMode::Primary);
+
+        let mut legacy_off = TableOptions::default();
+        legacy_off.advanced.lattice_text_densify = false;
+        assert!(!should_run_text_densify(&legacy_off));
+
+        let mut mode_off = TableOptions::from_preset(TablePreset::Auto);
+        mode_off.advanced.densify_mode = DensifyMode::Off;
+        assert!(!should_run_text_densify(&mode_off));
+
+        let mut inside = TableOptions::from_preset(TablePreset::Auto);
+        inside.advanced.densify_mode = DensifyMode::InsideFrameOnly;
+        assert!(
+            should_run_text_densify(&inside),
+            "InsideFrameOnly is enabled with Primary math (P1.8 no flip)"
+        );
+    }
 
     fn run(text: &str, x0: f32, y0: f32, x1: f32, y1: f32, fs: f32) -> TextRun {
         TextRun {
