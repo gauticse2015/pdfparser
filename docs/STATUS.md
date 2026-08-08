@@ -1,6 +1,6 @@
 # Status (single source of truth)
 
-**Updated:** 2026-08-08 (P0.1)  
+**Updated:** 2026-08-08 (P0.2)  
 **This file is the only place that may say PASS/FAIL for gates.**  
 Other docs (README, CHANGELOG, AUTONOMOUS_PROGRESS, freeze notes, phase reports) must not invent a second status plane. Point here.
 
@@ -95,4 +95,6 @@ Maturity labels (customer): text + ruled/borderless **detection** production; ce
 
 ## What is still open (not this PR)
 
-Harness / gold / executable contract (P0.2-P0.6): taxonomy not-all-unknown, R005/R010 gold review, G5.4 unit-test SSOT, latency freeze file, `--owned-only` + `--binary`. Do not invent `--binary` until P0.6.
+Harness / gold / executable contract (P0.3-P0.6): R005/R010 gold review, G5.4 unit-test SSOT, latency freeze file, `--owned-only` + `--binary`. Do not invent `--binary` until P0.6.
+
+P0.2 (taxonomy): `structure_error_taxonomy.py` reads `metrics.per_table[].pred_shape/gold_shape`. Default run is ICDAR-free. Census cell/shape is a **shadow metric only** (no 10-col e2e assert / H17). GATE-3/4/5 stay not green.
