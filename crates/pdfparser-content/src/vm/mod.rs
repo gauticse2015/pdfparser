@@ -1112,7 +1112,8 @@ mod tests {
     }
 
     fn has_gstack_warn(ws: &[VmWarning]) -> bool {
-        ws.iter().any(|w| w.to_string().contains("gstack_nesting_depth"))
+        ws.iter()
+            .any(|w| w.to_string().contains("gstack_nesting_depth"))
     }
 
     #[test]
@@ -1131,7 +1132,11 @@ mod tests {
         };
         let result = interpret_page(&content, &empty_fonts(), &opts);
         assert_eq!(
-            result.warnings.iter().filter(|w| w.to_string().contains("gstack_nesting_depth")).count(),
+            result
+                .warnings
+                .iter()
+                .filter(|w| w.to_string().contains("gstack_nesting_depth"))
+                .count(),
             1
         );
         assert_eq!(result.rules.len(), 1);
@@ -1146,7 +1151,11 @@ mod tests {
             ..InterpretOptions::default()
         };
         let result = interpret_page(content, &empty_fonts(), &opts);
-        assert!(!has_gstack_warn(&result.warnings), "warnings={:?}", result.warnings);
+        assert!(
+            !has_gstack_warn(&result.warnings),
+            "warnings={:?}",
+            result.warnings
+        );
         assert_eq!(result.rules.len(), 1);
     }
 
@@ -1158,7 +1167,11 @@ mod tests {
             &InterpretOptions::default(),
         );
         assert_eq!(result.rules.len(), 1);
-        assert!(!has_gstack_warn(&result.warnings), "warnings={:?}", result.warnings);
+        assert!(
+            !has_gstack_warn(&result.warnings),
+            "warnings={:?}",
+            result.warnings
+        );
     }
 
     #[test]
