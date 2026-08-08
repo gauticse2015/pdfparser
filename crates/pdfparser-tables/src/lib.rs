@@ -50,7 +50,8 @@ pub use form::scrub_document_table_fps;
 pub use lattice::detect_lattice_tables;
 pub use network::detect_network_tables;
 pub use options::{
-    TableAdvancedOptions, TableModeSet, TableOptions, TablePreset, PRODUCT_TABLE_OPTION_FIELDS,
+    DensifyMode, TableAdvancedOptions, TableModeSet, TableOptions, TablePreset,
+    PRODUCT_TABLE_OPTION_FIELDS,
 };
 pub use providers::{
     ExternalCliPageRenderer, NullPageRenderer, PageRenderer, ProviderError, RenderSafety,

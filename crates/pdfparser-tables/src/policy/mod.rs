@@ -79,7 +79,7 @@ impl ProposalPolicy {
         let mut p = Self {
             min_joints_ruled: opts.advanced.lattice_min_joints.max(4),
             whitespace_reject: opts.advanced.lattice_empty_frac_reject.clamp(0.5, 0.99),
-            allow_text_densify: opts.advanced.lattice_text_densify,
+            allow_text_densify: opts.advanced.effective_densify_mode().is_enabled(),
             ..Self::default()
         };
         // Area floor as fraction of letter-ish page when options give absolute area.
@@ -328,5 +328,12 @@ mod tests {
         assert_eq!(p.min_joints_ruled, 6);
         assert!(!p.allow_text_densify);
         assert!((p.whitespace_reject - 0.88).abs() < 1e-6);
+
+        let mut mode_off = crate::options::TableOptions::default();
+        mode_off.advanced.densify_mode = crate::options::DensifyMode::Off;
+        assert!(!ProposalPolicy::from_options(&mode_off).allow_text_densify);
+
+        let auto = crate::options::TableOptions::from_preset(crate::options::TablePreset::Auto);
+        assert!(ProposalPolicy::from_options(&auto).allow_text_densify);
     }
 }

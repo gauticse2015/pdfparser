@@ -24,7 +24,7 @@ use pdfparser_ir::{Rect, TextRun};
 use super::densify::{
     collapse_overdense_h_from_text, collapse_sparse_interior_columns, collapse_thin_gaps,
     densify_x_from_text_cols, densify_y_from_text_bands, expand_xs_exterior_text_cols,
-    multi_col_band_centers,
+    multi_col_band_centers, should_run_text_densify,
 };
 
 /// Detect ruled (lattice) tables on a page (may emit multiple).
@@ -288,7 +288,7 @@ fn table_from_component(
     let mut text_col_recovery = false;
     let mut synthetic_h_ys: Vec<f32> = Vec::new();
     let mut text_row_recovery = false;
-    if opts.advanced.lattice_text_densify {
+    if should_run_text_densify(opts) {
         let y_hi = y_ttb.iter().copied().fold(f32::NEG_INFINITY, f32::max);
         let y_lo = y_ttb.iter().copied().fold(f32::INFINITY, f32::min);
         // Stub/line-number columns often sit just left of a ruled number grid.
