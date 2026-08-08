@@ -9,11 +9,16 @@
 use serde::{Deserialize, Serialize};
 
 /// Which detectors to run.
+///
+/// [`Self::structure`] is reserved for tagged-PDF tables; product detectors do
+/// not read it. Keep the field; do not delete.
 #[derive(Debug, Clone, Copy)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct TableModeSet {
-    /// Structure-tree tables (PDF `/StructTreeRoot`). Reserved; product
-    /// detectors do not read this bit yet — leave `false` in Auto/Full.
+    /// Reserved tagged-PDF / `/StructTreeRoot` tables (A5.3 / A1.14).
+    ///
+    /// Not a detector. Product Auto/Full leave `false`; no builder reads this
+    /// bit. Keep for API/serde stability — do not delete or fake a builder.
     pub structure: bool,
     /// Ruled lattice.
     pub lattice: bool,
@@ -24,7 +29,7 @@ pub struct TableModeSet {
 }
 
 impl TableModeSet {
-    /// All detectors.
+    /// All detector bits, including reserved [`Self::structure`] (still unread).
     pub fn all() -> Self {
         Self {
             structure: true,

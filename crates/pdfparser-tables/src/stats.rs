@@ -1,7 +1,8 @@
 //! Cell-content statistics shared by form, stream, and orchestrator gates.
 //!
-//! One implementation of fill / numeric / punctuation / mean-length so detectors
-//! cannot drift (ISP: consumers take [`CellStats`], not the whole options bag).
+//! **Kept** as a standalone module (not folded into options). One implementation
+//! of fill / numeric / punctuation / mean-length so detectors cannot drift
+//! (ISP: consumers take [`CellStats`], not the whole options bag).
 
 use crate::types::Table;
 

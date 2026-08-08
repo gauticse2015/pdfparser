@@ -4,11 +4,15 @@ use pdfparser_ir::Rect;
 use serde::{Deserialize, Serialize};
 
 /// Strategy provenance tags.
+///
+/// Dead variants ([`Self::S1Structure`], [`Self::P2DenseNumeric`],
+/// [`Self::P3OverflowCell`], [`Self::P5Superscript`]) are **reserved** — no
+/// builder emits them yet. Keep for serde/wire stability; do not delete.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
 pub enum PipelineId {
-    /// Structure.
+    /// Reserved tagged-structure builder (A1.14 / A5.3). Not emitted.
     S1Structure,
     /// Lattice.
     S2Lattice,
@@ -22,13 +26,13 @@ pub enum PipelineId {
     S6RasterLines,
     /// Form discriminator.
     P1FormDisc,
-    /// Dense numeric.
+    /// Reserved dense-numeric refine. Not emitted.
     P2DenseNumeric,
-    /// Overflow cells.
+    /// Reserved overflow-cell recovery. Not emitted.
     P3OverflowCell,
     /// Side-by-side / anti over-seg.
     P4SideBySide,
-    /// Superscript recovery.
+    /// Reserved superscript recovery. Not emitted.
     P5Superscript,
     /// Multi-page stitch.
     D1Stitch,
