@@ -531,7 +531,10 @@ def gate5(with_icdar: Path | None) -> bool:
         )
     )
 
-    # G5.4 classic stream not in product Auto
+    # G5.4 classic stream not in product Auto.
+    # SSOT is the unit test auto_disables_classic_stream (cargo test). Product
+    # page.rs gates StreamDetector on allow_classic_stream. Do not require
+    # detect_stream_tables in page.rs — that symbol lives in stream.rs / detectors.rs.
     opts_rs = (REPO / "crates" / "pdfparser-tables" / "src" / "options.rs").read_text(
         encoding="utf-8"
     )
@@ -540,21 +543,15 @@ def gate5(with_icdar: Path | None) -> bool:
     )
     results.append(
         ok(
-            "G5.4 allow_classic_stream flag exists",
-            "allow_classic_stream" in opts_rs,
+            "G5.4 unit test auto_disables_classic_stream (SSOT)",
+            "fn auto_disables_classic_stream" in opts_rs
+            and "!o.allow_classic_stream" in opts_rs,
         )
     )
     results.append(
         ok(
-            "G5.4 classic stream gated on allow_classic_stream",
-            "allow_classic_stream" in page_rs and "detect_stream_tables" in page_rs,
-        )
-    )
-    results.append(
-        ok(
-            "G5.4 Auto preset disables classic stream (source)",
-            "TablePreset::Full | TablePreset::Auto" in opts_rs
-            and "allow_classic_stream: false" in opts_rs,
+            "G5.4 product path gates classic stream on allow_classic_stream",
+            "allow_classic_stream" in page_rs,
         )
     )
 
