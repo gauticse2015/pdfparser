@@ -108,7 +108,7 @@ Inventory is against the current tree under `crates/` + `benchmark/` + `.github/
 | A2.8 | Many ISO ops ignored; no typed warning | **Open** | Colors/`gs`/BMC/BDC/EMC ignored silently. **No `BI`/`EI`**. Unknown ops -> string `"unknown_op"`. | Typed `VmWarning`; do not change skip set in same PR. |
 | A2.9 | Form `/BBox` not clipped; form fonts = page font map | **Open** | `FormXObject.b_box` parsed; `try_expand_form` does not clip. Fonts: page `load_page_fonts` only. | Behavior change; isolate. |
 | A2.10 | VM never returns `Err`; missing numbers -> 0.0 | **Open** | `interpret_*` -> `InterpretResult`. `pop_num` underflow -> 0.0 + warning. | Keep fail-soft for product; typed warnings first. Hard-err is opt-in. |
-| A2.11 | All VM warnings mapped to `WarningCode::UnknownOperator` | **Open** | `extract.rs` maps every interpret warning to `UnknownOperator`. `MissingToUnicode` exists on IR, unused. | Map by prefix; no table change expected. |
+| A2.11 | All VM warnings mapped to `WarningCode::UnknownOperator` | **Fixed** | `extract.rs` maps `VmWarning` → `LimitSoft` / `UnknownOperator` / `Other` / `Unsupported`. `MissingToUnicode` still unused (A2.17). | — |
 | A2.12 | `ResourceLimits.max_nesting_depth` dead; q/Q unbounded | **Partial** | Page tree walk uses `hard_max::MAX_NESTING_DEPTH`. VM `gstack` unbounded. Form depth capped (`MAX_FORM_DEPTH=4`). | Cap q/Q to `max_nesting_depth`; fail-soft warn. |
 | A2.13 | Governor charges then checks | **Fixed** | `filters.rs`: `check_expand_ratio` then `charge_expanded`. | — |
 | A2.14 | Inline page `/Resources` dict not stored on `PageInfo` | **Open** | `page_tree.rs` stores `Resources` only if `Object::Reference`. Inline dicts dropped (raster/form walk page dict directly as workaround). | Store owned snapshot or inline flag. |
@@ -987,7 +987,7 @@ Fast: no render. Shadow exclusive excluded. Auto: no new asymptotic / no mandato
 | A2.8 | 2 | P2.1a | Open | Diagnostics | Typed warnings; BI/EI later |
 | A2.9 | 2 | P2.4a/b | Open | Rules/text | Split form bbox vs form fonts |
 | A2.10 | 2 | P2.1a | Open | Layout | Keep 0.0 fail-soft; typed warn |
-| A2.11 | 2 | P2.1b | Open | Diagnostics | Map codes |
+| A2.11 | 2 | P2.1b | **Fixed** | Diagnostics | Map codes |
 | A2.12 | 2 | P2.2b | Partial | Pathological PDF | Cap q/Q warn |
 | A2.13 | — | — | **Fixed** | — | — |
 | A2.14 | 2 | P2.2c | Open | Resources | Additive PageInfo |

@@ -2,7 +2,9 @@
 use crate::font_load::load_page_fonts;
 use crate::options::{ExtractOptions, TextOptions};
 use crate::raster_images::raster_pages_for_page;
-use pdfparser_content::{interpret_page, interpret_page_with_resolver, InterpretOptions};
+use pdfparser_content::{
+    interpret_page, interpret_page_with_resolver, InterpretOptions, VmWarning,
+};
 use pdfparser_core::{Error, PdfDocument, Result};
 use pdfparser_ir::{
     DocumentMetadata, Element, ExtractWarning, ExtractedDocument, ExtractedPage, TextRun,
@@ -68,19 +70,15 @@ pub fn page_content(
     } else {
         interpret_page(&content, &fonts, &iopts)
     };
-    // P2.1a: typed VmWarning; extract still serializes as strings and maps
-    // every variant to UnknownOperator (P2.1b will split WarningCode).
+    // P2.1b: typed VmWarning → WarningCode (A2.11). Messages stay Display strings.
     let mut warnings: Vec<ExtractWarning> = result
         .warnings
         .into_iter()
-        .map(|w| {
-            let message = w.to_string();
-            ExtractWarning {
-                code: interpret_warning_code(&message),
-                page: Some(page_index as u32),
-                message,
-                recoverable: true,
-            }
+        .map(|w| ExtractWarning {
+            code: interpret_warning_code(&w),
+            page: Some(page_index as u32),
+            message: w.to_string(),
+            recoverable: true,
         })
         .collect();
 
@@ -126,12 +124,19 @@ pub fn page_content(
     })
 }
 
-fn interpret_warning_code(message: &str) -> WarningCode {
-    // A2.12: q/Q nest cap is LimitSoft. Remaining VM strings stay UnknownOperator (A2.11).
-    if message.starts_with("gstack_nesting_depth") {
-        WarningCode::LimitSoft
-    } else {
-        WarningCode::UnknownOperator
+fn interpret_warning_code(w: &VmWarning) -> WarningCode {
+    match w {
+        VmWarning::UnknownOperator(_) => WarningCode::UnknownOperator,
+        VmWarning::MaxPageOps | VmWarning::PerFormMaxOps | VmWarning::GstackNestingDepth => {
+            WarningCode::LimitSoft
+        }
+        VmWarning::StackUnderflowNumeric
+        | VmWarning::FormCycle(_)
+        | VmWarning::FormDepth(_)
+        | VmWarning::FormExpansions(_) => WarningCode::Other,
+        VmWarning::ClipAabbOnly | VmWarning::IgnoredOperator(_) | VmWarning::StrokeWidthIgnored => {
+            WarningCode::Unsupported
+        }
     }
 }
 
@@ -572,6 +577,140 @@ mod gstack_limit_tests {
         assert!(pc.runs.iter().any(|r| r.text.contains("HELLO")));
         assert!(
             pc.warnings.iter().all(|w| w.code != WarningCode::LimitSoft),
+            "warnings={:?}",
+            pc.warnings
+        );
+    }
+}
+
+#[cfg(test)]
+mod vm_warning_code_tests {
+    use super::*;
+    use pdfparser_content::VmWarning;
+    use pdfparser_core::ResourceLimits;
+    use pdfparser_ir::WarningCode;
+
+    #[test]
+    fn interpret_warning_code_maps_all_variants() {
+        assert_eq!(
+            interpret_warning_code(&VmWarning::UnknownOperator("foo".into())),
+            WarningCode::UnknownOperator
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::StackUnderflowNumeric),
+            WarningCode::Other
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::MaxPageOps),
+            WarningCode::LimitSoft
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::PerFormMaxOps),
+            WarningCode::LimitSoft
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::FormCycle("Fm1".into())),
+            WarningCode::Other
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::FormDepth("Fm1".into())),
+            WarningCode::Other
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::FormExpansions("Fm1".into())),
+            WarningCode::Other
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::ClipAabbOnly),
+            WarningCode::Unsupported
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::IgnoredOperator("gs")),
+            WarningCode::Unsupported
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::StrokeWidthIgnored),
+            WarningCode::Unsupported
+        );
+        assert_eq!(
+            interpret_warning_code(&VmWarning::GstackNestingDepth),
+            WarningCode::LimitSoft
+        );
+    }
+
+    /// Minimal page with a custom content stream and Helvetica.
+    fn page_stream_pdf(stream: &str) -> Vec<u8> {
+        let stream_len = stream.len();
+        let mut body = String::new();
+        body.push_str("%PDF-1.4\n");
+        let o1 = body.len();
+        body.push_str("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+        let o2 = body.len();
+        body.push_str("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+        let o3 = body.len();
+        body.push_str(
+            "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] \
+             /Contents 4 0 R \
+             /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n",
+        );
+        let o4 = body.len();
+        body.push_str(&format!("4 0 obj\n<< /Length {stream_len} >>\nstream\n"));
+        body.push_str(stream);
+        body.push_str("endstream\nendobj\n");
+        let o5 = body.len();
+        body.push_str("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
+        let xref_pos = body.len();
+        body.push_str("xref\n0 6\n0000000000 65535 f \n");
+        for off in [o1, o2, o3, o4, o5] {
+            body.push_str(&format!("{off:010} 00000 n \n"));
+        }
+        body.push_str("trailer\n<< /Size 6 /Root 1 0 R >>\n");
+        body.push_str(&format!("startxref\n{xref_pos}\n%%EOF\n"));
+        body.into_bytes()
+    }
+
+    #[test]
+    fn unknown_op_extracts_as_unknown_operator() {
+        let data = page_stream_pdf("foo\nBT /F1 12 Tf 10 100 Td (HELLO) Tj ET\n");
+        let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(pc.runs.iter().any(|r| r.text.contains("HELLO")));
+        assert!(
+            pc.warnings.iter().any(|w| {
+                w.code == WarningCode::UnknownOperator && w.message.contains("unknown_op:foo")
+            }),
+            "warnings={:?}",
+            pc.warnings
+        );
+    }
+
+    #[test]
+    fn stack_underflow_extracts_as_other() {
+        let data = page_stream_pdf("re\n");
+        let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(
+            pc.warnings.iter().any(|w| {
+                w.code == WarningCode::Other && w.message.contains("stack_underflow:numeric")
+            }),
+            "warnings={:?}",
+            pc.warnings
+        );
+    }
+
+    #[test]
+    fn max_page_ops_extracts_as_limit_soft() {
+        let data = page_stream_pdf("BT /F1 12 Tf 10 100 Td (HELLO) Tj ET\n");
+        let limits = ResourceLimits {
+            max_page_ops: 0,
+            ..ResourceLimits::default()
+        };
+        let doc = PdfDocument::from_bytes(&data, limits).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(
+            pc.warnings.iter().any(|w| {
+                w.code == WarningCode::LimitSoft && w.message.contains("max_page_ops")
+            }),
             "warnings={:?}",
             pc.warnings
         );
