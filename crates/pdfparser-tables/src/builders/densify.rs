@@ -1,7 +1,8 @@
 //! Text densify / thin-gap / empty-column helpers for ruled lattice grids.
 //!
 //! Extracted from the ruled builder so densify policy stays reviewable and
-//! can be gated via [`crate::TableOptions::lattice_text_densify`].
+//! can be gated via [`crate::TableAdvancedOptions::lattice_text_densify`]
+//! (`opts.advanced.lattice_text_densify`).
 //!
 //! Thresholds that often need document-type tuning flow through
 //! [`DensifyParams`] (sourced from [`crate::TableTuning`]).
@@ -213,13 +214,10 @@ fn text_band_centers(
     centers
 }
 
-/// Densify missing vertical anchors from multi-row text left-edges.
-///
-/// Geometric rule only:
 /// Expand ruled X anchors when multi-row text columns sit just outside the
 /// lattice frame (stub labels / line numbers on statistical tables).
 ///
-/// Geometric rule: left-edges that hit ≥⅓ of table body bands, lie within
+/// Geometric rule only: left-edges that hit ≥⅓ of table body bands, lie within
 /// ~0.55× frame width of the nearest frame edge, and are not already inside
 /// an existing cell gap of the ruled skeleton.
 pub(crate) fn expand_xs_exterior_text_cols(
@@ -391,6 +389,8 @@ pub(crate) fn expand_xs_exterior_text_cols(
     out
 }
 
+/// Densify missing vertical anchors from multi-row text left-edges.
+///
 /// 1. Cluster left-edges that recur across many text bands (true columns).
 /// 2. Fire only when those columns **outnumber** ruled V gaps (partial-V).
 /// 3. Inside each V gap, if ≥2 text columns **span a majority of the gap**,
