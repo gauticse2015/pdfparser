@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Extract -- map VmWarning to WarningCode (P2.1b) (2026-08-08)
+
+- `page_content` maps typed `VmWarning` to existing `WarningCode` (A2.11). No new IR variants.
+- `GstackNestingDepth` / `MaxPageOps` / `PerFormMaxOps` → `LimitSoft`; `UnknownOperator` stays; form cycle/depth/expansions and stack underflow → `Other`; reserved clip/ignored/stroke → `Unsupported`.
+- Messages remain `VmWarning` Display strings. No skip-set or table change.
+
 ### Content -- opt-in form `/BBox` clip (P2.4a) (2026-08-08)
 
 - `InterpretOptions::clip_form_bbox` (default **false**) clips Form XObject paint to the form `/BBox` AABB after `/Matrix` (ISO form paint).
