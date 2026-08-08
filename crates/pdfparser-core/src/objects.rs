@@ -2,7 +2,7 @@
 //!
 //! Generic ISO 32000 walks — no corpus-specific logic.
 use crate::error::Result;
-use crate::page_tree::PageTree;
+use crate::page_tree::{PageResources, PageTree};
 use lopdf::{Dictionary, Document, Object, ObjectId};
 use std::collections::HashSet;
 
@@ -94,10 +94,16 @@ fn collect_images(doc: &Document, pages: &PageTree) -> Vec<ImageObject> {
         if let Ok(page_dict) = doc.get_dictionary(page.id) {
             walk_resources_for_images(doc, page_dict, page_idx, &mut images, &mut seen);
         }
-        if let Some(res_id) = page.resources {
-            if let Ok(res) = doc.get_dictionary(res_id) {
+        match &page.resources {
+            PageResources::Reference(res_id) => {
+                if let Ok(res) = doc.get_dictionary(*res_id) {
+                    collect_xobject_images(doc, res, page_idx, &mut images, &mut seen, None);
+                }
+            }
+            PageResources::Inline(res) => {
                 collect_xobject_images(doc, res, page_idx, &mut images, &mut seen, None);
             }
+            PageResources::None => {}
         }
         // lopdf helper
         if let Ok((Some(res), _fonts)) = doc.get_page_resources(page.id) {

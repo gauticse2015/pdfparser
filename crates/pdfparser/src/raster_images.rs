@@ -2,7 +2,7 @@
 
 use lopdf::{Dictionary, Object, ObjectId};
 use pdfparser_content::ImagePlacement;
-use pdfparser_core::{Error, PdfDocument, Result};
+use pdfparser_core::{Error, PageResources, PdfDocument, Result};
 use pdfparser_ir::Matrix3x2;
 use pdfparser_tables::{gray_from_rgb, RasterPage};
 use std::collections::HashMap;
@@ -48,10 +48,16 @@ fn page_xobject_map(doc: &PdfDocument, page_index: usize) -> Result<HashMap<Stri
         if let Ok(page_dict) = d.get_dictionary(page.id) {
             collect_xobjects(d, page_dict, &mut map);
         }
-        if let Some(res_id) = page.resources {
-            if let Ok(res) = d.get_dictionary(res_id) {
+        match &page.resources {
+            PageResources::Reference(res_id) => {
+                if let Ok(res) = d.get_dictionary(*res_id) {
+                    collect_xobjects_from_res(d, res, &mut map);
+                }
+            }
+            PageResources::Inline(res) => {
                 collect_xobjects_from_res(d, res, &mut map);
             }
+            PageResources::None => {}
         }
         if let Ok((Some(res), _)) = d.get_page_resources(page.id) {
             collect_xobjects_from_res(d, res, &mut map);

@@ -11,7 +11,7 @@ pub use error::{Error, Result};
 pub use filters::decode_stream_data;
 pub use limits::{hard_max, LimitKind, ResourceGovernor, ResourceLimits};
 pub use objects::{extract_objects, DocumentObjects, FormField, ImageObject, LinkAnnotation};
-pub use page_tree::{PageInfo, PageTree};
+pub use page_tree::{PageInfo, PageResources, PageTree};
 
 use lopdf::{Document as LopdfDocument, Object, ObjectId as LopdfId};
 use pdfparser_ir::Rect;
@@ -122,26 +122,16 @@ impl PdfDocument {
             .lock()
             .map_err(|_| Error::Internal("lock".into()))?;
         let mut fonts = Vec::new();
-        if let Some(res_id) = page.resources {
-            if let Ok(res) = doc.get_dictionary(res_id) {
-                if let Ok(Object::Dictionary(font_dict)) = res.get(b"Font") {
-                    for (name, obj) in font_dict.iter() {
-                        let name = String::from_utf8_lossy(name).into_owned();
-                        if let Object::Reference(id) = obj {
-                            fonts.push((name, *id));
-                        }
-                    }
-                } else if let Ok(Object::Reference(fr)) = res.get(b"Font") {
-                    if let Ok(font_dict) = doc.get_dictionary(*fr) {
-                        for (name, obj) in font_dict.iter() {
-                            let name = String::from_utf8_lossy(name).into_owned();
-                            if let Object::Reference(id) = obj {
-                                fonts.push((name, *id));
-                            }
-                        }
-                    }
+        match &page.resources {
+            PageResources::Reference(res_id) => {
+                if let Ok(res) = doc.get_dictionary(*res_id) {
+                    collect_font_refs(&doc, res, &mut fonts);
                 }
             }
+            PageResources::Inline(res) => {
+                collect_font_refs(&doc, res, &mut fonts);
+            }
+            PageResources::None => {}
         }
         // Also try page dict Resources
         if fonts.is_empty() {
@@ -199,6 +189,30 @@ impl PdfDocument {
         let mut out = Vec::new();
         append_content_object(&doc, Object::Reference(id), &mut out, &self.governor)?;
         Ok(out)
+    }
+}
+
+fn collect_font_refs(
+    doc: &LopdfDocument,
+    res: &lopdf::Dictionary,
+    fonts: &mut Vec<(String, LopdfId)>,
+) {
+    if let Ok(Object::Dictionary(font_dict)) = res.get(b"Font") {
+        for (name, obj) in font_dict.iter() {
+            let name = String::from_utf8_lossy(name).into_owned();
+            if let Object::Reference(id) = obj {
+                fonts.push((name, *id));
+            }
+        }
+    } else if let Ok(Object::Reference(fr)) = res.get(b"Font") {
+        if let Ok(font_dict) = doc.get_dictionary(*fr) {
+            for (name, obj) in font_dict.iter() {
+                let name = String::from_utf8_lossy(name).into_owned();
+                if let Object::Reference(id) = obj {
+                    fonts.push((name, *id));
+                }
+            }
+        }
     }
 }
 
