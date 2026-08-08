@@ -48,6 +48,7 @@ pub fn page_content(
         max_ops: doc.governor.limits.max_page_ops,
         capture_rules,
         capture_image_placements: capture_rules, // same gate as rules for table path
+        max_nesting_depth: doc.governor.limits.max_nesting_depth,
         ..InterpretOptions::default()
     };
     // When capturing rules (table path), expand Form XObjects so vector rules
@@ -70,11 +71,14 @@ pub fn page_content(
     let mut warnings: Vec<ExtractWarning> = result
         .warnings
         .into_iter()
-        .map(|w| ExtractWarning {
-            code: WarningCode::UnknownOperator,
-            page: Some(page_index as u32),
-            message: w.to_string(),
-            recoverable: true,
+        .map(|w| {
+            let message = w.to_string();
+            ExtractWarning {
+                code: interpret_warning_code(&message),
+                page: Some(page_index as u32),
+                message,
+                recoverable: true,
+            }
         })
         .collect();
 
@@ -118,6 +122,15 @@ pub fn page_content(
         image_placements: result.image_placements,
         warnings,
     })
+}
+
+fn interpret_warning_code(message: &str) -> WarningCode {
+    // A2.12: q/Q nest cap is LimitSoft. Remaining VM strings stay UnknownOperator (A2.11).
+    if message.starts_with("gstack_nesting_depth") {
+        WarningCode::LimitSoft
+    } else {
+        WarningCode::UnknownOperator
+    }
 }
 
 pub fn page_elements(
@@ -481,6 +494,84 @@ BT /F1 9 Tf 168 70 Td (IndiaNine) Tj ET
             tabs[0].rows >= 3 && tabs[0].cols >= 3,
             "shape {:?}",
             (tabs[0].rows, tabs[0].cols)
+        );
+    }
+}
+
+#[cfg(test)]
+mod gstack_limit_tests {
+    use super::*;
+    use pdfparser_core::ResourceLimits;
+    use pdfparser_ir::WarningCode;
+
+    /// Minimal page with `depth` nested `q` then a show and matching `Q`.
+    fn nested_q_pdf(depth: usize) -> Vec<u8> {
+        let mut stream = String::new();
+        for _ in 0..depth {
+            stream.push_str("q\n");
+        }
+        stream.push_str("BT /F1 12 Tf 10 100 Td (HELLO) Tj ET\n");
+        for _ in 0..depth {
+            stream.push_str("Q\n");
+        }
+        let stream_len = stream.len();
+        let mut body = String::new();
+        body.push_str("%PDF-1.4\n");
+        let o1 = body.len();
+        body.push_str("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+        let o2 = body.len();
+        body.push_str("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+        let o3 = body.len();
+        body.push_str(
+            "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] \
+             /Contents 4 0 R \
+             /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n",
+        );
+        let o4 = body.len();
+        body.push_str(&format!("4 0 obj\n<< /Length {stream_len} >>\nstream\n"));
+        body.push_str(&stream);
+        body.push_str("endstream\nendobj\n");
+        let o5 = body.len();
+        body.push_str("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
+        let xref_pos = body.len();
+        body.push_str("xref\n0 6\n0000000000 65535 f \n");
+        for off in [o1, o2, o3, o4, o5] {
+            body.push_str(&format!("{off:010} 00000 n \n"));
+        }
+        body.push_str("trailer\n<< /Size 6 /Root 1 0 R >>\n");
+        body.push_str(&format!("startxref\n{xref_pos}\n%%EOF\n"));
+        body.into_bytes()
+    }
+
+    #[test]
+    fn deep_q_stack_is_limit_soft_not_panic() {
+        let data = nested_q_pdf(80);
+        let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(
+            pc.runs.iter().any(|r| r.text.contains("HELLO")),
+            "text still extracted after nest cap; runs={:?}",
+            pc.runs.iter().map(|r| &r.text).collect::<Vec<_>>()
+        );
+        assert!(
+            pc.warnings.iter().any(|w| {
+                w.code == WarningCode::LimitSoft && w.message.contains("gstack_nesting_depth")
+            }),
+            "expected LimitSoft gstack warn; warnings={:?}",
+            pc.warnings
+        );
+    }
+
+    #[test]
+    fn shallow_q_stack_has_no_limit_soft() {
+        let data = nested_q_pdf(4);
+        let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(pc.runs.iter().any(|r| r.text.contains("HELLO")));
+        assert!(
+            pc.warnings.iter().all(|w| w.code != WarningCode::LimitSoft),
+            "warnings={:?}",
+            pc.warnings
         );
     }
 }

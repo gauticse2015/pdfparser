@@ -28,7 +28,8 @@ pub mod hard_max {
     pub const MAX_EXPAND_RATIO: u64 = 1000;
     /// Max ops per page.
     pub const MAX_PAGE_OPS: u64 = 10_000_000;
-    /// Max page-tree / outline nesting (shared with [`super::ResourceLimits::max_nesting_depth`]).
+    /// Max page-tree / outline / q-Q graphics-state nesting (shared with
+    /// [`super::ResourceLimits::max_nesting_depth`]).
     pub const MAX_NESTING_DEPTH: u32 = 64;
 }
 
@@ -43,7 +44,7 @@ pub struct ResourceLimits {
     pub max_expand_ratio: u64,
     /// Max content operators per page.
     pub max_page_ops: u64,
-    /// Max nesting depth.
+    /// Max page-tree / outline / q-Q graphics-state nesting.
     pub max_nesting_depth: u32,
 }
 

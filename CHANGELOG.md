@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Content -- cap q/Q graphics stack nesting (P2.2b) (2026-08-08)
+
+- Content VM stops pushing `q` once `gstack` reaches `InterpretOptions.max_nesting_depth` (default 64; same as `ResourceLimits` / `hard_max::MAX_NESTING_DEPTH`).
+- Fail-soft: warn once (`gstack_nesting_depth exceeded` → `WarningCode::LimitSoft`); extra `q` ignored; empty `Q` still no-ops. Does not panic.
+
 ### Content -- typed VmWarning (P2.1a) (2026-08-08)
 
 - `InterpretResult.warnings` is `Vec<VmWarning>` (was `Vec<String>`).
 - `Display` keeps legacy strings (`unknown_op:...`, `stack_underflow:numeric`, form/budget messages).
-- Extract still maps every VM warning to `WarningCode::UnknownOperator` (P2.1b).
+- Extract still maps every VM warning to `WarningCode::UnknownOperator` except q/Q nest (`LimitSoft`).
 - Ignored-op skip set unchanged; `pop_num` still fail-soft `0.0`.
 
 ### Fonts -- ToUnicode decode shares document governor (P2.2a) (2026-08-08)
