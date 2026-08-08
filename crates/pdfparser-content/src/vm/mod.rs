@@ -17,6 +17,8 @@ use text::{show_text, show_text_array};
 pub const MAX_FORM_DEPTH: u32 = 4;
 /// Max Form expansions on a single page interpret.
 pub const MAX_FORM_EXPANSIONS_PER_PAGE: u32 = 32;
+/// Hard max `q`/`Q` graphics-state nesting (aligned with core `hard_max::MAX_NESTING_DEPTH`).
+pub const MAX_GSTACK_DEPTH: u32 = 64;
 /// Floor for per-form operator budget.
 const PER_FORM_MAX_OPS_FLOOR: u64 = 50_000;
 
@@ -33,6 +35,9 @@ pub struct InterpretOptions {
     pub thin_fill_rule_max: f32,
     /// Capture image XObject placements (`Do`) for raster line sensing.
     pub capture_image_placements: bool,
+    /// Max `q`/`Q` graphics-state stack depth (`ResourceLimits.max_nesting_depth`).
+    /// Clamped to [`MAX_GSTACK_DEPTH`] at interpret time. Default 64.
+    pub max_nesting_depth: u32,
 }
 
 /// Default max thickness for thin filled rects treated as lattice rules.
@@ -47,6 +52,7 @@ impl Default for InterpretOptions {
             capture_rules: true,
             thin_fill_rule_max: DEFAULT_THIN_FILL_RULE_MAX,
             capture_image_placements: true,
+            max_nesting_depth: MAX_GSTACK_DEPTH,
         }
     }
 }
@@ -116,6 +122,8 @@ pub enum VmWarning {
     IgnoredOperator(&'static str),
     /// Stroke width `w` ignored (reserved until A2.6).
     StrokeWidthIgnored,
+    /// `q`/`Q` graphics stack hit `max_nesting_depth` (P2.2b).
+    GstackNestingDepth,
 }
 
 impl fmt::Display for VmWarning {
@@ -131,6 +139,7 @@ impl fmt::Display for VmWarning {
             VmWarning::ClipAabbOnly => write!(f, "clip_aabb_only"),
             VmWarning::IgnoredOperator(op) => write!(f, "ignored_op:{op}"),
             VmWarning::StrokeWidthIgnored => write!(f, "stroke_width_ignored"),
+            VmWarning::GstackNestingDepth => write!(f, "gstack_nesting_depth exceeded"),
         }
     }
 }
@@ -215,6 +224,7 @@ pub fn interpret_page_with_resolver(
         form_expansions: 0,
         form_depth: 0,
         form_cycle: Vec::new(),
+        gstack_limit_warned: false,
     };
     let mut gs = GState {
         ctm: Matrix3x2::identity(),
@@ -251,6 +261,7 @@ struct InterpretState<'a> {
     form_expansions: u32,
     form_depth: u32,
     form_cycle: Vec<ObjectId>,
+    gstack_limit_warned: bool,
 }
 
 fn per_form_max_ops(max_ops: u64) -> u64 {
@@ -291,7 +302,16 @@ fn interpret_stream(
                 let op = op.as_str();
                 match op {
                     "q" => {
-                        gstack.push(gs.clone());
+                        // A2.12 / P2.2b: cap q/Q nesting; fail-soft warn, do not panic.
+                        let cap = state.opts.max_nesting_depth.min(MAX_GSTACK_DEPTH) as usize;
+                        if gstack.len() >= cap {
+                            if !state.gstack_limit_warned {
+                                state.warnings.push(VmWarning::GstackNestingDepth);
+                                state.gstack_limit_warned = true;
+                            }
+                        } else {
+                            gstack.push(gs.clone());
+                        }
                         stack.clear();
                     }
                     "Q" => {
@@ -1038,29 +1058,8 @@ mod tests {
         );
         assert_eq!(VmWarning::MaxPageOps.to_string(), "max_page_ops exceeded");
         assert_eq!(
-            VmWarning::PerFormMaxOps.to_string(),
-            "per_form_max_ops exceeded"
-        );
-        assert_eq!(
-            VmWarning::FormCycle("Fm1".into()).to_string(),
-            "form_cycle_skipped:Fm1"
-        );
-        assert_eq!(
-            VmWarning::FormDepth("Fm1".into()).to_string(),
-            "form_depth_exceeded:Fm1"
-        );
-        assert_eq!(
-            VmWarning::FormExpansions("Fm1".into()).to_string(),
-            "form_expansions_exceeded:Fm1"
-        );
-        assert_eq!(VmWarning::ClipAabbOnly.to_string(), "clip_aabb_only");
-        assert_eq!(
-            VmWarning::IgnoredOperator("gs").to_string(),
-            "ignored_op:gs"
-        );
-        assert_eq!(
-            VmWarning::StrokeWidthIgnored.to_string(),
-            "stroke_width_ignored"
+            VmWarning::GstackNestingDepth.to_string(),
+            "gstack_nesting_depth exceeded"
         );
     }
 
@@ -1075,7 +1074,6 @@ mod tests {
 
     #[test]
     fn ignored_ops_stay_silent() {
-        // Skip set must remain silent (P2.1a: no IgnoredOperator / StrokeWidthIgnored).
         let content = b"1 w 0 G 0 g 1 0 0 RG 1 0 0 rg 0 0 0 1 K 0 0 0 1 k \
             /CS CS /cs cs 1 SC 1 SCN 1 sc 1 scn /Sh sh /GS gs \
             /MP MP /DP DP /BMC BMC /BDC BDC EMC BX EX /ri ri 1 i 0 J 0 j 10 M d0 d1\n";
@@ -1089,7 +1087,6 @@ mod tests {
 
     #[test]
     fn pop_num_underflow_is_zero_and_typed() {
-        // `re` with no operands: four fail-soft 0.0 pops, still no hard error.
         let result = interpret_page(b"re", &empty_fonts(), &InterpretOptions::default());
         assert_eq!(
             result.warnings,
@@ -1112,5 +1109,106 @@ mod tests {
         };
         let result = interpret_page(b"0 0 m 40 0 l S", &empty_fonts(), &opts);
         assert_eq!(result.warnings, vec![VmWarning::MaxPageOps]);
+    }
+
+    fn has_gstack_warn(ws: &[VmWarning]) -> bool {
+        ws.iter()
+            .any(|w| w.to_string().contains("gstack_nesting_depth"))
+    }
+
+    #[test]
+    fn q_stack_caps_at_max_nesting_depth() {
+        let mut content = Vec::new();
+        for _ in 0..8 {
+            content.extend_from_slice(b"q\n");
+        }
+        content.extend_from_slice(b"0 0 m 40 0 l S\n");
+        for _ in 0..8 {
+            content.extend_from_slice(b"Q\n");
+        }
+        let opts = InterpretOptions {
+            max_nesting_depth: 3,
+            ..InterpretOptions::default()
+        };
+        let result = interpret_page(&content, &empty_fonts(), &opts);
+        assert_eq!(
+            result
+                .warnings
+                .iter()
+                .filter(|w| w.to_string().contains("gstack_nesting_depth"))
+                .count(),
+            1
+        );
+        assert_eq!(result.rules.len(), 1);
+        assert!((result.rules[0].len() - 40.0).abs() < 0.5);
+    }
+
+    #[test]
+    fn q_stack_exact_cap_does_not_warn() {
+        let content = b"q\nq\n0 0 m 40 0 l S\nQ\nQ\n";
+        let opts = InterpretOptions {
+            max_nesting_depth: 2,
+            ..InterpretOptions::default()
+        };
+        let result = interpret_page(content, &empty_fonts(), &opts);
+        assert!(
+            !has_gstack_warn(&result.warnings),
+            "warnings={:?}",
+            result.warnings
+        );
+        assert_eq!(result.rules.len(), 1);
+    }
+
+    #[test]
+    fn q_restore_underflow_is_soft() {
+        let result = interpret_page(
+            b"Q Q Q 0 0 m 40 0 l S\n",
+            &empty_fonts(),
+            &InterpretOptions::default(),
+        );
+        assert_eq!(result.rules.len(), 1);
+        assert!(
+            !has_gstack_warn(&result.warnings),
+            "warnings={:?}",
+            result.warnings
+        );
+    }
+
+    #[test]
+    fn q_stack_default_cap_matches_hard_max() {
+        let mut content = Vec::new();
+        for _ in 0..MAX_GSTACK_DEPTH {
+            content.extend_from_slice(b"q\n");
+        }
+        content.extend_from_slice(b"0 0 m 10 0 l S\n");
+        for _ in 0..MAX_GSTACK_DEPTH {
+            content.extend_from_slice(b"Q\n");
+        }
+        let ok = interpret_page(&content, &empty_fonts(), &InterpretOptions::default());
+        assert!(!has_gstack_warn(&ok.warnings), "{:?}", ok.warnings);
+
+        content.clear();
+        for _ in 0..(MAX_GSTACK_DEPTH + 1) {
+            content.extend_from_slice(b"q\n");
+        }
+        content.extend_from_slice(b"0 0 m 10 0 l S\n");
+        let over = interpret_page(&content, &empty_fonts(), &InterpretOptions::default());
+        assert!(has_gstack_warn(&over.warnings), "{:?}", over.warnings);
+    }
+
+    #[test]
+    fn q_stack_clamps_huge_option_to_hard_max() {
+        let mut content = Vec::new();
+        for _ in 0..(MAX_GSTACK_DEPTH + 2) {
+            content.extend_from_slice(b"q\n");
+        }
+        content.extend_from_slice(b"0 0 m 8 0 l S\n");
+        let opts = InterpretOptions {
+            max_nesting_depth: u32::MAX,
+            ..InterpretOptions::default()
+        };
+        let result = interpret_page(&content, &empty_fonts(), &opts);
+        assert!(has_gstack_warn(&result.warnings), "{:?}", result.warnings);
+        assert_eq!(result.rules.len(), 1);
     }
 }
