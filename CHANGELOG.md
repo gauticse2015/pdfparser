@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### CLI -- optional text IR via pdfparser-export (P1.7) (2026-08-08)
+
+- `pdfparser extract --format json --use-export-ir` serializes `ExtractedDocument` through `pdfparser-export`.
+- Default off. Table `--format json` schema is unchanged; `--use-export-ir` is ignored when tables are enabled.
+
 ### Tables -- borrowed PageEvidence on diagnostics (P1.2) (2026-08-08)
 
 - `PageEvidence<'a>` borrows runs/rules/rasters; `PageEvidenceOwned` dump type omits raster pixels.

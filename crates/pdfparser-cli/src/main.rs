@@ -1,6 +1,11 @@
 //! pdfparser CLI — text + Phase V tables.
 use clap::{Parser, Subcommand, ValueEnum};
-use pdfparser::{Document, EnginePath, TableOptions, TablePreset, TableProfile, TextOptions};
+use pdfparser::{
+    Document, EnginePath, ExtractOptions, ExtractedDocument, TableOptions, TablePreset,
+    TableProfile, TextOptions,
+};
+use pdfparser_export::to_json_pretty;
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::time::Instant;
@@ -66,6 +71,11 @@ enum Commands {
         /// See `TableTuning` / `TABLE_TUNING_KEYS` for the full settings dict.
         #[arg(long = "table-setting", value_name = "KEY=VALUE")]
         table_settings: Vec<String>,
+        /// Emit text IR JSON via `pdfparser-export` (`ExtractedDocument`).
+        /// Default off. Ignored when tables are enabled so the existing table
+        /// JSON schema is unchanged.
+        #[arg(long)]
+        use_export_ir: bool,
     },
     /// Show document info
     Info { path: PathBuf },
@@ -122,6 +132,7 @@ fn main() -> ExitCode {
             legacy_router,
             table_profile,
             table_settings,
+            use_export_ir,
         } => {
             let want_tables = tables
                 || tables_hq
@@ -144,6 +155,7 @@ fn main() -> ExitCode {
                 legacy_router,
                 table_profile,
                 table_settings,
+                use_export_ir,
             }) {
                 Ok(()) => ExitCode::SUCCESS,
                 Err(e) => {
@@ -177,6 +189,7 @@ struct ExtractArgs {
     legacy_router: bool,
     table_profile: Option<String>,
     table_settings: Vec<String>,
+    use_export_ir: bool,
 }
 
 fn run_extract(a: ExtractArgs) -> Result<(), String> {
@@ -195,8 +208,8 @@ fn run_extract(a: ExtractArgs) -> Result<(), String> {
         legacy_router,
         table_profile,
         table_settings,
+        use_export_ir,
     } = a;
-    let t0 = Instant::now();
     let doc = Document::open(&path).map_err(|e| e.to_string())?;
     let text_opts = TextOptions {
         sort_reading_order: !paint_order,
@@ -205,6 +218,19 @@ fn run_extract(a: ExtractArgs) -> Result<(), String> {
         include_invisible: true,
         expand_forms: true,
     };
+    let range = parse_pages(pages.as_deref(), doc.page_count())?;
+
+    // P1.7 / A2.28: optional text IR via pdfparser-export. Never hijack table JSON.
+    if use_export_ir {
+        if tables {
+            eprintln!(
+                "note: --use-export-ir ignored when tables are enabled (table JSON schema unchanged)"
+            );
+        } else if matches!(format, OutFormat::Json) {
+            return emit_export_ir_json(&doc, text_opts, &range);
+        }
+    }
+    let t0 = Instant::now();
     let mut table_opts = if let Some(ref p) = table_preset {
         TableOptions::from_preset(p.to_preset())
     } else if tables_hq {
@@ -238,7 +264,6 @@ fn run_extract(a: ExtractArgs) -> Result<(), String> {
         None if tables => "Auto".into(),
         None => "Off".into(),
     };
-    let range = parse_pages(pages.as_deref(), doc.page_count())?;
 
     let (page_frags, logical) = if tables {
         doc.tables(&text_opts, &table_opts)
@@ -400,6 +425,34 @@ fn run_extract(a: ExtractArgs) -> Result<(), String> {
     Ok(())
 }
 
+/// Text IR JSON via `pdfparser-export` (`ExtractedDocument`).
+fn emit_export_ir_json(
+    doc: &Document,
+    text_opts: TextOptions,
+    range: &[u32],
+) -> Result<(), String> {
+    let extracted = doc
+        .extract(&ExtractOptions {
+            text: text_opts,
+            ..ExtractOptions::default()
+        })
+        .map_err(|e| e.to_string())?;
+    let extracted = filter_extracted_pages(extracted, range);
+    println!("{}", to_json_pretty(&extracted).map_err(|e| e.to_string())?);
+    Ok(())
+}
+
+/// Keep requested 0-based pages; document-level warnings stay.
+fn filter_extracted_pages(mut extracted: ExtractedDocument, range: &[u32]) -> ExtractedDocument {
+    let want: HashSet<u32> = range.iter().copied().collect();
+    extracted.pages.retain(|p| want.contains(&p.index));
+    extracted.warnings.retain(|w| match w.page {
+        Some(p) => want.contains(&p),
+        None => true,
+    });
+    extracted
+}
+
 fn render_table_tsv(tab: &pdfparser::Table) -> String {
     let mut grid: Vec<Vec<String>> =
         vec![vec![String::new(); tab.cols as usize]; tab.rows as usize];
@@ -469,4 +522,64 @@ fn parse_pages(spec: Option<&str>, n: u32) -> Result<Vec<u32>, String> {
         return Err("empty page range".into());
     }
     Ok(out)
+}
+
+#[cfg(test)]
+mod filter_extracted_pages_tests {
+    use super::*;
+    use pdfparser::{DocumentMetadata, ExtractWarning, ExtractedPage, Rect, WarningCode};
+
+    fn page(index: u32, text: &str) -> ExtractedPage {
+        ExtractedPage {
+            index,
+            media_box: Rect::zero(),
+            crop_box: None,
+            rotate: 0,
+            text: text.into(),
+            elements: Vec::new(),
+            warnings: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn keeps_selected_pages_and_doc_warnings() {
+        let extracted = ExtractedDocument {
+            schema_version: pdfparser::SCHEMA_VERSION,
+            metadata: DocumentMetadata {
+                page_count: 3,
+                ..DocumentMetadata::default()
+            },
+            pages: vec![page(0, "a"), page(1, "b"), page(2, "c")],
+            warnings: vec![
+                ExtractWarning {
+                    code: WarningCode::Other,
+                    page: Some(0),
+                    message: "p0".into(),
+                    recoverable: true,
+                },
+                ExtractWarning {
+                    code: WarningCode::Other,
+                    page: Some(2),
+                    message: "p2".into(),
+                    recoverable: true,
+                },
+                ExtractWarning {
+                    code: WarningCode::Other,
+                    page: None,
+                    message: "doc".into(),
+                    recoverable: true,
+                },
+            ],
+            partial: false,
+        };
+        let out = filter_extracted_pages(extracted, &[1, 2]);
+        assert_eq!(
+            out.pages.iter().map(|p| p.index).collect::<Vec<_>>(),
+            vec![1, 2]
+        );
+        assert_eq!(out.metadata.page_count, 3);
+        assert_eq!(out.warnings.len(), 2);
+        assert_eq!(out.warnings[0].message, "p2");
+        assert_eq!(out.warnings[1].message, "doc");
+    }
 }

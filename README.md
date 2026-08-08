@@ -242,6 +242,9 @@ cargo build --release -p pdfparser-cli
 # Text
 ./target/release/pdfparser extract path/to/file.pdf
 
+# Optional text IR JSON (pdfparser-export; does not change table JSON)
+./target/release/pdfparser extract --format json --use-export-ir path/to/file.pdf
+
 # Tables (product Auto = Engine V2)
 ./target/release/pdfparser extract --tables --format json path/to/file.pdf
 
