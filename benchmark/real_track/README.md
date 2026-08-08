@@ -58,7 +58,10 @@ Gate PASS/FAIL: [`docs/STATUS.md`](../../docs/STATUS.md) only.
 
 ## Latency
 
-`manifests/latency_probe.json` lists docs for p50/p95 timing (informative until rebaseline).
+`manifests/latency_probe.json` lists docs for p50/p95 timing.  
+Freeze: [`freezes/latency_fast_v0.json`](freezes/latency_fast_v0.json) (P0.5).  
+Probe script `budget_p95_ms=30000` is **informational**. Nightly required: `.github/workflows/nightly-latency-fast.yml` (Fast never full-page-renders).  
+Do not claim 30s→0.6s tightening until ubuntu-latest sample exists. GATE-5 is not claimed.
 
 ## Harness scripts (PR6a / Phase 3 live smoke)
 

@@ -2,5 +2,6 @@
   "steady": "g2.json",
   "note": "Steady freeze is the regression baseline (core cell Auto 0.637). Living gate board: docs/STATUS.md only.",
   "g3_industry": "INVALID / revoked - do not cite. See g3_industry.json revoked_at.",
-  "phase5": "see docs/STATUS.md - do not cite g3_industry.json"
+  "phase5": "see docs/STATUS.md - do not cite g3_industry.json",
+  "latency_fast_v0": "Fast p95 freeze + hardware. Two independent fail rules (no min()). Not GATE-5. ubuntu-latest sample TBD."
 }

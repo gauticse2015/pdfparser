@@ -1,0 +1,98 @@
+# Required nightly Fast latency probe (P0.5 / H15).
+# Not optional: this job must fail the workflow on probe/freeze miss.
+# Fast never full-page-renders.
+# ICDAR is never run here.
+#
+# Two independent fail rules vs benchmark/real_track/freezes/latency_fast_v0.json
+# (do NOT wrap in min(); do NOT gate vs freeze recorded_p95 * 1.10):
+#   1. live p95 > budget_p95_ms
+#   2. live p95 > prev_commit_p95 * 1.10 on the same machine class
+#      (first sample on a class: rule 1 only)
+#
+# Probe script budget_p95_ms=30000 stays informational.
+# Do not claim 30s→0.6s tightening until an ubuntu-latest sample exists.
+
+name: Nightly Fast latency
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: nightly-latency-fast-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  latency-fast:
+    name: Fast latency freeze (required)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CARGO_TERM_COLOR: always
+      RUSTFLAGS: "-D warnings"
+      LATENCY_MACHINE_CLASS: linux
+      LATENCY_HARDWARE_NOTE: "ubuntu-latest GitHub Actions runner (nightly required)"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assert no ICDAR in corpus
+        run: python3 benchmark/scripts/assert_no_icdar.py
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Restore previous p95 for this machine class
+        uses: actions/cache/restore@v4
+        with:
+          path: benchmark/real_track/results/latency_prev_class
+          key: latency-fast-prev-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            latency-fast-prev-${{ runner.os }}-
+
+      - name: Build release CLI
+        run: cargo build --release -p pdfparser-cli
+
+      - name: Run Fast latency probe (never full-page-render)
+        run: python3 benchmark/scripts/run_latency_probe.py
+
+      - name: Compare live p95 to latency_fast_v0 freeze
+        run: |
+          PREV=""
+          if [ -f benchmark/real_track/results/latency_prev_class/prev.json ]; then
+            PREV="--prev-json benchmark/real_track/results/latency_prev_class/prev.json"
+          fi
+          python3 benchmark/scripts/check_latency_freeze.py \
+            --freeze benchmark/real_track/freezes/latency_fast_v0.json \
+            --live benchmark/real_track/results/latency_probe_latest.json \
+            --machine-class linux \
+            --write-prev benchmark/real_track/results/latency_prev_class/prev.json \
+            $PREV
+
+      - name: Save p95 snapshot for next run on this class
+        # PASS only: do not persist a ratcheted prev p95 after a freeze FAIL.
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: benchmark/real_track/results/latency_prev_class
+          key: latency-fast-prev-${{ runner.os }}-${{ github.run_id }}
+
+      - name: Upload probe artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: latency-fast-probe-${{ github.run_id }}
+          path: |
+            benchmark/real_track/results/latency_probe_latest.json
+            benchmark/real_track/results/latency_prev_class/prev.json
+          if-no-files-found: warn

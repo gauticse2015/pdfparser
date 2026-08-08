@@ -69,6 +69,69 @@ def gate0() -> bool:
         cwd=str(REPO),
     )
     results.append(ok("G0.8 no ICDAR in repo", icdar_rc == 0, f"assert_no_icdar exit={icdar_rc}"))
+    # P0.5: freeze file + hardware + budget math (not a live probe; not GATE-5).
+    scripts_dir = Path(__file__).resolve().parent
+    if str(scripts_dir) not in sys.path:
+        sys.path.insert(0, str(scripts_dir))
+    import check_latency_freeze as clf
+
+    lat_f = load(RT / "freezes" / "latency_fast_v0.json")
+    results.append(ok("G0.9 latency_fast_v0.json exists", lat_f is not None))
+    if lat_f:
+        schema_errs = clf.validate_freeze_schema(lat_f)
+        results.append(
+            ok(
+                "G0.9 latency freeze schema + budget=max(p95*1.5,max*1.2)",
+                not schema_errs,
+                "; ".join(schema_errs) if schema_errs else "ok",
+            )
+        )
+        hw = lat_f.get("hardware") or {}
+        results.append(
+            ok(
+                "G0.9 hardware runner_os + note recorded",
+                bool(hw.get("runner_os")) and bool(hw.get("note")),
+                f"os={hw.get('runner_os')}",
+            )
+        )
+        nightly = REPO / ".github" / "workflows" / "nightly-latency-fast.yml"
+        nt = nightly.read_text(encoding="utf-8") if nightly.is_file() else ""
+        # Required: job must not set continue-on-error: (comments may mention the words).
+        has_continue_on_error_key = any(
+            line.split("#", 1)[0].strip().startswith("continue-on-error:")
+            for line in nt.splitlines()
+        )
+        has_actions_write = any(
+            line.split("#", 1)[0].strip() == "actions: write" for line in nt.splitlines()
+        )
+        results.append(
+            ok(
+                "G0.9 required nightly Fast latency workflow",
+                nightly.is_file()
+                and not has_continue_on_error_key
+                and "check_latency_freeze.py" in nt
+                and "run_latency_probe.py" in nt
+                and "schedule:" in nt,
+                str(nightly.name if nightly.is_file() else "missing"),
+            )
+        )
+        results.append(
+            ok(
+                "G0.9 nightly permissions include actions: write (cache)",
+                has_actions_write,
+                "actions/cache + rust-cache need actions: write; contents stays read",
+            )
+        )
+    wf = REPO / ".github" / "workflows"
+    icdar_in_nightly = False
+    if wf.is_dir():
+        for p in wf.glob("*.yml"):
+            txt = p.read_text(encoding="utf-8").lower()
+            if "nightly" in p.name.lower() and (
+                "run_icdar_competitive" in txt or "icdar2013" in txt
+            ):
+                icdar_in_nightly = True
+    results.append(ok("G0.9 nightly does not run ICDAR", not icdar_in_nightly))
     return all(results)
 
 

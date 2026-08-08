@@ -29,6 +29,7 @@ Thumbs.db
 # Benchmark artifacts (regenerable)
 benchmark/results/*.log
 benchmark/assets/_plain_enc.pdf
+benchmark/real_track/results/latency_prev_class/
 
 .dev-locks
 
