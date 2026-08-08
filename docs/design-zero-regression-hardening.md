@@ -12,12 +12,14 @@
 | **Does not supersede** | `docs/design-table-engine-v2.md` (capability ladder, K-decisions, ICDAR policy) |
 | **Informs / sequences** | `docs/design-table-engine-v3-industry.md` exclusive-first; `docs/implementation-plan-v3-gated.md` GATE-0..5 (quality) |
 | **Hard constraints** | No product Auto behavior change in mechanical PRs. No perf regression. No ICDAR in CI/tuning. Do not claim GATE-3/4 green. |
+| **P0.1 (2026-08-08)** | Landed. A1.12 / A3.23 / A4.8 / B Deref *evidence* columns describe the **pre-P0.1** tree. Living gate board is `docs/STATUS.md`. Do not flip the whole inventory in this file. |
+| **ASCII** | `docs/STATUS.md` and `docs/ARCHITECTURE.md` are strict ASCII. This inventory may keep typographic unicode (dashes, arrows). Diagrams stay ASCII. |
 
 ---
 
 ## Overview
 
-pdfparser's table product is already a **detection-strong** Engine V2 stack: `TablePreset::Auto` / `Full` run lattice + residual hybrid + network, then `finalize_engine_v2` (K26 merge + partition + nested keep + exclusive cleanup). That is **not** the V3 exclusive-first architecture (`Sense -> Classify -> Build once`). Detectors still all run; `PageEvidence` is diagnostics-only; `route_proposals` is not on the product call graph; status files disagree about which gates are green.
+pdfparser's table product is already a **detection-strong** Engine V2 stack: `TablePreset::Auto` / `Full` run lattice + residual hybrid + network, then `finalize_engine_v2` (K26 merge + partition + nested keep + exclusive cleanup). That is **not** the V3 exclusive-first architecture (`Sense -> Classify -> Build once`). Detectors still all run; `PageEvidence` is diagnostics-only; `route_proposals` is not on the product call graph. Pre-P0.1 status files disagreed about which gates are green; living board is now `docs/STATUS.md`.
 
 This document is a **production hardening + architecture repair bible**, not a TEDS-chasing plan. It (1) inventories every A1–A5 / B item against **today's tree**, (2) ranks a phased fix order that cannot silently change product Auto, (3) gives low-level design so each stacked PR is independently mergeable, and (4) defines a **No-Regression Contract**. Until **P0.6** lands, the contract's *intent* is binding but several commands are **not yet executable** (see that section). After P0.6 the reprinted command block is copy-pasteable.
 

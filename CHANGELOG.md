@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`docs/STATUS.md`** is the only source of truth for gate PASS/FAIL.
 - **Do not claim GATE-3 / GATE-4 / GATE-5 green.** Owned detection (G1/G2) is strong; shape / cells / industry polish are not.
-- Freeze lock remains `benchmark/real_track/freezes/g2.json` (core cell Auto **0.637**). README **0.738** is a later live number, not a freeze.
+- Freeze lock remains `benchmark/real_track/freezes/g2.json` (core cell Auto **0.637**). **0.738** is `phase_ab_baseline.json` (2026-07-18), not `real_structure_latest.json` and not a freeze.
 - `g3_industry.json` is **INVALID** / revoked - never cite as PASS.
 - Landed `docs/design-zero-regression-hardening.md` + `docs/ARCHITECTURE.md` stub.
 - `impl Deref` on `TableOptions` -> `TableAdvancedOptions` is **already gone**; use `opts.advanced`.
@@ -28,8 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and liabilities (~30×10) no longer hard-dropped as “giant IRS worksheets”.
 - **`form_likeness` size penalty** only when fill is sparse (dense data lists ≠ forms).
 - **IRS keyword veto** still rejects Schedule C / OMB field grids (FP strict zero_rate **1.0**).
-- **GATE-1 + GATE-2 PASS** (discipline exact **0.971**, under **0.029**, multi exact **1.0**,
-  ICDAR F1 **0.761**, ICDAR under **0.239** ≤ 0.28).
+- **GATE-1 + GATE-2** (historical 2026-07-16 snapshot; numbers != `docs/STATUS.md`):
+  discipline exact **0.971**, under **0.029**, multi exact **1.0**.
+  ICDAR F1 **0.761** in that snapshot is external honesty only (not a CI gate).
 - **T3 structure golds expanded to n=23** (`R021` left two-col multi, `R022` superscripts)
   with `phase3_tracking` metadata for Phase-3 shape/cell work (core freeze still n=15).
 

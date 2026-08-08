@@ -14,14 +14,14 @@ Extracts **text**, **tables**, and common **document objects** with security bud
 
 ## Architecture (current)
 
-Product default: **`TablePreset::Auto` = Engine V2 exclusive router**.
+Product default: **`TablePreset::Auto` = Engine V2 finalize** (soup then `finalize_engine_v2`; detectors still all run). Exclusive-first page flavor is **not** shipped. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ```text
 PDF page
   → content VM (text runs + vector rules; Form XObjects; thin-fill rect rules)
   → embedded Image XObject raster morph (optional full-page render: HQ or K25 opportunistic)
-  → lattice / hybrid / network proposals
-  → exclusive AutoRouter
+  → lattice / hybrid / network proposals (all run)
+  → Engine V2 finalize (`finalize_engine_v2`)
         · K26 vertical merge (header/body)
         · partition + ownership
         · nested multi-table keep (outer form + inner rate grid)
@@ -118,28 +118,30 @@ Gated plan: [`docs/implementation-plan-v3-gated.md`](docs/implementation-plan-v3
 ### 1) Real-structure track (primary product bar)
 
 Human/vision T3 gold · stitch off · product **Auto = Engine V2**.  
-Sources: `benchmark/real_track/results/real_structure_latest.json`, freeze `g2.json`, discipline / FP strict latest.
+Sources: freeze `g2.json`; latest committed `real_structure_latest.json` (2026-07-19); discipline / FP strict latest. Gate labels: [`docs/STATUS.md`](docs/STATUS.md).
 
-| Metric | Core (g2 ids, n=15) | Full suite (n=23 scored; 25 T3 gold files on disk) |
-|--------|--------------------:|--------------------------------------------------:|
-| freeze **cell F1** (`g2.json`) | **0.637** | — |
-| later live **cell F1** | **0.738** (not a freeze) | **0.639** |
-| micro **det count F1** | **~0.978** live / **0.964** freeze | **0.933** |
-| micro **det IoU F1** | **1.000** live | **0.869** |
-| shape exact rate | **~0.667** live / **0.533** freeze | **0.580** |
-| detect discipline exact | **0.941** (n=34) | — |
-| over-detect doc rate | **0.029** | — |
-| fp_strict zero rate | **1.000** (n=12) | — |
+| Metric | Core freeze `g2.json` (n=15) | Latest committed run (2026-07-19) |
+|--------|-----------------------------:|----------------------------------:|
+| **cell F1** | **0.637** | core mean **0.770** / full **0.656** |
+| **det count F1** | **0.964** | core **1.000** / full **0.935** |
+| **det IoU F1** | **0.941** | core **1.000** / full **0.844** |
+| shape exact rate | **0.533** | core **0.667** / full **0.565** |
+| detect discipline exact | — | **0.941** (n=34) |
+| over-detect doc rate | — | **0.029** |
+| fp_strict zero rate | — | **1.000** (n=12) |
+
+Latest full suite = summary n=23 scored (25 T3 gold files on disk). Core live = equal-weight mean of the 15 g2 ids in `real_structure_latest.json` (not pooled micro).  
+Older customer board quoted core cell **0.738** from `phase_ab_baseline.json` / `phase1_structure_framework.json` (2026-07-18). That is **not** `real_structure_latest.json` and **not** a freeze.
 
 **Interpretation for customers**
 
 - **Detection is the strength** — exact table counts, low FP, nested keep.
-- **Cell / shape are the gap** — later live core cell **0.738** is not a freeze; regression lock stays **g2 0.637**. Dense census / glued financial streams still drag the mean.
+- **Cell / shape are the gap** — regression lock stays **g2 0.637**. Dense census / glued financial streams still drag the mean.
 - Gate labels: [`docs/STATUS.md`](docs/STATUS.md). **Do not claim GATE-3/4/5 green.**
 
 #### Peer ranking on shared real gold (older equal-weight peer board)
 
-Last full multi-lib peer run on the reviewed T3 set (`REALITY_CHECK_PEERS.md`, 2026-07-12). pdfparser freeze mean cell is **0.637**; later live core **0.738** is not a freeze. Peer re-run recommended for an updated win table.
+Last full multi-lib peer run on the reviewed T3 set (`REALITY_CHECK_PEERS.md`, 2026-07-12). pdfparser freeze mean cell is **0.637**; later snapshots (0.738 dated / 0.770 latest core mean) are not freezes. Peer re-run recommended for an updated win table.
 
 | Rank (then) | Library | mean cell F1 | mean det F1 | wins (best cell) |
 |------------:|---------|-------------:|------------:|-----------------:|

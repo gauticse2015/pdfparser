@@ -12,7 +12,7 @@ Diagrams: **ASCII only** (no Mermaid).
 | Doc | Role |
 |-----|------|
 | [`design-table-engine-v2.md`](design-table-engine-v2.md) | Capability ladder, K-decisions, ICDAR ban, Fast never render, nested keep. **As-built: Auto already Engine V2** (migration "Auto still legacy until G1" is historical). |
-| [`design-zero-regression-hardening.md`](design-zero-regression-hardening.md) | As-built A1-A5/B inventory + zero-regression PR bible. Wins on today's tree. |
+| [`design-zero-regression-hardening.md`](design-zero-regression-hardening.md) | As-built A1-A5/B inventory + zero-regression PR bible. P0.1 landed; A1.12 evidence is pre-fix; living board is STATUS.md. |
 | [`design-table-engine-v3-industry.md`](design-table-engine-v3-industry.md) | Exclusive-first **target** (Sense -> Classify -> Build once). **Not** what product Auto does today. |
 | [`implementation-plan-v3-gated.md`](implementation-plan-v3-gated.md) | GATE-0..5 **quality** metric defs. Do not claim GATE-3/4/5 green. |
 | [`options-deprecation-map.md`](options-deprecation-map.md) | 12-field product surface. **No Deref.** |

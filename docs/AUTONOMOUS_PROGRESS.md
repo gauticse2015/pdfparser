@@ -27,7 +27,7 @@ Not a merge bar. Latest solo dump is **peers=1** (not rank #1). Multi-peer READM
 See [`STATUS.md`](STATUS.md). The 2026-07-18 table that claimed GATE-3 PASS is **retracted** (disagrees with `g3_industry.json` INVALID and `phase-structure-gates.md`).
 
 ## Real-track
-- freeze core cell **0.637** (`g2.json`); later live ~0.738 is not a freeze
+- freeze core cell **0.637** (`g2.json`); 0.738 is `phase_ab_baseline.json` 2026-07-18, not latest and not a freeze
 - ignore historical "core 0.820" claim in this file
 
 ## Key general fixes
@@ -38,6 +38,6 @@ See [`STATUS.md`](STATUS.md). The 2026-07-18 table that claimed GATE-3 PASS is *
 5. Hard rejects when measured regress (exterior Y, near_match, etc.)
 
 ## Next (Phase C)
-- Lift TEDS +0.019 without dropping F1/row/col/core
+- Lift TEDS +0.019 without dropping F1/row/col/core (owned suites)
 - Content assignment quality on exact-count wrong-shape docs
-- Then freeze G3/G4 with multi-peer ICDAR board
+- External multi-peer ICDAR honesty check only; freeze stays owned g2 / STATUS.md

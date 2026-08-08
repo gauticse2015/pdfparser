@@ -1,16 +1,18 @@
 # Structure quality phases (TEDS / row / col) — success criteria
 
-**Gate PASS/FAIL SSOT:** [`STATUS.md`](STATUS.md). This file defines criteria; do not treat the status log below as current promotion. GATE-3/4/5 are **not** green.
+**Living gate board:** [`STATUS.md`](STATUS.md) only. This file defines quality-train criteria; it is not a second promotion board. GATE-3/4/5 are not green.
 
 Autonomous develop→assess loop. **No ICDAR doc-id coupling in engine code.** ICDAR is never CI.
 
 ## Shared guards (every phase)
 
+Living no-regress floors: [`STATUS.md`](STATUS.md) (G1.7 = g2 auto - 0.03). Future checker: `owned_gates_v0.json` (P0.6). Do not restate a second floor here.
+
 | Guard | Threshold |
 |-------|-----------|
-| Real g2 core cell F1 | ≥ freeze − 0.02 (no-regress) |
-| Real g2 det count F1 | ≥ 0.88 |
-| ICDAR F1 | ≥ 0.815 (honest floor) |
+| Real g2 core cell F1 | see STATUS.md / H21 (not a second floor in this file) |
+| Real g2 det count F1 | see STATUS.md |
+| ICDAR F1 | external honesty only; never CI; never a merge bar in this file |
 | Unit tests `pdfparser-tables` | pass |
 | Stream fixtures `07` / `59` | pass |
 | No gold pads / suite filename hacks | required |
@@ -55,14 +57,14 @@ Phase 1 does **not** require row/col/TEDS lifts.
 - Report-only ICDAR with profiles; default path stays Auto + Default tuning.
 
 
-## Status log
+## Historical notes (not a gate board)
 
-| Phase | Status | Notes |
-|------:|:------:|-------|
-| 1 Framework + taxonomy + profiles | **PASS** | TableProfile, CLI, wired growth/overdense keys, taxonomy harness; F1 0.832 core 0.738 |
-| 2 Row geometry | **PASS** | row **0.500–0.507**, F1 ≥0.815, core ok, stream 07/59 green. Stream header keep + footnote strip. |
-| 3 Col geometry | **FAIL** | col **0.535** (need ≥0.55). Shippable path after fixture fix; under-col densify_x/partial-V next. |
-| 4 TEDS/content | **BLOCKED** | TEDS **~0.46** (need ≥0.50). Depends on col+lattice content quality. |
+Do not treat this section as promotion. Living labels: [`STATUS.md`](STATUS.md). GATE-3/4/5 are not green.
+
+- Phase 1 framework (TableProfile, CLI, taxonomy harness) landed.
+- Phase 2 row-geometry work landed (stream header keep + footnote strip).
+- Phase 3 col criterion in the table above is still unmet on the last ICDAR external snapshot (col ~0.535 vs 0.55). External only; not CI.
+- Phase 4 TEDS still ~0.46 vs 0.50 on that same external snapshot. Not a GATE-4 claim.
 
 ### Phase 2 landed (generic, no ICDAR ids)
 1. Network: near-top single-run multi-word headers; multi-run headers with aligned≥1; trailing prose footnote strip.
