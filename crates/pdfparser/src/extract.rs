@@ -49,6 +49,8 @@ pub fn page_content(
         capture_rules,
         capture_image_placements: capture_rules, // same gate as rules for table path
         max_nesting_depth: doc.governor.limits.max_nesting_depth,
+        // P2.3 / A2.6: opt-in fat-stroke filter stays OFF on product Auto.
+        stroke_width_filter: false,
         ..InterpretOptions::default()
     };
     // When capturing rules (table path), expand Form XObjects so vector rules

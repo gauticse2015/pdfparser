@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Content -- opt-in stroke-width rule filter default off (P2.3) (2026-08-08)
+
+- `InterpretOptions.stroke_width_filter` default **false**; named threshold `stroke_width_max` (4.0 pt). Product Auto / extract table path pins false.
+- When on, fat strokes (`w ×` CTM scale above threshold) are ignored instead of becoming 1-D centerline rules. Thin strokes unchanged. `w` is recorded on graphics state (q/Q restore).
+- Warning `stroke_width_ignored` emitted once per interpret when a fat stroke is dropped. Default path still silent.
+
 ### Content -- cap q/Q graphics stack nesting (P2.2b) (2026-08-08)
 
 - Content VM stops pushing `q` once `gstack` reaches `InterpretOptions.max_nesting_depth` (default 64; same as `ResourceLimits` / `hard_max::MAX_NESTING_DEPTH`).
