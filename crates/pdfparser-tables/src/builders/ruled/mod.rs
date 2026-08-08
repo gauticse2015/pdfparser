@@ -4,6 +4,7 @@
 #![allow(clippy::collapsible_if)]
 
 mod cells;
+mod emit;
 mod joints;
 
 pub use cells::trim_empty_border_rows_cols;
@@ -11,10 +12,8 @@ pub use cells::trim_empty_border_rows_cols;
 use crate::geom::{assign_runs_exclusive, bbox_of_cells, cluster_coords, grid_regularity_score};
 use crate::options::TableOptions;
 use crate::types::{PipelineId, Table, TableMethod};
-use cells::{
-    emit_cells_dense, merge_spans_dense, redistribute_row_tokens, strip_trailing_footer_totals,
-    RawCell,
-};
+use cells::{redistribute_row_tokens, strip_trailing_footer_totals};
+use emit::{emit_cells_dense, merge_spans_dense, RawCell};
 use joints::{
     cluster_line_components, coalesce_h, coalesce_v, edge_flags, filter_joint_supported_coords,
     segments_cross_hv, suppress_text_baseline_h_rules, HSeg, VSeg,
