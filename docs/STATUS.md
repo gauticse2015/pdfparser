@@ -93,8 +93,12 @@ Maturity labels (customer): text + ruled/borderless **detection** production; ce
 
 ---
 
+## Landed this PR (P0.2)
+
+`structure_error_taxonomy.py` reads `metrics.per_table[].pred_shape/gold_shape`. Default run is ICDAR-free. Census cell/shape is a **shadow metric only** (no 10-col e2e assert / H17). GATE-3/4/5 stay not green.
+
+---
+
 ## What is still open (not this PR)
 
 Harness / gold / executable contract (P0.3-P0.6): R005/R010 gold review, G5.4 unit-test SSOT, latency freeze file, `--owned-only` + `--binary`. Do not invent `--binary` until P0.6.
-
-P0.2 (taxonomy): `structure_error_taxonomy.py` reads `metrics.per_table[].pred_shape/gold_shape`. Default run is ICDAR-free. Census cell/shape is a **shadow metric only** (no 10-col e2e assert / H17). GATE-3/4/5 stay not green.

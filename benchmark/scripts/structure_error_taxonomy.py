@@ -24,6 +24,7 @@ from typing import Any
 
 SCRIPTS = Path(__file__).resolve().parent
 BENCH = SCRIPTS.parent
+REPO = BENCH.parent
 RT = BENCH / "real_track"
 OUT = RT / "results" / "structure_error_taxonomy_latest.json"
 
@@ -67,14 +68,24 @@ def _is_census_id(doc_id: Any) -> bool:
     return CENSUS_ID_SUBSTR in str(doc_id or "").lower()
 
 
+def _repo_rel(path: Path) -> str:
+    """Stable artifact path: repo-relative when possible (no machine worktrees)."""
+    try:
+        return path.resolve().relative_to(REPO.resolve()).as_posix()
+    except ValueError:
+        return Path(path).as_posix()
+
+
 def _classify_per_table(pt: dict[str, Any]) -> dict[str, Any]:
     pred = _shape_pair(pt.get("pred_shape"))
     gold = _shape_pair(pt.get("gold_shape"))
     unmatched = bool(pt.get("unmatched_gold")) or (
         isinstance(pt.get("pred_index"), int) and pt["pred_index"] < 0
     )
-    tags: list[str]
-    if pred is not None and gold is not None:
+    # Sentinel pred_shape [0, 0] + pred_index < 0 is a detection miss, not a 0x0 extract.
+    if unmatched:
+        tags = ["unmatched_gold"]
+    elif pred is not None and gold is not None:
         tags = classify_shape(pred[0], pred[1], gold[0], gold[1])
     elif pt.get("shape_exact") is True:
         tags = ["shape_exact"]
@@ -82,8 +93,6 @@ def _classify_per_table(pt: dict[str, Any]) -> dict[str, Any]:
         tags = ["wrong_shape"]
     else:
         tags = ["unknown"]
-    if unmatched and "unmatched_gold" not in tags:
-        tags = [*tags, "unmatched_gold"]
     return {
         "gold_index": pt.get("gold_index"),
         "pred_index": pt.get("pred_index"),
@@ -203,7 +212,7 @@ def from_real_structure(path: Path) -> dict[str, Any]:
             )
     return {
         "source": "real_structure",
-        "path": str(path),
+        "path": _repo_rel(path),
         "n_docs": len(per),
         "n_tables": n_tables,
         "mode_counts": dict(mode_counts),
@@ -245,7 +254,7 @@ def from_icdar_analysis(path: Path) -> dict[str, Any]:
                 shape_bins[t] += 1
     return {
         "source": "icdar_failure_analysis",
-        "path": str(path),
+        "path": _repo_rel(path),
         "mode_counts": dict(counts),
         "shape_bins_first_table": dict(shape_bins),
         "n_docs": len(data.get("per_doc") or []),

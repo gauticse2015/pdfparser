@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-08-08T08:31:03.240971+00:00",
+  "generated_at": "2026-08-08T08:41:34.250603+00:00",
   "policy": "generic shape taxonomy; no engine doc-id coupling; default=real_structure only; --icdar-analysis external optional",
   "real_structure": {
     "source": "real_structure",
-    "path": "/Users/gautamkumar/.grok/worktrees/desktop-pdfparser/subagent-019fe07c-c282-7f20-8b1d-2516748f3e8b/benchmark/real_track/results/real_structure_latest.json",
+    "path": "benchmark/real_track/results/real_structure_latest.json",
     "n_docs": 23,
     "n_tables": 31,
     "mode_counts": {
       "shape_exact": 17,
       "over_row": 4,
       "over_col": 6,
-      "wrong_shape": 14,
-      "under_row": 8,
-      "under_col": 6,
+      "wrong_shape": 11,
+      "under_row": 5,
+      "under_col": 3,
       "col_explode": 4,
-      "row_explode": 7,
+      "row_explode": 4,
       "unmatched_gold": 3
     },
     "note": "shapes from metrics.per_table[].pred_shape/gold_shape; mode_counts are per-table",
@@ -88,10 +88,6 @@
               "cell_f1": 0.0,
               "shape_exact": false,
               "tags": [
-                "under_row",
-                "under_col",
-                "wrong_shape",
-                "row_explode",
                 "unmatched_gold"
               ],
               "unmatched_gold": true
@@ -723,10 +719,6 @@
       {
         "id": "R005_census_acs_sample",
         "tags": [
-          "under_row",
-          "under_col",
-          "wrong_shape",
-          "row_explode",
           "unmatched_gold"
         ],
         "pred": [
@@ -751,10 +743,6 @@
               1
             ],
             "tags": [
-              "under_row",
-              "under_col",
-              "wrong_shape",
-              "row_explode",
               "unmatched_gold"
             ],
             "cell_f1": 0.0,
@@ -813,8 +801,6 @@
           "over_col",
           "wrong_shape",
           "col_explode",
-          "under_col",
-          "row_explode",
           "unmatched_gold"
         ],
         "pred": [
@@ -860,10 +846,6 @@
               2
             ],
             "tags": [
-              "under_row",
-              "under_col",
-              "wrong_shape",
-              "row_explode",
               "unmatched_gold"
             ],
             "cell_f1": 0.0,
@@ -882,10 +864,6 @@
               2
             ],
             "tags": [
-              "under_row",
-              "under_col",
-              "wrong_shape",
-              "row_explode",
               "unmatched_gold"
             ],
             "cell_f1": 0.0,
