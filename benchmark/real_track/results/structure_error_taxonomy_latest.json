@@ -1,386 +1,1102 @@
 {
-  "generated_at": "2026-07-19T14:00:14.992649+00:00",
-  "policy": "generic shape taxonomy; no engine doc-id coupling",
+  "generated_at": "2026-08-08T08:41:34.250603+00:00",
+  "policy": "generic shape taxonomy; no engine doc-id coupling; default=real_structure only; --icdar-analysis external optional",
   "real_structure": {
     "source": "real_structure",
-    "path": "/Users/gautamkumar/Desktop/pdfParser/benchmark/real_track/results/real_structure_latest.json",
+    "path": "benchmark/real_track/results/real_structure_latest.json",
     "n_docs": 23,
+    "n_tables": 31,
     "mode_counts": {
-      "unknown": 23
+      "shape_exact": 17,
+      "over_row": 4,
+      "over_col": 6,
+      "wrong_shape": 11,
+      "under_row": 5,
+      "under_col": 3,
+      "col_explode": 4,
+      "row_explode": 4,
+      "unmatched_gold": 3
+    },
+    "note": "shapes from metrics.per_table[].pred_shape/gold_shape; mode_counts are per-table",
+    "census_shadow": {
+      "note": "record-only cell/shape for census docs; no 10-col e2e assert (H17)",
+      "documents": [
+        {
+          "id": "32_real_census_table324",
+          "doc_cell_f1": 0.49291784702549574,
+          "n_pred": 2,
+          "n_exp": 2,
+          "tables": [
+            {
+              "gold_index": 0,
+              "pred_index": 0,
+              "pred_shape": [
+                34,
+                2
+              ],
+              "gold_shape": [
+                34,
+                10
+              ],
+              "cell_f1": 0.0059701492537313425,
+              "shape_exact": false,
+              "tags": [
+                "under_col",
+                "wrong_shape",
+                "col_explode"
+              ],
+              "unmatched_gold": null
+            },
+            {
+              "gold_index": 1,
+              "pred_index": 1,
+              "pred_shape": [
+                31,
+                6
+              ],
+              "gold_shape": [
+                33,
+                6
+              ],
+              "cell_f1": 0.9326145552560646,
+              "shape_exact": false,
+              "tags": [
+                "under_row",
+                "wrong_shape"
+              ],
+              "unmatched_gold": null
+            }
+          ]
+        },
+        {
+          "id": "R005_census_acs_sample",
+          "doc_cell_f1": 0.0,
+          "n_pred": 0,
+          "n_exp": 1,
+          "tables": [
+            {
+              "gold_index": 0,
+              "pred_index": -1,
+              "pred_shape": [
+                0,
+                0
+              ],
+              "gold_shape": [
+                5,
+                1
+              ],
+              "cell_f1": 0.0,
+              "shape_exact": false,
+              "tags": [
+                "unmatched_gold"
+              ],
+              "unmatched_gold": true
+            }
+          ]
+        }
+      ]
     },
     "documents": [
       {
         "id": "30_real_ca_warn_report",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          37,
+          7
         ],
         "gold": [
-          null,
-          null
+          37,
+          7
         ],
-        "cell_f1": 0.8411633109619687
+        "cell_f1": 0.8411633109619687,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              37,
+              7
+            ],
+            "gold": [
+              37,
+              7
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.8411633109619687,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "33_real_argentina_votes",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          32,
+          4
         ],
         "gold": [
-          null,
-          null
+          32,
+          4
         ],
-        "cell_f1": 0.8956521739130435
+        "cell_f1": 0.8956521739130435,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              32,
+              4
+            ],
+            "gold": [
+              32,
+              4
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.8956521739130435,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "34_real_schools_contributions",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          46,
+          10
         ],
         "gold": [
-          null,
-          null
+          46,
+          10
         ],
-        "cell_f1": 0.46551724137931033
+        "cell_f1": 0.46551724137931033,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              46,
+              10
+            ],
+            "gold": [
+              46,
+              10
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.46551724137931033,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "35_real_camelot_fuel",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          7,
+          7
         ],
         "gold": [
-          null,
-          null
+          7,
+          7
         ],
-        "cell_f1": 0.7164179104477612
+        "cell_f1": 0.7164179104477612,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              7,
+              7
+            ],
+            "gold": [
+              7,
+              7
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.7164179104477612,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "36_real_two_tables",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          3,
+          10
         ],
         "gold": [
-          null,
-          null
+          3,
+          10
         ],
-        "cell_f1": 0.9174311926605504
+        "cell_f1": 0.9174311926605504,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              3,
+              10
+            ],
+            "gold": [
+              3,
+              10
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.9600000000000001,
+            "shape_exact": true,
+            "unmatched_gold": null
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "pred": [
+              5,
+              9
+            ],
+            "gold": [
+              5,
+              9
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.8813559322033898,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "37_real_liabilities_superscript",
         "tags": [
-          "unknown"
+          "over_row",
+          "over_col",
+          "wrong_shape"
         ],
         "pred": [
-          null,
-          null
+          37,
+          12
         ],
         "gold": [
-          null,
-          null
+          36,
+          11
         ],
-        "cell_f1": 0.8069073783359497
+        "cell_f1": 0.8069073783359497,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              37,
+              12
+            ],
+            "gold": [
+              36,
+              11
+            ],
+            "tags": [
+              "over_row",
+              "over_col",
+              "wrong_shape"
+            ],
+            "cell_f1": 0.8069073783359497,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "31_real_background_checks",
         "tags": [
-          "unknown"
+          "under_row",
+          "wrong_shape"
         ],
         "pred": [
-          null,
-          null
+          58,
+          25
         ],
         "gold": [
-          null,
-          null
+          59,
+          25
         ],
-        "cell_f1": 0.8235765838011228
+        "cell_f1": 0.8235765838011228,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              58,
+              25
+            ],
+            "gold": [
+              59,
+              25
+            ],
+            "tags": [
+              "under_row",
+              "wrong_shape"
+            ],
+            "cell_f1": 0.8235765838011228,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "32_real_census_table324",
         "tags": [
-          "unknown"
+          "under_col",
+          "wrong_shape",
+          "col_explode",
+          "under_row"
         ],
         "pred": [
-          null,
-          null
+          34,
+          2
         ],
         "gold": [
-          null,
-          null
+          34,
+          10
         ],
-        "cell_f1": 0.0037523452157598495
+        "cell_f1": 0.49291784702549574,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              34,
+              2
+            ],
+            "gold": [
+              34,
+              10
+            ],
+            "tags": [
+              "under_col",
+              "wrong_shape",
+              "col_explode"
+            ],
+            "cell_f1": 0.0059701492537313425,
+            "shape_exact": false,
+            "unmatched_gold": null
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "pred": [
+              31,
+              6
+            ],
+            "gold": [
+              33,
+              6
+            ],
+            "tags": [
+              "under_row",
+              "wrong_shape"
+            ],
+            "cell_f1": 0.9326145552560646,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R018_camelot_health",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          50,
+          8
         ],
         "gold": [
-          null,
-          null
+          50,
+          8
         ],
-        "cell_f1": 0.9948979591836734
+        "cell_f1": 0.9948979591836734,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              50,
+              8
+            ],
+            "gold": [
+              50,
+              8
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.9948979591836734,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R003_bea_gdp_sample",
         "tags": [
-          "unknown"
+          "over_col",
+          "wrong_shape"
         ],
         "pred": [
-          null,
-          null
+          30,
+          10
         ],
         "gold": [
-          null,
-          null
+          30,
+          9
         ],
-        "cell_f1": 1.0
+        "cell_f1": 1.0,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              30,
+              10
+            ],
+            "gold": [
+              30,
+              9
+            ],
+            "tags": [
+              "over_col",
+              "wrong_shape"
+            ],
+            "cell_f1": 1.0,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R010_bea_nipa_highlights",
         "tags": [
-          "unknown"
+          "under_row",
+          "under_col",
+          "wrong_shape",
+          "row_explode",
+          "col_explode"
         ],
         "pred": [
-          null,
-          null
+          4,
+          3
         ],
         "gold": [
-          null,
-          null
+          51,
+          22
         ],
-        "cell_f1": 0.002063983488132095
+        "cell_f1": 0.002063983488132095,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              4,
+              3
+            ],
+            "gold": [
+              51,
+              22
+            ],
+            "tags": [
+              "under_row",
+              "under_col",
+              "wrong_shape",
+              "row_explode",
+              "col_explode"
+            ],
+            "cell_f1": 0.002063983488132095,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "42_real_insurance_italian",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          7,
+          2
         ],
         "gold": [
-          null,
-          null
+          7,
+          2
         ],
-        "cell_f1": 0.9500000000000001
+        "cell_f1": 0.9500000000000001,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              7,
+              2
+            ],
+            "gold": [
+              7,
+              2
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.9166666666666666,
+            "shape_exact": true,
+            "unmatched_gold": null
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "pred": [
+              4,
+              2
+            ],
+            "gold": [
+              4,
+              2
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 1.0,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "43_real_row_span_gmc",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          40,
+          4
         ],
         "gold": [
-          null,
-          null
+          40,
+          4
         ],
-        "cell_f1": 0.9947089947089947
+        "cell_f1": 0.9947089947089947,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              40,
+              4
+            ],
+            "gold": [
+              40,
+              4
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.9947089947089947,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "44_real_spanning_cells",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          21,
+          6
         ],
         "gold": [
-          null,
-          null
+          21,
+          6
         ],
-        "cell_f1": 0.7064676616915423
+        "cell_f1": 0.7064676616915423,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              21,
+              6
+            ],
+            "gold": [
+              21,
+              6
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.6545454545454547,
+            "shape_exact": true,
+            "unmatched_gold": null
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "pred": [
+              4,
+              6
+            ],
+            "gold": [
+              4,
+              6
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.9444444444444444,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "45_real_campaign_donors",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          56,
+          7
         ],
         "gold": [
-          null,
-          null
+          56,
+          7
         ],
-        "cell_f1": 0.9433962264150944
+        "cell_f1": 0.9433962264150944,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              56,
+              7
+            ],
+            "gold": [
+              56,
+              7
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.9433962264150944,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R005_census_acs_sample",
         "tags": [
-          "unknown"
+          "unmatched_gold"
         ],
         "pred": [
-          null,
-          null
+          0,
+          0
         ],
         "gold": [
-          null,
-          null
+          5,
+          1
         ],
-        "cell_f1": 0.0
+        "cell_f1": 0.0,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": -1,
+            "pred": [
+              0,
+              0
+            ],
+            "gold": [
+              5,
+              1
+            ],
+            "tags": [
+              "unmatched_gold"
+            ],
+            "cell_f1": 0.0,
+            "shape_exact": false,
+            "unmatched_gold": true
+          }
+        ]
       },
       {
         "id": "R008_cdc_mmwr_sample",
         "tags": [
-          "unknown"
+          "under_row",
+          "over_col",
+          "wrong_shape",
+          "row_explode",
+          "col_explode"
         ],
         "pred": [
-          null,
-          null
+          4,
+          5
         ],
         "gold": [
-          null,
-          null
+          47,
+          2
         ],
-        "cell_f1": 0.0
+        "cell_f1": 0.0,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              4,
+              5
+            ],
+            "gold": [
+              47,
+              2
+            ],
+            "tags": [
+              "under_row",
+              "over_col",
+              "wrong_shape",
+              "row_explode",
+              "col_explode"
+            ],
+            "cell_f1": 0.0,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R009_sec_10q_sample",
         "tags": [
-          "unknown"
+          "under_row",
+          "over_col",
+          "wrong_shape",
+          "col_explode",
+          "unmatched_gold"
         ],
         "pred": [
-          null,
-          null
+          4,
+          4
         ],
         "gold": [
-          null,
-          null
+          6,
+          2
         ],
-        "cell_f1": 0.0
+        "cell_f1": 0.0,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              4,
+              4
+            ],
+            "gold": [
+              6,
+              2
+            ],
+            "tags": [
+              "under_row",
+              "over_col",
+              "wrong_shape",
+              "col_explode"
+            ],
+            "cell_f1": 0.0,
+            "shape_exact": false,
+            "unmatched_gold": null
+          },
+          {
+            "gold_index": 1,
+            "pred_index": -1,
+            "pred": [
+              0,
+              0
+            ],
+            "gold": [
+              8,
+              2
+            ],
+            "tags": [
+              "unmatched_gold"
+            ],
+            "cell_f1": 0.0,
+            "shape_exact": false,
+            "unmatched_gold": true
+          },
+          {
+            "gold_index": 2,
+            "pred_index": -1,
+            "pred": [
+              0,
+              0
+            ],
+            "gold": [
+              12,
+              2
+            ],
+            "tags": [
+              "unmatched_gold"
+            ],
+            "cell_f1": 0.0,
+            "shape_exact": false,
+            "unmatched_gold": true
+          }
+        ]
       },
       {
         "id": "R016_tabula_12s0324",
         "tags": [
-          "unknown"
+          "over_row",
+          "over_col",
+          "wrong_shape",
+          "row_explode",
+          "under_col"
         ],
         "pred": [
-          null,
-          null
+          31,
+          6
         ],
         "gold": [
-          null,
-          null
+          3,
+          4
         ],
-        "cell_f1": 0.2857142857142857
+        "cell_f1": 0.2,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 1,
+            "pred": [
+              31,
+              6
+            ],
+            "gold": [
+              3,
+              4
+            ],
+            "tags": [
+              "over_row",
+              "over_col",
+              "wrong_shape",
+              "row_explode"
+            ],
+            "cell_f1": 0.28571428571428575,
+            "shape_exact": false,
+            "unmatched_gold": null
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 0,
+            "pred": [
+              34,
+              2
+            ],
+            "gold": [
+              2,
+              3
+            ],
+            "tags": [
+              "over_row",
+              "under_col",
+              "wrong_shape",
+              "row_explode"
+            ],
+            "cell_f1": 0.0,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R017_tabula_argentina",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          32,
+          4
         ],
         "gold": [
-          null,
-          null
+          32,
+          4
         ],
-        "cell_f1": 0.8956521739130435
+        "cell_f1": 0.8956521739130435,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              32,
+              4
+            ],
+            "gold": [
+              32,
+              4
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.8956521739130435,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R019_camelot_foo",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          7,
+          7
         ],
         "gold": [
-          null,
-          null
+          7,
+          7
         ],
-        "cell_f1": 0.7164179104477612
+        "cell_f1": 0.7164179104477612,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              7,
+              7
+            ],
+            "gold": [
+              7,
+              7
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.7164179104477612,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R021_camelot_left_twocol",
         "tags": [
-          "unknown"
+          "shape_exact"
         ],
         "pred": [
-          null,
-          null
+          3,
+          10
         ],
         "gold": [
-          null,
-          null
+          3,
+          10
         ],
-        "cell_f1": 0.9174311926605504
+        "cell_f1": 0.9174311926605504,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              3,
+              10
+            ],
+            "gold": [
+              3,
+              10
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.9600000000000001,
+            "shape_exact": true,
+            "unmatched_gold": null
+          },
+          {
+            "gold_index": 1,
+            "pred_index": 1,
+            "pred": [
+              5,
+              9
+            ],
+            "gold": [
+              5,
+              9
+            ],
+            "tags": [
+              "shape_exact"
+            ],
+            "cell_f1": 0.8813559322033898,
+            "shape_exact": true,
+            "unmatched_gold": null
+          }
+        ]
       },
       {
         "id": "R022_camelot_superscript",
         "tags": [
-          "unknown"
+          "over_row",
+          "over_col",
+          "wrong_shape"
         ],
         "pred": [
-          null,
-          null
+          37,
+          12
         ],
         "gold": [
-          null,
-          null
+          36,
+          11
         ],
-        "cell_f1": 0.8069073783359497
+        "cell_f1": 0.8069073783359497,
+        "tables": [
+          {
+            "gold_index": 0,
+            "pred_index": 0,
+            "pred": [
+              37,
+              12
+            ],
+            "gold": [
+              36,
+              11
+            ],
+            "tags": [
+              "over_row",
+              "over_col",
+              "wrong_shape"
+            ],
+            "cell_f1": 0.8069073783359497,
+            "shape_exact": false,
+            "unmatched_gold": null
+          }
+        ]
       }
     ]
-  },
-  "icdar": {
-    "source": "icdar_failure_analysis",
-    "path": "/Users/gautamkumar/Desktop/pdfParser/benchmark/results/icdar_failure_analysis.json",
-    "mode_counts": {
-      "multi_table_page": 17,
-      "multi_page_doc": 28,
-      "content_structure": 38,
-      "row_miscount": 39,
-      "wrong_shape": 46,
-      "col_miscount": 31,
-      "over_detect": 21,
-      "miss_all": 2,
-      "under_detect": 10
-    },
-    "shape_bins_first_table": {
-      "shape_exact": 21,
-      "over_row": 9,
-      "wrong_shape": 44,
-      "row_explode": 21,
-      "under_col": 16,
-      "col_explode": 15,
-      "over_col": 15,
-      "under_row": 30
-    },
-    "n_docs": 67,
-    "note": "ICDAR ids used for measurement only; not for engine control"
   }
 }
