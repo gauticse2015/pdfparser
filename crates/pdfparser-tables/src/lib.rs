@@ -88,9 +88,9 @@ pub use policy::{
     pad_rect, rect_area, rect_iou, ProposalPolicy,
 };
 pub use router::{
-    cmp_emit_order, emit_order_key, kind_priority, kinds_mergeable, partition, passes_gate,
-    route_proposals, sort_rects_by_emit_order, sort_tables_by_emit_order, structure_prior,
-    vertical_merge, x_iou, y_gap, DEFAULT_X_IOU_MIN, Y_GAP_MEDIAN_MULT,
+    cmp_emit_order, emit_order_key, kind_priority, kinds_mergeable, merge_then_partition,
+    partition, passes_gate, route_proposals, sort_rects_by_emit_order, sort_tables_by_emit_order,
+    structure_prior, vertical_merge, x_iou, y_gap, DEFAULT_X_IOU_MIN, Y_GAP_MEDIAN_MULT,
 };
 
 /// Whether the native table engine is linked into this build.

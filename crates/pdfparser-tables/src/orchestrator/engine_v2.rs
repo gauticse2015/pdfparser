@@ -10,7 +10,7 @@ use crate::geom;
 use crate::options::TableOptions;
 use crate::policy::{is_nested_table_pair, ProposalPolicy};
 use crate::raster::RasterPage;
-use crate::router::{partition, sort_tables_by_emit_order, vertical_merge, DEFAULT_X_IOU_MIN};
+use crate::router::{merge_then_partition, sort_tables_by_emit_order};
 use crate::types::{Table, TableMethod};
 use pdfparser_content::RuleSegment;
 use pdfparser_ir::Rect;
@@ -18,8 +18,9 @@ use std::collections::HashSet;
 
 pub(crate) const PAGE_AREA_EST: f32 = LETTER_PAGE_AREA;
 
-/// Engine V2 finalize: proposals → K26 vertical_merge → exclusive partition →
-/// identity-based emit → exclusive cleanup → K27 emit order.
+/// Engine V2 finalize: proposals → `merge_then_partition` (K26 + exclusive
+/// partition, **no sort**) → identity-based emit (walk = partition order) →
+/// exclusive cleanup → K27 emit order.
 pub(crate) fn finalize_engine_v2(
     mut cands: Vec<Table>,
     opts: &TableOptions,
@@ -54,13 +55,9 @@ pub(crate) fn finalize_engine_v2(
     } else {
         Vec::new()
     };
-    let merged = vertical_merge(
-        proposals,
-        ROUTER_MEDIAN_LINE_GAP,
-        DEFAULT_X_IOU_MIN,
-        &policy,
-    );
-    let accepted = partition(merged, &policy);
+    // H18: merge_then_partition, not route_proposals — sort would change emit
+    // walk when source_indices overlap.
+    let accepted = merge_then_partition(proposals, ROUTER_MEDIAN_LINE_GAP, &policy);
 
     // Identity-based emit: each accepted proposal contributes at most one table
     // from its source_indices (best quality). K26 merges collapse to one emit.
