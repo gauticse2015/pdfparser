@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fonts -- emit MissingToUnicode warning (P2.7b) (2026-08-08)
+
+- Extract emits `WarningCode::MissingToUnicode` once per Type0/CID font with no ToUnicode map (A2.17).
+- Glyph mapping unchanged: Identity-H BMP guess still conf 0.3. Warning only.
+
 ### Extract -- map VmWarning to WarningCode (P2.1b) (2026-08-08)
 
 - `page_content` maps typed `VmWarning` to existing `WarningCode` (A2.11). No new IR variants.

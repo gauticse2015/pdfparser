@@ -82,6 +82,23 @@ pub fn page_content(
         })
         .collect();
 
+    // A2.17 / P2.7b: Type0/CID without ToUnicode. Mapping stays Identity-H
+    // BMP guess at conf 0.3 — warning only.
+    let mut missing_tu: Vec<&str> = fonts
+        .iter()
+        .filter(|(_, f)| f.missing_to_unicode())
+        .map(|(name, _)| name.as_str())
+        .collect();
+    missing_tu.sort_unstable();
+    for name in missing_tu {
+        warnings.push(ExtractWarning {
+            code: WarningCode::MissingToUnicode,
+            page: Some(page_index as u32),
+            message: format!("missing ToUnicode for Type0/CID font {name}"),
+            recoverable: true,
+        });
+    }
+
     if !opts.include_invisible {
         result.runs.retain(|r| !r.invisible);
     }
@@ -711,6 +728,180 @@ mod vm_warning_code_tests {
             pc.warnings.iter().any(|w| {
                 w.code == WarningCode::LimitSoft && w.message.contains("max_page_ops")
             }),
+            "warnings={:?}",
+            pc.warnings
+        );
+    }
+}
+
+#[cfg(test)]
+mod missing_tounicode_tests {
+    use super::*;
+    use pdfparser_core::ResourceLimits;
+    use pdfparser_ir::WarningCode;
+
+    /// Identity-H Type0 page showing "HI" as 2-byte CIDs 0x48 / 0x49.
+    fn type0_pdf(with_tounicode: bool) -> Vec<u8> {
+        let stream = "BT /F1 12 Tf 10 100 Td <00480049> Tj ET\n";
+        let stream_len = stream.len();
+        let cmap = "/CIDInit /ProcSet findresource begin 12 dict begin begincmap \
+             1 begincodespacerange <0000> <FFFF> endcodespacerange \
+             2 beginbfchar <0048> <0048> <0049> <0049> endbfchar endcmap\n";
+        let mut body = String::new();
+        body.push_str("%PDF-1.4\n");
+        let o1 = body.len();
+        body.push_str("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+        let o2 = body.len();
+        body.push_str("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+        let o3 = body.len();
+        body.push_str(
+            "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] \
+             /Contents 4 0 R \
+             /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n",
+        );
+        let o4 = body.len();
+        body.push_str(&format!("4 0 obj\n<< /Length {stream_len} >>\nstream\n"));
+        body.push_str(stream);
+        body.push_str("endstream\nendobj\n");
+        let o5 = body.len();
+        if with_tounicode {
+            body.push_str(
+                "5 0 obj\n<< /Type /Font /Subtype /Type0 /BaseFont /TestCID \
+                 /Encoding /Identity-H /DescendantFonts [6 0 R] /ToUnicode 7 0 R >>\nendobj\n",
+            );
+        } else {
+            body.push_str(
+                "5 0 obj\n<< /Type /Font /Subtype /Type0 /BaseFont /TestCID \
+                 /Encoding /Identity-H /DescendantFonts [6 0 R] >>\nendobj\n",
+            );
+        }
+        let o6 = body.len();
+        body.push_str(
+            "6 0 obj\n<< /Type /Font /Subtype /CIDFontType2 /BaseFont /TestCID \
+             /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> \
+             /DW 1000 >>\nendobj\n",
+        );
+        let mut offs = vec![o1, o2, o3, o4, o5, o6];
+        if with_tounicode {
+            let o7 = body.len();
+            body.push_str(&format!("7 0 obj\n<< /Length {} >>\nstream\n", cmap.len()));
+            body.push_str(cmap);
+            body.push_str("endstream\nendobj\n");
+            offs.push(o7);
+        }
+        let nobj = offs.len() + 1;
+        let xref_pos = body.len();
+        body.push_str(&format!("xref\n0 {nobj}\n0000000000 65535 f \n"));
+        for off in offs {
+            body.push_str(&format!("{off:010} 00000 n \n"));
+        }
+        body.push_str(&format!(
+            "trailer\n<< /Size {nobj} /Root 1 0 R >>\nstartxref\n{xref_pos}\n%%EOF\n"
+        ));
+        body.into_bytes()
+    }
+
+    fn type1_pdf() -> Vec<u8> {
+        let stream = "BT /F1 12 Tf 10 100 Td (HELLO) Tj ET\n";
+        let stream_len = stream.len();
+        let mut body = String::new();
+        body.push_str("%PDF-1.4\n");
+        let o1 = body.len();
+        body.push_str("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+        let o2 = body.len();
+        body.push_str("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+        let o3 = body.len();
+        body.push_str(
+            "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] \
+             /Contents 4 0 R \
+             /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n",
+        );
+        let o4 = body.len();
+        body.push_str(&format!("4 0 obj\n<< /Length {stream_len} >>\nstream\n"));
+        body.push_str(stream);
+        body.push_str("endstream\nendobj\n");
+        let o5 = body.len();
+        body.push_str("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
+        let xref_pos = body.len();
+        body.push_str("xref\n0 6\n0000000000 65535 f \n");
+        for off in [o1, o2, o3, o4, o5] {
+            body.push_str(&format!("{off:010} 00000 n \n"));
+        }
+        body.push_str("trailer\n<< /Size 6 /Root 1 0 R >>\n");
+        body.push_str(&format!("startxref\n{xref_pos}\n%%EOF\n"));
+        body.into_bytes()
+    }
+
+    #[test]
+    fn type0_without_tounicode_emits_warning_conf_unchanged() {
+        let data = type0_pdf(false);
+        let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(
+            pc.runs
+                .iter()
+                .any(|r| r.text.contains('H') && r.text.contains('I')),
+            "Identity-H guess still maps glyphs; runs={:?}",
+            pc.runs.iter().map(|r| &r.text).collect::<Vec<_>>()
+        );
+        assert!(
+            pc.runs
+                .iter()
+                .any(|r| (r.mapping_confidence - 0.3).abs() < 1e-5),
+            "conf must stay 0.3; runs={:?}",
+            pc.runs
+                .iter()
+                .map(|r| (r.text.as_str(), r.mapping_confidence))
+                .collect::<Vec<_>>()
+        );
+        assert!(
+            pc.warnings.iter().any(|w| {
+                w.code == WarningCode::MissingToUnicode && w.message.contains("missing ToUnicode")
+            }),
+            "expected MissingToUnicode; warnings={:?}",
+            pc.warnings
+        );
+    }
+
+    #[test]
+    fn type0_with_tounicode_has_no_missing_warning() {
+        let data = type0_pdf(true);
+        let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(
+            pc.runs
+                .iter()
+                .any(|r| r.text.contains('H') && r.text.contains('I')),
+            "ToUnicode should map HI; runs={:?}",
+            pc.runs.iter().map(|r| &r.text).collect::<Vec<_>>()
+        );
+        assert!(
+            pc.runs.iter().any(|r| r.mapping_confidence >= 0.95),
+            "ToUnicode conf ~1.0; runs={:?}",
+            pc.runs
+                .iter()
+                .map(|r| (r.text.as_str(), r.mapping_confidence))
+                .collect::<Vec<_>>()
+        );
+        assert!(
+            pc.warnings
+                .iter()
+                .all(|w| w.code != WarningCode::MissingToUnicode),
+            "warnings={:?}",
+            pc.warnings
+        );
+    }
+
+    #[test]
+    fn type1_simple_font_has_no_missing_tounicode() {
+        let data = type1_pdf();
+        let doc = PdfDocument::from_bytes(&data, ResourceLimits::default()).unwrap();
+        let pc = page_content(&doc, 0, &TextOptions::default(), false).unwrap();
+        assert!(pc.runs.iter().any(|r| r.text.contains("HELLO")));
+        assert!(
+            pc.warnings
+                .iter()
+                .all(|w| w.code != WarningCode::MissingToUnicode),
             "warnings={:?}",
             pc.warnings
         );

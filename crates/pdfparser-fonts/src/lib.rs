@@ -171,6 +171,13 @@ impl LoadedFont {
         (ch.to_string(), conf)
     }
 
+    /// Type0/CID with no usable ToUnicode CMap (A2.16 / A2.17).
+    ///
+    /// Simple fonts rely on encodings, not ToUnicode; they return false.
+    pub fn missing_to_unicode(&self) -> bool {
+        self.is_cid && self.to_unicode.is_none()
+    }
+
     /// Decode a PDF string bytes into codes (simple 1-byte or CID 2-byte Identity).
     pub fn codes_from_bytes(&self, bytes: &[u8]) -> Vec<u32> {
         if self.is_cid {
@@ -227,4 +234,51 @@ pub struct FontParts<'a> {
     pub ascent: Option<f32>,
     /// Descent.
     pub descent: Option<f32>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn type0_without_tounicode_is_missing_and_conf_point_three() {
+        let font = LoadedFont::from_parts(FontParts {
+            subtype: "Type0".into(),
+            base_font: Some("TestCID"),
+            ..FontParts::default()
+        })
+        .expect("type0");
+        assert!(font.is_cid);
+        assert!(font.missing_to_unicode());
+        let (s, conf) = font.to_unicode(0x48);
+        assert_eq!(s, "H");
+        assert!(
+            (conf - 0.3).abs() < 1e-6,
+            "Identity-H guess must stay conf 0.3, got {conf}"
+        );
+    }
+
+    #[test]
+    fn type0_with_tounicode_is_not_missing() {
+        let cmap = b"1 beginbfchar <0048> <0048> endbfchar\n";
+        let font = LoadedFont::from_parts(FontParts {
+            subtype: "Type0".into(),
+            base_font: Some("TestCID"),
+            to_unicode_bytes: Some(cmap.as_slice()),
+            ..FontParts::default()
+        })
+        .expect("type0+tounicode");
+        assert!(font.is_cid);
+        assert!(!font.missing_to_unicode());
+        let (s, conf) = font.to_unicode(0x48);
+        assert_eq!(s, "H");
+        assert!((conf - 1.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn simple_latin_is_not_missing_tounicode() {
+        let font = LoadedFont::simple_latin("Helvetica");
+        assert!(!font.is_cid);
+        assert!(!font.missing_to_unicode());
+    }
 }

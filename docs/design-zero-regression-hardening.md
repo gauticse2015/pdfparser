@@ -108,13 +108,13 @@ Inventory is against the current tree under `crates/` + `benchmark/` + `.github/
 | A2.8 | Many ISO ops ignored; no typed warning | **Open** | Colors/`gs`/BMC/BDC/EMC ignored silently. **No `BI`/`EI`**. Unknown ops -> string `"unknown_op"`. | Typed `VmWarning`; do not change skip set in same PR. |
 | A2.9 | Form `/BBox` not clipped; form fonts = page font map | **Open** | `FormXObject.b_box` parsed; `try_expand_form` does not clip. Fonts: page `load_page_fonts` only. | Behavior change; isolate. |
 | A2.10 | VM never returns `Err`; missing numbers -> 0.0 | **Open** | `interpret_*` -> `InterpretResult`. `pop_num` underflow -> 0.0 + warning. | Keep fail-soft for product; typed warnings first. Hard-err is opt-in. |
-| A2.11 | All VM warnings mapped to `WarningCode::UnknownOperator` | **Fixed** | `extract.rs` maps `VmWarning` → `LimitSoft` / `UnknownOperator` / `Other` / `Unsupported`. `MissingToUnicode` still unused (A2.17). | — |
+| A2.11 | All VM warnings mapped to `WarningCode::UnknownOperator` | **Fixed** | `extract.rs` maps `VmWarning` → `LimitSoft` / `UnknownOperator` / `Other` / `Unsupported`. `MissingToUnicode` is emitted separately for Type0/CID (A2.17). | — |
 | A2.12 | `ResourceLimits.max_nesting_depth` dead; q/Q unbounded | **Partial** | Page tree walk uses `hard_max::MAX_NESTING_DEPTH`. VM `gstack` unbounded. Form depth capped (`MAX_FORM_DEPTH=4`). | Cap q/Q to `max_nesting_depth`; fail-soft warn. |
 | A2.13 | Governor charges then checks | **Fixed** | `filters.rs`: `check_expand_ratio` then `charge_expanded`. | — |
 | A2.14 | Inline page `/Resources` dict not stored on `PageInfo` | **Open** | `page_tree.rs` stores `Resources` only if `Object::Reference`. Inline dicts dropped (raster/form walk page dict directly as workaround). | Store owned snapshot or inline flag. |
 | A2.15 | LZW `EarlyChange` ignored; DecodeParms not per-filter indexed | **Open** | `decode_lzw` weezl default EarlyChange=1. Flate uses last DecodeParms dict if array. | Isolate; may change rare streams. |
 | A2.16 | Type0 without ToUnicode: CID->Unicode conf 0.3 | **Open** | `LoadedFont::to_unicode` Identity-H BMP guess, conf 0.3. | Warning + optional no-guess flag. |
-| A2.17 | `MissingToUnicode` warning never emitted | **Open** | Code exists; extract never sets it. | Emit with A2.11/A2.16. |
+| A2.17 | `MissingToUnicode` warning never emitted | **Fixed** | extract emits `WarningCode::MissingToUnicode` for Type0/CID with no ToUnicode; glyph mapping/conf 0.3 unchanged. | — |
 | A2.18 | MacRoman/Standard high bytes = WinAnsi/Latin-1 | **Partial** | MacRoman 0x80-FF table correct; MacExpert distinct. StandardEncoding high bytes still `char::from_u32(code)` (Latin-1-ish). | Standard high-byte table; freeze text compare. |
 | A2.19 | ToUnicode bfrange array form skipped; parse always Ok | **Open** | `parse_bfrange_region` skips `[...]` destinations. `parse` returns `Ok` even if empty. | Implement array form; return err on zero maps when tokens seen. |
 | A2.20 | Type0 encoding stream CMaps unimplemented; CID always 2-byte BE | **Open** | `codes_from_bytes` Identity 2-byte. Encoding name parsed, not interpreted as CMap. | Large; isolate; not required to "fix architecture." |
@@ -993,7 +993,7 @@ Fast: no render. Shadow exclusive excluded. Auto: no new asymptotic / no mandato
 | A2.14 | 2 | P2.2c | Open | Resources | Additive PageInfo |
 | A2.15 | 2 | P2.5a | Open | Decode | Isolate; rare |
 | A2.16 | 2 | P2.7a | Open | Text | Warning + freeze |
-| A2.17 | 2 | P2.7b | Open | Diagnostics | Emit code |
+| A2.17 | 2 | P2.7b | **Fixed** | Diagnostics | Emit code |
 | A2.18 | 2 | P2.7c | Partial | Text | StandardEncoding table + compare |
 | A2.19 | 2 | P2.7d | Open | Text | Array bfrange |
 | A2.20 | later | — | Open | CID | Out of hardening critical path |
