@@ -7,6 +7,7 @@ Run: python3 benchmark/scripts/test_check_phase_gates.py
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -276,6 +277,24 @@ def test_ci_yml_no_phase_12() -> None:
     check("ci keeps --phase 0", "--phase 0" in ci)
 
 
+def test_notes_not_control_plane() -> None:
+    """A1.9 / P1.4: product must not read notes.iter().any (tests + writes OK)."""
+    pat = re.compile(r"notes\s*\.\s*iter\s*\(\s*\)\s*\.\s*any\s*\(")
+    hits: list[str] = []
+    for p in (REPO / "crates").rglob("*.rs"):
+        rel = p.relative_to(REPO).as_posix()
+        if "/tests/" in f"/{rel}":
+            continue
+        text = p.read_text(encoding="utf-8")
+        cut = text.find("#[cfg(test)]")
+        if cut >= 0:
+            text = text[:cut]
+        for m in pat.finditer(text):
+            line = text.count("\n", 0, m.start()) + 1
+            hits.append(f"{rel}:{line}")
+    check("product notes.iter().any absent (A1.9)", hits == [], str(hits))
+
+
 def main() -> int:
     print("test_check_phase_gates: P0.6 owned contract...")
     test_argparse_binary_and_owned()
@@ -286,6 +305,7 @@ def main() -> int:
     test_dump_dry_run()
     test_check_phase_gates_cli_owned()
     test_ci_yml_no_phase_12()
+    test_notes_not_control_plane()
     print(f"test_check_phase_gates: {passed} passed, {failed} failed")
     if failed:
         return 1

@@ -64,12 +64,13 @@ pub(crate) fn finalize_engine_v2(
     let mut kept = emit_tables_from_accepted(&cands, &accepted);
     kept = engine_v2_exclusive_cleanup(kept, opts, &policy);
 
+    // Telemetry only (A1.9): uniqueness is a loop bool, not a notes-string gate.
+    // Each table is visited once; notes stay diagnostic writes.
     for t in &mut kept {
-        if contour_seeds
+        let contour_seed_match = contour_seeds
             .iter()
-            .any(|p| geom::iou(t.bbox, p.bbox) >= 0.35)
-            && !t.notes.iter().any(|n| n == "contour_seed_match")
-        {
+            .any(|p| geom::iou(t.bbox, p.bbox) >= 0.35);
+        if contour_seed_match {
             t.notes.push("contour_seed_match".into());
         }
     }
