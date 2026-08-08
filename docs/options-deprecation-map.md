@@ -23,13 +23,16 @@ Gate PASS/FAIL: [`STATUS.md`](STATUS.md). Do **not** treat this map as GATE-5 PA
 
 All lattice/stream/raster numeric fields live on `TableAdvancedOptions`.
 **`impl Deref` is gone** — use `opts.advanced.lattice_min_joints` (JSON serde flatten
-still works). Prefer presets over hand-tuning advanced knobs.
+still works). There is no `opts.tuning` / `opts.lattice_min_joints` path.
+Prefer presets over hand-tuning advanced knobs.
+Lock test: `no_deref_advanced_knobs` (`crates/pdfparser-tables/src/options.rs`).
+Product names are `PRODUCT_TABLE_OPTION_FIELDS` (exactly **12**).
 
 | Field / path | Status | Notes |
 |--------------|--------|-------|
 | Classic `detect_stream_tables` export | **Deprecated for product** | Network is borderless path |
 | Legacy soup NMS path | Retained | Until M4 (≥1 minor after flip) |
-| `advanced.tuning` / `opts.tuning` | **Active** | Document-type settings dict (`TableTuning`); system defaults + per-call override |
+| `advanced.tuning` (`opts.advanced.tuning`) | **Active** | Document-type settings dict (`TableTuning`); system defaults + per-call override |
 
 ## TableTuning (settings dict)
 
