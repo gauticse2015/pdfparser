@@ -21,21 +21,33 @@ OUT = BENCH / "real_track" / "results" / "real_fp_strict_latest.json"
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--binary",
+        type=Path,
+        default=None,
+        help="pdfparser binary (default: discover target/release/pdfparser)",
+    )
     ap.add_argument("--build", action="store_true")
     ap.add_argument("--strict", action="store_true")
     ap.add_argument("--limit", type=int, default=None)
     args = ap.parse_args()
     man = json.loads(MANIFEST.read_text())
     docs = man["documents"]
-    binary = find_binary()
-    if binary is None or args.build:
-        ok, msg = try_build_release()
-        print(msg)
-        if not ok:
+    if args.binary is not None:
+        binary = args.binary.expanduser()
+        if not binary.is_file():
+            print(f"missing binary: {binary}", file=sys.stderr)
             return 2
+    else:
         binary = find_binary()
-    if binary is None:
-        return 2
+        if binary is None or args.build:
+            ok, msg = try_build_release()
+            print(msg)
+            if not ok:
+                return 2
+            binary = find_binary()
+        if binary is None:
+            return 2
     out_docs = []
     n_pass = 0
     for i, d in enumerate(docs):

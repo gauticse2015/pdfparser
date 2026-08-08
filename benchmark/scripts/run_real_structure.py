@@ -409,6 +409,12 @@ def main() -> int:
         help="also run engine-v2 and include both in output",
     )
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument(
+        "--binary",
+        type=Path,
+        default=None,
+        help="pdfparser binary (default: discover target/release/pdfparser)",
+    )
     ap.add_argument("--build", action="store_true")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument(
@@ -452,16 +458,22 @@ def main() -> int:
         args.out.write_text(json.dumps(empty, indent=2), encoding="utf-8")
         return 1 if args.strict else 0
 
-    binary = find_binary()
-    if binary is None or args.build:
-        ok, msg = try_build_release()
-        print(msg)
-        if not ok:
+    if args.binary is not None:
+        binary = args.binary.expanduser()
+        if not binary.is_file():
+            print(f"missing pdfparser binary: {binary}", file=sys.stderr)
             return 2
+    else:
         binary = find_binary()
-    if binary is None:
-        print("missing pdfparser binary; pass --build", file=sys.stderr)
-        return 2
+        if binary is None or args.build:
+            ok, msg = try_build_release()
+            print(msg)
+            if not ok:
+                return 2
+            binary = find_binary()
+        if binary is None:
+            print("missing pdfparser binary; pass --build or --binary", file=sys.stderr)
+            return 2
 
     runs = [run_preset(binary, man, args.preset, args.limit)]
     if args.compare and args.preset != "engine-v2":

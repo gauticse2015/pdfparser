@@ -103,6 +103,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", type=Path, default=MANIFEST_DEFAULT)
     ap.add_argument("--out", type=Path, default=OUT_DEFAULT)
+    ap.add_argument(
+        "--binary",
+        type=Path,
+        default=None,
+        help="pdfparser binary (default: discover target/release/pdfparser)",
+    )
     ap.add_argument("--build", action="store_true")
     ap.add_argument("--strict", action="store_true")
     ap.add_argument("--limit", type=int, default=None)
@@ -118,15 +124,21 @@ def main() -> int:
             print(f"  {d['id']}: pdf={'OK' if pdf.is_file() else 'MISS'} exp={d.get('expected_table_count')} scope={d.get('page_scope')}")
         return 0
 
-    binary = find_binary()
-    if binary is None or args.build:
-        ok, msg = try_build_release()
-        print(msg)
-        if not ok:
+    if args.binary is not None:
+        binary = args.binary.expanduser()
+        if not binary.is_file():
+            print(f"missing binary: {binary}", file=sys.stderr)
             return 2
+    else:
         binary = find_binary()
-    if binary is None:
-        return 2
+        if binary is None or args.build:
+            ok, msg = try_build_release()
+            print(msg)
+            if not ok:
+                return 2
+            binary = find_binary()
+        if binary is None:
+            return 2
 
     out_docs = []
     n_exact = n_over = n_under = 0

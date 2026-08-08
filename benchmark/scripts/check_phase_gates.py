@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Hard phase gates for V3 gated development.
 
-ICDAR external metrics are **required** for phases 1–5 (plan promotion rule).
-Missing ICDAR artifacts or failing ICDAR thresholds = gate FAIL (never silent skip).
+Merge bar (H8 / P0.6): ``--owned-only`` — discipline + fp_strict + g2 core +
+nested doc 42. **Never loads ICDAR files.**
 
   python3 benchmark/scripts/check_phase_gates.py --phase 0
-  python3 benchmark/scripts/check_phase_gates.py --phase 1
-  # ICDAR results must already exist in benchmark/results/ (run run_icdar_competitive.py)
+  python3 benchmark/scripts/check_phase_gates.py --owned-only
+
+``--phase 1`` / ``--phase 2`` still exist for external ICDAR promotion checks
+but are **not** a CI merge bar (H8).
 """
 from __future__ import annotations
 
@@ -295,7 +297,7 @@ def _core_structure_stats(struct, freeze):
         docs = [d for d in docs if d.get("id") in core_ids]
     if not docs:
         return None
-    cells, dets, shapes, rows, cols = [], [], [], [], []
+    cells, dets, det_ious, shapes, rows, cols = [], [], [], [], [], []
     shape_zero = 0
     cell_zero = 0
     cell_lt_03 = 0
@@ -311,6 +313,9 @@ def _core_structure_stats(struct, freeze):
         dc = m.get("detection_count") or {}
         if dc.get("f1") is not None:
             dets.append(dc["f1"])
+        di = m.get("detection_iou") or {}
+        if isinstance(di, dict) and di.get("f1") is not None:
+            det_ious.append(di["f1"])
         st = m.get("structure") or {}
         if st.get("shape_exact_rate") is not None:
             se = st["shape_exact_rate"]
@@ -331,6 +336,7 @@ def _core_structure_stats(struct, freeze):
         "n": len(docs),
         "micro_cell_f1": mean(cells),
         "micro_det_count_f1": mean(dets),
+        "micro_det_iou_f1": mean(det_ious),
         "micro_shape_exact": mean(shapes),
         "micro_row_acc": mean(rows),
         "micro_col_acc": mean(cols),
@@ -715,18 +721,234 @@ def gate5(with_icdar: Path | None) -> bool:
     return all(results)
 
 
+def _freeze_doc42_cell(freeze) -> float | None:
+    for d in (freeze or {}).get("documents_auto") or []:
+        if d.get("id") == "42_real_insurance_italian" and d.get("cell_f1") is not None:
+            return float(d["cell_f1"])
+    return None
+
+
+def _owned_floor_cell(floors: dict, freeze) -> float:
+    g2 = (freeze or {}).get("summaries", {}).get("auto") or {}
+    band = float((floors.get("bands") or {}).get("micro_cell_f1", 0.03))
+    if g2.get("micro_cell_f1") is not None:
+        return float(g2["micro_cell_f1"]) - band
+    return float((floors.get("floors") or {}).get("micro_cell_f1", 0.607))
+
+
+def _owned_floor_det(floors: dict, freeze) -> float:
+    g2 = (freeze or {}).get("summaries", {}).get("auto") or {}
+    band = float((floors.get("bands") or {}).get("micro_det_count_f1", 0.02))
+    if g2.get("micro_det_count_f1") is not None:
+        return float(g2["micro_det_count_f1"]) - band
+    return float((floors.get("floors") or {}).get("micro_det_count_f1", 0.944))
+
+
+def _owned_floor_iou(floors: dict, freeze) -> float | None:
+    g2 = (freeze or {}).get("summaries", {}).get("auto") or {}
+    if g2.get("micro_det_iou_f1") is None:
+        stored = (floors.get("floors") or {}).get("micro_det_iou_f1")
+        return float(stored) if stored is not None else None
+    band = float((floors.get("bands") or {}).get("micro_det_iou_f1", 0.03))
+    return float(g2["micro_det_iou_f1"]) - band
+
+
+def gate_owned_only(
+    *,
+    discipline_path: Path | None = None,
+    fp_path: Path | None = None,
+    structure_path: Path | None = None,
+    freeze_path: Path | None = None,
+    floors_path: Path | None = None,
+) -> bool:
+    """ICDAR-free merge bar (H8/H21). Must not load any ICDAR artifacts."""
+    print("=== OWNED-ONLY (H21; ICDAR is not a gate) ===")
+    floors = load(floors_path or (RT / "freezes" / "owned_gates_v0.json"))
+    freeze = load(freeze_path or (RT / "freezes" / "g2.json"))
+    disc = load(discipline_path or (RT / "results" / "detect_discipline_latest.json"))
+    fp = load(fp_path or (RT / "results" / "real_fp_strict_latest.json"))
+    struct = load(structure_path or (RT / "results" / "real_structure_latest.json"))
+    results = []
+    results.append(ok("owned_gates_v0.json present", floors is not None))
+    if not floors:
+        return False
+
+    disc_cfg = floors.get("discipline") or {}
+    exact_min = float(disc_cfg.get("exact_count_rate_min", (floors.get("floors") or {}).get("exact_count_rate", 0.88)))
+    over_max = float(disc_cfg.get("over_doc_rate_max", (floors.get("floors") or {}).get("over_doc_rate", 0.12)))
+    if not disc:
+        results.append(ok("detect_discipline_latest.json present", False, "run run_detect_discipline.py"))
+    else:
+        s = disc.get("summary") or {}
+        results.append(
+            ok(
+                f"discipline exact_count_rate >= {exact_min}",
+                float(s.get("exact_count_rate") or 0) >= exact_min,
+                f"{s.get('exact_count_rate')}",
+            )
+        )
+        results.append(
+            ok(
+                f"discipline over_doc_rate <= {over_max}",
+                float(s.get("over_doc_rate") if s.get("over_doc_rate") is not None else 1) <= over_max,
+                f"{s.get('over_doc_rate')}",
+            )
+        )
+
+    fp_cfg = floors.get("fp_strict") or {}
+    zero_min = float(fp_cfg.get("zero_rate_min", (floors.get("floors") or {}).get("fp_strict_zero_rate", 1.0)))
+    n_fp_req = int(fp_cfg.get("n", 12))
+    if not fp:
+        results.append(ok("real_fp_strict_latest.json present", False, "run run_fp_strict.py"))
+    else:
+        fs = fp.get("summary") or {}
+        n_docs = int(fs.get("n_docs") or 0)
+        results.append(
+            ok(
+                f"fp_strict n_docs >= {n_fp_req}",
+                n_docs >= n_fp_req,
+                f"n={n_docs}",
+            )
+        )
+        results.append(
+            ok(
+                f"fp_strict zero_rate >= {zero_min}",
+                float(fs.get("fp_zero_rate") or 0) >= zero_min,
+                f"{fs.get('fp_zero_rate')}",
+            )
+        )
+
+    if not freeze:
+        results.append(ok("g2.json freeze present", False))
+        return all(results)
+
+    core = _core_structure_stats(struct, freeze)
+    if not core:
+        results.append(ok("real_structure core stats", False, "missing structure latest or freeze core ids"))
+    else:
+        cell_floor = _owned_floor_cell(floors, freeze)
+        det_floor = _owned_floor_det(floors, freeze)
+        cell = core.get("micro_cell_f1")
+        det = core.get("micro_det_count_f1")
+        results.append(
+            ok(
+                f"micro cell F1 >= g2 auto − band ({cell_floor:.4f})",
+                cell is not None and cell >= cell_floor,
+                f"{cell} vs floor {cell_floor:.4f} (n_core={core.get('n')})",
+            )
+        )
+        results.append(
+            ok(
+                f"micro det count F1 >= g2 auto − band ({det_floor:.4f})",
+                det is not None and det >= det_floor,
+                f"{det} vs floor {det_floor:.4f}",
+            )
+        )
+        iou_floor = _owned_floor_iou(floors, freeze)
+        iou = core.get("micro_det_iou_f1")
+        if iou_floor is not None and iou is not None:
+            results.append(
+                ok(
+                    f"micro det IoU F1 >= g2 − band ({iou_floor:.4f})",
+                    iou >= iou_floor,
+                    f"{iou} vs floor {iou_floor:.4f}",
+                )
+            )
+        elif iou_floor is not None and iou is None:
+            print("  [SKIP] micro det IoU F1 (not present on live core docs)")
+        else:
+            print("  [SKIP] micro det IoU F1 (not present on g2 freeze)")
+
+    nest = floors.get("nested_doc_42") or {}
+    nest_id = nest.get("id") or "42_real_insurance_italian"
+    nest_n = int(nest.get("n_tables", 2))
+    found_42 = False
+    if struct:
+        docs = []
+        if "runs" in struct:
+            docs = struct["runs"][0].get("documents") or []
+        if not docs:
+            docs = struct.get("documents") or []
+        for d in docs:
+            if d.get("id") != nest_id:
+                continue
+            found_42 = True
+            m = d.get("metrics") or {}
+            dc = m.get("detection_count") or {}
+            n_pred = dc.get("predicted", m.get("n_pred"))
+            results.append(
+                ok(
+                    f"nested doc 42 still {nest_n} tables",
+                    n_pred == nest_n,
+                    f"pred={n_pred}",
+                )
+            )
+            freeze_42 = nest.get("freeze_cell_f1")
+            if freeze_42 is None:
+                freeze_42 = _freeze_doc42_cell(freeze)
+            if freeze_42 is not None:
+                band42 = float(nest.get("cell_f1_band", 0.05))
+                live_cell = (m.get("cell") or {}).get("f1")
+                floor42 = float(freeze_42) - band42
+                results.append(
+                    ok(
+                        f"nested doc 42 cell F1 >= freeze_42 − {band42}",
+                        live_cell is not None and live_cell >= floor42,
+                        f"{live_cell} vs floor {floor42:.4f} (freeze={freeze_42})",
+                    )
+                )
+            break
+    if not found_42:
+        results.append(ok("nested doc 42 present in structure latest", False, nest_id))
+
+    print("  [INFO] ICDAR is not a gate (H8)")
+    return all(results)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Hard phase gates. ICDAR results required for phase ≥ 1 (never silent skip)."
+        description=(
+            "Hard phase gates. CI merge bar is --owned-only (no ICDAR). "
+            "--phase >=1 still loads ICDAR metrics for external promotion only."
+        )
     )
-    ap.add_argument("--phase", type=int, required=True)
+    ap.add_argument(
+        "--phase",
+        type=int,
+        default=None,
+        help="Phase gate 0–5. Phase >=1 loads ICDAR JSON (not CI).",
+    )
+    ap.add_argument(
+        "--owned-only",
+        action="store_true",
+        help="ICDAR-free merge bar: discipline + fp_strict + g2 core + doc 42.",
+    )
     ap.add_argument(
         "--with-icdar",
         type=Path,
         default=None,
         help="Deprecated no-op: ICDAR always enforced from benchmark/results for phase≥1",
     )
+    ap.add_argument("--discipline", type=Path, default=None, help="Override detect_discipline JSON")
+    ap.add_argument("--fp-strict", type=Path, default=None, help="Override fp_strict JSON")
+    ap.add_argument("--structure", type=Path, default=None, help="Override real_structure JSON")
+    ap.add_argument("--freeze", type=Path, default=None, help="Override g2 freeze JSON")
+    ap.add_argument("--owned-gates", type=Path, default=None, help="Override owned_gates_v0.json")
     args = ap.parse_args()
+    if args.owned_only and args.phase is not None:
+        ap.error("use either --owned-only or --phase, not both")
+    if not args.owned_only and args.phase is None:
+        ap.error("one of --owned-only or --phase is required")
+    if args.owned_only:
+        passed = gate_owned_only(
+            discipline_path=args.discipline,
+            fp_path=args.fp_strict,
+            structure_path=args.structure,
+            freeze_path=args.freeze,
+            floors_path=args.owned_gates,
+        )
+        print("RESULT:", "PASS" if passed else "FAIL")
+        return 0 if passed else 1
     # Always pass a non-None marker so any residual with_icdar branches still run.
     icdar_marker = Path("benchmark/results")
     if args.phase == 0:

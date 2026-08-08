@@ -6,7 +6,7 @@ Autonomous develop→assess loop. **No ICDAR doc-id coupling in engine code.** I
 
 ## Shared guards (every phase)
 
-Living no-regress floors: [`STATUS.md`](STATUS.md) (G1.7 = g2 auto - 0.03). Future checker: `owned_gates_v0.json` (P0.6). Do not restate a second floor here.
+Living no-regress floors: [`STATUS.md`](STATUS.md) and `benchmark/real_track/freezes/owned_gates_v0.json` (`check_phase_gates.py --owned-only`). Do not restate a second floor here.
 
 | Guard | Threshold |
 |-------|-----------|
