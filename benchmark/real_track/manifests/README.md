@@ -10,7 +10,7 @@ See parent [`../README.md`](../README.md) and `docs/design-table-engine-v2.md` (
 | `real_detect_smoke_v0.json` | Detection smoke suite (v0): real PDFs + soft `expected_table_count` |
 | `coverage_matrix.json` | Mode tag → detect/structure docs + explicit waivers |
 | `demotion_list.json` | **C0 signed** list of synthetic bulk demoted from primary (PDFs not deleted) |
-| `latency_probe.json` | Doc ids for p50/p95 timing (informative until rebaseline) |
+| `latency_probe.json` | Doc ids for Fast p50/p95 timing (probe budget 30000 informational; freeze is `freezes/latency_fast_v0.json`) |
 
 Planned (later corpus PRs):
 

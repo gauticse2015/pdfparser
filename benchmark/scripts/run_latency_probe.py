@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""Latency probe for TablePreset::Fast (GATE-5 G5.6).
+"""Latency probe for TablePreset::Fast (G5.6 / P0.5).
 
 Times `pdfparser extract --tables --table-preset fast --no-stitch --page-tables`
 on docs listed in real_track/manifests/latency_probe.json.
 
 Writes real_track/results/latency_probe_latest.json with p50/p95 ms.
-Budget is informative (default 30000ms p95) until rebaseline.
+budget_p95_ms here is informational (default 30000). Freeze ceiling + fail
+rules live in real_track/freezes/latency_fast_v0.json. Fast never full-page-renders.
 """
 from __future__ import annotations
 
+import argparse
 import json
+import os
+import platform
 import statistics
 import subprocess
 import sys
@@ -23,6 +27,10 @@ RT = BENCH / "real_track"
 MAN = RT / "manifests" / "latency_probe.json"
 OUT = RT / "results" / "latency_probe_latest.json"
 BIN = REPO / "target" / "release" / "pdfparser"
+
+# Informational only until an ubuntu-latest sample exists (P0.5). Do not treat
+# this 30s figure as the freeze ceiling — see freezes/latency_fast_v0.json.
+INFORMATIONAL_BUDGET_P95_MS = 30_000.0
 
 # Map probe doc ids to PDF paths under corpus/
 PDF_CANDIDATES = [
@@ -39,7 +47,84 @@ def find_pdf(doc_id: str) -> Path | None:
     return None
 
 
+def hardware_block() -> dict:
+    runner_os = os.environ.get("RUNNER_OS") or platform.system()
+    note = os.environ.get("LATENCY_HARDWARE_NOTE") or (
+        f"{platform.platform()} {platform.machine()}"
+    )
+    return {
+        "runner_os": runner_os,
+        "machine_class": (os.environ.get("LATENCY_MACHINE_CLASS") or runner_os).lower(),
+        "machine": platform.machine(),
+        "platform": platform.platform(),
+        "note": note,
+    }
+
+
+def fast_cli(pdf: Path, dump_evidence: bool = False) -> list[str]:
+    cmd = [
+        str(BIN),
+        "extract",
+        str(pdf),
+        "--tables",
+        "--table-preset",
+        "fast",
+        "--no-stitch",
+        "--page-tables",
+        "--format",
+        "json",
+    ]
+    if dump_evidence:
+        cmd.append("--dump-evidence")
+    return cmd
+
+
+def parse_dump_evidence_flags(stderr: str) -> dict | None:
+    text = (stderr or "").strip()
+    if not text:
+        return None
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+        if start < 0 or end <= start:
+            return None
+        try:
+            return json.loads(text[start : end + 1])
+        except json.JSONDecodeError:
+            return None
+
+
+def verify_fast_never_renders(pdf: Path) -> tuple[bool, bool | None, bool | None, str]:
+    """Untimed dump-evidence probe. Fast must hard-disable both render flags."""
+    r = subprocess.run(
+        fast_cli(pdf, dump_evidence=True),
+        capture_output=True,
+        text=True,
+    )
+    if r.returncode != 0:
+        return False, None, None, f"dump-evidence exit={r.returncode} {r.stderr[-300:]}"
+    ev = parse_dump_evidence_flags(r.stderr)
+    if not ev:
+        return False, None, None, "dump-evidence stderr was not JSON"
+    enable = ev.get("enable_full_page_render")
+    allow = ev.get("allow_auto_render")
+    preset = str(ev.get("preset") or "").lower()
+    ok = enable is False and allow is False and preset in ("fast", "")
+    return ok, enable, allow, f"preset={ev.get('preset')!r}"
+
+
 def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--out",
+        type=Path,
+        default=OUT,
+        help="Write probe JSON here (default: real_track/results/latency_probe_latest.json)",
+    )
+    args = ap.parse_args()
+
     if not BIN.is_file():
         print("missing release binary; run: cargo build --release -p pdfparser-cli", file=sys.stderr)
         return 2
@@ -47,6 +132,7 @@ def main() -> int:
     docs = man.get("documents") or []
     times_ms = []
     per = []
+    first_ok_pdf: Path | None = None
     for doc_id in docs:
         pdf = find_pdf(doc_id)
         if not pdf:
@@ -54,18 +140,7 @@ def main() -> int:
             continue
         t0 = time.perf_counter()
         r = subprocess.run(
-            [
-                str(BIN),
-                "extract",
-                str(pdf),
-                "--tables",
-                "--table-preset",
-                "fast",
-                "--no-stitch",
-                "--page-tables",
-                "--format",
-                "json",
-            ],
+            fast_cli(pdf, dump_evidence=False),
             capture_output=True,
             text=True,
         )
@@ -74,7 +149,8 @@ def main() -> int:
             per.append({"id": doc_id, "error": r.stderr[-400:], "ms": dt})
             continue
         times_ms.append(dt)
-        # Confirm Fast flags if dump present — not required
+        if first_ok_pdf is None:
+            first_ok_pdf = pdf
         per.append({"id": doc_id, "ms": dt, "ok": True})
         print(f"  {doc_id}: {dt:.1f} ms")
 
@@ -92,6 +168,23 @@ def main() -> int:
             return times_ms_sorted[f]
         return times_ms_sorted[f] + (times_ms_sorted[c] - times_ms_sorted[f]) * (k - f)
 
+    enable_flag: bool | None = False
+    allow_flag: bool | None = False
+    render_ok = False
+    render_detail = "no successful pdf for dump-evidence"
+    if first_ok_pdf is not None:
+        render_ok, enable_flag, allow_flag, render_detail = verify_fast_never_renders(
+            first_ok_pdf
+        )
+        print(f"  fast_never_render: ok={render_ok} {render_detail}")
+        if not render_ok:
+            print(
+                f"Fast preset must never full-page-render ({render_detail})",
+                file=sys.stderr,
+            )
+            return 1
+
+    info_budget = float(man.get("budget_p95_ms") or INFORMATIONAL_BUDGET_P95_MS)
     summary = {
         "preset": "fast",
         "n_ok": len(times_ms),
@@ -100,23 +193,32 @@ def main() -> int:
         "p95_ms": pct(95),
         "mean_ms": statistics.mean(times_ms),
         "max_ms": max(times_ms),
-        "budget_p95_ms": float(man.get("budget_p95_ms") or 30_000),
-        "enable_full_page_render": False,
-        "allow_auto_render": False,
+        "budget_p95_ms": info_budget,
+        "budget_p95_informational": True,
+        "enable_full_page_render": False if enable_flag is False else enable_flag,
+        "allow_auto_render": False if allow_flag is False else allow_flag,
+        "fast_never_render_verified": render_ok,
         "cli_preset": "fast",
         "cli_args": ["extract", "--tables", "--table-preset", "fast"],
-        "note": "Invoked TablePreset::Fast; Fast hard-disables full-page render (G5.6).",
+        "note": (
+            "Invoked TablePreset::Fast; Fast hard-disables full-page render (G5.6). "
+            "budget_p95_ms here is informational (default 30000). Freeze ceiling is "
+            "freezes/latency_fast_v0.json — do not claim 30s→0.6s tightening until "
+            "ubuntu-latest sample exists."
+        ),
     }
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "hardware": hardware_block(),
         "summary": summary,
         "documents": per,
     }
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    out_path = args.out
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(
-        f"wrote {OUT} p50={summary['p50_ms']:.1f} p95={summary['p95_ms']:.1f} "
-        f"budget={summary['budget_p95_ms']}"
+        f"wrote {out_path} p50={summary['p50_ms']:.1f} p95={summary['p95_ms']:.1f} "
+        f"informational_budget={summary['budget_p95_ms']}"
     )
     return 0
 

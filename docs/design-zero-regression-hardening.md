@@ -13,6 +13,7 @@
 | **Informs / sequences** | `docs/design-table-engine-v3-industry.md` exclusive-first; `docs/implementation-plan-v3-gated.md` GATE-0..5 (quality) |
 | **Hard constraints** | No product Auto behavior change in mechanical PRs. No perf regression. No ICDAR in CI/tuning. Do not claim GATE-3/4 green. |
 | **P0.1 (2026-08-08)** | Landed. A1.12 / A3.23 / A4.8 / B Deref *evidence* columns describe the **pre-P0.1** tree. Living gate board is `docs/STATUS.md`. Do not flip the whole inventory in this file. |
+| **P0.5 (2026-08-08)** | Landed. `freezes/latency_fast_v0.json` + required nightly Fast probe. Two independent fail rules, no `min()`. Do not claim 30s→0.6s until ubuntu-latest sample exists. |
 | **ASCII** | `docs/STATUS.md` and `docs/ARCHITECTURE.md` are strict ASCII. This inventory may keep typographic unicode (dashes, arrows). Diagrams stay ASCII. |
 
 ---

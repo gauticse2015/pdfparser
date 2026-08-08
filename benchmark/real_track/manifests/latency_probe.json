@@ -1,7 +1,7 @@
 {
   "suite": "latency_probe",
   "version": 1,
-  "notes": "Informative p50/p95 only; not pass/fail until rebaseline (K20).",
+  "notes": "Probe budget_p95_ms default 30000 is informational. Freeze + fail rules: freezes/latency_fast_v0.json (P0.5). Fast never full-page-renders. Do not claim 30s→0.6s until ubuntu-latest sample exists.",
   "documents": [
     "30_real_ca_warn_report",
     "31_real_background_checks",

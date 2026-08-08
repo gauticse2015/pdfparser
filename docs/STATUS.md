@@ -1,6 +1,6 @@
 # Status (single source of truth)
 
-**Updated:** 2026-08-08 (P0.1 + P0.2 + P0.3)  
+**Updated:** 2026-08-08 (P0.1 through P0.5)  
 **This file is the only place that may say PASS/FAIL for gates.**  
 Other docs (README, CHANGELOG, AUTONOMOUS_PROGRESS, freeze notes, phase reports) must not invent a second status plane. Point here.
 
@@ -19,7 +19,7 @@ As-built pointer (not status): [`ARCHITECTURE.md`](ARCHITECTURE.md).
 | README **0.738** is not a freeze | Dated 2026-07-18 snapshot in `phase_ab_baseline.json` `real_core_cell_f1` (also `phase1_structure_framework.json`). **Not** `real_structure_latest.json` |
 | ICDAR never in CI / corpus / tuning | External honesty check only. Never a PR merge bar |
 | No `impl Deref` on `TableOptions` | Advanced knobs live on `opts.advanced` (serde flatten only) |
-| Fast preset never full-page-renders | `allow_auto_render=false` |
+| Fast preset never full-page-renders | `allow_auto_render=false` and `enable_full_page_render=false` |
 
 Committed `*_latest.json` is **not** a live `--binary` re-run. Detector PRs must not claim PASS from committed JSON alone (nightly live after P0.6).
 
@@ -31,7 +31,7 @@ Owned detection is the strength. Quality (shape / cells / TEDS) is not.
 
 | Gate | Status | Evidence (owned) | Must not claim |
 |------|:------:|------------------|----------------|
-| **GATE-0** measurement foundation | **PASS** | Discipline manifest n=34; fp_strict n=12; T3 gold files **25**; count golds >=25; `baseline_pre_v3.json`; `assert_no_icdar.py` | - |
+| **GATE-0** measurement foundation | **PASS** | Discipline manifest n=34; fp_strict n=12; T3 gold files **25**; count golds >=25; `baseline_pre_v3.json`; `assert_no_icdar.py`; `latency_fast_v0.json` + required nightly Fast probe | - |
 | **GATE-1** over-detect / precision | **PASS** (owned detection) | `detect_discipline_latest.json` exact **0.941**, over_doc **0.029**, pred/gt **1.0**, severe over **0**; `real_fp_strict_latest.json` zero_rate **1.000** (n=12); g2 core det F1 **0.964** | ICDAR F1 as a CI gate |
 | **GATE-2** completeness | **PASS** (owned detection) | Discipline under_doc **0.029**; nested doc **42** keep is a product invariant (outer + inner) | ICDAR under-detect as a CI gate |
 | **GATE-3** shape / topology | **NOT green** | Core freeze shape exact **0.533** (`g2.json`); latest committed full-suite shape **0.565** (`real_structure_latest.json`) still below honest G3 floors | GATE-3 PASS |
@@ -55,6 +55,26 @@ CI may keep phase 3-5 jobs `continue-on-error` until honestly green. That is **n
 | [`g3_industry.json`](../benchmark/real_track/freezes/g3_industry.json) | Revoked industry freeze | claimed 0.787 | **INVALID** |
 
 No-regress floor (G1.7): live core cell >= **g2 auto - 0.03** (0.607). Do not invent a `live-main - 0.02` floor.
+
+### Latency freeze (P0.5)
+
+[`latency_fast_v0.json`](../benchmark/real_track/freezes/latency_fast_v0.json) records Fast p50/p95/max from committed `latency_probe_latest.json` (2026-07-18 local macOS; n=8).
+
+| Field | Value |
+|-------|------:|
+| recorded_p50_ms | ~10.9 |
+| recorded_p95_ms | ~409 |
+| recorded_max_ms | ~604 |
+| budget_p95_ms | **~725.4** = max(p95×1.5, max×1.2) |
+
+Hardware is **local macOS**, not ubuntu-latest. **Do not claim 30s→0.6s tightening** until a live ubuntu-latest sample exists. Probe script `budget_p95_ms=30000` stays informational.
+
+Two independent fail rules (nightly required; **no `min()`**):
+
+1. fail if live p95 > `budget_p95_ms`
+2. fail if live p95 > `prev_commit_p95 × 1.10` on the **same machine class** (first sample on a class: rule 1 only)
+
+Do **not** gate vs freeze `recorded_p95 × 1.10`. Fast never full-page-renders. Workflow: `.github/workflows/nightly-latency-fast.yml` (not optional). This is **not** GATE-5 PASS.
 
 ### T3 gold count (A4.9)
 
@@ -110,8 +130,12 @@ Opened both golds + PDFs. No detector math.
 
 Committed `real_structure_latest.json` still scores R005 as 0 vs 1 (stale until next live `--binary` run). Do not hand-edit that board.
 
+## Landed: P0.5 latency freeze + nightly
+
+`benchmark/real_track/freezes/latency_fast_v0.json` records Fast p50/p95/max + hardware (local macOS sample). `budget_p95_ms = max(p95*1.5, max*1.2)`. Two independent fail rules; do not gate vs freeze recorded_p95*1.10. Required nightly Fast probe; Fast never full-page-renders. Do not claim 30s->0.6s tightening until ubuntu-latest sample exists. Not GATE-5.
+
 ---
 
 ## What is still open (not this PR)
 
-Harness / executable contract (P0.5–P0.6): latency freeze file, `--owned-only` + `--binary`. Do not invent `--binary` until P0.6.
+Executable contract (P0.6): `--owned-only` + `--binary` + dump-compare. Do not invent `--binary` until P0.6.

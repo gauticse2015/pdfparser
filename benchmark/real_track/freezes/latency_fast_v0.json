@@ -1,0 +1,40 @@
+{
+  "schema": "latency_fast_v0",
+  "schema_version": 1,
+  "suite_id": "latency_fast_v0",
+  "preset": "fast",
+  "n_docs": 8,
+  "recorded_p50_ms": 10.880938018090092,
+  "recorded_p95_ms": 409.03888345346803,
+  "recorded_max_ms": 604.4711249996908,
+  "budget_p95_ms": 725.3653499996289,
+  "budget_formula": "max(recorded_p95_ms * 1.5, recorded_max_ms * 1.2)",
+  "enable_full_page_render": false,
+  "allow_auto_render": false,
+  "hardware": {
+    "runner_os": "macOS",
+    "machine_class": "macos",
+    "note": "Copied from committed benchmark/real_track/results/latency_probe_latest.json (generated_at 2026-07-18T06:21:41.364719+00:00). That sample is a local macOS probe (same host family as g2.json binary path /Users/gautamkumar/Desktop/pdfParser/target/release/pdfparser). Not an ubuntu-latest GitHub Actions sample. ubuntu-latest nightly TBD — do not claim 30s→0.6s tightening until that sample exists. Probe script budget_p95_ms=30000 stays informational."
+  },
+  "rules": {
+    "absolute_ceiling": "fail if live p95_ms > budget_p95_ms",
+    "same_class_drift": "fail if live p95_ms > prev_commit_p95_ms * 1.10 on the same machine class; first sample on a class: only absolute_ceiling",
+    "do_not_wrap_in_min": true,
+    "do_not_gate_vs_freeze_recorded_p95_x_1_10": true
+  },
+  "source": {
+    "results_file": "benchmark/real_track/results/latency_probe_latest.json",
+    "generated_at": "2026-07-18T06:21:41.364719+00:00",
+    "documents": [
+      "30_real_ca_warn_report",
+      "31_real_background_checks",
+      "32_real_census_table324",
+      "33_real_argentina_votes",
+      "34_real_schools_contributions",
+      "35_real_camelot_fuel",
+      "36_real_two_tables",
+      "37_real_liabilities_superscript"
+    ]
+  },
+  "note": "Fast preset never full-page-renders. Two independent fail rules (no min()). Nightly workflow required. GATE-5 is not claimed."
+}

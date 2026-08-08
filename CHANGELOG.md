@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### CI -- latency_fast_v0 freeze and nightly probe (P0.5) (2026-08-08)
+
+- Recorded Fast p50/p95/max + hardware in `benchmark/real_track/freezes/latency_fast_v0.json` (copied from committed `latency_probe_latest.json`; local macOS, not ubuntu-latest).
+- `budget_p95_ms = max(recorded_p95 * 1.5, recorded_max * 1.2)` (~725 ms). Two independent fail rules, no `min()`. Do not gate vs freeze `recorded_p95 * 1.10`.
+- Required nightly workflow `.github/workflows/nightly-latency-fast.yml` runs Fast probe and compares to the freeze. Fast never full-page-renders. ICDAR not in that workflow.
+- Probe script `budget_p95_ms=30000` stays informational. **Do not claim 30s->0.6s tightening** until an ubuntu-latest sample exists. **Not GATE-5.**
+
 ### Gold -- R005 / R010 PDF review (P0.3) (2026-08-08)
 
 - **R005** structure expected_table_count **1 → 0**. Opened ACS PDF: first page is the title page, not a table. Dropped the 5×1 Camelot stub. Discipline stays n_exp=0 first_page.

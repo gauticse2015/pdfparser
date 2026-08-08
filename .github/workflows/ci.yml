@@ -69,6 +69,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: IoU unit tests
         run: python3 benchmark/scripts/test_iou_metrics.py
+      - name: Latency freeze unit tests
+        run: python3 benchmark/scripts/test_latency_freeze.py
       - name: Assert no ICDAR
         run: python3 benchmark/scripts/assert_no_icdar.py
       - name: Phase gate 0 (measurement foundation)
