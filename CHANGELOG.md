@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Content -- typed VmWarning (P2.1a) (2026-08-08)
+
+- `InterpretResult.warnings` is `Vec<VmWarning>` (was `Vec<String>`).
+- `Display` keeps legacy strings (`unknown_op:...`, `stack_underflow:numeric`, form/budget messages).
+- Extract still maps every VM warning to `WarningCode::UnknownOperator` (P2.1b).
+- Ignored-op skip set unchanged; `pop_num` still fail-soft `0.0`.
+
 ### Fonts -- ToUnicode decode shares document governor (P2.2a) (2026-08-08)
 
 - `load_page_fonts` takes `&ResourceGovernor`; ToUnicode stream decode charges the document budget (A2.23).

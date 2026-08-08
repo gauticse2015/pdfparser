@@ -65,13 +65,15 @@ pub fn page_content(
     } else {
         interpret_page(&content, &fonts, &iopts)
     };
+    // P2.1a: typed VmWarning; extract still serializes as strings and maps
+    // every variant to UnknownOperator (P2.1b will split WarningCode).
     let mut warnings: Vec<ExtractWarning> = result
         .warnings
         .into_iter()
-        .map(|message| ExtractWarning {
+        .map(|w| ExtractWarning {
             code: WarningCode::UnknownOperator,
             page: Some(page_index as u32),
-            message,
+            message: w.to_string(),
             recoverable: true,
         })
         .collect();
