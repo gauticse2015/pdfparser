@@ -9,7 +9,9 @@ use pdfparser_ir::{Matrix3x2, ObjectId, Rect, TextRun};
 use std::collections::HashMap;
 use std::fmt;
 
-use path::{clip_rule_segment, expand_dash_segment, intersect_rect, PathBuilder};
+use path::{
+    clip_rule_segment, expand_dash_segment, intersect_rect, transform_rect_aabb, PathBuilder,
+};
 use state::{GState, TextState};
 use text::{show_text, show_text_array};
 
@@ -47,6 +49,13 @@ pub struct InterpretOptions {
     /// Max effective stroke width (user units / pt) kept as a 1-D lattice
     /// rule when [`Self::stroke_width_filter`] is on. Named threshold; default 4.0.
     pub stroke_width_max: f32,
+    /// When true, Form XObject paint is clipped to the form `/BBox` (A2.9 / P2.4a).
+    ///
+    /// Default **false** (bit-identical with today's unclipped form expansion).
+    /// AABB only: transformed BBox corners → user-space rect, intersected with
+    /// any existing `W`/`W*` clip. Applies to rule capture; text still ignores
+    /// `clip_rect` (P2.4c).
+    pub clip_form_bbox: bool,
 }
 
 /// Default max thickness for thin filled rects treated as lattice rules.
@@ -66,6 +75,7 @@ impl Default for InterpretOptions {
             max_nesting_depth: MAX_GSTACK_DEPTH,
             stroke_width_filter: false,
             stroke_width_max: DEFAULT_STROKE_WIDTH_MAX,
+            clip_form_bbox: false,
         }
     }
 }
@@ -723,6 +733,18 @@ fn try_expand_form(
     // CTM' = form.matrix × CTM (PDF form paint); isolate GState / path / q-stack.
     let mut form_gs = gs.clone();
     form_gs.ctm = form.matrix.concat(form_gs.ctm);
+    // P2.4a: opt-in AABB clip to form /BBox (default off). Text still ignores
+    // clip_rect (P2.4c). Intersects any existing W/W* clip.
+    if state.opts.clip_form_bbox {
+        if let Some(bb) = form.b_box {
+            if let Some(user_bb) = transform_rect_aabb(bb, &form_gs.ctm) {
+                form_gs.clip_rect = Some(match form_gs.clip_rect {
+                    None => user_bb,
+                    Some(prev) => intersect_rect(prev, user_bb),
+                });
+            }
+        }
+    }
     let mut form_gstack: Vec<GState> = Vec::new();
     let budget = per_form_max_ops(state.opts.max_ops);
 
@@ -904,6 +926,205 @@ mod tests {
             (r.x0 - 30.0).abs() < 1.0 && (r.x1 - 150.0).abs() < 1.0,
             "{r:?}"
         );
+    }
+
+    fn mock_named_form(
+        name: &str,
+        stream: &[u8],
+        b_box: Option<Rect>,
+        matrix: Matrix3x2,
+    ) -> MockResolver {
+        MockResolver {
+            forms: HashMap::from([(
+                name.into(),
+                FormXObject {
+                    id: ObjectId { num: 5, gen: 0 },
+                    stream: stream.to_vec(),
+                    matrix,
+                    b_box,
+                },
+            )]),
+            enter_count: 0,
+            leave_count: 0,
+        }
+    }
+
+    #[test]
+    fn clip_form_bbox_default_is_off() {
+        assert!(!InterpretOptions::default().clip_form_bbox);
+    }
+
+    #[test]
+    fn form_bbox_clip_default_off_keeps_outside_rules() {
+        // BBox 0..50; H stroke at y=10 spans 0→100 (past bbox) and y=80 is outside.
+        let form_stream = b"0 10 m 100 10 l S\n0 80 m 100 80 l S\n";
+        let mut resolver = mock_named_form(
+            "Fm1",
+            form_stream,
+            Some(Rect {
+                x0: 0.0,
+                y0: 0.0,
+                x1: 50.0,
+                y1: 50.0,
+            }),
+            Matrix3x2::identity(),
+        );
+        let result = interpret_page_with_resolver(
+            b"/Fm1 Do",
+            &empty_fonts(),
+            &InterpretOptions::default(),
+            Some(&mut resolver),
+        );
+        assert_eq!(
+            result.rules.len(),
+            2,
+            "default off must not clip form paint: {:?}",
+            result.rules
+        );
+        assert!(result
+            .rules
+            .iter()
+            .any(|r| r.is_horizontal(1.5) && r.len() >= 90.0));
+        assert!(result
+            .rules
+            .iter()
+            .any(|r| r.is_horizontal(1.5) && (r.y0 - 80.0).abs() < 1.0));
+    }
+
+    #[test]
+    fn form_bbox_clip_opt_in_trims_and_drops() {
+        let form_stream = b"0 10 m 100 10 l S\n0 80 m 100 80 l S\n";
+        let mut resolver = mock_named_form(
+            "Fm1",
+            form_stream,
+            Some(Rect {
+                x0: 0.0,
+                y0: 0.0,
+                x1: 50.0,
+                y1: 50.0,
+            }),
+            Matrix3x2::identity(),
+        );
+        let opts = InterpretOptions {
+            clip_form_bbox: true,
+            ..InterpretOptions::default()
+        };
+        let result =
+            interpret_page_with_resolver(b"/Fm1 Do", &empty_fonts(), &opts, Some(&mut resolver));
+        assert_eq!(result.rules.len(), 1, "rules={:?}", result.rules);
+        let r = &result.rules[0];
+        assert!(r.is_horizontal(1.5), "{r:?}");
+        assert!((r.y0 - 10.0).abs() < 0.5, "{r:?}");
+        assert!((r.x0.min(r.x1) - 0.0).abs() < 0.5, "{r:?}");
+        assert!((r.x0.max(r.x1) - 50.0).abs() < 0.5, "{r:?}");
+    }
+
+    #[test]
+    fn form_bbox_clip_respects_form_matrix() {
+        // Form BBox [0 0 50 50], Matrix +20,+30 → user clip 20..70 x 30..80.
+        // Stroke 0 10 m 100 10 l → page y=40, x=20..120 → clipped x=20..70.
+        let form_stream = b"0 10 m 100 10 l S\n";
+        let mut resolver = mock_named_form(
+            "Fm1",
+            form_stream,
+            Some(Rect {
+                x0: 0.0,
+                y0: 0.0,
+                x1: 50.0,
+                y1: 50.0,
+            }),
+            Matrix3x2 {
+                m: [1.0, 0.0, 0.0, 1.0, 20.0, 30.0],
+            },
+        );
+        let opts = InterpretOptions {
+            clip_form_bbox: true,
+            ..InterpretOptions::default()
+        };
+        let result =
+            interpret_page_with_resolver(b"/Fm1 Do", &empty_fonts(), &opts, Some(&mut resolver));
+        assert_eq!(result.rules.len(), 1, "rules={:?}", result.rules);
+        let r = &result.rules[0];
+        assert!(r.is_horizontal(1.5), "{r:?}");
+        assert!((r.y0 - 40.0).abs() < 0.5, "{r:?}");
+        assert!((r.x0.min(r.x1) - 20.0).abs() < 0.5, "{r:?}");
+        assert!((r.x0.max(r.x1) - 70.0).abs() < 0.5, "{r:?}");
+    }
+
+    #[test]
+    fn form_bbox_clip_absent_bbox_does_not_clip() {
+        let form_stream = b"0 80 m 100 80 l S\n";
+        let mut resolver = mock_named_form("Fm1", form_stream, None, Matrix3x2::identity());
+        let opts = InterpretOptions {
+            clip_form_bbox: true,
+            ..InterpretOptions::default()
+        };
+        let result =
+            interpret_page_with_resolver(b"/Fm1 Do", &empty_fonts(), &opts, Some(&mut resolver));
+        assert_eq!(result.rules.len(), 1, "rules={:?}", result.rules);
+        assert!((result.rules[0].len() - 100.0).abs() < 0.5);
+    }
+
+    #[test]
+    fn form_bbox_clip_intersects_existing_w_clip() {
+        // Page clip 0..40 x 0..40; form BBox 0..100; stroke 0→100 at y=10.
+        // Intersect → 0..40.
+        let form_stream = b"0 10 m 100 10 l S\n";
+        let mut resolver = mock_named_form(
+            "Fm1",
+            form_stream,
+            Some(Rect {
+                x0: 0.0,
+                y0: 0.0,
+                x1: 100.0,
+                y1: 100.0,
+            }),
+            Matrix3x2::identity(),
+        );
+        let opts = InterpretOptions {
+            clip_form_bbox: true,
+            ..InterpretOptions::default()
+        };
+        let result = interpret_page_with_resolver(
+            b"0 0 40 40 re W n\n/Fm1 Do\n",
+            &empty_fonts(),
+            &opts,
+            Some(&mut resolver),
+        );
+        assert_eq!(result.rules.len(), 1, "rules={:?}", result.rules);
+        let r = &result.rules[0];
+        assert!(r.is_horizontal(1.5), "{r:?}");
+        assert!((r.x0.min(r.x1) - 0.0).abs() < 0.5, "{r:?}");
+        assert!((r.x0.max(r.x1) - 40.0).abs() < 0.5, "{r:?}");
+    }
+
+    #[test]
+    fn form_bbox_clip_does_not_drop_text() {
+        // P2.4c is separate: text outside form BBox still emits.
+        let form_stream = b"BT /F1 12 Tf 5 80 Td (Hello) Tj ET\n";
+        let mut resolver = mock_named_form(
+            "Fm1",
+            form_stream,
+            Some(Rect {
+                x0: 0.0,
+                y0: 0.0,
+                x1: 50.0,
+                y1: 50.0,
+            }),
+            Matrix3x2::identity(),
+        );
+        let opts = InterpretOptions {
+            clip_form_bbox: true,
+            ..InterpretOptions::default()
+        };
+        let result =
+            interpret_page_with_resolver(b"/Fm1 Do", &empty_fonts(), &opts, Some(&mut resolver));
+        assert!(
+            result.runs.iter().any(|r| r.text.contains("Hello")),
+            "text must not be clipped in P2.4a: {:?}",
+            result.runs
+        );
+        assert!(result.rules.is_empty());
     }
 
     #[test]

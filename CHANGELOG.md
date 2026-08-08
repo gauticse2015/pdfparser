@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Content -- opt-in form `/BBox` clip (P2.4a) (2026-08-08)
+
+- `InterpretOptions::clip_form_bbox` (default **false**) clips Form XObject paint to the form `/BBox` AABB after `/Matrix` (ISO form paint).
+- Default off: form expansion stays unclipped. Text still ignores clip (P2.4c). Form fonts unchanged (P2.4b).
+
 ### Content -- opt-in stroke-width rule filter default off (P2.3) (2026-08-08)
 
 - `InterpretOptions.stroke_width_filter` default **false**; named threshold `stroke_width_max` (4.0 pt). Product Auto / extract table path pins false.
