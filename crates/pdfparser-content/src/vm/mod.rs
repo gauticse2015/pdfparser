@@ -7,6 +7,7 @@ use crate::lexer::{tokenize, Token};
 use pdfparser_fonts::LoadedFont;
 use pdfparser_ir::{Matrix3x2, ObjectId, Rect, TextRun};
 use std::collections::HashMap;
+use std::fmt;
 
 use path::{clip_rule_segment, expand_dash_segment, intersect_rect, PathBuilder};
 use state::{GState, TextState};
@@ -89,6 +90,51 @@ impl RuleSegment {
     }
 }
 
+/// Soft VM diagnostic (unknown ops, budgets).
+///
+/// [`Display`] keeps the legacy string forms so extract can still serialize
+/// messages as strings (P2.1b maps variants to `WarningCode`).
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum VmWarning {
+    /// Unrecognized content operator (not handled and not in the skip set).
+    UnknownOperator(String),
+    /// Numeric operand missing; interpreter used `0.0` (fail-soft).
+    StackUnderflowNumeric,
+    /// Page operator budget exceeded (`InterpretOptions::max_ops`).
+    MaxPageOps,
+    /// Per-form operator budget exceeded.
+    PerFormMaxOps,
+    /// Form XObject cycle skipped (`Do` resource name).
+    FormCycle(String),
+    /// Form nesting exceeded [`MAX_FORM_DEPTH`] (`Do` resource name).
+    FormDepth(String),
+    /// Page form expansion count exceeded [`MAX_FORM_EXPANSIONS_PER_PAGE`].
+    FormExpansions(String),
+    /// Clip is axis-aligned bbox only (reserved; not emitted this PR).
+    ClipAabbOnly,
+    /// Known ISO op intentionally ignored (reserved; skip set unchanged).
+    IgnoredOperator(&'static str),
+    /// Stroke width `w` ignored (reserved until A2.6).
+    StrokeWidthIgnored,
+}
+
+impl fmt::Display for VmWarning {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            VmWarning::UnknownOperator(op) => write!(f, "unknown_op:{op}"),
+            VmWarning::StackUnderflowNumeric => write!(f, "stack_underflow:numeric"),
+            VmWarning::MaxPageOps => write!(f, "max_page_ops exceeded"),
+            VmWarning::PerFormMaxOps => write!(f, "per_form_max_ops exceeded"),
+            VmWarning::FormCycle(name) => write!(f, "form_cycle_skipped:{name}"),
+            VmWarning::FormDepth(name) => write!(f, "form_depth_exceeded:{name}"),
+            VmWarning::FormExpansions(name) => write!(f, "form_expansions_exceeded:{name}"),
+            VmWarning::ClipAabbOnly => write!(f, "clip_aabb_only"),
+            VmWarning::IgnoredOperator(op) => write!(f, "ignored_op:{op}"),
+            VmWarning::StrokeWidthIgnored => write!(f, "stroke_width_ignored"),
+        }
+    }
+}
+
 /// Full page interpret output.
 #[derive(Debug, Clone, Default)]
 pub struct InterpretResult {
@@ -99,7 +145,7 @@ pub struct InterpretResult {
     /// Image XObject placements for raster line sensing.
     pub image_placements: Vec<ImagePlacement>,
     /// Soft warnings (unknown ops, budgets).
-    pub warnings: Vec<String>,
+    pub warnings: Vec<VmWarning>,
 }
 
 /// Resolved Form XObject payload injected by the façade (PR2a / K19).
@@ -200,7 +246,7 @@ struct InterpretState<'a> {
     runs: Vec<TextRun>,
     rules: Vec<RuleSegment>,
     image_placements: Vec<ImagePlacement>,
-    warnings: Vec<String>,
+    warnings: Vec<VmWarning>,
     ops: u64,
     form_expansions: u32,
     form_depth: u32,
@@ -230,12 +276,12 @@ fn interpret_stream(
     while i < tokens.len() {
         state.ops += 1;
         if state.ops > state.opts.max_ops {
-            state.warnings.push("max_page_ops exceeded".into());
+            state.warnings.push(VmWarning::MaxPageOps);
             break;
         }
         if let Some(ref mut left) = form_ops_left {
             if *left == 0 {
-                state.warnings.push("per_form_max_ops exceeded".into());
+                state.warnings.push(VmWarning::PerFormMaxOps);
                 break;
             }
             *left -= 1;
@@ -552,10 +598,13 @@ fn interpret_stream(
                     "CS" | "cs" | "SC" | "SCN" | "sc" | "scn" | "G" | "g" | "RG" | "rg" | "K"
                     | "k" | "sh" | "gs" | "MP" | "DP" | "BMC" | "BDC" | "EMC" | "BX" | "EX"
                     | "ri" | "i" | "J" | "j" | "M" | "w" | "d0" | "d1" => {
+                        // Skip set unchanged (P2.1a): still silent, no IgnoredOperator.
                         stack.clear();
                     }
                     _ => {
-                        state.warnings.push(format!("unknown_op:{op}"));
+                        state
+                            .warnings
+                            .push(VmWarning::UnknownOperator(op.to_string()));
                         stack.clear();
                     }
                 }
@@ -586,17 +635,17 @@ fn try_expand_form(
 
     // Form resolved: do not fall through to image placement even if we skip expand.
     if state.form_cycle.contains(&form.id) {
-        state.warnings.push(format!("form_cycle_skipped:{name}"));
+        state.warnings.push(VmWarning::FormCycle(name.to_string()));
         return true;
     }
     if state.form_depth >= MAX_FORM_DEPTH {
-        state.warnings.push(format!("form_depth_exceeded:{name}"));
+        state.warnings.push(VmWarning::FormDepth(name.to_string()));
         return true;
     }
     if state.form_expansions >= MAX_FORM_EXPANSIONS_PER_PAGE {
         state
             .warnings
-            .push(format!("form_expansions_exceeded:{name}"));
+            .push(VmWarning::FormExpansions(name.to_string()));
         return true;
     }
 
@@ -629,14 +678,14 @@ fn try_expand_form(
     true
 }
 
-fn pop_num(stack: &mut Vec<Token>, warnings: &mut Vec<String>) -> f32 {
+fn pop_num(stack: &mut Vec<Token>, warnings: &mut Vec<VmWarning>) -> f32 {
     loop {
         match stack.pop() {
             Some(Token::Number(n)) => return n,
             Some(Token::ArrayEnd) | Some(Token::ArrayStart) => continue,
             Some(_) => continue,
             None => {
-                warnings.push("stack_underflow:numeric".into());
+                warnings.push(VmWarning::StackUnderflowNumeric);
                 return 0.0;
             }
         }
@@ -670,7 +719,10 @@ pub fn interpret_text(
     opts: &InterpretOptions,
 ) -> (Vec<TextRun>, Vec<String>) {
     let r = interpret_page(content, fonts, opts);
-    (r.runs, r.warnings)
+    (
+        r.runs,
+        r.warnings.into_iter().map(|w| w.to_string()).collect(),
+    )
 }
 
 #[cfg(test)]
@@ -813,7 +865,10 @@ mod tests {
             Some(&mut resolver),
         );
         assert!(
-            result.warnings.iter().any(|w| w.contains("form_cycle")),
+            result
+                .warnings
+                .iter()
+                .any(|w| matches!(w, VmWarning::FormCycle(_))),
             "warnings={:?}",
             result.warnings
         );
@@ -969,5 +1024,93 @@ mod tests {
             "expected ~8 ON with phase 2, got {on_len} rules={:?}",
             result.rules
         );
+    }
+
+    #[test]
+    fn vm_warning_display_preserves_legacy_strings() {
+        assert_eq!(
+            VmWarning::UnknownOperator("foo".into()).to_string(),
+            "unknown_op:foo"
+        );
+        assert_eq!(
+            VmWarning::StackUnderflowNumeric.to_string(),
+            "stack_underflow:numeric"
+        );
+        assert_eq!(VmWarning::MaxPageOps.to_string(), "max_page_ops exceeded");
+        assert_eq!(
+            VmWarning::PerFormMaxOps.to_string(),
+            "per_form_max_ops exceeded"
+        );
+        assert_eq!(
+            VmWarning::FormCycle("Fm1".into()).to_string(),
+            "form_cycle_skipped:Fm1"
+        );
+        assert_eq!(
+            VmWarning::FormDepth("Fm1".into()).to_string(),
+            "form_depth_exceeded:Fm1"
+        );
+        assert_eq!(
+            VmWarning::FormExpansions("Fm1".into()).to_string(),
+            "form_expansions_exceeded:Fm1"
+        );
+        assert_eq!(VmWarning::ClipAabbOnly.to_string(), "clip_aabb_only");
+        assert_eq!(
+            VmWarning::IgnoredOperator("gs").to_string(),
+            "ignored_op:gs"
+        );
+        assert_eq!(
+            VmWarning::StrokeWidthIgnored.to_string(),
+            "stroke_width_ignored"
+        );
+    }
+
+    #[test]
+    fn unknown_op_is_typed_warning() {
+        let result = interpret_page(b"1 2 foo", &empty_fonts(), &InterpretOptions::default());
+        assert_eq!(
+            result.warnings,
+            vec![VmWarning::UnknownOperator("foo".into())]
+        );
+    }
+
+    #[test]
+    fn ignored_ops_stay_silent() {
+        // Skip set must remain silent (P2.1a: no IgnoredOperator / StrokeWidthIgnored).
+        let content = b"1 w 0 G 0 g 1 0 0 RG 1 0 0 rg 0 0 0 1 K 0 0 0 1 k \
+            /CS CS /cs cs 1 SC 1 SCN 1 sc 1 scn /Sh sh /GS gs \
+            /MP MP /DP DP /BMC BMC /BDC BDC EMC BX EX /ri ri 1 i 0 J 0 j 10 M d0 d1\n";
+        let result = interpret_page(content, &empty_fonts(), &InterpretOptions::default());
+        assert!(
+            result.warnings.is_empty(),
+            "skip set must stay silent: {:?}",
+            result.warnings
+        );
+    }
+
+    #[test]
+    fn pop_num_underflow_is_zero_and_typed() {
+        // `re` with no operands: four fail-soft 0.0 pops, still no hard error.
+        let result = interpret_page(b"re", &empty_fonts(), &InterpretOptions::default());
+        assert_eq!(
+            result.warnings,
+            vec![
+                VmWarning::StackUnderflowNumeric,
+                VmWarning::StackUnderflowNumeric,
+                VmWarning::StackUnderflowNumeric,
+                VmWarning::StackUnderflowNumeric,
+            ]
+        );
+        assert!(result.rules.is_empty());
+        assert!(result.runs.is_empty());
+    }
+
+    #[test]
+    fn max_page_ops_is_typed_warning() {
+        let opts = InterpretOptions {
+            max_ops: 0,
+            ..InterpretOptions::default()
+        };
+        let result = interpret_page(b"0 0 m 40 0 l S", &empty_fonts(), &opts);
+        assert_eq!(result.warnings, vec![VmWarning::MaxPageOps]);
     }
 }
